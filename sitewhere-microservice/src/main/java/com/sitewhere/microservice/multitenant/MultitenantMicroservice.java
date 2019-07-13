@@ -9,8 +9,6 @@ package com.sitewhere.microservice.multitenant;
 
 import java.util.UUID;
 
-import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
-import com.sitewhere.grpc.client.tenant.CachedTenantManagementApiChannel;
 import com.sitewhere.microservice.configuration.ConfigurableMicroservice;
 import com.sitewhere.microservice.configuration.TenantPathInfo;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
@@ -33,9 +31,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T extends IMicroserviceTenantEngine>
 	extends ConfigurableMicroservice<I> implements IMultitenantMicroservice<I, T> {
 
-    /** Tenant management API demux */
-    private ITenantManagementApiChannel<?> tenantManagementApiChannel;
-
     /** Tenant engine manager */
     private ITenantEngineManager<T> tenantEngineManager = new TenantEngineManager<>();
 
@@ -49,14 +44,8 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
 
-	// Create GRPC components.
-	createGrpcComponents();
-
 	// Create step that will start components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
-
-	// Initialize tenant management API channel.
-	init.addInitializeStep(this, getTenantManagementApiChannel(), true);
 
 	// Initialize tenant engine manager.
 	init.addInitializeStep(this, getTenantEngineManager(), true);
@@ -69,14 +58,6 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
 
 	// Call logic for initializing microservice subclass.
 	microserviceInitialize(monitor);
-    }
-
-    /**
-     * Create components that interact via GRPC.
-     */
-    private void createGrpcComponents() {
-	this.tenantManagementApiChannel = new CachedTenantManagementApiChannel(getInstanceSettings(),
-		new CachedTenantManagementApiChannel.CacheSettings());
     }
 
     /*
@@ -92,9 +73,6 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
 
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
-
-	// Start tenant mangement API channel.
-	start.addStartStep(this, getTenantManagementApiChannel(), true);
 
 	// Start tenant engine manager.
 	start.addStartStep(this, getTenantEngineManager(), true);
@@ -126,27 +104,8 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
 	// Stop tenant engine manager.
 	stop.addStopStep(this, getTenantEngineManager());
 
-	// Stop tenant management API channel.
-	stop.addStopStep(this, getTenantManagementApiChannel());
-
 	// Execute shutdown steps.
 	stop.execute(monitor);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
-     * terminate(com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Shut down tenant management API channel.
-	if (getTenantManagementApiChannel() != null) {
-	    getTenantManagementApiChannel().terminate(monitor);
-	}
-
-	super.terminate(monitor);
     }
 
     /*
@@ -291,9 +250,5 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
     @Override
     public ITenantEngineManager<T> getTenantEngineManager() {
 	return tenantEngineManager;
-    }
-
-    public ITenantManagementApiChannel<?> getTenantManagementApiChannel() {
-	return tenantManagementApiChannel;
     }
 }

@@ -10,7 +10,6 @@ package com.sitewhere.instance.spi.microservice;
 import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
 import com.sitewhere.instance.spi.tenant.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.instance.spi.tenant.kafka.ITenantBootstrapModelConsumer;
-import com.sitewhere.instance.spi.tenant.kafka.ITenantModelProducer;
 import com.sitewhere.instance.spi.tenant.templates.IDatasetTemplateManager;
 import com.sitewhere.instance.spi.tenant.templates.ITenantTemplateManager;
 import com.sitewhere.instance.spi.user.grpc.IUserManagementGrpcServer;
@@ -18,7 +17,6 @@ import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
 import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
 import com.sitewhere.spi.tenant.ITenantAdministration;
-import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.user.IUserManagement;
 
 /**
@@ -58,13 +56,6 @@ public interface IInstanceManagementMicroservice<T extends IFunctionIdentifier>
     public IUserManagementGrpcServer getUserManagementGrpcServer();
 
     /**
-     * Get tenant management implementation.
-     * 
-     * @return
-     */
-    public ITenantManagement getTenantManagement();
-
-    /**
      * Get tenant management gRPC server.
      * 
      * @return
@@ -84,13 +75,6 @@ public interface IInstanceManagementMicroservice<T extends IFunctionIdentifier>
      * @return
      */
     public IDatasetTemplateManager getTenantDatasetTemplateManager();
-
-    /**
-     * Get tenant model producer.
-     * 
-     * @return
-     */
-    public ITenantModelProducer getTenantModelProducer();
 
     /**
      * Get tenant bootstrap model producer.

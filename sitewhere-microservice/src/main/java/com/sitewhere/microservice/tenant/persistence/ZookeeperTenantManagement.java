@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.instance.tenant.persistence;
+package com.sitewhere.microservice.tenant.persistence;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -16,7 +16,6 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.zookeeper.data.Stat;
 
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.rest.model.search.Pager;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
@@ -26,6 +25,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.tenant.ITenantSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -128,7 +128,7 @@ public class ZookeeperTenantManagement extends LifecycleComponent implements ITe
 	try {
 	    CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
 	    List<String> children = curator.getChildren()
-		    .forPath(getInstanceManagementMicroservice().getInstanceTenantsConfigurationPath());
+		    .forPath(getConfigurableMicroservice().getInstanceTenantsConfigurationPath());
 	    List<ITenant> tenants = new ArrayList<>();
 	    for (String child : children) {
 		tenants.add(getTenant(UUID.fromString(child)));
@@ -174,7 +174,7 @@ public class ZookeeperTenantManagement extends LifecycleComponent implements ITe
      * @throws SiteWhereException
      */
     protected String getTenantModelPath(UUID tenantId) throws SiteWhereException {
-	return getInstanceManagementMicroservice().getInstanceTenantConfigurationPath(tenantId) + "/" + TENANT_JSON;
+	return getConfigurableMicroservice().getInstanceTenantConfigurationPath(tenantId) + "/" + TENANT_JSON;
     }
 
     /**
@@ -196,7 +196,7 @@ public class ZookeeperTenantManagement extends LifecycleComponent implements ITe
 	}
     }
 
-    protected IInstanceManagementMicroservice<?> getInstanceManagementMicroservice() {
-	return (IInstanceManagementMicroservice<?>) getMicroservice();
+    protected IConfigurableMicroservice<?> getConfigurableMicroservice() {
+	return (IConfigurableMicroservice<?>) getMicroservice();
     }
 }

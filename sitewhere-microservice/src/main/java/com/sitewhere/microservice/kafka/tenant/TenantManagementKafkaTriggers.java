@@ -9,9 +9,8 @@ package com.sitewhere.microservice.kafka.tenant;
 
 import java.util.UUID;
 
-import com.sitewhere.instance.microservice.InstanceManagementMicroservice;
-import com.sitewhere.instance.spi.tenant.kafka.ITenantModelProducer;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.kafka.tenant.ITenantModelProducer;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
@@ -67,6 +66,6 @@ public class TenantManagementKafkaTriggers extends TenantManagementDecorator {
     }
 
     public ITenantModelProducer getTenantModelProducer() {
-	return ((InstanceManagementMicroservice) getMicroservice()).getTenantModelProducer();
+	return getMicroservice().getTenantModelProducer();
     }
 }
