@@ -7,6 +7,8 @@
  */
 package com.sitewhere.commands.destination;
 
+import java.util.List;
+
 import com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor;
 import com.sitewhere.commands.spi.ICommandDeliveryProvider;
 import com.sitewhere.commands.spi.ICommandDestination;
@@ -24,8 +26,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Default implementation of {@link ICommandDestination}.
- * 
- * @author Derek
  * 
  * @param <T>
  */
@@ -48,41 +48,36 @@ public class CommandDestination<T, P> extends TenantEngineLifecycleComponent imp
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.device.communication.ICommandDestination#deliverCommand
-     * (com.sitewhere .spi.device.command.IDeviceCommandExecution,
-     * com.sitewhere.spi.device.IDeviceNestingContext,
-     * com.sitewhere.spi.device.IDeviceAssignment)
+     * com.sitewhere.commands.spi.ICommandDestination#deliverCommand(com.sitewhere.
+     * spi.device.command.IDeviceCommandExecution,
+     * com.sitewhere.spi.device.IDeviceNestingContext, java.util.List)
      */
     @Override
     public void deliverCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
-	    IDeviceAssignment assignment) throws SiteWhereException {
-	T encoded = getCommandExecutionEncoder().encode(execution, nesting, assignment);
+	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	T encoded = getCommandExecutionEncoder().encode(execution, nesting, assignments);
 	if (encoded != null) {
-	    P params = getCommandDeliveryParameterExtractor().extractDeliveryParameters(nesting, assignment, execution);
-	    getCommandDeliveryProvider().deliver(nesting, assignment, execution, encoded, params);
+	    P params = getCommandDeliveryParameterExtractor().extractDeliveryParameters(nesting, assignments,
+		    execution);
+	    getCommandDeliveryProvider().deliver(nesting, assignments, execution, encoded, params);
 	} else {
 	    getLogger().info("Skipping command delivery. Encoder returned null.");
 	}
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.ICommandDestination#
-     * deliverSystemCommand (com.sitewhere.spi.device.command.ISystemCommand,
-     * com.sitewhere.spi.device.IDeviceNestingContext,
-     * com.sitewhere.spi.device.IDeviceAssignment)
+     * @see com.sitewhere.commands.spi.ICommandDestination#deliverSystemCommand(com.
+     * sitewhere.spi.device.command.ISystemCommand,
+     * com.sitewhere.spi.device.IDeviceNestingContext, java.util.List)
      */
     @Override
     public void deliverSystemCommand(ISystemCommand command, IDeviceNestingContext nesting,
-	    IDeviceAssignment assignment) throws SiteWhereException {
-	T encoded = getCommandExecutionEncoder().encodeSystemCommand(command, nesting, assignment);
+	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	T encoded = getCommandExecutionEncoder().encodeSystemCommand(command, nesting, assignments);
 	if (encoded != null) {
-	    P params = getCommandDeliveryParameterExtractor().extractDeliveryParameters(nesting, assignment, null);
-	    getCommandDeliveryProvider().deliverSystemCommand(nesting, assignment, encoded, params);
+	    P params = getCommandDeliveryParameterExtractor().extractDeliveryParameters(nesting, assignments, null);
+	    getCommandDeliveryProvider().deliverSystemCommand(nesting, assignments, encoded, params);
 	} else {
 	    getLogger().info("Skipping system command delivery. Encoder returned null.");
 	}

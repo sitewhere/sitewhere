@@ -1130,8 +1130,7 @@ public class DeviceModelConverter {
 	Device api = new Device();
 	api.setDeviceTypeId(CommonModelConverter.asApiUuid(grpc.getDeviceTypeId()));
 	api.setStatus(grpc.hasStatus() ? grpc.getStatus().getValue() : null);
-	api.setDeviceAssignmentId(
-		grpc.hasDeviceAssignmentId() ? CommonModelConverter.asApiUuid(grpc.getDeviceAssignmentId()) : null);
+	api.setActiveDeviceAssignmentIds(CommonModelConverter.asApiUuids(grpc.getActiveAssignmentIdList()));
 	api.setParentDeviceId(
 		grpc.hasParentDeviceId() ? CommonModelConverter.asApiUuid(grpc.getParentDeviceId()) : null);
 	api.setComments(grpc.hasComments() ? grpc.getComments().getValue() : null);
@@ -1157,8 +1156,8 @@ public class DeviceModelConverter {
 	if (api.getStatus() != null) {
 	    grpc.setStatus(GOptionalString.newBuilder().setValue(api.getStatus()).build());
 	}
-	if (api.getDeviceAssignmentId() != null) {
-	    grpc.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(api.getDeviceAssignmentId()));
+	if (api.getActiveDeviceAssignmentIds() != null) {
+	    grpc.addAllActiveAssignmentId(CommonModelConverter.asGrpcUuids(api.getActiveDeviceAssignmentIds()));
 	}
 	if (api.getComments() != null) {
 	    grpc.setComments(GOptionalString.newBuilder().setValue(api.getComments()).build());
@@ -1646,6 +1645,22 @@ public class DeviceModelConverter {
     }
 
     /**
+     * Convert list of device assignments from GRPC to API.
+     * 
+     * @param grpcs
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<IDeviceAssignment> asApiDeviceAssignments(Collection<GDeviceAssignment> grpcs)
+	    throws SiteWhereException {
+	List<IDeviceAssignment> apis = new ArrayList<>();
+	for (GDeviceAssignment grpc : grpcs) {
+	    apis.add(DeviceModelConverter.asApiDeviceAssignment(grpc));
+	}
+	return apis;
+    }
+
+    /**
      * Convert a device assignment from API to GRPC.
      * 
      * @param api
@@ -1667,6 +1682,22 @@ public class DeviceModelConverter {
 	grpc.setReleasedDate(CommonModelConverter.asGrpcDate(api.getReleasedDate()));
 	grpc.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
 	return grpc.build();
+    }
+
+    /**
+     * Convert list of device assignments from API to GRPC.
+     * 
+     * @param apis
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<GDeviceAssignment> asGrpcDeviceAssignments(List<IDeviceAssignment> apis)
+	    throws SiteWhereException {
+	List<GDeviceAssignment> grpcs = new ArrayList<>();
+	for (IDeviceAssignment api : apis) {
+	    grpcs.add(DeviceModelConverter.asGrpcDeviceAssignment(api));
+	}
+	return grpcs;
     }
 
     /**

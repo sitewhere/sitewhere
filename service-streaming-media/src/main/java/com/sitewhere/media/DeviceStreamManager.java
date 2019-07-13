@@ -7,6 +7,8 @@
  */
 package com.sitewhere.media;
 
+import java.util.List;
+
 import com.sitewhere.rest.model.device.command.DeviceStreamAckCommand;
 import com.sitewhere.rest.model.device.command.SendDeviceStreamDataCommand;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -26,7 +28,6 @@ import com.sitewhere.spi.device.streaming.request.IDeviceStreamDataCreateRequest
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Default {@link IDeviceStreamManager} implementation.
@@ -49,11 +50,12 @@ public class DeviceStreamManager extends TenantEngineLifecycleComponent implemen
     @Override
     public void handleDeviceStreamRequest(String deviceToken, IDeviceStreamCreateRequest request)
 	    throws SiteWhereException {
-	IDeviceAssignment assignment = getCurrentAssignment(deviceToken);
+	List<IDeviceAssignment> assignments = getActiveAssignments(deviceToken);
 
 	DeviceStreamAckCommand ack = new DeviceStreamAckCommand();
 	try {
-	    getDeviceStreamManagement().createDeviceStream(assignment.getId(), request);
+	    // TODO: Send to all active assignments?
+	    getDeviceStreamManagement().createDeviceStream(assignments.get(0).getId(), request);
 	    ack.setStatus(DeviceStreamStatus.DeviceStreamCreated);
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to create device stream.", e);
@@ -73,8 +75,9 @@ public class DeviceStreamManager extends TenantEngineLifecycleComponent implemen
     @Override
     public void handleDeviceStreamDataRequest(String deviceToken, IDeviceStreamDataCreateRequest request)
 	    throws SiteWhereException {
-	IDeviceAssignment assignment = getCurrentAssignment(deviceToken);
-	getDeviceStreamDataManagement().addDeviceStreamData(assignment.getId(), request);
+	// TODO: Send to all active assignments?
+	List<IDeviceAssignment> assignments = getActiveAssignments(deviceToken);
+	getDeviceStreamDataManagement().addDeviceStreamData(assignments.get(0).getId(), request);
     }
 
     /*
@@ -103,24 +106,21 @@ public class DeviceStreamManager extends TenantEngineLifecycleComponent implemen
     }
 
     /**
-     * Get the current assignment or throw errors if it can not be resolved.
+     * Get active assignments for the device.
      * 
      * @param deviceToken
      * @return
      * @throws SiteWhereException
      */
-    protected IDeviceAssignment getCurrentAssignment(String deviceToken) throws SiteWhereException {
-	IDevice device = getDeviceManagement(getTenantEngine().getTenant()).getDeviceByToken(deviceToken);
+    protected List<IDeviceAssignment> getActiveAssignments(String deviceToken) throws SiteWhereException {
+	IDevice device = getDeviceManagement().getDeviceByToken(deviceToken);
 	if (device == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceToken, ErrorLevel.ERROR);
 	}
-	if (device.getDeviceAssignmentId() == null) {
-	    throw new SiteWhereSystemException(ErrorCode.DeviceNotAssigned, ErrorLevel.ERROR);
-	}
-	return getDeviceManagement(getTenantEngine().getTenant()).getDeviceAssignment(device.getDeviceAssignmentId());
+	return getDeviceManagement().getActiveDeviceAssignments(device.getId());
     }
 
-    private IDeviceManagement getDeviceManagement(ITenant tenant) {
+    private IDeviceManagement getDeviceManagement() {
 	return null;
     }
 

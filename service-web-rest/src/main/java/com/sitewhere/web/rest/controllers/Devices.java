@@ -41,6 +41,7 @@ import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
+import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceAssignment;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
@@ -193,16 +194,21 @@ public class Devices extends RestControllerBase {
     }
 
     /**
-     * List device assignment history for a given device.
+     * List active assignments for a given device.
      * 
      * @param deviceToken
+     * @param includeDevice
+     * @param includeCustomer
+     * @param includeArea
+     * @param includeAsset
+     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{deviceToken}/assignment", method = RequestMethod.GET)
-    @ApiOperation(value = "Get current assignment for device")
+    @RequestMapping(value = "/{deviceToken}/assignments/active", method = RequestMethod.GET)
+    @ApiOperation(value = "Get active assignments for device")
     @Secured({ SiteWhereRoles.REST })
-    public IDeviceAssignment getDeviceCurrentAssignment(
+    public List<MarshaledDeviceAssignment> getActiveDeviceAssignments(
 	    @ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
 	    @ApiParam(value = "Include device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
 	    @ApiParam(value = "Include customer information", required = false) @RequestParam(defaultValue = "false") boolean includeCustomer,
@@ -210,13 +216,19 @@ public class Devices extends RestControllerBase {
 	    @ApiParam(value = "Include asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	IDevice existing = assertDeviceByToken(deviceToken);
-	IDeviceAssignment assignment = assertDeviceAssignment(existing.getDeviceAssignmentId());
+	List<IDeviceAssignment> assignments = getDeviceManagement().getActiveDeviceAssignments(existing.getId());
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeDevice(includeDevice);
 	helper.setIncludeCustomer(includeCustomer);
 	helper.setIncludeArea(includeArea);
 	helper.setIncludeAsset(includeAsset);
-	return helper.convert(assignment, getAssetManagement());
+
+	List<MarshaledDeviceAssignment> converted = new ArrayList<>();
+	for (IDeviceAssignment assignment : assignments) {
+	    converted.add(helper.convert(assignment, getAssetManagement()));
+	}
+
+	return converted;
     }
 
     /**
@@ -436,29 +448,35 @@ public class Devices extends RestControllerBase {
 	    @ApiParam(value = "Device token", required = true) @PathVariable String deviceToken,
 	    @RequestBody DeviceEventBatch batch) throws SiteWhereException {
 	IDevice device = assertDeviceByToken(deviceToken);
-	if (device.getDeviceAssignmentId() == null) {
+	if (device.getActiveDeviceAssignmentIds().size() == 0) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceNotAssigned, ErrorLevel.ERROR);
 	}
-	IDeviceAssignment assignment = assertDeviceAssignment(device.getDeviceAssignmentId());
+	List<IDeviceAssignment> assignments = getDeviceManagement().getActiveDeviceAssignments(device.getId());
 
-	// Set event dates if not set by client.
-	for (IDeviceLocationCreateRequest locReq : batch.getLocations()) {
-	    if (locReq.getEventDate() == null) {
-		((DeviceLocationCreateRequest) locReq).setEventDate(new Date());
+	IDeviceEventBatchResponse response = null;
+	for (IDeviceAssignment assignment : assignments) {
+	    // Set event dates if not set by client.
+	    for (IDeviceLocationCreateRequest locReq : batch.getLocations()) {
+		if (locReq.getEventDate() == null) {
+		    ((DeviceLocationCreateRequest) locReq).setEventDate(new Date());
+		}
 	    }
-	}
-	for (IDeviceMeasurementCreateRequest measReq : batch.getMeasurements()) {
-	    if (measReq.getEventDate() == null) {
-		((DeviceMeasurementCreateRequest) measReq).setEventDate(new Date());
+	    for (IDeviceMeasurementCreateRequest measReq : batch.getMeasurements()) {
+		if (measReq.getEventDate() == null) {
+		    ((DeviceMeasurementCreateRequest) measReq).setEventDate(new Date());
+		}
 	    }
-	}
-	for (IDeviceAlertCreateRequest alertReq : batch.getAlerts()) {
-	    if (alertReq.getEventDate() == null) {
-		((DeviceAlertCreateRequest) alertReq).setEventDate(new Date());
+	    for (IDeviceAlertCreateRequest alertReq : batch.getAlerts()) {
+		if (alertReq.getEventDate() == null) {
+		    ((DeviceAlertCreateRequest) alertReq).setEventDate(new Date());
+		}
 	    }
+
+	    response = getDeviceEventManagement().addDeviceEventBatch(assignment.getId(), batch);
 	}
 
-	return getDeviceEventManagement().addDeviceEventBatch(assignment.getId(), batch);
+	// TODO: Only returns the last response. Should this be refactored?
+	return response;
     }
 
     /**

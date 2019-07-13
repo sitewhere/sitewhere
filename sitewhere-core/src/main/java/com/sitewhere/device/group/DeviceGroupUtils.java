@@ -61,7 +61,7 @@ public class DeviceGroupUtils {
 	    }
 
 	    // Handle exclude assigned.
-	    if (criteria.isExcludeAssigned() && (device.getDeviceAssignmentId() != null)) {
+	    if (criteria.isExcludeAssigned() && (device.getActiveDeviceAssignmentIds().size() > 0)) {
 		continue;
 	    }
 	    if ((criteria.getStartDate() != null) && (device.getCreatedDate().before(criteria.getStartDate()))) {

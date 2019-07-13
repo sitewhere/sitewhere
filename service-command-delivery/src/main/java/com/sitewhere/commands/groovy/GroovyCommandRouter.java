@@ -28,8 +28,6 @@ import groovy.lang.Binding;
 /**
  * Implementation of {@link IOutboundCommandRouter} that uses Groovy scripts to
  * perform routing logic.
- * 
- * @author Derek
  */
 public class GroovyCommandRouter extends GroovyComponent implements IOutboundCommandRouter {
 
@@ -41,26 +39,24 @@ public class GroovyCommandRouter extends GroovyComponent implements IOutboundCom
      * @see
      * com.sitewhere.commands.spi.IOutboundCommandRouter#getDestinationsFor(com.
      * sitewhere.spi.device.command.IDeviceCommandExecution,
-     * com.sitewhere.spi.device.IDeviceNestingContext,
-     * com.sitewhere.spi.device.IDeviceAssignment)
+     * com.sitewhere.spi.device.IDeviceNestingContext, java.util.List)
      */
     @Override
     public List<ICommandDestination<?, ?>> getDestinationsFor(IDeviceCommandExecution execution,
-	    IDeviceNestingContext nesting, IDeviceAssignment assignment) throws SiteWhereException {
-	return findAndResolveCommandDestinations(execution, null, nesting, assignment);
+	    IDeviceNestingContext nesting, List<IDeviceAssignment> assignments) throws SiteWhereException {
+	return findAndResolveCommandDestinations(execution, null, nesting, assignments);
     }
 
     /*
      * @see
      * com.sitewhere.commands.spi.IOutboundCommandRouter#getDestinationsFor(com.
      * sitewhere.spi.device.command.ISystemCommand,
-     * com.sitewhere.spi.device.IDeviceNestingContext,
-     * com.sitewhere.spi.device.IDeviceAssignment)
+     * com.sitewhere.spi.device.IDeviceNestingContext, java.util.List)
      */
     @Override
     public List<ICommandDestination<?, ?>> getDestinationsFor(ISystemCommand command, IDeviceNestingContext nesting,
-	    IDeviceAssignment assignment) throws SiteWhereException {
-	return findAndResolveCommandDestinations(null, command, nesting, assignment);
+	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	return findAndResolveCommandDestinations(null, command, nesting, assignments);
     }
 
     /**
@@ -70,14 +66,14 @@ public class GroovyCommandRouter extends GroovyComponent implements IOutboundCom
      * @param execution
      * @param system
      * @param nesting
-     * @param assignment
+     * @param assignments
      * @return
      * @throws SiteWhereException
      */
     protected List<ICommandDestination<?, ?>> findAndResolveCommandDestinations(IDeviceCommandExecution execution,
-	    ISystemCommand system, IDeviceNestingContext nesting, IDeviceAssignment assignment)
+	    ISystemCommand system, IDeviceNestingContext nesting, List<IDeviceAssignment> assignments)
 	    throws SiteWhereException {
-	String target = findCommandDestination(execution, system, nesting, assignment);
+	String target = findCommandDestination(execution, system, nesting, assignments);
 	if (target != null) {
 	    ICommandDestination<?, ?> destination = getCommandDestinationsManager().getCommandDestinations()
 		    .get(target);
@@ -98,17 +94,18 @@ public class GroovyCommandRouter extends GroovyComponent implements IOutboundCom
      * @param execution
      * @param system
      * @param nesting
-     * @param assignment
+     * @param assignments
+     * @return
      * @throws SiteWhereException
      */
     protected String findCommandDestination(IDeviceCommandExecution execution, ISystemCommand system,
-	    IDeviceNestingContext nesting, IDeviceAssignment assignment) throws SiteWhereException {
+	    IDeviceNestingContext nesting, List<IDeviceAssignment> assignments) throws SiteWhereException {
 	try {
 	    Binding binding = createBindingFor(this);
 	    binding.setVariable(IGroovyVariables.VAR_COMMAND_EXECUTION, execution);
 	    binding.setVariable(IGroovyVariables.VAR_SYSTEM_COMMAND, system);
 	    binding.setVariable(IGroovyVariables.VAR_NESTING_CONTEXT, nesting);
-	    binding.setVariable(IGroovyVariables.VAR_ASSIGNMENT, assignment);
+	    binding.setVariable(IGroovyVariables.VAR_ACTIVE_ASSIGNMENTS, assignments);
 	    getLogger().debug("About to route command using script '" + getScriptId() + "'");
 	    return (String) run(binding);
 	} catch (SiteWhereException e) {

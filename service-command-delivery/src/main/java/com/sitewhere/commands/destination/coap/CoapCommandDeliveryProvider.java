@@ -7,6 +7,8 @@
  */
 package com.sitewhere.commands.destination.coap;
 
+import java.util.List;
+
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
@@ -22,8 +24,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 /**
  * Delivers commands via CoAP by creating a client request to send command data
  * to the remote device.
- * 
- * @author Derek
  */
 public class CoapCommandDeliveryProvider extends TenantEngineLifecycleComponent
 	implements ICommandDeliveryProvider<byte[], CoapParameters> {
@@ -33,17 +33,15 @@ public class CoapCommandDeliveryProvider extends TenantEngineLifecycleComponent
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.ICommandDeliveryProvider#deliver(
-     * com. sitewhere.spi.device.IDeviceNestingContext,
-     * com.sitewhere.spi.device.IDeviceAssignment,
+     * @see
+     * com.sitewhere.commands.spi.ICommandDeliveryProvider#deliver(com.sitewhere.spi
+     * .device.IDeviceNestingContext, java.util.List,
      * com.sitewhere.spi.device.command.IDeviceCommandExecution, java.lang.Object,
      * java.lang.Object)
      */
     @Override
-    public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment, IDeviceCommandExecution execution,
-	    byte[] encoded, CoapParameters parameters) throws SiteWhereException {
+    public void deliver(IDeviceNestingContext nested, List<IDeviceAssignment> assignments,
+	    IDeviceCommandExecution execution, byte[] encoded, CoapParameters parameters) throws SiteWhereException {
 	CoapClient client = createCoapClient(parameters);
 	CoapResponse response = null;
 	getLogger().debug(parameters.toString());
@@ -61,15 +59,13 @@ public class CoapCommandDeliveryProvider extends TenantEngineLifecycleComponent
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.ICommandDeliveryProvider#
-     * deliverSystemCommand(com.sitewhere.spi.device.IDeviceNestingContext,
-     * com.sitewhere.spi.device.IDeviceAssignment, java.lang.Object,
+     * @see
+     * com.sitewhere.commands.spi.ICommandDeliveryProvider#deliverSystemCommand(com.
+     * sitewhere.spi.device.IDeviceNestingContext, java.util.List, java.lang.Object,
      * java.lang.Object)
      */
     @Override
-    public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment, byte[] encoded,
+    public void deliverSystemCommand(IDeviceNestingContext nested, List<IDeviceAssignment> assignments, byte[] encoded,
 	    CoapParameters parameters) throws SiteWhereException {
 	CoapClient client = createCoapClient(parameters);
 	CoapResponse response = null;

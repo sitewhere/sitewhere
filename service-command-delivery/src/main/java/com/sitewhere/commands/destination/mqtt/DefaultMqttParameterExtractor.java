@@ -8,6 +8,7 @@
 package com.sitewhere.commands.destination.mqtt;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.text.StrSubstitutor;
@@ -49,23 +50,21 @@ public class DefaultMqttParameterExtractor extends TenantEngineLifecycleComponen
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.
-     * ICommandDeliveryParameterExtractor#
+     * @see com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor#
      * extractDeliveryParameters(com.sitewhere.spi.device.IDeviceNestingContext,
-     * com.sitewhere.spi.device.IDeviceAssignment,
-     * com.sitewhere.spi.device.command.IDeviceCommandExecution)
+     * java.util.List, com.sitewhere.spi.device.command.IDeviceCommandExecution)
      */
     @Override
-    public MqttParameters extractDeliveryParameters(IDeviceNestingContext nesting, IDeviceAssignment assignment,
+    public MqttParameters extractDeliveryParameters(IDeviceNestingContext nesting, List<IDeviceAssignment> assignments,
 	    IDeviceCommandExecution execution) throws SiteWhereException {
 	MqttParameters params = new MqttParameters();
 
 	Map<String, String> values = new HashMap<>();
 	values.put("tenant", getTenantEngine().getTenant().getToken());
 	values.put("device", nesting.getGateway().getToken());
-	values.put("assignment", assignment.getToken());
+
+	// TODO: Does targeting based on assignment make sense?
+	// values.put("assignment", assignment.getToken());
 
 	String commandTopic = StrSubstitutor.replace(getCommandTopicExpr(), values);
 	params.setCommandTopic(commandTopic);

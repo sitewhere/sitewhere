@@ -32,18 +32,18 @@ public class CommandRoutingLogic {
      * @param eventContext
      * @param execution
      * @param nesting
-     * @param assignment
+     * @param assignments
      * @throws SiteWhereException
      */
     public static void routeCommand(IOutboundCommandRouter router, IUndeliveredCommandInvocationsProducer undelivered,
 	    IDeviceEventContext eventContext, IDeviceCommandExecution execution, IDeviceNestingContext nesting,
-	    IDeviceAssignment assignment) throws SiteWhereException {
-	List<ICommandDestination<?, ?>> destinations = router.getDestinationsFor(execution, nesting, assignment);
+	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	List<ICommandDestination<?, ?>> destinations = router.getDestinationsFor(execution, nesting, assignments);
 	boolean deliveredToAll = true;
 	for (ICommandDestination<?, ?> destination : destinations) {
 	    if (destination.getLifecycleStatus() == LifecycleStatus.Started) {
 		try {
-		    deliverCommand(destination, execution, nesting, assignment);
+		    deliverCommand(destination, execution, nesting, assignments);
 		} catch (SiteWhereException e) {
 		    router.getLogger().error("Unable to deliver command to destination.", e);
 		    deliveredToAll = false;
@@ -69,14 +69,14 @@ public class CommandRoutingLogic {
      * @param router
      * @param command
      * @param nesting
-     * @param assignment
+     * @param assignments
      * @throws SiteWhereException
      */
     public static void routeSystemCommand(IOutboundCommandRouter router, ISystemCommand command,
-	    IDeviceNestingContext nesting, IDeviceAssignment assignment) throws SiteWhereException {
-	List<ICommandDestination<?, ?>> destinations = router.getDestinationsFor(command, nesting, assignment);
+	    IDeviceNestingContext nesting, List<IDeviceAssignment> assignments) throws SiteWhereException {
+	List<ICommandDestination<?, ?>> destinations = router.getDestinationsFor(command, nesting, assignments);
 	for (ICommandDestination<?, ?> destination : destinations) {
-	    deliverSystemCommand(destination, command, nesting, assignment);
+	    deliverSystemCommand(destination, command, nesting, assignments);
 	    // TODO: How are failures handled?
 	}
     }
@@ -87,12 +87,12 @@ public class CommandRoutingLogic {
      * @param destination
      * @param execution
      * @param nesting
-     * @param assignment
+     * @param assignments
      * @throws SiteWhereException
      */
     public static void deliverCommand(ICommandDestination<?, ?> destination, IDeviceCommandExecution execution,
-	    IDeviceNestingContext nesting, IDeviceAssignment assignment) throws SiteWhereException {
-	destination.deliverCommand(execution, nesting, assignment);
+	    IDeviceNestingContext nesting, List<IDeviceAssignment> assignments) throws SiteWhereException {
+	destination.deliverCommand(execution, nesting, assignments);
     }
 
     /**
@@ -101,11 +101,11 @@ public class CommandRoutingLogic {
      * @param destination
      * @param command
      * @param nesting
-     * @param assignment
+     * @param assignments
      * @throws SiteWhereException
      */
     public static void deliverSystemCommand(ICommandDestination<?, ?> destination, ISystemCommand command,
-	    IDeviceNestingContext nesting, IDeviceAssignment assignment) throws SiteWhereException {
-	destination.deliverSystemCommand(command, nesting, assignment);
+	    IDeviceNestingContext nesting, List<IDeviceAssignment> assignments) throws SiteWhereException {
+	destination.deliverSystemCommand(command, nesting, assignments);
     }
 }

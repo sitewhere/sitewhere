@@ -1409,24 +1409,23 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getCurrentDeviceAssignment(java.
+     * com.sitewhere.spi.device.IDeviceManagement#getActiveDeviceAssignments(java.
      * util.UUID)
      */
     @Override
-    public IDeviceAssignment getCurrentDeviceAssignment(UUID deviceId) throws SiteWhereException {
+    public List<IDeviceAssignment> getActiveDeviceAssignments(UUID deviceId) throws SiteWhereException {
 	try {
-	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetCurrentAssignmentForDeviceMethod());
-	    GGetCurrentAssignmentForDeviceRequest.Builder grequest = GGetCurrentAssignmentForDeviceRequest.newBuilder();
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetActiveAssignmentsForDeviceMethod());
+	    GGetActiveAssignmentsForDeviceRequest.Builder grequest = GGetActiveAssignmentsForDeviceRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(deviceId));
-	    GGetCurrentAssignmentForDeviceResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .getCurrentAssignmentForDevice(grequest.build());
-	    IDeviceAssignment response = (gresponse.hasAssignment())
-		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment())
-		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetCurrentAssignmentForDeviceMethod(), response);
+	    GGetActiveAssignmentsForDeviceResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .getActiveAssignmentsForDevice(grequest.build());
+	    List<IDeviceAssignment> response = DeviceModelConverter
+		    .asApiDeviceAssignments(gresponse.getAssignmentList());
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetActiveAssignmentsForDeviceMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetCurrentAssignmentForDeviceMethod(),
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetActiveAssignmentsForDeviceMethod(),
 		    t);
 	}
     }

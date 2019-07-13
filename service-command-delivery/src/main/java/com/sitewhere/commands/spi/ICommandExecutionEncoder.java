@@ -7,6 +7,8 @@
  */
 package com.sitewhere.commands.spi;
 
+import java.util.List;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -17,8 +19,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 /**
  * Encodes an {@link IDeviceCommandExecution} into a format that can be
  * transmitted.
- * 
- * @author Derek
  * 
  * @param <T>
  *            format for encoded command. Must be compatible with the
@@ -31,11 +31,11 @@ public interface ICommandExecutionEncoder<T> extends ITenantEngineLifecycleCompo
      * 
      * @param command
      * @param nested
-     * @param assignment
+     * @param assignments
      * @return
      * @throws SiteWhereException
      */
-    public T encode(IDeviceCommandExecution command, IDeviceNestingContext nested, IDeviceAssignment assignment)
+    public T encode(IDeviceCommandExecution command, IDeviceNestingContext nested, List<IDeviceAssignment> assignments)
 	    throws SiteWhereException;
 
     /**
@@ -43,10 +43,10 @@ public interface ICommandExecutionEncoder<T> extends ITenantEngineLifecycleCompo
      * 
      * @param command
      * @param nested
-     * @param assignment
+     * @param assignments
      * @return
      * @throws SiteWhereException
      */
-    public T encodeSystemCommand(ISystemCommand command, IDeviceNestingContext nested, IDeviceAssignment assignment)
-	    throws SiteWhereException;
+    public T encodeSystemCommand(ISystemCommand command, IDeviceNestingContext nested,
+	    List<IDeviceAssignment> assignments) throws SiteWhereException;
 }

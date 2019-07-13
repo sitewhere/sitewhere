@@ -7,11 +7,15 @@
  */
 package com.sitewhere.device.marshaling;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sitewhere.rest.model.common.PersistentEntity;
 import com.sitewhere.rest.model.device.Device;
+import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDevice;
 import com.sitewhere.spi.SiteWhereException;
@@ -71,7 +75,7 @@ public class DeviceMarshalHelper {
     public MarshaledDevice convert(IDevice source, IAssetManagement assetManagement) throws SiteWhereException {
 	MarshaledDevice result = new MarshaledDevice();
 	result.setDeviceTypeId(source.getDeviceTypeId());
-	result.setDeviceAssignmentId(source.getDeviceAssignmentId());
+	result.setActiveDeviceAssignmentIds(source.getActiveDeviceAssignmentIds());
 	result.setParentDeviceId(source.getParentDeviceId());
 	result.setStatus(source.getStatus());
 	result.setComments(source.getComments());
@@ -97,14 +101,14 @@ public class DeviceMarshalHelper {
 		result.setDeviceType(getDeviceTypeHelper().convert(deviceType));
 	    }
 	}
-	if ((source.getDeviceAssignmentId() != null) && (isIncludeAssignment())) {
+	if ((source.getActiveDeviceAssignmentIds().size() > 0) && (isIncludeAssignment())) {
 	    try {
-		IDeviceAssignment assignment = getDeviceManagement()
-			.getDeviceAssignment(source.getDeviceAssignmentId());
-		if (assignment == null) {
-		    throw new SiteWhereException("Device contains an invalid assignment reference.");
+		List<IDeviceAssignment> assignments = getDeviceManagement().getActiveDeviceAssignments(source.getId());
+		List<DeviceAssignment> converted = new ArrayList<>();
+		for (IDeviceAssignment assignment : assignments) {
+		    converted.add(getAssignmentHelper().convert(assignment, assetManagement));
 		}
-		result.setAssignment(getAssignmentHelper().convert(assignment, assetManagement));
+		result.setActiveAssignments(converted);
 	    } catch (SiteWhereException e) {
 		LOGGER.warn("Device has token for non-existent assignment.");
 	    }

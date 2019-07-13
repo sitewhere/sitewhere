@@ -7,6 +7,8 @@
  */
 package com.sitewhere.commands.encoding;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -32,20 +34,20 @@ public class EncodedCommandExecution {
     private IDeviceNestingContext nestingContext;
 
     /** Device assignment information */
-    private IDeviceAssignment assignment;
+    private List<IDeviceAssignment> assignments;
 
     public EncodedCommandExecution(IDeviceCommandExecution command, IDeviceNestingContext nestingContext,
-	    IDeviceAssignment assignment) {
+	    List<IDeviceAssignment> assignments) {
 	this.command = command;
 	this.nestingContext = nestingContext;
-	this.assignment = assignment;
+	this.assignments = assignments;
     }
 
     public EncodedCommandExecution(ISystemCommand systemCommand, IDeviceNestingContext nestingContext,
-	    IDeviceAssignment assignment) {
+	    List<IDeviceAssignment> assignments) {
 	this.systemCommand = systemCommand;
 	this.nestingContext = nestingContext;
-	this.assignment = assignment;
+	this.assignments = assignments;
     }
 
     public IDeviceCommandExecution getCommand() {
@@ -72,11 +74,11 @@ public class EncodedCommandExecution {
 	this.nestingContext = nestingContext;
     }
 
-    public IDeviceAssignment getAssignment() {
-	return assignment;
+    public List<IDeviceAssignment> getAssignments() {
+	return assignments;
     }
 
-    public void setAssignment(IDeviceAssignment assignment) {
-	this.assignment = assignment;
+    public void setAssignments(List<IDeviceAssignment> assignments) {
+	this.assignments = assignments;
     }
 }

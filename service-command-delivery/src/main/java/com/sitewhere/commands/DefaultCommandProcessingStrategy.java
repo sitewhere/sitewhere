@@ -35,8 +35,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Default implementation of {@link ICommandProcessingStrategy}.
- * 
- * @author Derek
  */
 public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleComponent
 	implements ICommandProcessingStrategy {
@@ -71,10 +69,12 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
 		    throw new SiteWhereException("Targeted assignment references device that does not exist.");
 		}
 
+		List<IDeviceAssignment> active = getDeviceManagementApiChannel()
+			.getActiveDeviceAssignments(device.getId());
 		IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device,
 			getTenantEngine().getTenant());
 		CommandRoutingLogic.routeCommand(getOutboundCommandRouter(), getUndeliveredCommandInvocationsProducer(),
-			context, execution, nesting, assignment);
+			context, execution, nesting, active);
 	    }
 	} else {
 	    throw new SiteWhereException("Invalid command referenced from invocation.");
@@ -95,11 +95,12 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
 	if (device == null) {
 	    throw new SiteWhereException("Targeted assignment references device that does not exist.");
 	}
-	IDeviceAssignment assignment = getDeviceManagementApiChannel()
-		.getDeviceAssignment(device.getDeviceAssignmentId());
+
+	List<IDeviceAssignment> assignments = getDeviceManagementApiChannel()
+		.getActiveDeviceAssignments(device.getId());
 	IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device,
 		getTenantEngine().getTenant());
-	CommandRoutingLogic.routeSystemCommand(getOutboundCommandRouter(), command, nesting, assignment);
+	CommandRoutingLogic.routeSystemCommand(getOutboundCommandRouter(), command, nesting, assignments);
     }
 
     /*
