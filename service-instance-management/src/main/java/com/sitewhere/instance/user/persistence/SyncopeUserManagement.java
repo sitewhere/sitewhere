@@ -536,8 +536,8 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 			    TOKEN_REFRESH_IN_MINUTES, TimeUnit.MINUTES);
 		    return true;
 		};
-		RetryConfig config = new RetryConfigBuilder().retryOnAnyException().withMaxNumberOfTries(7)
-			.withDelayBetweenTries(Duration.ofSeconds(2)).withRandomExponentialBackoff().build();
+		RetryConfig config = new RetryConfigBuilder().retryOnAnyException().withMaxNumberOfTries(10)
+			.withDelayBetweenTries(Duration.ofSeconds(7)).withRandomExponentialBackoff().build();
 		RetryListener listener = new RetryListener<Boolean>() {
 
 		    @Override

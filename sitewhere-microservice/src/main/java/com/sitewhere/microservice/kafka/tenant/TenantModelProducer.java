@@ -14,10 +14,10 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 
 import com.sitewhere.grpc.client.tenant.TenantModelMarshaler;
 import com.sitewhere.grpc.model.TenantModel.GTenantModelUpdateType;
-import com.sitewhere.instance.spi.tenant.kafka.ITenantModelProducer;
 import com.sitewhere.microservice.kafka.AckPolicy;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.kafka.tenant.ITenantModelProducer;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
