@@ -55,6 +55,9 @@ import com.sitewhere.spi.tenant.ITenantManagement;
 public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicroserviceTenantEngine>
 	extends LifecycleComponent implements ITenantEngineManager<T> {
 
+    /** Number of seconds between fallback attempts for connecting to Syncope */
+    private static final int BOOTSTRAP_CHECK_SECS_BETWEEN_RETRIES = 7;
+
     /** Max number of tenants being added/removed concurrently */
     private static final int MAX_CONCURRENT_TENANT_OPERATIONS = 5;
 
@@ -191,7 +194,8 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 	    return true;
 	};
 	RetryConfig config = new RetryConfigBuilder().retryOnAnyException().withMaxNumberOfTries(7)
-		.withDelayBetweenTries(Duration.ofSeconds(2)).withRandomExponentialBackoff().build();
+		.withDelayBetweenTries(Duration.ofSeconds(BOOTSTRAP_CHECK_SECS_BETWEEN_RETRIES))
+		.withExponentialBackoff().build();
 	RetryListener<Boolean> listener = new RetryListener<Boolean>() {
 
 	    @Override

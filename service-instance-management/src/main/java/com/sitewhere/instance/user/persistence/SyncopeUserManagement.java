@@ -71,6 +71,9 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
  */
 public class SyncopeUserManagement extends LifecycleComponent implements IUserManagement {
 
+    /** Number of seconds between fallback attempts for connecting to Syncope */
+    private static final int CONNECT_SECS_BETWEEN_RETRIES = 7;
+
     /** Default Syncope username */
     private static final String SYNCOPE_USERNAME = "synadmin";
 
@@ -537,7 +540,8 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 		    return true;
 		};
 		RetryConfig config = new RetryConfigBuilder().retryOnAnyException().withMaxNumberOfTries(10)
-			.withDelayBetweenTries(Duration.ofSeconds(7)).withRandomExponentialBackoff().build();
+			.withDelayBetweenTries(Duration.ofSeconds(CONNECT_SECS_BETWEEN_RETRIES))
+			.withExponentialBackoff().build();
 		RetryListener listener = new RetryListener<Boolean>() {
 
 		    @Override
