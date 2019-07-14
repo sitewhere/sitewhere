@@ -108,7 +108,7 @@ public class DeviceMarshalHelper {
 		for (IDeviceAssignment assignment : assignments) {
 		    converted.add(getAssignmentHelper().convert(assignment, assetManagement));
 		}
-		result.setActiveAssignments(converted);
+		result.setActiveDeviceAssignments(converted);
 	    } catch (SiteWhereException e) {
 		LOGGER.warn("Device has token for non-existent assignment.");
 	    }
