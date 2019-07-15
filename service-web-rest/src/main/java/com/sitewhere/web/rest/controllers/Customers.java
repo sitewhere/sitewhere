@@ -50,7 +50,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.customer.ICustomer;
-import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -238,26 +237,9 @@ public class Customers extends RestControllerBase {
 	    String parentCustomerToken, String customerTypeToken) throws SiteWhereException {
 	// Build criteria.
 	CustomerSearchCriteria criteria = new CustomerSearchCriteria(page, pageSize);
+	criteria.setParentCustomerToken(parentCustomerToken);
+	criteria.setCustomerTypeToken(customerTypeToken);
 	criteria.setRootOnly(rootOnly);
-
-	// Look up parent customer if provided.
-	if (parentCustomerToken != null) {
-	    ICustomer parent = getDeviceManagement().getCustomerByToken(parentCustomerToken);
-	    if (parent == null) {
-		throw new SiteWhereException("Invalid parent customer token.");
-	    }
-	    criteria.setParentCustomerId(parent.getId());
-	}
-
-	// Look up customer type if provided.
-	if (customerTypeToken != null) {
-	    ICustomerType customerType = getDeviceManagement().getCustomerTypeByToken(customerTypeToken);
-	    if (customerType == null) {
-		throw new SiteWhereException("Invalid customer type token.");
-	    }
-	    criteria.setCustomerTypeId(customerType.getId());
-	}
-
 	return criteria;
     }
 

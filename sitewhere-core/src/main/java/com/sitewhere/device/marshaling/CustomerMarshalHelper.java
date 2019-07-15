@@ -19,6 +19,7 @@ import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.customer.ICustomer;
+import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -78,12 +79,14 @@ public class CustomerMarshalHelper {
 	customer.setDescription(source.getDescription());
 	BrandedEntity.copy(source, customer);
 	if (isIncludeCustomerType()) {
-	    customer.setCustomerType(getDeviceManagement().getCustomerType(source.getCustomerTypeId()));
+	    ICustomerType type = getDeviceManagement().getCustomerType(source.getCustomerTypeId());
+	    customer.setCustomerType(new CustomerTypeMarshalHelper(getDeviceManagement()).convert(type));
 	}
 	if (isIncludeParentCustomer()) {
 	    if (source.getParentId() != null) {
 		ICustomer parent = getDeviceManagement().getCustomer(source.getParentId());
-		customer.setParentCustomer(parent);
+		customer.setParentCustomer(
+			new CustomerMarshalHelper(getDeviceManagement(), getAssetManagement()).convert(parent));
 	    }
 	}
 	if (isIncludeAssignments()) {

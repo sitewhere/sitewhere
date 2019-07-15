@@ -17,9 +17,9 @@ import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequ
 import com.sitewhere.rest.model.device.event.scripting.DeviceEventSupport;
 import com.sitewhere.rest.model.search.device.DeviceCommandSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -65,9 +65,9 @@ public class DeviceEventRequestBuilder {
 	    if (targetAssignment == null) {
 		throw new SiteWhereException("Target assignment not found: " + target);
 	    }
-	    IDevice targetDevice = deviceManagement.getDevice(targetAssignment.getDeviceId());
+	    IDeviceType type = deviceManagement.getDeviceType(targetAssignment.getDeviceTypeId());
 	    DeviceCommandSearchCriteria criteria = new DeviceCommandSearchCriteria(1, 0);
-	    criteria.setDeviceTypeId(targetDevice.getDeviceTypeId());
+	    criteria.setDeviceTypeToken(type.getToken());
 	    ISearchResults<IDeviceCommand> commands = deviceManagement.listDeviceCommands(criteria);
 	    IDeviceCommand match = null;
 	    for (IDeviceCommand command : commands.getResults()) {

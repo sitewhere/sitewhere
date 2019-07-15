@@ -22,13 +22,9 @@ import com.sitewhere.rest.model.device.command.DeviceCommandNamespace;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.DeviceCommandSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.command.IDeviceCommandNamespace;
-import com.sitewhere.spi.error.ErrorCode;
-import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
@@ -65,16 +61,7 @@ public class DeviceCommands extends RestControllerBase {
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize)
 	    throws SiteWhereException {
 	DeviceCommandSearchCriteria criteria = new DeviceCommandSearchCriteria(page, pageSize);
-
-	// Look up device type if specified.
-	IDeviceType deviceType = null;
-	if (deviceTypeToken != null) {
-	    deviceType = getDeviceManagement().getDeviceTypeByToken(deviceTypeToken);
-	    if (deviceType == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidDeviceTypeToken, ErrorLevel.ERROR);
-	    }
-	    criteria.setDeviceTypeId(deviceType.getId());
-	}
+	criteria.setDeviceTypeToken(deviceTypeToken);
 
 	return getDeviceManagement().listDeviceCommands(criteria);
     }
@@ -94,16 +81,7 @@ public class DeviceCommands extends RestControllerBase {
 	    @ApiParam(value = "Device type token", required = false) @RequestParam(defaultValue = "false") String deviceTypeToken)
 	    throws SiteWhereException {
 	DeviceCommandSearchCriteria criteria = new DeviceCommandSearchCriteria(1, 0);
-
-	// Look up device type if specified.
-	IDeviceType deviceType = null;
-	if (deviceTypeToken != null) {
-	    deviceType = getDeviceManagement().getDeviceTypeByToken(deviceTypeToken);
-	    if (deviceType == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidDeviceTypeToken, ErrorLevel.ERROR);
-	    }
-	    criteria.setDeviceTypeId(deviceType.getId());
-	}
+	criteria.setDeviceTypeToken(deviceTypeToken);
 
 	List<IDeviceCommand> results = getDeviceManagement().listDeviceCommands(criteria).getResults();
 	Collections.sort(results, new Comparator<IDeviceCommand>() {

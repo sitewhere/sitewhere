@@ -329,7 +329,7 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	}
 
 	DeviceCommandSearchCriteria criteria = new DeviceCommandSearchCriteria(1, 0);
-	criteria.setDeviceTypeId(deviceType.getId());
+	criteria.setDeviceTypeToken(deviceType.getToken());
 	ISearchResults<IDeviceCommand> existing = listDeviceCommands(criteria);
 
 	// Use common logic so all backend implementations work the same.
@@ -391,7 +391,7 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	}
 
 	DeviceCommandSearchCriteria criteria = new DeviceCommandSearchCriteria(1, 0);
-	criteria.setDeviceTypeId(deviceType.getId());
+	criteria.setDeviceTypeToken(deviceType.getToken());
 	ISearchResults<IDeviceCommand> existing = listDeviceCommands(criteria);
 
 	// Use common update logic.
@@ -414,8 +414,9 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	    throws SiteWhereException {
 	MongoCollection<Document> commands = getMongoClient().getDeviceCommandsCollection();
 	Document dbCriteria = new Document();
-	if (criteria.getDeviceTypeId() != null) {
-	    dbCriteria.put(MongoDeviceCommand.PROP_DEVICE_TYPE_ID, criteria.getDeviceTypeId());
+	if (criteria.getDeviceTypeToken() != null) {
+	    IDeviceType type = getDeviceTypeByToken(criteria.getDeviceTypeToken());
+	    dbCriteria.put(MongoDeviceCommand.PROP_DEVICE_TYPE_ID, type.getId());
 	}
 	Document sort = new Document(MongoDeviceCommand.PROP_NAME, 1);
 	return MongoPersistence.search(IDeviceCommand.class, commands, dbCriteria, sort, criteria, LOOKUP);
@@ -1439,11 +1440,19 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	Document query = new Document();
 	if ((criteria.getRootOnly() != null) && (criteria.getRootOnly().booleanValue() == true)) {
 	    query.append(MongoCustomer.PROP_PARENT_CUSTOMER_ID, null);
-	} else if (criteria.getParentCustomerId() != null) {
-	    query.append(MongoCustomer.PROP_PARENT_CUSTOMER_ID, criteria.getParentCustomerId());
+	} else if (criteria.getParentCustomerToken() != null) {
+	    ICustomer parent = getCustomerByToken(criteria.getParentCustomerToken());
+	    if (parent == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidCustomerToken, ErrorLevel.ERROR);
+	    }
+	    query.append(MongoCustomer.PROP_PARENT_CUSTOMER_ID, parent.getId());
 	}
-	if (criteria.getCustomerTypeId() != null) {
-	    query.append(MongoCustomer.PROP_CUSTOMER_TYPE_ID, criteria.getCustomerTypeId());
+	if (criteria.getCustomerTypeToken() != null) {
+	    ICustomerType type = getCustomerTypeByToken(criteria.getCustomerTypeToken());
+	    if (type == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidCustomerTypeToken, ErrorLevel.ERROR);
+	    }
+	    query.append(MongoCustomer.PROP_CUSTOMER_TYPE_ID, type.getId());
 	}
 	Document sort = new Document(MongoArea.PROP_NAME, 1);
 	return MongoPersistence.search(ICustomer.class, customers, query, sort, criteria, LOOKUP);
