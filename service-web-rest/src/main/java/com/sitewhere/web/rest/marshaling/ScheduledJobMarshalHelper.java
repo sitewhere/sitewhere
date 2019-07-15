@@ -129,14 +129,13 @@ public class ScheduledJobMarshalHelper {
     protected void includeCommandInvocationContext(ScheduledJob job) throws SiteWhereException {
 	String assnToken = job.getJobConfiguration().get(JobConstants.CommandInvocation.ASSIGNMENT_TOKEN);
 	String commandToken = job.getJobConfiguration().get(JobConstants.CommandInvocation.COMMAND_TOKEN);
-	if (assnToken != null) {
-	    IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(assnToken);
-	    if (assignment != null) {
-		job.getContext().put("assignment", getAssignmentHelper().convert(assignment, getAssetManagement()));
-	    }
+	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(assnToken);
+	if (assignment != null) {
+	    job.getContext().put("assignment", getAssignmentHelper().convert(assignment, getAssetManagement()));
 	}
 	if (commandToken != null) {
-	    IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(commandToken);
+	    IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(assignment.getDeviceTypeId(),
+		    commandToken);
 	    if (command != null) {
 		Map<String, String> paramValues = new HashMap<String, String>();
 		for (String key : job.getJobConfiguration().keySet()) {
@@ -167,18 +166,16 @@ public class ScheduledJobMarshalHelper {
      */
     protected void includeBatchCommandInvocationContext(ScheduledJob job) throws SiteWhereException {
 	String deviceTypeToken = job.getJobConfiguration().get(JobConstants.BatchCommandInvocation.DEVICE_TYPE_TOKEN);
-	if (deviceTypeToken != null) {
-	    IDeviceType deviceType = getDeviceManagement().getDeviceTypeByToken(deviceTypeToken);
-	    if (deviceType != null) {
-		job.getContext().put("deviceType", getDeviceTypeHelper().convert(deviceType));
-	    }
-	    BatchCommandForCriteriaRequest criteria = BatchCommandInvocationJobParser.parse(job.getJobConfiguration());
-	    String html = CommandHtmlHelper.getHtml(criteria, getDeviceManagement(), "..");
-	    job.getContext().put("criteriaHtml", html);
+	IDeviceType deviceType = getDeviceManagement().getDeviceTypeByToken(deviceTypeToken);
+	if (deviceType != null) {
+	    job.getContext().put("deviceType", getDeviceTypeHelper().convert(deviceType));
 	}
+	BatchCommandForCriteriaRequest criteria = BatchCommandInvocationJobParser.parse(job.getJobConfiguration());
+	String html = CommandHtmlHelper.getHtml(criteria, getDeviceManagement(), "..");
+	job.getContext().put("criteriaHtml", html);
 	String commandToken = job.getJobConfiguration().get(JobConstants.CommandInvocation.COMMAND_TOKEN);
 	if (commandToken != null) {
-	    IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(commandToken);
+	    IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(deviceType.getId(), commandToken);
 	    if (command != null) {
 		Map<String, String> paramValues = new HashMap<String, String>();
 		for (String key : job.getJobConfiguration().keySet()) {
@@ -192,7 +189,7 @@ public class ScheduledJobMarshalHelper {
 		MarshaledDeviceCommandInvocation invocation = new MarshaledDeviceCommandInvocation();
 		invocation.setCommand(DeviceCommand.copy(command));
 		invocation.setParameterValues(paramValues);
-		String html = CommandHtmlHelper.getHtml(invocation);
+		html = CommandHtmlHelper.getHtml(invocation);
 
 		job.getContext().put("command", command);
 		job.getContext().put("invocationHtml", html);

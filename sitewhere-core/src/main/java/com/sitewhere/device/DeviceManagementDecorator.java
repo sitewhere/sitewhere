@@ -144,12 +144,12 @@ public class DeviceManagementDecorator extends TenantEngineLifecycleComponentDec
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceCommandByToken(java.lang.
-     * String)
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceCommandByToken(java.util.
+     * UUID, java.lang.String)
      */
     @Override
-    public IDeviceCommand getDeviceCommandByToken(String token) throws SiteWhereException {
-	return getDelegate().getDeviceCommandByToken(token);
+    public IDeviceCommand getDeviceCommandByToken(UUID deviceTypeId, String token) throws SiteWhereException {
+	return getDelegate().getDeviceCommandByToken(deviceTypeId, token);
     }
 
     /*
@@ -204,12 +204,12 @@ public class DeviceManagementDecorator extends TenantEngineLifecycleComponentDec
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStatusByToken(java.lang.
-     * String)
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStatusByToken(java.util.
+     * UUID, java.lang.String)
      */
     @Override
-    public IDeviceStatus getDeviceStatusByToken(String token) throws SiteWhereException {
-	return getDelegate().getDeviceStatusByToken(token);
+    public IDeviceStatus getDeviceStatusByToken(UUID deviceTypeId, String token) throws SiteWhereException {
+	return getDelegate().getDeviceStatusByToken(deviceTypeId, token);
     }
 
     /*

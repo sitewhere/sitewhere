@@ -8,6 +8,7 @@
 package com.sitewhere.rest.model.device.asset;
 
 import java.util.Map;
+import java.util.UUID;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
@@ -26,8 +27,6 @@ public class DeviceCommandInvocationWithAsset extends DeviceEventWithAsset imple
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getInitiator()
      */
     @Override
@@ -36,8 +35,6 @@ public class DeviceCommandInvocationWithAsset extends DeviceEventWithAsset imple
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getInitiatorId()
      */
     @Override
@@ -46,8 +43,6 @@ public class DeviceCommandInvocationWithAsset extends DeviceEventWithAsset imple
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getTarget()
      */
     @Override
@@ -56,8 +51,6 @@ public class DeviceCommandInvocationWithAsset extends DeviceEventWithAsset imple
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getTargetId()
      */
     @Override
@@ -66,21 +59,17 @@ public class DeviceCommandInvocationWithAsset extends DeviceEventWithAsset imple
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.device.event.IDeviceCommandInvocation#getCommandToken()
+     * com.sitewhere.spi.device.event.IDeviceCommandInvocation#getDeviceCommandId()
      */
     @Override
-    public String getCommandToken() {
-	return ((IDeviceCommandInvocation) getWrapped()).getCommandToken();
+    public UUID getDeviceCommandId() {
+	return ((IDeviceCommandInvocation) getWrapped()).getDeviceCommandId();
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#
-     * getParameterValues()
+     * @see
+     * com.sitewhere.spi.device.event.IDeviceCommandInvocation#getParameterValues()
      */
     @Override
     public Map<String, String> getParameterValues() {

@@ -37,6 +37,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.DeviceEventIndex;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -253,8 +254,10 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	List<IDeviceCommandInvocation> result = new ArrayList<>();
 	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
 	for (IDeviceCommandInvocationCreateRequest request : requests) {
+	    IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(assignment.getDeviceTypeId(),
+		    request.getCommandToken());
 	    DeviceCommandInvocation invocation = DeviceEventManagementPersistence
-		    .deviceCommandInvocationCreateLogic(assignment, request);
+		    .deviceCommandInvocationCreateLogic(assignment, command, request);
 	    storeDeviceEvent(assignment, invocation, CassandraDeviceCommandInvocation.INSTANCE);
 	    result.add(invocation);
 	}

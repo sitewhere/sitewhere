@@ -36,8 +36,8 @@ public class InfluxDbDeviceCommandInvocation {
     /** Tag for target id */
     public static final String CMD_TARGET_ID = "targetId";
 
-    /** Tag for command token */
-    public static final String CMD_COMMAND_TOKEN = "command";
+    /** Tag for command id */
+    public static final String CMD_COMMAND_ID = "command";
 
     /** Field prefix for parameter values */
     public static final String CMD_PARAMETER_VALUE_PREFIX = "param:";
@@ -69,7 +69,8 @@ public class InfluxDbDeviceCommandInvocation {
 	event.setInitiatorId(InfluxDbDeviceEvent.find(values, CMD_INITIATOR_ID, true));
 	event.setTarget(CommandTarget.valueOf(InfluxDbDeviceEvent.find(values, CMD_TARGET)));
 	event.setTargetId(InfluxDbDeviceEvent.find(values, CMD_TARGET_ID, true));
-	event.setCommandToken(InfluxDbDeviceEvent.find(values, CMD_COMMAND_TOKEN));
+	event.setDeviceCommandId(
+		InfluxDbDeviceEvent.convertUUID((String) InfluxDbDeviceEvent.find(values, CMD_COMMAND_ID)));
 
 	// Copy parameter values.
 	for (String key : values.keySet()) {
@@ -99,7 +100,7 @@ public class InfluxDbDeviceCommandInvocation {
 	if (event.getTargetId() != null) {
 	    builder.tag(CMD_TARGET_ID, event.getTargetId());
 	}
-	builder.tag(CMD_COMMAND_TOKEN, event.getCommandToken());
+	builder.tag(CMD_COMMAND_ID, event.getDeviceCommandId().toString());
 
 	for (String key : event.getParameterValues().keySet()) {
 	    String value = event.getParameterValues().get(key);

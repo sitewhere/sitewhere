@@ -1180,7 +1180,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GGetDeviceCommandByTokenResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetDeviceCommandByTokenMethod());
-	    IDeviceCommand apiResult = getDeviceManagement().getDeviceCommandByToken(request.getToken());
+	    IDeviceCommand apiResult = getDeviceManagement().getDeviceCommandByToken(
+		    CommonModelConverter.asApiUuid(request.getDeviceTypeId()), request.getToken());
 	    GGetDeviceCommandByTokenResponse.Builder response = GGetDeviceCommandByTokenResponse.newBuilder();
 	    if (apiResult != null) {
 		response.setCommand(DeviceModelConverter.asGrpcDeviceCommand(apiResult));
@@ -1349,7 +1350,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GGetDeviceStatusByTokenResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetDeviceStatusByTokenMethod());
-	    IDeviceStatus apiResult = getDeviceManagement().getDeviceStatusByToken(request.getToken());
+	    IDeviceStatus apiResult = getDeviceManagement().getDeviceStatusByToken(
+		    CommonModelConverter.asApiUuid(request.getDeviceTypeId()), request.getToken());
 	    GGetDeviceStatusByTokenResponse.Builder response = GGetDeviceStatusByTokenResponse.newBuilder();
 	    if (apiResult != null) {
 		response.setStatus(DeviceModelConverter.asGrpcDeviceStatus(apiResult));

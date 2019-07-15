@@ -356,14 +356,13 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceCommandByToken(java.
-     * lang.String )
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceCommandByToken(java.util.
+     * UUID, java.lang.String)
      */
     @Override
-    public IDeviceCommand getDeviceCommandByToken(String token) throws SiteWhereException {
-	Document result = getDeviceCommandDocumentByToken(token);
+    public IDeviceCommand getDeviceCommandByToken(UUID deviceTypeId, String token) throws SiteWhereException {
+	Document result = getDeviceCommandDocumentByToken(deviceTypeId, token);
 	if (result != null) {
 	    return MongoDeviceCommand.fromDocument(result);
 	}
@@ -438,13 +437,15 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
     /**
      * Return the {@link Document} for the device command with the given token.
      * 
+     * @param deviceTypeId
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    protected Document getDeviceCommandDocumentByToken(String token) throws SiteWhereException {
+    protected Document getDeviceCommandDocumentByToken(UUID deviceTypeId, String token) throws SiteWhereException {
 	MongoCollection<Document> commands = getMongoClient().getDeviceCommandsCollection();
-	Document query = new Document(MongoPersistentEntity.PROP_TOKEN, token);
+	Document query = new Document(MongoDeviceCommand.PROP_DEVICE_TYPE_ID, deviceTypeId)
+		.append(MongoPersistentEntity.PROP_TOKEN, token);
 	return commands.find(query).first();
     }
 
@@ -522,12 +523,12 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStatusByToken(java.lang.
-     * String)
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStatusByToken(java.util.
+     * UUID, java.lang.String)
      */
     @Override
-    public IDeviceStatus getDeviceStatusByToken(String token) throws SiteWhereException {
-	Document result = getDeviceStatusDocumentByToken(token);
+    public IDeviceStatus getDeviceStatusByToken(UUID deviceTypeId, String token) throws SiteWhereException {
+	Document result = getDeviceStatusDocumentByToken(deviceTypeId, token);
 	if (result != null) {
 	    return MongoDeviceStatus.fromDocument(result);
 	}
@@ -608,9 +609,10 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
      * @return
      * @throws SiteWhereException
      */
-    protected Document getDeviceStatusDocumentByToken(String token) throws SiteWhereException {
+    protected Document getDeviceStatusDocumentByToken(UUID deviceTypeId, String token) throws SiteWhereException {
 	MongoCollection<Document> statuses = getMongoClient().getDeviceStatusesCollection();
-	Document query = new Document(MongoPersistentEntity.PROP_TOKEN, token);
+	Document query = new Document(MongoDeviceStatus.PROP_DEVICE_TYPE_ID, token)
+		.append(MongoPersistentEntity.PROP_TOKEN, token);
 	return statuses.find(query).first();
     }
 

@@ -12,18 +12,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.rest.model.device.command.DeviceCommandNamespace;
-import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.DeviceCommandSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
@@ -53,36 +48,6 @@ import io.swagger.annotations.ApiParam;
 @RequestMapping(value = "/commands")
 @Api(value = "commands")
 public class DeviceCommands extends RestControllerBase {
-
-    /**
-     * Create a new command.
-     * 
-     * @param request
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(method = RequestMethod.POST)
-    @ApiOperation(value = "Create device command.")
-    @Secured({ SiteWhereRoles.REST })
-    public IDeviceCommand createDeviceCommand(@RequestBody DeviceCommandCreateRequest request)
-	    throws SiteWhereException {
-	return getDeviceManagement().createDeviceCommand(request);
-    }
-
-    /**
-     * Get a device command by unique token.
-     * 
-     * @param token
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/{token}", method = RequestMethod.GET)
-    @ApiOperation(value = "Get device command by unique token")
-    @Secured({ SiteWhereRoles.REST })
-    public IDeviceCommand getDeviceCommandByToken(
-	    @ApiParam(value = "Token", required = true) @PathVariable String token) throws SiteWhereException {
-	return assertDeviceCommandByToken(token);
-    }
 
     /**
      * List commands that match the given criteria.
@@ -170,56 +135,6 @@ public class DeviceCommands extends RestControllerBase {
 	    current.getCommands().add(command);
 	}
 	return new SearchResults<IDeviceCommandNamespace>(namespaces);
-    }
-
-    /**
-     * Update an existing device command.
-     * 
-     * @param token
-     * @param request
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/{token}", method = RequestMethod.PUT)
-    @ApiOperation(value = "Update an existing device command")
-    @Secured({ SiteWhereRoles.REST })
-    public IDeviceCommand updateDeviceCommand(@ApiParam(value = "Token", required = true) @PathVariable String token,
-	    @RequestBody DeviceCommandCreateRequest request) throws SiteWhereException {
-	IDeviceCommand command = assertDeviceCommandByToken(token);
-	return getDeviceManagement().updateDeviceCommand(command.getId(), request);
-    }
-
-    /**
-     * Delete an existing device command.
-     * 
-     * @param token
-     * @param servletRequest
-     * @return
-     * @throws SiteWhereException
-     */
-    @RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
-    @ApiOperation(value = "Delete device command by unique token")
-    @Secured({ SiteWhereRoles.REST })
-    public IDeviceCommand deleteDeviceCommand(@ApiParam(value = "Token", required = true) @PathVariable String token,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceCommand command = assertDeviceCommandByToken(token);
-	return getDeviceManagement().deleteDeviceCommand(command.getId());
-    }
-
-    /**
-     * Gets a device command by token and throws an exception if not found.
-     * 
-     * @param token
-     * @param servletRequest
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IDeviceCommand assertDeviceCommandByToken(String token) throws SiteWhereException {
-	IDeviceCommand result = getDeviceManagement().getDeviceCommandByToken(token);
-	if (result == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandToken, ErrorLevel.ERROR);
-	}
-	return result;
     }
 
     private IDeviceManagement getDeviceManagement() {
