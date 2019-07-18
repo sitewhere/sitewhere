@@ -15,12 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.rest.model.search.device.DeviceStatusSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceStatus;
-import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.error.ErrorCode;
-import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
@@ -58,16 +54,7 @@ public class DeviceStatuses extends RestControllerBase {
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize)
 	    throws SiteWhereException {
 	DeviceStatusSearchCriteria criteria = new DeviceStatusSearchCriteria(page, pageSize);
-
-	// Look up device type if specified.
-	IDeviceType deviceType = null;
-	if (deviceTypeToken != null) {
-	    deviceType = getDeviceManagement().getDeviceTypeByToken(deviceTypeToken);
-	    if (deviceType == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidDeviceTypeToken, ErrorLevel.ERROR);
-	    }
-	    criteria.setDeviceTypeId(deviceType.getId());
-	}
+	criteria.setDeviceTypeToken(deviceTypeToken);
 
 	// Add code if specified.
 	if (code != null) {

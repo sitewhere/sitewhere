@@ -506,7 +506,7 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	}
 
 	DeviceStatusSearchCriteria criteria = new DeviceStatusSearchCriteria(1, 0);
-	criteria.setDeviceTypeId(deviceType.getId());
+	criteria.setDeviceTypeToken(deviceType.getToken());
 	ISearchResults<IDeviceStatus> existing = listDeviceStatuses(criteria);
 
 	// Use common logic so all backend implementations work the same.
@@ -568,7 +568,7 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	}
 
 	DeviceStatusSearchCriteria criteria = new DeviceStatusSearchCriteria(1, 0);
-	criteria.setDeviceTypeId(deviceType.getId());
+	criteria.setDeviceTypeToken(deviceType.getToken());
 	ISearchResults<IDeviceStatus> existing = listDeviceStatuses(criteria);
 
 	// Use common update logic.
@@ -591,8 +591,9 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	    throws SiteWhereException {
 	MongoCollection<Document> statuses = getMongoClient().getDeviceStatusesCollection();
 	Document dbCriteria = new Document();
-	if (criteria.getDeviceTypeId() != null) {
-	    dbCriteria.put(MongoDeviceStatus.PROP_DEVICE_TYPE_ID, criteria.getDeviceTypeId());
+	if (criteria.getDeviceTypeToken() != null) {
+	    IDeviceType type = getDeviceTypeByToken(criteria.getDeviceTypeToken());
+	    dbCriteria.put(MongoDeviceStatus.PROP_DEVICE_TYPE_ID, type.getId());
 	}
 	if (criteria.getCode() != null) {
 	    dbCriteria.put(MongoDeviceStatus.PROP_CODE, criteria.getCode());
@@ -1803,8 +1804,9 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 
 	// Query based on search criteria.
 	Document query = new Document();
-	if (criteria.getAreaId() != null) {
-	    query.append(MongoZone.PROP_AREA_ID, criteria.getAreaId());
+	if (criteria.getAreaToken() != null) {
+	    IArea area = getAreaByToken(criteria.getAreaToken());
+	    query.append(MongoZone.PROP_AREA_ID, area.getId());
 	}
 
 	Document sort = new Document(MongoPersistentEntity.PROP_CREATED_DATE, -1);
