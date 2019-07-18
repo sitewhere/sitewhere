@@ -232,7 +232,6 @@ public class CachedDeviceManagementApiChannel extends TenantEngineLifecycleCompo
      */
     @Override
     public IDevice getDeviceByToken(String token) throws SiteWhereException {
-	getLogger().info(String.format("Checking cache for device %s [%s]", token, this.getClass().getSimpleName()));
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDevice device = getDeviceCache().getCacheEntry(tenant, token);
 	if (device == null) {
@@ -249,8 +248,6 @@ public class CachedDeviceManagementApiChannel extends TenantEngineLifecycleCompo
      */
     @Override
     public IDevice getDevice(UUID deviceId) throws SiteWhereException {
-	getLogger().info(String.format("Checking cache for device %s [%s]", deviceId.toString(),
-		this.getClass().getSimpleName()));
 	ITenant tenant = UserContextManager.getCurrentTenant(true);
 	IDevice device = getDeviceByIdCache().getCacheEntry(tenant, deviceId);
 	if (device == null) {
