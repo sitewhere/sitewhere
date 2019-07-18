@@ -5,6 +5,8 @@ dependencies {
 	compile project(':sitewhere-mongodb')
 	compile project(':sitewhere-microservice')
 	compile project(':sitewhere-grpc-client')
+	compile project(':sitewhere-rdb')
+
 }
 
 apply plugin: 'org.springframework.boot'

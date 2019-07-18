@@ -9,6 +9,7 @@ package com.sitewhere.device.spring;
 
 import java.util.List;
 
+import com.sitewhere.device.persistence.rdb.RDBDeviceManagement;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -78,6 +79,20 @@ public class DeviceManagementParser extends AbstractBeanDefinitionParser {
 	    context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_MONGODB_CLIENT,
 		    client.getBeanDefinition());
 	    break;
+	}
+	case RDB: {
+		BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(RDBDeviceManagement.class);
+		client.addConstructorArgValue(config.getConfiguration());
+		context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_RDB_CLIENT,
+				client.getBeanDefinition());
+		break;
+	}
+	case RDBReference: {
+		BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(RDBDeviceManagement.class);
+		client.addConstructorArgReference((String) config.getConfiguration());
+		context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_RDB_CLIENT,
+				client.getBeanDefinition());
+		break;
 	}
 	default: {
 	    throw new RuntimeException("Invalid datastore configured: " + config.getType());

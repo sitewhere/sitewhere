@@ -1,0 +1,78 @@
+package com.sitewhere.rdb.entities;
+
+import com.sitewhere.spi.device.group.IDeviceGroupElement;
+import org.hibernate.annotations.Type;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@Entity
+@Table(name = "device_group_element")
+public class DeviceGroupElement implements IDeviceGroupElement {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    /** Unqiue id */
+    private UUID id;
+
+    /** Parent group id */
+    private UUID groupId;
+
+    /** Device id (null if nested group id specified) */
+    private UUID deviceId;
+
+    /** Nested group id (null if device id specified) */
+    private UUID nestedGroupId;
+
+    /** List of roles for the element */
+    @ElementCollection
+    private List<String> roles = new ArrayList<String>();
+
+    @Override
+    public UUID getId() {
+        return id;
+    }
+
+    @Override
+    public UUID getGroupId() {
+        return groupId;
+    }
+
+    @Override
+    public UUID getDeviceId() {
+        return deviceId;
+    }
+
+    @Override
+    public UUID getNestedGroupId() {
+        return nestedGroupId;
+    }
+
+    @Override
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public void setGroupId(UUID groupId) {
+        this.groupId = groupId;
+    }
+
+    public void setDeviceId(UUID deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public void setNestedGroupId(UUID nestedGroupId) {
+        this.nestedGroupId = nestedGroupId;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
+
+}

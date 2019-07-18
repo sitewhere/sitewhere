@@ -28,6 +28,8 @@ include ':sitewhere-influxdb'
 include ':sitewhere-microservice'
 include ':sitewhere-mongodb'
 include ':sitewhere-solr'
+include 'sitewhere-rdb'
+
 
 project(':service-asset-management').projectDir = "$rootDir/service-asset-management" as File
 project(':service-batch-operations').projectDir = "$rootDir/service-batch-operations" as File
@@ -58,3 +60,5 @@ project(':sitewhere-influxdb').projectDir = "$rootDir/sitewhere-influxdb" as Fil
 project(':sitewhere-microservice').projectDir = "$rootDir/sitewhere-microservice" as File
 project(':sitewhere-mongodb').projectDir = "$rootDir/sitewhere-mongodb" as File
 project(':sitewhere-solr').projectDir = "$rootDir/sitewhere-solr" as File
+include 'sitewhere-rdb'
+

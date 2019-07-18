@@ -30,5 +30,11 @@ public enum DatastoreConfigurationType {
     Cassandra,
 
     // Reference to global Cassandra configuration.
-    CassandraReference;
+    CassandraReference,
+
+    // Custom MongoDB configuration.
+    RDB,
+
+    // Reference to global MongoDB configuration.
+    RDBReference;
 }
