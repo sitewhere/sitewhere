@@ -117,7 +117,7 @@ public class AreaMarshalHelper {
 	}
 	if (isIncludeZones()) {
 	    ZoneSearchCriteria criteria = new ZoneSearchCriteria(1, 0);
-	    criteria.setAreaId(area.getId());
+	    criteria.setAreaToken(area.getToken());
 	    ISearchResults<IZone> matches = getDeviceManagement().listZones(criteria);
 	    List<Zone> zones = new ArrayList<Zone>();
 	    List<IZone> reordered = matches.getResults();

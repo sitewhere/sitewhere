@@ -781,7 +781,7 @@ public class DeviceModelConverter {
 	    throws SiteWhereException {
 	DeviceStatusSearchCriteria api = new DeviceStatusSearchCriteria(grpc.getPaging().getPageNumber(),
 		grpc.getPaging().getPageSize());
-	api.setDeviceTypeId(grpc.hasDeviceTypeId() ? CommonModelConverter.asApiUuid(grpc.getDeviceTypeId()) : null);
+	api.setDeviceTypeToken(grpc.hasDeviceTypeToken() ? grpc.getDeviceTypeToken().getValue() : null);
 	api.setCode(grpc.hasCode() ? grpc.getCode().getValue() : null);
 	return api;
     }
@@ -796,8 +796,8 @@ public class DeviceModelConverter {
     public static GDeviceStatusSearchCriteria asGrpcDeviceStatusSearchCriteria(IDeviceStatusSearchCriteria api)
 	    throws SiteWhereException {
 	GDeviceStatusSearchCriteria.Builder gcriteria = GDeviceStatusSearchCriteria.newBuilder();
-	if (api.getDeviceTypeId() != null) {
-	    gcriteria.setDeviceTypeId(CommonModelConverter.asGrpcUuid(api.getDeviceTypeId()));
+	if (api.getDeviceTypeToken() != null) {
+	    gcriteria.setDeviceTypeToken(GOptionalString.newBuilder().setValue(api.getDeviceTypeToken()));
 	}
 	if (api.getCode() != null) {
 	    gcriteria.setCode(GOptionalString.newBuilder().setValue(api.getCode()).build());
@@ -2651,7 +2651,7 @@ public class DeviceModelConverter {
     public static ZoneSearchCriteria asApiZoneSearchCriteria(GZoneSearchCriteria grpc) throws SiteWhereException {
 	ZoneSearchCriteria api = new ZoneSearchCriteria(grpc.getPaging().getPageNumber(),
 		grpc.getPaging().getPageSize());
-	api.setAreaId(grpc.hasAreaId() ? CommonModelConverter.asApiUuid(grpc.getAreaId()) : null);
+	api.setAreaToken(grpc.hasAreaToken() ? grpc.getAreaToken().getValue() : null);
 	return api;
     }
 
@@ -2664,8 +2664,8 @@ public class DeviceModelConverter {
      */
     public static GZoneSearchCriteria asGrpcZoneSearchCriteria(IZoneSearchCriteria api) throws SiteWhereException {
 	GZoneSearchCriteria.Builder grpc = GZoneSearchCriteria.newBuilder();
-	if (api.getAreaId() != null) {
-	    grpc.setAreaId(CommonModelConverter.asGrpcUuid(api.getAreaId()));
+	if (api.getAreaToken() != null) {
+	    grpc.setAreaToken(GOptionalString.newBuilder().setValue(api.getAreaToken()));
 	}
 	grpc.setPaging(CommonModelConverter.asGrpcPaging(api));
 	return grpc.build();

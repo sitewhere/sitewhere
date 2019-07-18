@@ -21,7 +21,6 @@ import com.sitewhere.rest.model.area.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.search.device.ZoneSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.error.ErrorCode;
@@ -113,16 +112,7 @@ public class Zones extends RestControllerBase {
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize)
 	    throws SiteWhereException {
 	ZoneSearchCriteria criteria = new ZoneSearchCriteria(page, pageSize);
-
-	// If area token specified, look up area.
-	if (areaToken != null) {
-	    IArea area = getDeviceManagement().getAreaByToken(areaToken);
-	    if (area == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
-	    }
-	    criteria.setAreaId(area.getId());
-	}
-
+	criteria.setAreaToken(areaToken);
 	return getDeviceManagement().listZones(criteria);
     }
 
