@@ -9,6 +9,7 @@ package com.sitewhere.event.persistence.mongodb;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bson.Document;
 
@@ -38,7 +39,7 @@ public class MongoDeviceCommandInvocation implements MongoConverter<IDeviceComma
     public static final String PROP_TARGET_ID = "tgid";
 
     /** Property for command token */
-    public static final String PROP_COMMAND_TOKEN = "cmtk";
+    public static final String PROP_COMMAND_ID = "cmid";
 
     /** Property for parameter values */
     public static final String PROP_PARAMETER_VALUES = "pmvl";
@@ -76,7 +77,7 @@ public class MongoDeviceCommandInvocation implements MongoConverter<IDeviceComma
 	target.append(PROP_INITIATOR_ID, source.getInitiatorId());
 	target.append(PROP_TARGET, source.getTarget().name());
 	target.append(PROP_TARGET_ID, source.getTargetId());
-	target.append(PROP_COMMAND_TOKEN, source.getCommandToken());
+	target.append(PROP_COMMAND_ID, source.getDeviceCommandId());
 
 	Document params = new Document();
 	for (String key : source.getParameterValues().keySet()) {
@@ -98,7 +99,7 @@ public class MongoDeviceCommandInvocation implements MongoConverter<IDeviceComma
 	String initiatorId = (String) source.get(PROP_INITIATOR_ID);
 	String targetName = (String) source.get(PROP_TARGET);
 	String targetId = (String) source.get(PROP_TARGET_ID);
-	String commandToken = (String) source.get(PROP_COMMAND_TOKEN);
+	UUID commandId = (UUID) source.get(PROP_COMMAND_ID);
 
 	if (initiatorName != null) {
 	    target.setInitiator(CommandInitiator.valueOf(initiatorName));
@@ -108,7 +109,7 @@ public class MongoDeviceCommandInvocation implements MongoConverter<IDeviceComma
 	}
 	target.setInitiatorId(initiatorId);
 	target.setTargetId(targetId);
-	target.setCommandToken(commandToken);
+	target.setDeviceCommandId(commandId);
 
 	Map<String, String> params = new HashMap<String, String>();
 	Document dbparams = (Document) source.get(PROP_PARAMETER_VALUES);

@@ -121,7 +121,7 @@ public class Areas extends RestControllerBase {
 	    @ApiParam(value = "Include parent area information", required = false) @RequestParam(defaultValue = "true") boolean includeParentArea)
 	    throws SiteWhereException {
 	IArea existing = assertArea(areaToken);
-	AreaMarshalHelper helper = new AreaMarshalHelper(getDeviceManagement(), getAssetManagement());
+	AreaMarshalHelper helper = new AreaMarshalHelper(getCachedDeviceManagement(), getCachedAssetManagement());
 	helper.setIncludeAreaType(includeAreaType);
 	helper.setIncludeParentArea(includeParentArea);
 	return helper.convert(existing);
@@ -200,7 +200,7 @@ public class Areas extends RestControllerBase {
 
 	// Perform search.
 	ISearchResults<IArea> matches = getDeviceManagement().listAreas(criteria);
-	AreaMarshalHelper helper = new AreaMarshalHelper(getDeviceManagement(), getAssetManagement());
+	AreaMarshalHelper helper = new AreaMarshalHelper(getCachedDeviceManagement(), getCachedAssetManagement());
 	helper.setIncludeAreaType(includeAreaType);
 	helper.setIncludeZones(includeZones);
 	helper.setIncludeAssignments(includeAssignments);
@@ -291,7 +291,7 @@ public class Areas extends RestControllerBase {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceMeasurement> wrapped = new ArrayList<IDeviceMeasurement>();
 	for (IDeviceMeasurement result : results.getResults()) {
-	    wrapped.add(new DeviceMeasurementsWithAsset(result, getAssetManagement()));
+	    wrapped.add(new DeviceMeasurementsWithAsset(result, getCachedAssetManagement()));
 	}
 	return new SearchResults<IDeviceMeasurement>(wrapped, results.getNumResults());
     }
@@ -326,7 +326,7 @@ public class Areas extends RestControllerBase {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceLocation> wrapped = new ArrayList<IDeviceLocation>();
 	for (IDeviceLocation result : results.getResults()) {
-	    wrapped.add(new DeviceLocationWithAsset(result, getAssetManagement()));
+	    wrapped.add(new DeviceLocationWithAsset(result, getCachedAssetManagement()));
 	}
 	return new SearchResults<IDeviceLocation>(wrapped, results.getNumResults());
     }
@@ -361,7 +361,7 @@ public class Areas extends RestControllerBase {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceAlert> wrapped = new ArrayList<IDeviceAlert>();
 	for (IDeviceAlert result : results.getResults()) {
-	    wrapped.add(new DeviceAlertWithAsset(result, getAssetManagement()));
+	    wrapped.add(new DeviceAlertWithAsset(result, getCachedAssetManagement()));
 	}
 	return new SearchResults<IDeviceAlert>(wrapped, results.getNumResults());
     }
@@ -396,7 +396,7 @@ public class Areas extends RestControllerBase {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceCommandInvocation> wrapped = new ArrayList<IDeviceCommandInvocation>();
 	for (IDeviceCommandInvocation result : results.getResults()) {
-	    wrapped.add(new DeviceCommandInvocationWithAsset(result, getAssetManagement()));
+	    wrapped.add(new DeviceCommandInvocationWithAsset(result, getCachedAssetManagement()));
 	}
 	return new SearchResults<IDeviceCommandInvocation>(wrapped, results.getNumResults());
     }
@@ -431,7 +431,7 @@ public class Areas extends RestControllerBase {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceCommandResponse> wrapped = new ArrayList<IDeviceCommandResponse>();
 	for (IDeviceCommandResponse result : results.getResults()) {
-	    wrapped.add(new DeviceCommandResponseWithAsset(result, getAssetManagement()));
+	    wrapped.add(new DeviceCommandResponseWithAsset(result, getCachedAssetManagement()));
 	}
 	return new SearchResults<IDeviceCommandResponse>(wrapped, results.getNumResults());
     }
@@ -466,7 +466,7 @@ public class Areas extends RestControllerBase {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceStateChange> wrapped = new ArrayList<IDeviceStateChange>();
 	for (IDeviceStateChange result : results.getResults()) {
-	    wrapped.add(new DeviceStateChangeWithAsset(result, getAssetManagement()));
+	    wrapped.add(new DeviceStateChangeWithAsset(result, getCachedAssetManagement()));
 	}
 	return new SearchResults<IDeviceStateChange>(wrapped, results.getNumResults());
     }
@@ -505,7 +505,7 @@ public class Areas extends RestControllerBase {
 	criteria.setAreaTokens(areas);
 
 	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
-	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getCachedDeviceManagement());
 	helper.setIncludeDevice(includeDevice);
 	helper.setIncludeCustomer(includeCustomer);
 	helper.setIncludeArea(includeArea);
@@ -513,7 +513,7 @@ public class Areas extends RestControllerBase {
 
 	List<DeviceAssignment> converted = new ArrayList<DeviceAssignment>();
 	for (IDeviceAssignment assignment : matches.getResults()) {
-	    converted.add(helper.convert(assignment, getAssetManagement()));
+	    converted.add(helper.convert(assignment, getCachedAssetManagement()));
 	}
 	return new SearchResults<DeviceAssignment>(converted, matches.getNumResults());
     }
@@ -615,12 +615,16 @@ public class Areas extends RestControllerBase {
 	return getMicroservice().getDeviceManagementApiChannel();
     }
 
+    private IDeviceManagement getCachedDeviceManagement() {
+	return getMicroservice().getCachedDeviceManagement();
+    }
+
     private IDeviceEventManagement getDeviceEventManagement() {
 	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiChannel());
     }
 
-    private IAssetManagement getAssetManagement() {
-	return getMicroservice().getAssetManagementApiChannel();
+    private IAssetManagement getCachedAssetManagement() {
+	return getMicroservice().getCachedAssetManagement();
     }
 
     private ILabelGeneration getLabelGeneration() {

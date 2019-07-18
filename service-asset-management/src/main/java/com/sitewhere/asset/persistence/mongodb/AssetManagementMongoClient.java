@@ -16,8 +16,6 @@ import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Mongo client that provides access to asset management resources.
- * 
- * @author Derek
  */
 public class AssetManagementMongoClient extends MongoDbClient implements IAssetManagementMongoClient {
 

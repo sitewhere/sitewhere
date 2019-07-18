@@ -19,10 +19,10 @@ import com.sitewhere.asset.persistence.AssetManagementPersistence;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
+import com.sitewhere.mongodb.MongoTenantComponent;
 import com.sitewhere.mongodb.common.MongoPersistentEntity;
 import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.rest.model.asset.AssetType;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAsset;
@@ -36,44 +36,28 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.asset.IAssetSearchCriteria;
 import com.sitewhere.spi.search.asset.IAssetTypeSearchCritiera;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IAssetManagement} that stores data in MongoDB.
- * 
- * @author Derek
  */
-public class MongoAssetManagement extends TenantEngineLifecycleComponent implements IAssetManagement {
+public class MongoAssetManagement extends MongoTenantComponent<AssetManagementMongoClient> implements IAssetManagement {
 
     /** Converter lookup */
     private static IMongoConverterLookup LOOKUP = new MongoConverters();
 
     /** Injected with global SiteWhere Mongo client */
-    private IAssetManagementMongoClient mongoClient;
+    private AssetManagementMongoClient mongoClient;
 
     public MongoAssetManagement() {
 	super(LifecycleComponentType.DataStore);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
-     * .server.lifecycle.ILifecycleProgressMonitor)
+     * @see com.sitewhere.mongodb.MongoTenantComponent#ensureIndexes()
      */
     @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	ensureIndexes();
-    }
-
-    /**
-     * Ensure that expected collection indexes exist.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void ensureIndexes() throws SiteWhereException {
+    public void ensureIndexes() throws SiteWhereException {
 	getMongoClient().getAssetTypesCollection().createIndex(Indexes.ascending(MongoPersistentEntity.PROP_TOKEN),
 		new IndexOptions().unique(true));
 	getMongoClient().getAssetsCollection().createIndex(Indexes.ascending(MongoPersistentEntity.PROP_TOKEN),
@@ -387,11 +371,15 @@ public class MongoAssetManagement extends TenantEngineLifecycleComponent impleme
 	return match;
     }
 
-    public IAssetManagementMongoClient getMongoClient() {
+    /*
+     * @see com.sitewhere.mongodb.MongoTenantComponent#getMongoClient()
+     */
+    @Override
+    public AssetManagementMongoClient getMongoClient() {
 	return mongoClient;
     }
 
-    public void setMongoClient(IAssetManagementMongoClient mongoClient) {
+    public void setMongoClient(AssetManagementMongoClient mongoClient) {
 	this.mongoClient = mongoClient;
     }
 }

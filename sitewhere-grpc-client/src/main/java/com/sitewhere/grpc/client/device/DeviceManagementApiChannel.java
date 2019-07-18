@@ -946,16 +946,16 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceCommandByToken(java.
-     * lang.String)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceCommandByToken(java.util.
+     * UUID, java.lang.String)
      */
     @Override
-    public IDeviceCommand getDeviceCommandByToken(String token) throws SiteWhereException {
+    public IDeviceCommand getDeviceCommandByToken(UUID deviceTypeId, String token) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetDeviceCommandByTokenMethod());
 	    GGetDeviceCommandByTokenRequest.Builder grequest = GGetDeviceCommandByTokenRequest.newBuilder();
+	    grequest.setDeviceTypeId(CommonModelConverter.asGrpcUuid(deviceTypeId));
 	    grequest.setToken(token);
 	    GGetDeviceCommandByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getDeviceCommandByToken(grequest.build());
@@ -1085,14 +1085,15 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStatusByToken(java.lang.
-     * String)
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStatusByToken(java.util.
+     * UUID, java.lang.String)
      */
     @Override
-    public IDeviceStatus getDeviceStatusByToken(String token) throws SiteWhereException {
+    public IDeviceStatus getDeviceStatusByToken(UUID deviceTypeId, String token) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetDeviceStatusMethod());
 	    GGetDeviceStatusByTokenRequest.Builder grequest = GGetDeviceStatusByTokenRequest.newBuilder();
+	    grequest.setDeviceTypeId(CommonModelConverter.asGrpcUuid(deviceTypeId));
 	    grequest.setToken(token);
 	    GGetDeviceStatusByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getDeviceStatusByToken(grequest.build());

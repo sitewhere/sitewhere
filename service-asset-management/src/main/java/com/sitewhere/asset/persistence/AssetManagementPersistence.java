@@ -29,8 +29,6 @@ import com.sitewhere.spi.search.ISearchResults;
 
 /**
  * Persistence logic for asset management components.
- * 
- * @author Derek
  */
 public class AssetManagementPersistence extends Persistence {
 

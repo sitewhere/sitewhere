@@ -132,13 +132,14 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     public IDeviceCommand getDeviceCommand(UUID id) throws SiteWhereException;
 
     /**
-     * Get a device command by unique token.
+     * Get a device command by token.
      * 
+     * @param deviceTypeId
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceCommand getDeviceCommandByToken(String token) throws SiteWhereException;
+    public IDeviceCommand getDeviceCommandByToken(UUID deviceTypeId, String token) throws SiteWhereException;
 
     /**
      * Update an existing device command.
@@ -190,11 +191,12 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     /**
      * Get a device status by unique token.
      * 
+     * @param deviceTypeId
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceStatus getDeviceStatusByToken(String token) throws SiteWhereException;
+    public IDeviceStatus getDeviceStatusByToken(UUID deviceTypeId, String token) throws SiteWhereException;
 
     /**
      * Update an existing device status.

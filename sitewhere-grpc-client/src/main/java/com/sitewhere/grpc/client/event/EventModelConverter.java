@@ -1083,7 +1083,7 @@ public class EventModelConverter {
 	if (grpc.hasTargetId()) {
 	    api.setTargetId(grpc.getTargetId().getValue());
 	}
-	api.setCommandToken(grpc.getCommandToken());
+	api.setDeviceCommandId(CommonModelConverter.asApiUuid(grpc.getDeviceCommandId()));
 	api.setParameterValues(grpc.getParameterValuesMap());
 	EventModelConverter.copyApiDeviceEvent(grpc.getEvent(), api);
 	return api;
@@ -1105,7 +1105,7 @@ public class EventModelConverter {
 	if (api.getTargetId() != null) {
 	    grpc.setTargetId(GOptionalString.newBuilder().setValue(api.getTargetId()));
 	}
-	grpc.setCommandToken(api.getCommandToken());
+	grpc.setDeviceCommandId(CommonModelConverter.asGrpcUuid(api.getDeviceCommandId()));
 	grpc.putAllParameterValues(api.getParameterValues());
 	grpc.setEvent(EventModelConverter.createGrpcDeviceEvent(api));
 	return grpc.build();

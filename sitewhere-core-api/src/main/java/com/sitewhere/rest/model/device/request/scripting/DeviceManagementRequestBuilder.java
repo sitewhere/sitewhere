@@ -374,8 +374,4 @@ public class DeviceManagementRequestBuilder {
     public IDeviceManagement getDeviceManagement() {
 	return deviceManagement;
     }
-
-    public void setDeviceManagement(IDeviceManagement deviceManagement) {
-	this.deviceManagement = deviceManagement;
-    }
 }

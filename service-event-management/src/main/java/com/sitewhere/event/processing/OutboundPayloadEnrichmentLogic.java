@@ -33,7 +33,6 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 public class OutboundPayloadEnrichmentLogic {
 
     /** Static logger instance */
-    @SuppressWarnings("unused")
     private static Log LOGGER = LogFactory.getLog(OutboundPayloadEnrichmentLogic.class);
 
     /** Handle to inbound processing tenant engine */
@@ -53,14 +52,15 @@ public class OutboundPayloadEnrichmentLogic {
     public void enrichAndDeliver(IDeviceEvent event) throws SiteWhereException {
 	try {
 	    LOGGER.debug("Looking up device assignment.");
-	    IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(event.getDeviceAssignmentId());
+	    IDeviceAssignment assignment = getCachedDeviceManagement()
+		    .getDeviceAssignment(event.getDeviceAssignmentId());
 	    if (assignment == null) {
 		// TODO: Is there a separate topic for these events?
 		throw new SiteWhereException("Event references non-existent device assignment.");
 	    }
 
 	    LOGGER.debug("Looking up device.");
-	    IDevice device = getDeviceManagement().getDevice(assignment.getDeviceId());
+	    IDevice device = getCachedDeviceManagement().getDevice(assignment.getDeviceId());
 	    if (device == null) {
 		// TODO: Is there a separate topic for these events?
 		throw new SiteWhereException("Event references assignment for non-existent device.");
@@ -102,8 +102,8 @@ public class OutboundPayloadEnrichmentLogic {
      * 
      * @return
      */
-    protected IDeviceManagement getDeviceManagement() {
-	return ((IEventManagementMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
+    protected IDeviceManagement getCachedDeviceManagement() {
+	return ((IEventManagementMicroservice) getTenantEngine().getMicroservice()).getCachedDeviceManagement();
     }
 
     protected IEventManagementTenantEngine getTenantEngine() {

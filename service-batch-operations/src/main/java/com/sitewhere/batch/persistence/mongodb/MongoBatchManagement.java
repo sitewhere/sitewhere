@@ -18,11 +18,11 @@ import com.sitewhere.batch.persistence.BatchManagementPersistence;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
+import com.sitewhere.mongodb.MongoTenantComponent;
 import com.sitewhere.mongodb.common.MongoPersistentEntity;
 import com.sitewhere.rest.model.batch.BatchElement;
 import com.sitewhere.rest.model.batch.BatchOperation;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.batch.IBatchElement;
@@ -41,24 +41,23 @@ import com.sitewhere.spi.search.batch.IBatchOperationSearchCriteria;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
-public class MongoBatchManagement extends TenantEngineLifecycleComponent implements IBatchManagement {
+public class MongoBatchManagement extends MongoTenantComponent<BatchManagementMongoClient> implements IBatchManagement {
 
     /** Converter lookup */
     private static IMongoConverterLookup LOOKUP = new MongoConverters();
 
     /** Injected with global SiteWhere Mongo client */
-    private IBatchManagementMongoClient mongoClient;
+    private BatchManagementMongoClient mongoClient;
 
     public MongoBatchManagement() {
 	super(LifecycleComponentType.DataStore);
     }
 
-    /**
-     * Ensure that expected collection indexes exist.
-     * 
-     * @throws SiteWhereException
+    /*
+     * @see com.sitewhere.mongodb.MongoTenantComponent#ensureIndexes()
      */
-    protected void ensureIndexes() throws SiteWhereException {
+    @Override
+    public void ensureIndexes() throws SiteWhereException {
 	// Batch operation indexes.
 	getMongoClient().getBatchOperationsCollection().createIndex(new Document(MongoPersistentEntity.PROP_TOKEN, 1),
 		new IndexOptions().unique(true));
@@ -345,11 +344,15 @@ public class MongoBatchManagement extends TenantEngineLifecycleComponent impleme
 	return ((IBatchOperationsMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
     }
 
-    public IBatchManagementMongoClient getMongoClient() {
+    /*
+     * @see com.sitewhere.mongodb.MongoTenantComponent#getMongoClient()
+     */
+    @Override
+    public BatchManagementMongoClient getMongoClient() {
 	return mongoClient;
     }
 
-    public void setMongoClient(IBatchManagementMongoClient mongoClient) {
+    public void setMongoClient(BatchManagementMongoClient mongoClient) {
 	this.mongoClient = mongoClient;
     }
 }

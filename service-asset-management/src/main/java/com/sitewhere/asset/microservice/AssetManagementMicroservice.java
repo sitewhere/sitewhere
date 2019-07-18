@@ -13,10 +13,12 @@ import com.sitewhere.asset.spi.grpc.IAssetManagementGrpcServer;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
 import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
+import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -40,6 +42,9 @@ public class AssetManagementMicroservice
 
     /** Device management API demux */
     private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
+
+    /** Cached device management implementation */
+    private IDeviceManagement cachedDeviceManagement;
 
     /*
      * (non-Javadoc)
@@ -104,8 +109,8 @@ public class AssetManagementMicroservice
 	// Initialize device management GRPC server.
 	init.addInitializeStep(this, getAssetManagementGrpcServer(), true);
 
-	// Initialize device management API channel.
-	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
+	// Initialize device management API channel + cache.
+	init.addInitializeStep(this, getCachedDeviceManagement(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -126,8 +131,8 @@ public class AssetManagementMicroservice
 	// Start asset management GRPC server.
 	start.addStartStep(this, getAssetManagementGrpcServer(), true);
 
-	// Start device mangement API channel.
-	start.addStartStep(this, getDeviceManagementApiChannel(), true);
+	// Start device mangement API channel + cache.
+	start.addStartStep(this, getCachedDeviceManagement(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -148,8 +153,8 @@ public class AssetManagementMicroservice
 	// Stop asset management GRPC server.
 	stop.addStopStep(this, getAssetManagementGrpcServer());
 
-	// Stop device mangement API channel.
-	stop.addStopStep(this, getDeviceManagementApiChannel());
+	// Stop device mangement API channel + cache.
+	stop.addStopStep(this, getCachedDeviceManagement());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -163,7 +168,8 @@ public class AssetManagementMicroservice
 	this.assetManagementGrpcServer = new AssetManagementGrpcServer(this);
 
 	// Device management.
-	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(getInstanceSettings(),
+	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
+	this.cachedDeviceManagement = new CachedDeviceManagementApiChannel(deviceManagementApiChannel,
 		new CachedDeviceManagementApiChannel.CacheSettings());
     }
 
@@ -178,6 +184,19 @@ public class AssetManagementMicroservice
 
     public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
 	this.deviceManagementApiChannel = deviceManagementApiChannel;
+    }
+
+    /*
+     * @see com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice#
+     * getCachedDeviceManagement()
+     */
+    @Override
+    public IDeviceManagement getCachedDeviceManagement() {
+	return cachedDeviceManagement;
+    }
+
+    public void setCachedDeviceManagement(IDeviceManagement cachedDeviceManagement) {
+	this.cachedDeviceManagement = cachedDeviceManagement;
     }
 
     public IAssetManagementGrpcServer getAssetManagementGrpcServer() {

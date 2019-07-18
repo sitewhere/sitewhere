@@ -58,7 +58,7 @@ public class ProtobufSpecificationBuilder {
     public static DescriptorProtos.DescriptorProto createDeviceTypeMessage(IDeviceType deviceType, ITenant tenant,
 	    IDeviceManagement deviceManagement) throws SiteWhereException {
 	DeviceCommandSearchCriteria criteria = new DeviceCommandSearchCriteria(1, 0);
-	criteria.setDeviceTypeId(deviceType.getId());
+	criteria.setDeviceTypeToken(deviceType.getToken());
 	ISearchResults<IDeviceCommand> commands = deviceManagement.listDeviceCommands(criteria);
 
 	DescriptorProtos.DescriptorProto.Builder builder = DescriptorProtos.DescriptorProto.newBuilder();

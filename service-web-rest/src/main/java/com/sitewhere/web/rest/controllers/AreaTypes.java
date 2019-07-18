@@ -143,7 +143,7 @@ public class AreaTypes extends RestControllerBase {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<IAreaType> matches = getDeviceManagement().listAreaTypes(criteria);
 
-	AreaTypeMarshalHelper helper = new AreaTypeMarshalHelper(getDeviceManagement());
+	AreaTypeMarshalHelper helper = new AreaTypeMarshalHelper(getCachedDeviceManagement());
 	helper.setIncludeContainedAreaTypes(includeContainedAreaTypes);
 
 	List<IAreaType> results = new ArrayList<IAreaType>();
@@ -186,6 +186,10 @@ public class AreaTypes extends RestControllerBase {
 
     private IDeviceManagement getDeviceManagement() {
 	return getMicroservice().getDeviceManagementApiChannel();
+    }
+
+    private IDeviceManagement getCachedDeviceManagement() {
+	return getMicroservice().getCachedDeviceManagement();
     }
 
     private ILabelGeneration getLabelGeneration() {

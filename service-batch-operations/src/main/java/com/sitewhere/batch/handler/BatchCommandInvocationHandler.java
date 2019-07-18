@@ -57,20 +57,21 @@ public class BatchCommandInvocationHandler extends TenantEngineLifecycleComponen
 	    IBatchElementCreateRequest updated) throws SiteWhereException {
 	getLogger().info("Processing command invocation: " + element.getDeviceId());
 
+	// Find information about the device to execute the command against.
+	IDevice device = getDeviceManagement().getDevice(element.getDeviceId());
+	if (device == null) {
+	    throw new SiteWhereException("Invalid device id in command invocation.");
+	}
+
 	// Find information about the command to be executed.
 	String deviceCommandToken = operation.getParameters().get(IBatchCommandInvocationRequest.PARAM_COMMAND_TOKEN);
 	if (deviceCommandToken == null) {
 	    throw new SiteWhereException("Command token not found in batch command invocation request.");
 	}
-	IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(deviceCommandToken);
+	IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(device.getDeviceTypeId(),
+		deviceCommandToken);
 	if (command == null) {
 	    throw new SiteWhereException("Invalid command token referenced by batch command invocation.");
-	}
-
-	// Find information about the device to execute the command against.
-	IDevice device = getDeviceManagement().getDevice(element.getDeviceId());
-	if (device == null) {
-	    throw new SiteWhereException("Invalid device id in command invocation.");
 	}
 
 	// Find the current assignment information for the device.

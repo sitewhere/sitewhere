@@ -40,8 +40,6 @@ import com.sitewhere.spi.search.asset.IAssetTypeSearchCritiera;
 
 /**
  * Convert asset entities between SiteWhere API model and GRPC model.
- * 
- * @author Derek
  */
 public class AssetModelConverter {
 

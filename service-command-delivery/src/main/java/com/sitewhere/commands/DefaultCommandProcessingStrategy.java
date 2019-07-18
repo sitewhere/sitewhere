@@ -59,7 +59,7 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
     public void deliverCommand(IDeviceEventContext context, IDeviceCommandInvocation invocation)
 	    throws SiteWhereException {
 	getLogger().debug("Command processing strategy handling invocation.");
-	IDeviceCommand command = getDeviceManagementApiChannel().getDeviceCommandByToken(invocation.getCommandToken());
+	IDeviceCommand command = getDeviceManagementApiChannel().getDeviceCommand(invocation.getDeviceCommandId());
 	if (command != null) {
 	    IDeviceCommandExecution execution = getCommandExecutionBuilder().createExecution(command, invocation);
 	    List<IDeviceAssignment> assignments = getCommandTargetResolver().resolveTargets(invocation);

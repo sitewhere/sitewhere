@@ -154,7 +154,7 @@ public class BatchOperations extends RestControllerBase {
 	} else {
 	    // Resolve tokens for devices matching criteria.
 	    List<String> deviceTokens = BatchUtils.resolveDeviceTokensForCriteria(request, getDeviceManagement(),
-		    getAssetManagement());
+		    getCachedAssetManagement());
 
 	    // Create batch command invocation.
 	    BatchCommandInvocationRequest invoke = new BatchCommandInvocationRequest();
@@ -203,8 +203,8 @@ public class BatchOperations extends RestControllerBase {
 	return getMicroservice().getDeviceManagementApiChannel();
     }
 
-    private IAssetManagement getAssetManagement() {
-	return getMicroservice().getAssetManagementApiChannel();
+    private IAssetManagement getCachedAssetManagement() {
+	return getMicroservice().getCachedAssetManagement();
     }
 
     protected IBatchManagement getBatchManagement() {

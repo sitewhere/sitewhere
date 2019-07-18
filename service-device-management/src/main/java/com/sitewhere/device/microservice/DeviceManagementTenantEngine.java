@@ -18,7 +18,6 @@ import com.sitewhere.device.initializer.GroovyDeviceModelInitializer;
 import com.sitewhere.device.spi.kafka.IDeviceInteractionEventsProducer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
-import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.service.DeviceManagementGrpc;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.grpc.DeviceManagementImpl;
@@ -28,6 +27,7 @@ import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
@@ -153,7 +153,7 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 		    getMicroservice()));
 	    for (String script : scripts) {
 		GroovyDeviceModelInitializer initializer = new GroovyDeviceModelInitializer(groovy, script);
-		initializer.initialize(getDeviceManagement(), getAssetManagementApiChannel());
+		initializer.initialize(getDeviceManagement(), getAssetManagement());
 	    }
 	} finally {
 	    SecurityContextHolder.getContext().setAuthentication(previous);
@@ -227,7 +227,7 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	this.deviceInteractionEventsProducer = deviceInteractionEventsProducer;
     }
 
-    public IAssetManagementApiChannel<?> getAssetManagementApiChannel() {
-	return ((IDeviceManagementMicroservice) getMicroservice()).getAssetManagementApiChannel();
+    public IAssetManagement getAssetManagement() {
+	return ((IDeviceManagementMicroservice) getMicroservice()).getCachedAssetManagement();
     }
 }

@@ -10,6 +10,7 @@ package com.sitewhere.devicestate.spi.microservice;
 import com.sitewhere.devicestate.spi.grpc.IDeviceStateGrpcServer;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
@@ -41,4 +42,11 @@ public interface IDeviceStateMicroservice
      * @return
      */
     public IDeviceEventManagementApiChannel<?> getDeviceEventManagementApiChannel();
+
+    /**
+     * Caching wrapper around device management API channel.
+     * 
+     * @return
+     */
+    public IDeviceManagement getCachedDeviceManagement();
 }
