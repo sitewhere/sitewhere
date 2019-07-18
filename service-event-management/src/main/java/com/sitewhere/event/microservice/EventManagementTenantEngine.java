@@ -19,7 +19,6 @@ import com.sitewhere.event.spi.kafka.IOutboundCommandInvocationsProducer;
 import com.sitewhere.event.spi.kafka.IOutboundEventsProducer;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.grpc.EventManagementImpl;
@@ -30,6 +29,7 @@ import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
@@ -182,7 +182,7 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 		    getMicroservice()));
 	    for (String script : scripts) {
 		GroovyEventModelInitializer initializer = new GroovyEventModelInitializer(groovy, script);
-		initializer.initialize(getDeviceManagementApiChannel(), getEventManagement());
+		initializer.initialize(getCachedDeviceManagement(), getEventManagement());
 	    }
 	} finally {
 	    SecurityContextHolder.getContext().setAuthentication(previous);
@@ -289,7 +289,7 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 	this.outboundCommandInvocationsProducer = outboundCommandInvocationsProducer;
     }
 
-    protected IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
-	return ((IEventManagementMicroservice) getMicroservice()).getDeviceManagementApiChannel();
+    protected IDeviceManagement getCachedDeviceManagement() {
+	return ((IEventManagementMicroservice) getMicroservice()).getCachedDeviceManagement();
     }
 }

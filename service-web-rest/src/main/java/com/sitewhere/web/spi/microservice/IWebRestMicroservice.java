@@ -16,9 +16,13 @@ import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiChannel;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
+import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
 import com.sitewhere.spi.microservice.state.ITopologyStateAggregator;
+import com.sitewhere.spi.tenant.ITenantManagement;
+import com.sitewhere.spi.user.IUserManagement;
 
 /**
  * Microservice that provides web/REST functionality.
@@ -35,6 +39,13 @@ public interface IWebRestMicroservice<T extends IFunctionIdentifier> extends IGl
     public IUserManagementApiChannel<?> getUserManagementApiChannel();
 
     /**
+     * Get wrapper for caching data from the user management API channel.
+     * 
+     * @return
+     */
+    public IUserManagement getCachedUserManagement();
+
+    /**
      * Tenant API access via GRPC channel.
      * 
      * @return
@@ -42,11 +53,25 @@ public interface IWebRestMicroservice<T extends IFunctionIdentifier> extends IGl
     public ITenantManagementApiChannel<?> getTenantManagementApiChannel();
 
     /**
+     * Get wrapper for caching data from the tenant management API channel.
+     * 
+     * @return
+     */
+    public ITenantManagement getCachedTenantManagement();
+
+    /**
      * Device management API access via GRPC channel.
      * 
      * @return
      */
     public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel();
+
+    /**
+     * Caching wrapper around device management API channel.
+     * 
+     * @return
+     */
+    public IDeviceManagement getCachedDeviceManagement();
 
     /**
      * Device event management API access via GRPC channel.
@@ -61,6 +86,13 @@ public interface IWebRestMicroservice<T extends IFunctionIdentifier> extends IGl
      * @return
      */
     public IAssetManagementApiChannel<?> getAssetManagementApiChannel();
+
+    /**
+     * Get wrapper for caching data from the asset management API channel.
+     * 
+     * @return
+     */
+    public IAssetManagement getCachedAssetManagement();
 
     /**
      * Batch management API access via GRPC channel.

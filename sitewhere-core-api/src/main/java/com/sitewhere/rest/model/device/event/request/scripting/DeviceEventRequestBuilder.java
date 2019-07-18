@@ -102,16 +102,8 @@ public class DeviceEventRequestBuilder {
 	return deviceManagement;
     }
 
-    public void setDeviceManagement(IDeviceManagement deviceManagement) {
-	this.deviceManagement = deviceManagement;
-    }
-
     public IDeviceEventManagement getEventManagement() {
 	return eventManagement;
-    }
-
-    public void setEventManagement(IDeviceEventManagement eventManagement) {
-	this.eventManagement = eventManagement;
     }
 
     public static class AssignmentScope {
@@ -225,10 +217,6 @@ public class DeviceEventRequestBuilder {
 
 	public IDeviceAssignment getDeviceAssignment() {
 	    return deviceAssignment;
-	}
-
-	public void setDeviceAssignment(IDeviceAssignment deviceAssignment) {
-	    this.deviceAssignment = deviceAssignment;
 	}
     }
 }

@@ -131,11 +131,18 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	getMongoClient().getAreasCollection().createIndex(new Document(MongoPersistentEntity.PROP_TOKEN, 1),
 		new IndexOptions().unique(true));
 
-	// Device-type-related indexes.
+	// Device type indexes.
 	getMongoClient().getDeviceTypesCollection().createIndex(new Document(MongoPersistentEntity.PROP_TOKEN, 1),
 		new IndexOptions().unique(true));
+
+	// Device command indexes.
+	getMongoClient().getDeviceCommandsCollection().createIndex(
+		new Document(MongoDeviceStatus.PROP_DEVICE_TYPE_ID, 1).append(MongoPersistentEntity.PROP_TOKEN, 1),
+		new IndexOptions().unique(true));
+
+	// Device status indexes.
 	getMongoClient().getDeviceStatusesCollection().createIndex(
-		new Document(MongoDeviceStatus.PROP_DEVICE_TYPE_ID, 1).append(MongoDeviceStatus.PROP_CODE, 1),
+		new Document(MongoDeviceStatus.PROP_DEVICE_TYPE_ID, 1).append(MongoPersistentEntity.PROP_TOKEN, 1),
 		new IndexOptions().unique(true));
 
 	// Devices.
@@ -145,13 +152,16 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	// Device assignments.
 	getMongoClient().getDeviceAssignmentsCollection().createIndex(new Document(MongoPersistentEntity.PROP_TOKEN, 1),
 		new IndexOptions().unique(true));
+	// Device assignment search.
 	getMongoClient().getDeviceAssignmentsCollection()
-		.createIndex(new Document(MongoDeviceAssignment.PROP_AREA_ID, 1)
-			.append(MongoDeviceAssignment.PROP_ASSET_ID, 1).append(MongoDeviceAssignment.PROP_STATUS, 1));
+		.createIndex(new Document(MongoDeviceAssignment.PROP_CUSTOMER_ID, 1)
+			.append(MongoDeviceAssignment.PROP_AREA_ID, 1).append(MongoDeviceAssignment.PROP_ASSET_ID, 1)
+			.append(MongoDeviceAssignment.PROP_STATUS, 1));
 
 	// Device group indexes.
 	getMongoClient().getDeviceGroupsCollection().createIndex(new Document(MongoPersistentEntity.PROP_TOKEN, 1),
 		new IndexOptions().unique(true));
+	// Device group search by role.
 	getMongoClient().getDeviceGroupsCollection().createIndex(new Document(MongoDeviceGroup.PROP_ROLES, 1));
 
 	// Device group element indexes.
@@ -2469,7 +2479,7 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
      * @return
      */
     public IAssetManagement getAssetManagement() {
-	return ((DeviceManagementMicroservice) getTenantEngine().getMicroservice()).getAssetManagementApiChannel();
+	return ((DeviceManagementMicroservice) getTenantEngine().getMicroservice()).getCachedAssetManagement();
     }
 
     /*

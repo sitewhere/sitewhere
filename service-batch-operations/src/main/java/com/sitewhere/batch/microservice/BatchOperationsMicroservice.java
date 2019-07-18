@@ -12,6 +12,7 @@ import com.sitewhere.batch.spi.grpc.IBatchManagementGrpcServer;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
 import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
+import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
@@ -19,6 +20,7 @@ import com.sitewhere.microservice.grpc.BatchManagementGrpcServer;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -45,6 +47,9 @@ public class BatchOperationsMicroservice
 
     /** Device event management API demux */
     private IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel;
+
+    /** Cached device management implementation */
+    private IDeviceManagement cachedDeviceManagement;
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
@@ -103,8 +108,8 @@ public class BatchOperationsMicroservice
 	// Initialize batch management GRPC server.
 	init.addInitializeStep(this, getBatchManagementGrpcServer(), true);
 
-	// Initialize device management API channel.
-	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
+	// Initialize device management API channel + cache.
+	init.addInitializeStep(this, getCachedDeviceManagement(), true);
 
 	// Initialize device event management API channel.
 	init.addInitializeStep(this, getDeviceEventManagementApiChannel(), true);
@@ -126,8 +131,8 @@ public class BatchOperationsMicroservice
 	// Start batch management GRPC server.
 	start.addStartStep(this, getBatchManagementGrpcServer(), true);
 
-	// Start device mangement API channel.
-	start.addStartStep(this, getDeviceManagementApiChannel(), true);
+	// Start device mangement API channel + cache.
+	start.addStartStep(this, getCachedDeviceManagement(), true);
 
 	// Start device event mangement API channel.
 	start.addStartStep(this, getDeviceEventManagementApiChannel(), true);
@@ -149,8 +154,8 @@ public class BatchOperationsMicroservice
 	// Stop batch management GRPC server.
 	stop.addStopStep(this, getBatchManagementGrpcServer());
 
-	// Stop device mangement API channel.
-	stop.addStopStep(this, getDeviceManagementApiChannel());
+	// Stop device mangement API channel + cache.
+	stop.addStopStep(this, getCachedDeviceManagement());
 
 	// Stop device event mangement API channel.
 	stop.addStopStep(this, getDeviceEventManagementApiChannel());
@@ -167,7 +172,8 @@ public class BatchOperationsMicroservice
 	this.batchManagementGrpcServer = new BatchManagementGrpcServer(this);
 
 	// Device management.
-	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(getInstanceSettings(),
+	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
+	this.cachedDeviceManagement = new CachedDeviceManagementApiChannel(deviceManagementApiChannel,
 		new CachedDeviceManagementApiChannel.CacheSettings());
 
 	// Device event management.
@@ -198,6 +204,19 @@ public class BatchOperationsMicroservice
 
     public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
 	this.deviceManagementApiChannel = deviceManagementApiChannel;
+    }
+
+    /*
+     * @see com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice#
+     * getCachedDeviceManagement()
+     */
+    @Override
+    public IDeviceManagement getCachedDeviceManagement() {
+	return cachedDeviceManagement;
+    }
+
+    public void setCachedDeviceManagement(IDeviceManagement cachedDeviceManagement) {
+	this.cachedDeviceManagement = cachedDeviceManagement;
     }
 
     /*

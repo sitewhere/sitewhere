@@ -12,12 +12,8 @@ import java.util.UUID;
 
 import com.sitewhere.event.DeviceEventManagementDecorator;
 import com.sitewhere.event.processing.OutboundPayloadEnrichmentLogic;
-import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -32,8 +28,6 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
-import com.sitewhere.spi.error.ErrorCode;
-import com.sitewhere.spi.error.ErrorLevel;
 
 /**
  * Adds triggers to event persistence methods to push the new events into a
@@ -137,25 +131,6 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
     public List<IDeviceStateChange> addDeviceStateChanges(UUID deviceAssignmentId,
 	    IDeviceStateChangeCreateRequest... request) throws SiteWhereException {
 	return forwardEvents(deviceAssignmentId, super.addDeviceStateChanges(deviceAssignmentId, request));
-    }
-
-    /**
-     * Assert that a device assignment exists and throw an exception if not.
-     * 
-     * @param token
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IDeviceAssignment assertDeviceAssignmentById(UUID id) throws SiteWhereException {
-	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(id);
-	if (assignment == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentId, ErrorLevel.ERROR);
-	}
-	return assignment;
-    }
-
-    protected IDeviceManagement getDeviceManagement() {
-	return ((IEventManagementMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
     }
 
     protected OutboundPayloadEnrichmentLogic getEnrichmentLogic() {

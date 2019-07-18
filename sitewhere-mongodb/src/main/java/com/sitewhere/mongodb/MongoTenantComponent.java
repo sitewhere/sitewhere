@@ -40,10 +40,13 @@ public abstract class MongoTenantComponent<T extends MongoDbClient> extends Tena
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Don't allow the component to start until MongoDB is available.
+	getLogger().info("Waiting for MongoDB to become available...");
 	waitForMongoAvailable();
 
 	// Ensure that collection indexes exist.
+	getLogger().info("Verifying indexes for MongoDB collections...");
 	ensureIndexes();
+	getLogger().info("Index verification complete.");
     }
 
     /**
@@ -78,14 +81,6 @@ public abstract class MongoTenantComponent<T extends MongoDbClient> extends Tena
      * @throws SiteWhereException
      */
     public abstract void ensureIndexes() throws SiteWhereException;
-
-    /**
-     * Set the MongoDB client used to access the database.
-     * 
-     * @param client
-     * @throws SiteWhereException
-     */
-    public abstract void setMongoClient(T client) throws SiteWhereException;
 
     /**
      * Get the MongoDB client used to access the database.

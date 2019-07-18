@@ -55,8 +55,6 @@ import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 
 /**
  * Convert batch entities between SiteWhere API model and GRPC model.
- * 
- * @author Derek
  */
 public class BatchModelConverter {
 

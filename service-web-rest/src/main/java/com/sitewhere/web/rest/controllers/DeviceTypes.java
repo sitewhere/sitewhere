@@ -80,7 +80,7 @@ public class DeviceTypes extends RestControllerBase {
     public IDeviceType createDeviceType(@RequestBody DeviceTypeCreateRequest request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
 	IDeviceType result = getDeviceManagement().createDeviceType(request);
-	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getDeviceManagement());
+	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getCachedDeviceManagement());
 	return helper.convert(result);
     }
 
@@ -99,7 +99,7 @@ public class DeviceTypes extends RestControllerBase {
 	    @ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset)
 	    throws SiteWhereException {
 	IDeviceType result = assertDeviceTypeByToken(token);
-	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getDeviceManagement());
+	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getCachedDeviceManagement());
 	return helper.convert(result);
     }
 
@@ -158,7 +158,7 @@ public class DeviceTypes extends RestControllerBase {
 	    @RequestBody DeviceTypeCreateRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
 	IDeviceType deviceType = assertDeviceTypeByToken(token);
 	IDeviceType result = getDeviceManagement().updateDeviceType(deviceType.getId(), request);
-	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getDeviceManagement());
+	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getCachedDeviceManagement());
 	return helper.convert(result);
     }
 
@@ -208,7 +208,7 @@ public class DeviceTypes extends RestControllerBase {
 	    HttpServletRequest servletRequest) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<IDeviceType> results = getDeviceManagement().listDeviceTypes(criteria);
-	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getDeviceManagement());
+	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getCachedDeviceManagement());
 	List<IDeviceType> typesConv = new ArrayList<IDeviceType>();
 	for (IDeviceType type : results.getResults()) {
 	    typesConv.add(helper.convert(type));
@@ -402,6 +402,10 @@ public class DeviceTypes extends RestControllerBase {
 
     private IDeviceManagement getDeviceManagement() {
 	return getMicroservice().getDeviceManagementApiChannel();
+    }
+
+    private IDeviceManagement getCachedDeviceManagement() {
+	return getMicroservice().getCachedDeviceManagement();
     }
 
     private ILabelGeneration getLabelGeneration() {

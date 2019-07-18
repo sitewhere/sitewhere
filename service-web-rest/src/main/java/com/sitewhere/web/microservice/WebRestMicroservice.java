@@ -7,9 +7,11 @@
  */
 package com.sitewhere.web.microservice;
 
+import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
 import com.sitewhere.grpc.client.asset.CachedAssetManagementApiChannel;
 import com.sitewhere.grpc.client.batch.BatchManagementApiChannel;
 import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
+import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.devicestate.DeviceStateApiChannel;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.label.LabelGenerationApiChannel;
@@ -24,16 +26,22 @@ import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
 import com.sitewhere.grpc.client.tenant.CachedTenantManagementApiChannel;
+import com.sitewhere.grpc.client.tenant.TenantManagementApiChannel;
 import com.sitewhere.grpc.client.user.CachedUserManagementApiChannel;
+import com.sitewhere.grpc.client.user.UserManagementApiChannel;
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.state.TopologyStateAggregator;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.state.ITopologyStateAggregator;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.tenant.ITenantManagement;
+import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.web.configuration.WebRestModelProvider;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
 
@@ -54,17 +62,29 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
     /** User management API channel */
     private IUserManagementApiChannel<?> userManagementApiChannel;
 
+    /** Cached user management implementation */
+    private IUserManagement cachedUserManagement;
+
     /** Tenant management API channel */
     private ITenantManagementApiChannel<?> tenantManagementApiChannel;
 
+    /** Cached tenant management implementation */
+    private ITenantManagement cachedTenantManagement;
+
     /** Device management API channel */
     private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
+
+    /** Cached device management implementation */
+    private IDeviceManagement cachedDeviceManagement;
 
     /** Device event management API channel */
     private IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel;
 
     /** Asset management API channel */
     private IAssetManagementApiChannel<?> assetManagementApiChannel;
+
+    /** Cached asset management implementation */
+    private IAssetManagement cachedAssetManagement;
 
     /** Batch management API channel */
     private IBatchManagementApiChannel<?> batchManagementApiChannel;
@@ -142,20 +162,20 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 	// Initialize topology state aggregator.
 	init.addInitializeStep(this, getTopologyStateAggregator(), true);
 
-	// Initialize user management API channel.
-	init.addInitializeStep(this, getUserManagementApiChannel(), true);
+	// Initialize user management API channel + cache.
+	init.addInitializeStep(this, getCachedUserManagement(), true);
 
-	// Initialize tenant management API channel.
-	init.addInitializeStep(this, getTenantManagementApiChannel(), true);
+	// Initialize tenant management API channel + cache.
+	init.addInitializeStep(this, getCachedTenantManagement(), true);
 
-	// Initialize device management API channel.
-	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
+	// Initialize device management API channel + cache.
+	init.addInitializeStep(this, getCachedDeviceManagement(), true);
 
 	// Initialize device event management API channel.
 	init.addInitializeStep(this, getDeviceEventManagementApiChannel(), true);
 
-	// Initialize asset management API channel.
-	init.addInitializeStep(this, getAssetManagementApiChannel(), true);
+	// Initialize asset management API channel + cache.
+	init.addInitializeStep(this, getCachedAssetManagement(), true);
 
 	// Initialize batch management API channel.
 	init.addInitializeStep(this, getBatchManagementApiChannel(), true);
@@ -180,22 +200,26 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
      */
     protected void createGrpcComponents() throws SiteWhereException {
 	// User management.
-	this.userManagementApiChannel = new CachedUserManagementApiChannel(getInstanceSettings(),
+	this.userManagementApiChannel = new UserManagementApiChannel(getInstanceSettings());
+	this.cachedUserManagement = new CachedUserManagementApiChannel(userManagementApiChannel,
 		new CachedUserManagementApiChannel.CacheSettings());
 
 	// Tenant management.
-	this.tenantManagementApiChannel = new CachedTenantManagementApiChannel(getInstanceSettings(),
+	this.tenantManagementApiChannel = new TenantManagementApiChannel(getInstanceSettings());
+	this.cachedTenantManagement = new CachedTenantManagementApiChannel(tenantManagementApiChannel,
 		new CachedTenantManagementApiChannel.CacheSettings());
 
 	// Device management.
-	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(getInstanceSettings(),
+	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
+	this.cachedDeviceManagement = new CachedDeviceManagementApiChannel(deviceManagementApiChannel,
 		new CachedDeviceManagementApiChannel.CacheSettings());
 
 	// Device event management.
 	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(getInstanceSettings());
 
 	// Asset management.
-	this.assetManagementApiChannel = new CachedAssetManagementApiChannel(getInstanceSettings(),
+	this.assetManagementApiChannel = new AssetManagementApiChannel(getInstanceSettings());
+	this.cachedAssetManagement = new CachedAssetManagementApiChannel(assetManagementApiChannel,
 		new CachedAssetManagementApiChannel.CacheSettings());
 
 	// Batch management.
@@ -226,20 +250,20 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 	// Start topology state aggregator.
 	start.addStartStep(this, getTopologyStateAggregator(), true);
 
-	// Start user mangement API channel.
-	start.addStartStep(this, getUserManagementApiChannel(), true);
+	// Start user mangement API channel + cache.
+	start.addStartStep(this, getCachedUserManagement(), true);
 
-	// Start tenant mangement API channel.
-	start.addStartStep(this, getTenantManagementApiChannel(), true);
+	// Start tenant mangement API channel + cache.
+	start.addStartStep(this, getCachedTenantManagement(), true);
 
-	// Start device mangement API channel.
-	start.addStartStep(this, getDeviceManagementApiChannel(), true);
+	// Start device mangement API channel + cache.
+	start.addStartStep(this, getCachedDeviceManagement(), true);
 
 	// Start device event mangement API channel.
 	start.addStartStep(this, getDeviceEventManagementApiChannel(), true);
 
-	// Start asset mangement API channel.
-	start.addStartStep(this, getAssetManagementApiChannel(), true);
+	// Start asset mangement API channel + cache.
+	start.addStartStep(this, getCachedAssetManagement(), true);
 
 	// Start batch mangement API channel.
 	start.addStartStep(this, getBatchManagementApiChannel(), true);
@@ -268,20 +292,20 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
-	// Stop user mangement API channel.
-	stop.addStopStep(this, getUserManagementApiChannel());
+	// Stop user mangement API channel + cache.
+	stop.addStopStep(this, getCachedUserManagement());
 
-	// Stop tenant mangement API channel.
-	stop.addStopStep(this, getTenantManagementApiChannel());
+	// Stop tenant mangement API channel + cache.
+	stop.addStopStep(this, getCachedTenantManagement());
 
-	// Stop device mangement API channel.
-	stop.addStopStep(this, getDeviceManagementApiChannel());
+	// Stop device mangement API channel + cache.
+	stop.addStopStep(this, getCachedDeviceManagement());
 
 	// Stop device event mangement API channel.
 	stop.addStopStep(this, getDeviceEventManagementApiChannel());
 
-	// Stop asset mangement API channel.
-	stop.addStopStep(this, getAssetManagementApiChannel());
+	// Stop asset mangement API channel + cache.
+	stop.addStopStep(this, getCachedAssetManagement());
 
 	// Stop batch mangement API channel.
 	stop.addStopStep(this, getBatchManagementApiChannel());
@@ -317,6 +341,19 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 
     /*
      * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
+     * getCachedUserManagement()
+     */
+    @Override
+    public IUserManagement getCachedUserManagement() {
+	return cachedUserManagement;
+    }
+
+    public void setCachedUserManagement(IUserManagement cachedUserManagement) {
+	this.cachedUserManagement = cachedUserManagement;
+    }
+
+    /*
+     * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
      * getTenantManagementApiChannel()
      */
     @Override
@@ -330,6 +367,19 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 
     /*
      * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
+     * getCachedTenantManagement()
+     */
+    @Override
+    public ITenantManagement getCachedTenantManagement() {
+	return cachedTenantManagement;
+    }
+
+    public void setCachedTenantManagement(ITenantManagement cachedTenantManagement) {
+	this.cachedTenantManagement = cachedTenantManagement;
+    }
+
+    /*
+     * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
      * getDeviceManagementApiChannel()
      */
     @Override
@@ -339,6 +389,19 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 
     public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
 	this.deviceManagementApiChannel = deviceManagementApiChannel;
+    }
+
+    /*
+     * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
+     * getCachedDeviceManagement()
+     */
+    @Override
+    public IDeviceManagement getCachedDeviceManagement() {
+	return cachedDeviceManagement;
+    }
+
+    public void setCachedDeviceManagement(IDeviceManagement cachedDeviceManagement) {
+	this.cachedDeviceManagement = cachedDeviceManagement;
     }
 
     /*
@@ -366,6 +429,19 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 
     public void setAssetManagementApiChannel(IAssetManagementApiChannel<?> assetManagementApiChannel) {
 	this.assetManagementApiChannel = assetManagementApiChannel;
+    }
+
+    /*
+     * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
+     * getCachedAssetManagement()
+     */
+    @Override
+    public IAssetManagement getCachedAssetManagement() {
+	return cachedAssetManagement;
+    }
+
+    public void setCachedAssetManagement(IAssetManagement cachedAssetManagement) {
+	this.cachedAssetManagement = cachedAssetManagement;
     }
 
     /*
