@@ -2,7 +2,6 @@ package com.sitewhere.rdb.entities;
 
 import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.common.ILocation;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.*;
@@ -34,14 +33,19 @@ public class Zone implements IZone {
     /** Opacity */
     private Double opacity;
 
+    /** Token */
     private String token;
 
+    /** Date entity was created */
     private Date createdDate;
 
+    /** Username for creator */
     private String createdBy;
 
+    /** Date entity was last updated */
     private Date updatedDate;
 
+    /** Username that updated entity */
     private String updatedBy;
 
     @ElementCollection

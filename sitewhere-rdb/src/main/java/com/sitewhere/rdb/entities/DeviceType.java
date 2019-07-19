@@ -31,24 +31,34 @@ public class DeviceType implements IDeviceType {
     /** Schema that specifies allowable locations of nested devices */
     private DeviceElementSchema deviceElementSchema;
 
-    private String imageUrl;
-
+    /** Background color */
     private String backgroundColor;
 
+    /** Foreground color */
     private String foregroundColor;
 
+    /** Border color */
     private String borderColor;
 
+    /** Image URL */
+    private String imageUrl;
+
+    /** Icon */
     private String icon;
 
+    /** Unique token */
     private String token;
 
+    /** Date entity was created */
     private Date createdDate;
 
+    /** Username for creator */
     private String createdBy;
 
+    /** Date entity was last updated */
     private Date updatedDate;
 
+    /** Username that updated entity */
     private String updatedBy;
 
     @ElementCollection

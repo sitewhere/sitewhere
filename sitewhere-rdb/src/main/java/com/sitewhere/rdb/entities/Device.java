@@ -3,7 +3,6 @@ package com.sitewhere.rdb.entities;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.*;
@@ -41,18 +40,23 @@ public class Device implements IDevice {
     /** Status indicator */
     private String status;
 
+    /** Unique token */
     private String token;
 
+    /** Date entity was created */
     private Date createdDate;
 
+    /** Username for creator */
     private String createdBy;
 
+    /** Date entity was last updated */
     private Date updatedDate;
 
+    /** Username that updated entity */
     private String updatedBy;
 
     @ElementCollection
-    private List<UUID> activeDeviceAssignmentIds;
+    private List<UUID> activeDeviceAssignmentIds = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(name="device_metadata")

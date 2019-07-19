@@ -1,7 +1,6 @@
 package com.sitewhere.rdb.entities;
 
 import com.sitewhere.spi.area.IAreaType;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.*;
@@ -24,24 +23,34 @@ public class AreaType implements IAreaType {
     @ElementCollection
     private List<UUID> containedAreaTypeIds = new ArrayList<>();
 
+    /** Background color */
     private String backgroundColor;
 
+    /** Foreground color */
     private String foregroundColor;
 
+    /** Border color */
     private String borderColor;
 
+    /** Image URL */
     private String imageUrl;
 
+    /** Icon */
     private String icon;
 
+    /** Unique token */
     private String token;
 
+    /** Date entity was created */
     private Date createdDate;
 
+    /** Username for creator */
     private String createdBy;
 
+    /** Date entity was last updated */
     private Date updatedDate;
 
+    /** Username that updated entity */
     private String updatedBy;
 
     @ElementCollection

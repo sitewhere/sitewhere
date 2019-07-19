@@ -15,8 +15,4 @@ import java.util.UUID;
 public interface AreaRepository extends CrudRepository<Area, UUID>, JpaSpecificationExecutor<Area> {
 
     Optional<Area> findByToken(String token);
-
-    List<Area> findAllOrderByName(Specification<Area> spec);
-
-    List<Area> findAllByParentIdOrderByName(UUID parentId);
 }

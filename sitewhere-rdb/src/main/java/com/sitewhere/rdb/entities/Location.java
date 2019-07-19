@@ -14,18 +14,22 @@ public class Location implements ILocation {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
+    /** Latitude value */
     private Double latitude;
 
+    /** Longitude value */
     private Double longitude;
 
+    /** Elevation value */
     private Double elevation;
 
     /**
-     *
+     * Constructor
      */
     public Location() {}
 
     /**
+     * Constructor
      *
      * @param latitude
      * @param longitude

@@ -39,14 +39,19 @@ public class DeviceStatus implements IDeviceStatus {
     /** Icon */
     private String icon;
 
+    /** Unique token */
     private String token;
 
+    /** Date entity was created */
     private Date createdDate;
 
+    /** Username for creator */
     private String createdBy;
 
+    /** Date entity was last updated */
     private Date updatedDate;
 
+    /** Username that updated entity */
     private String updatedBy;
 
     @ElementCollection

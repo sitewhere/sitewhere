@@ -24,24 +24,34 @@ public class CustomerType implements ICustomerType {
     @ElementCollection
     private List<UUID> containedCustomerTypeIds = new ArrayList<>();
 
-    private String imageUrl;
-
+    /** Background color */
     private String backgroundColor;
 
+    /** Foreground color */
     private String foregroundColor;
 
+    /** Border color */
     private String borderColor;
 
+    /** Image URL */
+    private String imageUrl;
+
+    /** Icon */
     private String icon;
 
+    /** Unique token */
     private String token;
 
+    /** Date entity was created */
     private Date createdDate;
 
+    /** Username for creator */
     private String createdBy;
 
+    /** Date entity was last updated */
     private Date updatedDate;
 
+    /** Username that updated entity */
     private String updatedBy;
 
     @ElementCollection

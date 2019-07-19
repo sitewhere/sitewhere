@@ -11,30 +11,6 @@ import java.util.*;
 @Table(name = "device_command")
 public class DeviceCommand implements IDeviceCommand {
 
-    /** Property for device type id */
-    public static final String PROP_DEVICE_TYPE_ID = "dtid";
-
-    /** Property for command namespace */
-    public static final String PROP_NAMESPACE = "nmsp";
-
-    /** Property for command name */
-    public static final String PROP_NAME = "name";
-
-    /** Property for command description */
-    public static final String PROP_DESCRIPTION = "desc";
-
-    /** Property for command parameters list */
-    public static final String PROP_PARAMETERS = "parm";
-
-    /** Property for command parameter name */
-    public static final String PROP_PARAM_NAME = "pnam";
-
-    /** Property for command parameter type */
-    public static final String PROP_PARAM_TYPE = "ptyp";
-
-    /** Property for command parameter required indicator */
-    public static final String PROP_PARAM_REQUIRED = "preq";
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -52,18 +28,22 @@ public class DeviceCommand implements IDeviceCommand {
     private String description;
 
     /** Parameter list */
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "device_command_id")
+    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.LAZY)
     private List<CommandParameter> parameterList = new ArrayList<>();
 
+    /** Unique token */
     private String token;
 
+    /** Date entity was created */
     private Date createdDate;
 
+    /** Username for creator */
     private String createdBy;
 
+    /** Date entity was last updated */
     private Date updatedDate;
 
+    /** Username that updated entity */
     private String updatedBy;
 
     @ElementCollection

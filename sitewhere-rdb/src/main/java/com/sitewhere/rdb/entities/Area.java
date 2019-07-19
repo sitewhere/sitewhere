@@ -26,25 +26,34 @@ public class Area implements IArea {
     /** Area description */
     private String description;
 
+    /** Background color */
+    private String backgroundColor;
+
+    /** Foreground color */
+    private String foregroundColor;
+
+    /** Border color */
+    private String borderColor;
+
     /** Image URL */
     private String imageUrl;
 
-    private String backgroundColor;
-
-    private String foregroundColor;
-
-    private String borderColor;
-
+    /** Icon */
     private String icon;
 
+    /** Unique token */
     private String token;
 
+    /** Date entity was created */
     private Date createdDate;
 
+    /** Username for creator */
     private String createdBy;
 
+    /** Date entity was last updated */
     private Date updatedDate;
 
+    /** Username that updated entity */
     private String updatedBy;
 
     @ElementCollection
@@ -53,10 +62,8 @@ public class Area implements IArea {
     @Column(name="propValue")
     private Map<String, String> metadata = new HashMap<>();
 
-    @JoinColumn(name="AREA_ID")
-    @OneToMany
+    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.LAZY)
     private List<Location> bounds = new ArrayList<>();
-
 
     @Override
     public UUID getAreaTypeId() {

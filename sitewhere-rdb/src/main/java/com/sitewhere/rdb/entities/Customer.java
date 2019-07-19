@@ -28,24 +28,34 @@ public class Customer implements ICustomer {
     /** Area description */
     private String description;
 
-    private String imageUrl;
-
+    /** Background color */
     private String backgroundColor;
 
+    /** Foreground color */
     private String foregroundColor;
 
+    /** Border color */
     private String borderColor;
 
+    /** Image URL */
+    private String imageUrl;
+
+    /** Icon */
     private String icon;
 
+    /** Unique token */
     private String token;
 
+    /** Date entity was created */
     private Date createdDate;
 
+    /** Username for creator */
     private String createdBy;
 
+    /** Date entity was last updated */
     private Date updatedDate;
 
+    /** Username that updated entity */
     private String updatedBy;
 
     @ElementCollection
@@ -53,7 +63,6 @@ public class Customer implements ICustomer {
     @MapKeyColumn(name="propKey")
     @Column(name="propValue")
     private Map<String, String> metadata = new HashMap<>();
-
 
     @Override
     public UUID getCustomerTypeId() {

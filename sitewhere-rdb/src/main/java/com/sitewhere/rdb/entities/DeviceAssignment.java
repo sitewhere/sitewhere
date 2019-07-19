@@ -1,7 +1,6 @@
 package com.sitewhere.rdb.entities;
 
 
-
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import org.hibernate.annotations.Type;
@@ -36,6 +35,7 @@ public class DeviceAssignment implements IDeviceAssignment {
     private UUID assetId;
 
     /** Assignment status */
+    @Enumerated(EnumType.STRING)
     private DeviceAssignmentStatus status;
 
     /** Assignment start date */
@@ -44,14 +44,19 @@ public class DeviceAssignment implements IDeviceAssignment {
     /** Assignment end date */
     private Date releasedDate;
 
+    /** Unique token */
     private String token;
 
+    /** Date entity was created */
     private Date createdDate;
 
+    /** Username for creator */
     private String createdBy;
 
+    /** Date entity was last updated */
     private Date updatedDate;
 
+    /** Username that updated entity */
     private String updatedBy;
 
     @ElementCollection

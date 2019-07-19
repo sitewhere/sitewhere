@@ -1,7 +1,5 @@
 package com.sitewhere.rdb.entities;
 
-import com.sitewhere.rest.model.device.element.DeviceSlot;
-import com.sitewhere.rest.model.device.element.DeviceUnit;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 import com.sitewhere.spi.device.element.IDeviceSlot;
 import com.sitewhere.spi.device.element.IDeviceUnit;
@@ -25,9 +23,11 @@ public class DeviceElementSchema implements IDeviceElementSchema, Serializable {
     private String path;
 
     /** List of device slots */
+    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.LAZY)
     private List<DeviceSlot> deviceSlots = new ArrayList<DeviceSlot>();
 
     /** List of device units */
+    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.LAZY)
     private List<DeviceUnit> deviceUnits = new ArrayList<DeviceUnit>();
 
     @Override
@@ -72,5 +72,13 @@ public class DeviceElementSchema implements IDeviceElementSchema, Serializable {
 
     public void setDeviceUnits(List<DeviceUnit> deviceUnits) {
         this.deviceUnits = deviceUnits;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 }

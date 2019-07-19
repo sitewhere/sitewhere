@@ -5,10 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sitewhere.configuration.instance.rdb.RDBConfiguration;
 import com.sitewhere.rdb.entities.*;
 import com.sitewhere.rdb.repositories.*;
+import com.sitewhere.rest.model.search.SearchResults;
+import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.DeviceAssignmentStatus;
+import com.sitewhere.spi.search.ISearchCriteria;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
-import java.util.Optional;
+import javax.persistence.criteria.*;
+import java.util.*;
 
 public class DbManager {
 
@@ -109,69 +116,5 @@ public class DbManager {
     public ZoneRepository getZoneRepository() {
         ZoneRepository bean = ApplicationContextUtils.getBean(ZoneRepository.class);
         return bean;
-    }
-
-
-    public static void main(String[] args) {
-        RDBConfiguration config = new RDBConfiguration();
-        config.setUrl("jdbc:postgresql://114.116.1.182:5432/tenant1");
-        config.setDriver("org.postgresql.Driver");
-        config.setUsername("DL");
-        config.setPassword("123456");
-        config.setDialect("org.hibernate.dialect.PostgreSQL94Dialect");
-        config.setHbm2ddlAuto("update");
-        config.setFormatSql("true");
-        config.setShowSql("true");
-
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonStr = null;
-        try {
-            jsonStr = mapper.writeValueAsString(config);
-        } catch (JsonProcessingException e) {
-        }
-
-        System.out.println("jsonStr="+jsonStr);
-
-        DbManager manager = new DbManager(jsonStr);
-        manager.start();
-        /// ============================== started
-
-
-//        DeviceTypeRepository bean = manager.getDeviceTypeRepository();
-//        System.out.println("=================== "+bean);
-//        DeviceType dt = new DeviceType();
-//        dt.setDescription("555");
-//        bean.save(dt);
-
-//        AreaRepository bean = manager.getAreaRepository();
-//        LocationRepository bean2 = manager.getLocationRepository();
-//        Location local1 = new Location();
-//        Location local2 = new Location();
-//        bean2.save(local1);
-//        bean2.save(local2);
-//        List<Location> lst = new ArrayList<>();
-//        lst.add(local1);
-//        lst.add(local2);
-//        Area area = new Area();
-//        area.setDescription("123123123");
-//        area.setBounds(lst);
-//        bean.save(area);
-
-//        AreaTypeRepository bean = manager.getAreaTypeRepository();
-//        AreaType at = new AreaType();
-//        at.setCreatedBy("ddd");
-//        at.setDescription("dsdsdsds");
-//        List lst = new ArrayList<>();
-//        lst.add(UUID.randomUUID());
-//        lst.add(UUID.randomUUID());
-//        at.setContainedAreaTypeIds(lst);
-//        bean.save(at);
-
-        AreaRepository bean = manager.getAreaRepository();
-        Optional<Area> opt = bean.findByToken("aaaaa");
-        System.out.println("=============result===="+opt.get().getId());
-
-//============================== stop
-        manager.stop();
     }
 }

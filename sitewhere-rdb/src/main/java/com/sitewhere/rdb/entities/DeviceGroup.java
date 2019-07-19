@@ -1,7 +1,6 @@
 package com.sitewhere.rdb.entities;
 
 import com.sitewhere.spi.device.group.IDeviceGroup;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.*;
@@ -22,26 +21,36 @@ public class DeviceGroup implements IDeviceGroup {
 
     /** List of roles */
     @ElementCollection
-    private List<String> roles = new ArrayList<String>();
+    private List<String> roles = new ArrayList<>();
 
-    private String imageUrl;
-
+    /** Background color */
     private String backgroundColor;
 
+    /** Foreground color */
     private String foregroundColor;
 
+    /** Border color */
     private String borderColor;
 
+    /** Image URL */
+    private String imageUrl;
+
+    /** Icon */
     private String icon;
 
+    /** Unique token */
     private String token;
 
+    /** Date entity was created */
     private Date createdDate;
 
+    /** Username for creator */
     private String createdBy;
 
+    /** Date entity was last updated */
     private Date updatedDate;
 
+    /** Username that updated entity */
     private String updatedBy;
 
     @ElementCollection
@@ -49,7 +58,6 @@ public class DeviceGroup implements IDeviceGroup {
     @MapKeyColumn(name="propKey")
     @Column(name="propValue")
     private Map<String, String> metadata = new HashMap<>();
-
 
     @Override
     public List<String> getRoles() {
