@@ -9,6 +9,11 @@ import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+/**
+ * Entry point class for Spring data JPA
+ *
+ * Simeon Chen
+ */
 @SpringBootApplication
 public class Application {
 

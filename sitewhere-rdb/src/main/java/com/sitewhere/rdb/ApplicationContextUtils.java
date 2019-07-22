@@ -2,6 +2,11 @@ package com.sitewhere.rdb;
 
 import org.springframework.context.ApplicationContext;
 
+/**
+ * Application context Util
+ *
+ * Simeon Chen
+ */
 public class ApplicationContextUtils {
     private static ApplicationContext context;
 

@@ -24,7 +24,11 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-
+/**
+ * Persistence configuration for Relational database
+ *
+ * Simeon Chen
+ */
 @Configuration
 @EnableTransactionManagement
 @ComponentScan({ "com.sitewhere.rdb" })

@@ -1,22 +1,15 @@
 package com.sitewhere.rdb;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sitewhere.configuration.instance.rdb.RDBConfiguration;
-import com.sitewhere.rdb.entities.*;
 import com.sitewhere.rdb.repositories.*;
-import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.DeviceAssignmentStatus;
-import com.sitewhere.spi.search.ISearchCriteria;
+import com.sitewhere.rdb.repositories.event.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.*;
-import java.util.*;
-
+/**
+ * DbManager is a database client for data management
+ *
+ * Simeon Chen
+ */
 public class DbManager {
 
     private String paramInJsonFormat;
@@ -117,4 +110,40 @@ public class DbManager {
         ZoneRepository bean = ApplicationContextUtils.getBean(ZoneRepository.class);
         return bean;
     }
+
+    public DeviceAlertRepository getDeviceAlertRepository() {
+        DeviceAlertRepository bean = ApplicationContextUtils.getBean(DeviceAlertRepository.class);
+        return bean;
+    }
+
+    public DeviceCommandInvocationRepository getDeviceCommandInvocationRepository() {
+        DeviceCommandInvocationRepository bean = ApplicationContextUtils.getBean(DeviceCommandInvocationRepository.class);
+        return bean;
+    }
+
+    public DeviceCommandResponseRepository getDeviceCommandResponseRepository() {
+        DeviceCommandResponseRepository bean = ApplicationContextUtils.getBean(DeviceCommandResponseRepository.class);
+        return bean;
+    }
+
+    public DeviceLocationRepository getDeviceLocationRepository() {
+        DeviceLocationRepository bean = ApplicationContextUtils.getBean(DeviceLocationRepository.class);
+        return bean;
+    }
+
+    public DeviceMeasurementRepository getDeviceMeasurementRepository() {
+        DeviceMeasurementRepository bean = ApplicationContextUtils.getBean(DeviceMeasurementRepository.class);
+        return bean;
+    }
+
+    public DeviceStateChangeRepository getDeviceStateChangeRepository() {
+        DeviceStateChangeRepository bean = ApplicationContextUtils.getBean(DeviceStateChangeRepository.class);
+        return bean;
+    }
+
+    public DeviceEventRepository getDeviceEventRepository() {
+        DeviceEventRepository bean = ApplicationContextUtils.getBean(DeviceEventRepository.class);
+        return bean;
+    }
+
 }

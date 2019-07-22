@@ -17,6 +17,7 @@ import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.search.area.AreaSearchCriteria;
 import com.sitewhere.rest.model.search.customer.CustomerSearchCriteria;
+import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceCommandSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceStatusSearchCriteria;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -55,12 +56,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
+ * Device management implementation that uses Relational database for persistence.
+ *
  * Simeon Chen
  */
 public class RDBDeviceManagement extends TenantEngineLifecycleComponent implements IDeviceManagement {
@@ -630,13 +630,13 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
                 if ((criteria.getAssignmentStatuses() != null) && (criteria.getAssignmentStatuses().size() > 0)) {
                     Path path = root.get("status");
                     List<String> names = DeviceManagementUtils.getAssignmentStatusNames(criteria.getAssignmentStatuses());
-                    predicates.add(cb.in(path));
+                    predicates.add(path.in(names));
                 }
                 if ((criteria.getDeviceTokens() != null) && (criteria.getDeviceTokens().size() > 0)) {
                     try {
                         List<UUID> ids = DeviceManagementUtils.getDeviceIds(criteria.getDeviceTokens(), RDBDeviceManagement.this);
                         Path path = root.get("deviceId");
-                        predicates.add(cb.in(path));
+                        predicates.add(path.in(ids));
                     } catch (SiteWhereException e) {
                         e.printStackTrace();
                     }
@@ -645,7 +645,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
                     try {
                         List<UUID> ids = DeviceManagementUtils.getCustomerIds(criteria.getCustomerTokens(), RDBDeviceManagement.this);
                         Path path = root.get("customerId");
-                        predicates.add(cb.in(path));
+                        predicates.add(path.in(ids));
                     } catch (SiteWhereException e) {
                         e.printStackTrace();
                     }
@@ -654,7 +654,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
                     try {
                         List<UUID> ids = DeviceManagementUtils.getAreaIds(criteria.getAreaTokens(), RDBDeviceManagement.this);
                         Path path = root.get("areaId");
-                        predicates.add(cb.in(path));
+                        predicates.add(path.in(ids));
                     } catch (SiteWhereException e) {
                         e.printStackTrace();
                     }
@@ -663,7 +663,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
                     try {
                         List<UUID> ids = getAssetIds(criteria.getAssetTokens());
                         Path path = root.get("assetId");
-                        predicates.add(cb.in(path));
+                        predicates.add(path.in(ids));
                     } catch (SiteWhereException e) {
                         e.printStackTrace();
                     }
@@ -684,24 +684,31 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
     @Override
     public IDeviceAssignment endDeviceAssignment(UUID id) throws SiteWhereException {
         Optional<com.sitewhere.rdb.entities.DeviceAssignment> opt = dbClient.getDbManager().getDeviceAssignmentRepository().findById(id);
+        com.sitewhere.rdb.entities.DeviceAssignment updated = null;
         if(opt.isPresent()) {
+            updated = opt.get();
+            updated.setReleasedDate(Calendar.getInstance().getTime());
+            updated.setStatus(DeviceAssignmentStatus.Released);
 
+            UUID deviceId = updated.getDeviceId();
+            Optional<com.sitewhere.rdb.entities.Device> opt2 = dbClient.getDbManager().getDeviceRepository().findById(deviceId);
+            if (opt2.isPresent()) {
+                com.sitewhere.rdb.entities.Device device = opt2.get();
+                DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(1, 0);
+                criteria.setDeviceTokens(Collections.singletonList(updated.getToken()));
+                criteria.setAssignmentStatuses(Collections.singletonList(DeviceAssignmentStatus.Active));
+                ISearchResults<IDeviceAssignment> matches = listDeviceAssignments(criteria);
+
+                List<UUID> uuids = new ArrayList<>();
+                for (IDeviceAssignment assignment : matches.getResults()) {
+                    uuids.add(assignment.getId());
+                }
+
+                device.setActiveDeviceAssignmentIds(uuids);
+                dbClient.getDbManager().getDeviceRepository().save(device);
+            }
+            return updated;
         }
-//        Document match = assertDeviceAssignment(id);
-//        match.put(MongoDeviceAssignment.PROP_RELEASED_DATE, Calendar.getInstance().getTime());
-//        match.put(MongoDeviceAssignment.PROP_STATUS, DeviceAssignmentStatus.Released.name());
-//        MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
-//        Document query = new Document(MongoPersistentEntity.PROP_ID, id);
-//        MongoPersistence.update(assignments, query, match);
-//
-//        // Update list of active assignments.
-//        UUID deviceId = (UUID) match.get(MongoDeviceAssignment.PROP_DEVICE_ID);
-//        IDevice device = MongoDevice.fromDocument(assertDevice(deviceId));
-//        updateDeviceActiveAssignments(device);
-//
-//        DeviceAssignment assignment = MongoDeviceAssignment.fromDocument(match);
-//        return assignment;
-
         return null;
     }
 
@@ -853,6 +860,22 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public ICustomerType updateCustomerType(UUID id, ICustomerTypeCreateRequest request) throws SiteWhereException {
+        Optional<com.sitewhere.rdb.entities.CustomerType> opt = dbClient.getDbManager().getCustomerTypeRepository().findById(id);
+        com.sitewhere.rdb.entities.CustomerType updated = null;
+        if(opt.isPresent()) {
+            updated = opt.get();
+            // Convert contained customer type tokens to ids.
+            List<UUID> cctids = convertCustomerTypeTokensToIds(request.getContainedCustomerTypeTokens());
+
+            CustomerType target = new CustomerType();
+            target.setId(id);
+            // Use common update logic.
+            DeviceManagementPersistence.customerTypeUpdateLogic(request, cctids, target);
+
+            BeanUtils.copyProperties(target, updated);
+            updated = dbClient.getDbManager().getCustomerTypeRepository().save(updated);
+            return updated;
+        }
         return null;
     }
 
@@ -1343,7 +1366,17 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public IDeviceGroup updateDeviceGroup(UUID id, IDeviceGroupCreateRequest request) throws SiteWhereException {
-        return null;
+        Optional<com.sitewhere.rdb.entities.DeviceGroup> opt = dbClient.getDbManager().getDeviceGroupRepository().findById(id);
+        com.sitewhere.rdb.entities.DeviceGroup updated = null;
+        if(opt.isPresent()) {
+            updated = opt.get();
+            DeviceGroup target = new DeviceGroup();
+            target.setId(id);
+            DeviceManagementPersistence.deviceGroupUpdateLogic(request, target);
+            BeanUtils.copyProperties(target, updated);
+            updated = dbClient.getDbManager().getDeviceGroupRepository().save(updated);
+        }
+        return updated;
     }
 
     @Override
@@ -1373,7 +1406,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             public Predicate toPredicate(Root<com.sitewhere.rdb.entities.DeviceGroup> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 List<Predicate> predicates = new ArrayList<>();
                 Path path = root.get("roles");
-                predicates.add(cb.in(path));
+                predicates.add(path.in(role));
                 return query.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
             }
         };

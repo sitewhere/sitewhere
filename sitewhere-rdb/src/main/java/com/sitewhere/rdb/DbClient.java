@@ -11,6 +11,8 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponentParameter;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
+ * Client used for connecting to and interacting with an Relational database server.
+ *
  * Simeon Chen
  */
 public abstract class DbClient extends TenantEngineLifecycleComponent implements IDiscoverableTenantLifecycleComponent {
