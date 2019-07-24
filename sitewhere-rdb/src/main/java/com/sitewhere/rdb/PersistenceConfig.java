@@ -1,21 +1,18 @@
 package com.sitewhere.rdb;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Properties;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sitewhere.configuration.instance.rdb.RDBConfiguration;
-import com.zaxxer.hikari.HikariDataSource;
+import com.sitewhere.rdb.multitenancy.MapMultiTenantConnectionProviderImpl;
+import com.sitewhere.rdb.multitenancy.CurrentTenantIdentifierResolverImpl;
+import org.hibernate.MultiTenancyStrategy;
+import org.hibernate.cfg.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
 import org.springframework.context.annotation.*;
-import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -36,34 +33,9 @@ public class PersistenceConfig {
 
     private static final Logger log = LoggerFactory.getLogger(PersistenceConfig.class);
 
-    @Autowired
-    private Environment env;
-
-    private RDBConfiguration config;
-
-    @Autowired
-    public PersistenceConfig(ApplicationArguments args) {
-        String jsonStr = args.getSourceArgs()[0];
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            config = mapper.readValue(jsonStr, RDBConfiguration.class);
-        } catch (IOException e) {
-            log.error(e.getMessage(),e);
-        }
-    }
-
-    @Bean
-    public DataSource dataSource() {
-        final HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setDriverClassName(config.getDriver());
-        dataSource.setJdbcUrl(config.getUrl());
-        dataSource.setUsername(config.getUsername());
-        dataSource.setPassword(config.getPassword());
-        return dataSource;
-    }
-
     @Bean(name = "transactionManager")
     public PlatformTransactionManager jpaTransactionManager(EntityManagerFactory entityManagerFactory) throws URISyntaxException {
+        log.info("Initialize transactionManager");
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(entityManagerFactory);
         return transactionManager;
@@ -75,11 +47,11 @@ public class PersistenceConfig {
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, MapMultiTenantConnectionProviderImpl multiTenantConnectionProvider, CurrentTenantIdentifierResolverImpl currentTenantIdentifierResolver) {
         LocalContainerEntityManagerFactoryBean em = new  LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(dataSource());
+        em.setDataSource(dataSource);
         em.setPackagesToScan(new String[] { "com.sitewhere.rdb.entities" });
-        em.setJpaProperties(hibernateProperties());
+        em.setJpaProperties(hibernateProperties(multiTenantConnectionProvider,currentTenantIdentifierResolver ));
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
         return em;
@@ -90,17 +62,16 @@ public class PersistenceConfig {
      *
      * @return
      */
-    private final Properties hibernateProperties() {
+    private final Properties hibernateProperties(MapMultiTenantConnectionProviderImpl multiTenantConnectionProviderImpl, CurrentTenantIdentifierResolverImpl currentTenantIdentifierResolver) {
         Properties hibernateProperties = new Properties();
-        hibernateProperties.setProperty("hibernate.hbm2ddl.auto", config.getHbm2ddlAuto());
-        hibernateProperties.setProperty("hibernate.dialect", config.getDialect());
-        hibernateProperties.setProperty("hibernate.show_sql", config.getShowSql());
-        hibernateProperties.setProperty("hibernate.format_sql", config.getFormatSql());
-//		hibernateProperties.setProperty("hibernate.connection.autocommit","true");
-//		hibernateProperties.setProperty("hibernate.connection.provider_disables_autocommit","false");
         hibernateProperties.setProperty("hibernate.jdbc.lob.non_contextual_creation", "true");
         // Envers properties
+        hibernateProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQL94Dialect");
         hibernateProperties.setProperty("org.hibernate.envers.audit_table_suffix", "_audit_log");
+        hibernateProperties.put(Environment.MULTI_TENANT, MultiTenancyStrategy.DATABASE);
+        hibernateProperties.put(Environment.MULTI_TENANT_CONNECTION_PROVIDER, multiTenantConnectionProviderImpl);
+        hibernateProperties.put(Environment.MULTI_TENANT_IDENTIFIER_RESOLVER, currentTenantIdentifierResolver);
+        hibernateProperties.put(Environment.FORMAT_SQL, "true");
         return hibernateProperties;
     }
 }

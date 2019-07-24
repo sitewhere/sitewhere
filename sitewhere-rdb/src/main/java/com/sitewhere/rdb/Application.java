@@ -8,6 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 /**
  * Entry point class for Spring data JPA
@@ -15,6 +16,7 @@ import org.springframework.context.annotation.Bean;
  * Simeon Chen
  */
 @SpringBootApplication
+@EnableJpaAuditing
 public class Application {
 
     private static final Logger log = LoggerFactory.getLogger(Application.class);

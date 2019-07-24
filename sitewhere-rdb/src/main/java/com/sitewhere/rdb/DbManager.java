@@ -1,5 +1,6 @@
 package com.sitewhere.rdb;
 
+import com.sitewhere.rdb.multitenancy.MapMultiTenantConnectionProviderImpl;
 import com.sitewhere.rdb.repositories.*;
 import com.sitewhere.rdb.repositories.event.*;
 import org.springframework.boot.SpringApplication;
@@ -12,17 +13,17 @@ import org.springframework.context.ConfigurableApplicationContext;
  */
 public class DbManager {
 
-    private String paramInJsonFormat;
     private ConfigurableApplicationContext context;
 
-    public DbManager(String paramInJsonFormat) {
-        this.paramInJsonFormat = paramInJsonFormat;
-    }
+    /**
+     * Constructor
+     */
+    public DbManager() {}
 
     public void start() {
         SpringApplication app = new SpringApplication(Application.class);
         app.addListeners(new MainBusiListeners());
-        context = app.run( paramInJsonFormat);
+        context = app.run();
     }
 
     public void stop() {
@@ -146,4 +147,8 @@ public class DbManager {
         return bean;
     }
 
+    public MapMultiTenantConnectionProviderImpl getMapMultiTenantConnectionProvider() {
+        MapMultiTenantConnectionProviderImpl bean = ApplicationContextUtils.getBean(MapMultiTenantConnectionProviderImpl.class);
+        return bean;
+    }
 }

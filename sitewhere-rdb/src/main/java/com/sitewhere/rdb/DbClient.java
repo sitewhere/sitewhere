@@ -3,6 +3,8 @@ package com.sitewhere.rdb;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sitewhere.configuration.instance.rdb.RDBConfiguration;
+import com.sitewhere.rdb.multitenancy.MapMultiTenantConnectionProviderImpl;
+import com.sitewhere.rdb.multitenancy.TenantContext;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.server.lifecycle.parameters.StringComponentParameter;
 import com.sitewhere.spi.SiteWhereException;
@@ -57,14 +59,7 @@ public abstract class DbClient extends TenantEngineLifecycleComponent implements
 
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonStr;
-        try {
-            jsonStr = mapper.writeValueAsString(configuration);
-        } catch (JsonProcessingException e) {
-            throw new SiteWhereException(e.getMessage(), e);
-        }
-        dbManager = new DbManager(jsonStr);
+        dbManager = new DbManager();
     }
 
     @Override
@@ -73,6 +68,12 @@ public abstract class DbClient extends TenantEngineLifecycleComponent implements
                 + configuration.getUrl() + " for database '" + databaseName.getValue() + "'");
 
         dbManager.start();
+
+        // Set current tenant
+        TenantContext.setCurrentTenant(this.getTenantEngine().getTenant().getName());
+
+        MapMultiTenantConnectionProviderImpl provider = dbManager.getMapMultiTenantConnectionProvider();
+        provider.registerTenantConnectionProvider(TenantContext.getCurrentTenant(), configuration);
     }
 
     @Override

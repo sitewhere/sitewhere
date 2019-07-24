@@ -23,6 +23,9 @@ public class ApplicationContextUtils {
     }
 
     public static <T> T getBean(Class<T> t) {
+        if(context == null) {
+            System.err.println("The DbManager has not started yet!");
+        }
         return context.getBean(t);
     }
 }
