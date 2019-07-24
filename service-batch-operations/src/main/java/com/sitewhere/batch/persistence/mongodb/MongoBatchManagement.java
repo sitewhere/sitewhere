@@ -60,10 +60,10 @@ public class MongoBatchManagement extends MongoTenantComponent<BatchManagementMo
     public void ensureIndexes() throws SiteWhereException {
 	// Batch operation indexes.
 	getMongoClient().getBatchOperationsCollection().createIndex(new Document(MongoPersistentEntity.PROP_TOKEN, 1),
-		new IndexOptions().unique(true));
+		new IndexOptions().unique(true).background(true));
 	getMongoClient().getBatchOperationElementsCollection().createIndex(
 		new Document(MongoBatchElement.PROP_BATCH_OPERATION_ID, 1).append(MongoBatchElement.PROP_DEVICE_ID, 1),
-		new IndexOptions().unique(true));
+		new IndexOptions().unique(true).background(true));
     }
 
     /*

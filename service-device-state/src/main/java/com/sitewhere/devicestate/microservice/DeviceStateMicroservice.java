@@ -11,15 +11,19 @@ import com.sitewhere.devicestate.configuration.DeviceStateModelProvider;
 import com.sitewhere.devicestate.spi.grpc.IDeviceStateGrpcServer;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
+import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
+import com.sitewhere.grpc.client.asset.CachedAssetManagementApiChannel;
 import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.microservice.grpc.DeviceStateGrpcServer;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
@@ -44,11 +48,17 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
     /** Device management API channel */
     private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
 
-    /** Device event management API channel */
-    private IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel;
-
     /** Cached device management implementation */
     private IDeviceManagement cachedDeviceManagement;
+
+    /** Asset management API channel */
+    private IAssetManagementApiChannel<?> assetManagementApiChannel;
+
+    /** Cached asset management implementation */
+    private IAssetManagement cachedAssetManagement;
+
+    /** Device event management API channel */
+    private IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel;
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
@@ -110,6 +120,9 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
 	// Initialize device management API channel + cache.
 	init.addInitializeStep(this, getCachedDeviceManagement(), true);
 
+	// Initialize asset management API channel + cache.
+	init.addInitializeStep(this, getCachedAssetManagement(), true);
+
 	// Initialize device event management API channel.
 	init.addInitializeStep(this, getDeviceEventManagementApiChannel(), true);
 
@@ -133,6 +146,9 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
 	// Start device mangement API channel + cache.
 	start.addStartStep(this, getCachedDeviceManagement(), true);
 
+	// Start asset mangement API channel + cache.
+	start.addStartStep(this, getCachedAssetManagement(), true);
+
 	// Start device event mangement API channel.
 	start.addStartStep(this, getDeviceEventManagementApiChannel(), true);
 
@@ -152,6 +168,9 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
 
 	// Stop device mangement API channel + cache.
 	stop.addStopStep(this, getCachedDeviceManagement());
+
+	// Stop asset mangement API channel + cache.
+	stop.addStopStep(this, getCachedAssetManagement());
 
 	// Stop device event mangement API channel.
 	stop.addStopStep(this, getDeviceEventManagementApiChannel());
@@ -174,6 +193,11 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
 	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
 	this.cachedDeviceManagement = new CachedDeviceManagementApiChannel(deviceManagementApiChannel,
 		new CachedDeviceManagementApiChannel.CacheSettings());
+
+	// Asset management.
+	this.assetManagementApiChannel = new AssetManagementApiChannel(getInstanceSettings());
+	this.cachedAssetManagement = new CachedAssetManagementApiChannel(assetManagementApiChannel,
+		new CachedAssetManagementApiChannel.CacheSettings());
 
 	// Device event management.
 	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(getInstanceSettings());
@@ -216,6 +240,32 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
 
     public void setCachedDeviceManagement(IDeviceManagement cachedDeviceManagement) {
 	this.cachedDeviceManagement = cachedDeviceManagement;
+    }
+
+    /*
+     * @see com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice#
+     * getAssetManagementApiChannel()
+     */
+    @Override
+    public IAssetManagementApiChannel<?> getAssetManagementApiChannel() {
+	return assetManagementApiChannel;
+    }
+
+    public void setAssetManagementApiChannel(IAssetManagementApiChannel<?> assetManagementApiChannel) {
+	this.assetManagementApiChannel = assetManagementApiChannel;
+    }
+
+    /*
+     * @see com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice#
+     * getCachedAssetManagement()
+     */
+    @Override
+    public IAssetManagement getCachedAssetManagement() {
+	return cachedAssetManagement;
+    }
+
+    public void setCachedAssetManagement(IAssetManagement cachedAssetManagement) {
+	this.cachedAssetManagement = cachedAssetManagement;
     }
 
     /*

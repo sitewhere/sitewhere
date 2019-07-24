@@ -93,7 +93,7 @@ logger.info "[Create Area] ${ptreeArea.name}"
 
 // Create zone associated with construction site.
 def zone = deviceBuilder.newZone 'officepark', 'Office Park', ptreeArea
-zone.withBorderColor('#017112') withFillColor('#1db32e') withOpacity(0.5)
+zone.withBorderColor('#017112') withBorderOpacity(0.8) withFillColor('#1db32e') withFillOpacity(0.5)
 zone.coord(34.10154272138541, -84.23811793316418) coord(34.10341869706135, -84.2390012741089)
 zone.coord(34.10372666664766, -84.23785686405608) coord(34.1038169851322, -84.23678040504456)
 zone.coord(34.10153087628316, -84.23575758923107)

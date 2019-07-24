@@ -937,8 +937,9 @@ public class DeviceManagementPersistence extends Persistence {
 	zone.setAreaId(area.getId());
 	zone.setName(request.getName());
 	zone.setBorderColor(request.getBorderColor());
+	zone.setBorderOpacity(request.getBorderOpacity());
 	zone.setFillColor(request.getFillColor());
-	zone.setOpacity(request.getOpacity());
+	zone.setFillOpacity(request.getFillOpacity());
 	zone.setBounds(Location.copy(request.getBounds()));
 
 	return zone;
@@ -961,11 +962,14 @@ public class DeviceManagementPersistence extends Persistence {
 	if (request.getBorderColor() != null) {
 	    target.setBorderColor(request.getBorderColor());
 	}
+	if (request.getBorderOpacity() != null) {
+	    target.setBorderOpacity(request.getBorderOpacity());
+	}
 	if (request.getFillColor() != null) {
 	    target.setFillColor(request.getFillColor());
 	}
-	if (request.getOpacity() != null) {
-	    target.setOpacity(request.getOpacity());
+	if (request.getFillOpacity() != null) {
+	    target.setFillOpacity(request.getFillOpacity());
 	}
 	if (request.getBounds() != null) {
 	    target.setBounds(Location.copy(request.getBounds()));

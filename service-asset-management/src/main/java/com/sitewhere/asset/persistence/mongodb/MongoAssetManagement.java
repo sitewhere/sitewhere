@@ -14,7 +14,6 @@ import org.bson.Document;
 import com.mongodb.MongoClientException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.IndexOptions;
-import com.mongodb.client.model.Indexes;
 import com.sitewhere.asset.persistence.AssetManagementPersistence;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.mongodb.IMongoConverterLookup;
@@ -58,10 +57,10 @@ public class MongoAssetManagement extends MongoTenantComponent<AssetManagementMo
      */
     @Override
     public void ensureIndexes() throws SiteWhereException {
-	getMongoClient().getAssetTypesCollection().createIndex(Indexes.ascending(MongoPersistentEntity.PROP_TOKEN),
-		new IndexOptions().unique(true));
-	getMongoClient().getAssetsCollection().createIndex(Indexes.ascending(MongoPersistentEntity.PROP_TOKEN),
-		new IndexOptions().unique(true));
+	getMongoClient().getAssetTypesCollection().createIndex(new Document(MongoPersistentEntity.PROP_TOKEN, 1),
+		new IndexOptions().unique(true).background(true));
+	getMongoClient().getAssetsCollection().createIndex(new Document(MongoPersistentEntity.PROP_TOKEN, 1),
+		new IndexOptions().unique(true).background(true));
     }
 
     /*

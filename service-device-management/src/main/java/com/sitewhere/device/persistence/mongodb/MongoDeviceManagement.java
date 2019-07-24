@@ -129,46 +129,48 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
     public void ensureIndexes() throws SiteWhereException {
 	// Area indexes.
 	getMongoClient().getAreasCollection().createIndex(new Document(MongoPersistentEntity.PROP_TOKEN, 1),
-		new IndexOptions().unique(true));
+		new IndexOptions().unique(true).background(true));
 
 	// Device type indexes.
 	getMongoClient().getDeviceTypesCollection().createIndex(new Document(MongoPersistentEntity.PROP_TOKEN, 1),
-		new IndexOptions().unique(true));
+		new IndexOptions().unique(true).background(true));
 
 	// Device command indexes.
 	getMongoClient().getDeviceCommandsCollection().createIndex(
 		new Document(MongoDeviceStatus.PROP_DEVICE_TYPE_ID, 1).append(MongoPersistentEntity.PROP_TOKEN, 1),
-		new IndexOptions().unique(true));
+		new IndexOptions().unique(true).background(true));
 
 	// Device status indexes.
 	getMongoClient().getDeviceStatusesCollection().createIndex(
 		new Document(MongoDeviceStatus.PROP_DEVICE_TYPE_ID, 1).append(MongoPersistentEntity.PROP_TOKEN, 1),
-		new IndexOptions().unique(true));
+		new IndexOptions().unique(true).background(true));
 
 	// Devices.
 	getMongoClient().getDevicesCollection().createIndex(new Document(MongoPersistentEntity.PROP_TOKEN, 1),
-		new IndexOptions().unique(true));
+		new IndexOptions().unique(true).background(true));
 
 	// Device assignments.
 	getMongoClient().getDeviceAssignmentsCollection().createIndex(new Document(MongoPersistentEntity.PROP_TOKEN, 1),
-		new IndexOptions().unique(true));
+		new IndexOptions().unique(true).background(true));
 	// Device assignment search.
-	getMongoClient().getDeviceAssignmentsCollection()
-		.createIndex(new Document(MongoDeviceAssignment.PROP_CUSTOMER_ID, 1)
-			.append(MongoDeviceAssignment.PROP_AREA_ID, 1).append(MongoDeviceAssignment.PROP_ASSET_ID, 1)
-			.append(MongoDeviceAssignment.PROP_STATUS, 1));
+	getMongoClient().getDeviceAssignmentsCollection().createIndex(
+		new Document(MongoDeviceAssignment.PROP_CUSTOMER_ID, 1).append(MongoDeviceAssignment.PROP_AREA_ID, 1)
+			.append(MongoDeviceAssignment.PROP_ASSET_ID, 1).append(MongoDeviceAssignment.PROP_STATUS, 1),
+		new IndexOptions().background(true));
 
 	// Device group indexes.
 	getMongoClient().getDeviceGroupsCollection().createIndex(new Document(MongoPersistentEntity.PROP_TOKEN, 1),
-		new IndexOptions().unique(true));
+		new IndexOptions().unique(true).background(true));
 	// Device group search by role.
-	getMongoClient().getDeviceGroupsCollection().createIndex(new Document(MongoDeviceGroup.PROP_ROLES, 1));
+	getMongoClient().getDeviceGroupsCollection().createIndex(new Document(MongoDeviceGroup.PROP_ROLES, 1),
+		new IndexOptions().background(true));
 
 	// Device group element indexes.
 	getMongoClient().getGroupElementsCollection().createIndex(new Document(MongoDeviceGroupElement.PROP_GROUP_ID, 1)
-		.append(MongoDeviceGroupElement.PROP_DEVICE_ID, 1), new IndexOptions().unique(true));
+		.append(MongoDeviceGroupElement.PROP_DEVICE_ID, 1), new IndexOptions().unique(true).background(true));
 	getMongoClient().getGroupElementsCollection().createIndex(
-		new Document(MongoDeviceGroupElement.PROP_GROUP_ID, 1).append(MongoDeviceGroupElement.PROP_ROLES, 1));
+		new Document(MongoDeviceGroupElement.PROP_GROUP_ID, 1).append(MongoDeviceGroupElement.PROP_ROLES, 1),
+		new IndexOptions().background(true));
     }
 
     /*

@@ -58,9 +58,9 @@ public class MongoScheduleManagement extends MongoTenantComponent<ScheduleManage
     @Override
     public void ensureIndexes() throws SiteWhereException {
 	getMongoClient().getSchedulesCollection().createIndex(new Document(MongoSchedule.PROP_TOKEN, 1),
-		new IndexOptions().unique(true));
+		new IndexOptions().unique(true).background(true));
 	getMongoClient().getScheduledJobsCollection().createIndex(new Document(MongoScheduledJob.PROP_TOKEN, 1),
-		new IndexOptions().unique(true));
+		new IndexOptions().unique(true).background(true));
     }
 
     /*

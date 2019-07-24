@@ -127,16 +127,23 @@ public class MongoDeviceEventManagement extends MongoTenantComponent<DeviceEvent
     @Override
     public void ensureIndexes() throws SiteWhereException {
 	getMongoClient().getEventsCollection().createIndex(new BasicDBObject(MongoDeviceEvent.PROP_ALTERNATE_ID, 1),
-		new IndexOptions().unique(true).sparse(true));
+		new IndexOptions().unique(true).sparse(true).background(true));
 	getMongoClient().getEventsCollection()
 		.createIndex(new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_ID, 1)
-			.append(MongoDeviceEvent.PROP_EVENT_TYPE, 1).append(MongoDeviceEvent.PROP_EVENT_DATE, -1));
-	getMongoClient().getEventsCollection().createIndex(new BasicDBObject(MongoDeviceEvent.PROP_CUSTOMER_ID, 1)
-		.append(MongoDeviceEvent.PROP_EVENT_TYPE, 1).append(MongoDeviceEvent.PROP_EVENT_DATE, -1));
-	getMongoClient().getEventsCollection().createIndex(new BasicDBObject(MongoDeviceEvent.PROP_AREA_ID, 1)
-		.append(MongoDeviceEvent.PROP_EVENT_TYPE, 1).append(MongoDeviceEvent.PROP_EVENT_DATE, -1));
-	getMongoClient().getEventsCollection().createIndex(new BasicDBObject(MongoDeviceEvent.PROP_ASSET_ID, 1)
-		.append(MongoDeviceEvent.PROP_EVENT_TYPE, 1).append(MongoDeviceEvent.PROP_EVENT_DATE, -1));
+			.append(MongoDeviceEvent.PROP_EVENT_TYPE, 1).append(MongoDeviceEvent.PROP_EVENT_DATE, -1),
+			new IndexOptions().background(true));
+	getMongoClient().getEventsCollection()
+		.createIndex(new BasicDBObject(MongoDeviceEvent.PROP_CUSTOMER_ID, 1)
+			.append(MongoDeviceEvent.PROP_EVENT_TYPE, 1).append(MongoDeviceEvent.PROP_EVENT_DATE, -1),
+			new IndexOptions().background(true));
+	getMongoClient().getEventsCollection()
+		.createIndex(new BasicDBObject(MongoDeviceEvent.PROP_AREA_ID, 1)
+			.append(MongoDeviceEvent.PROP_EVENT_TYPE, 1).append(MongoDeviceEvent.PROP_EVENT_DATE, -1),
+			new IndexOptions().background(true));
+	getMongoClient().getEventsCollection()
+		.createIndex(new BasicDBObject(MongoDeviceEvent.PROP_ASSET_ID, 1)
+			.append(MongoDeviceEvent.PROP_EVENT_TYPE, 1).append(MongoDeviceEvent.PROP_EVENT_DATE, -1),
+			new IndexOptions().background(true));
     }
 
     /*

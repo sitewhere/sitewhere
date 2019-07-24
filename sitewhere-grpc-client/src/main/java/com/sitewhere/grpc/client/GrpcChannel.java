@@ -103,6 +103,8 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
 	    this.channel = builder.build();
 	    this.blockingStub = createBlockingStub();
 	    this.asyncStub = createAsyncStub();
+	    getLogger().info(
+		    String.format("Creating gRPC client channel connected to %s:%d ...", getHostname(), getPort()));
 	} catch (Throwable t) {
 	    throw new SiteWhereException("Unhandled exception starting gRPC channel.", t);
 	}
