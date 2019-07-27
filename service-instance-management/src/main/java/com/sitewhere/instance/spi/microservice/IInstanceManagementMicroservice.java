@@ -7,6 +7,7 @@
  */
 package com.sitewhere.instance.spi.microservice;
 
+import com.sitewhere.instance.spi.instance.grpc.IInstanceManagementGrpcServer;
 import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
 import com.sitewhere.instance.spi.tenant.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.instance.spi.tenant.kafka.ITenantBootstrapModelConsumer;
@@ -16,16 +17,12 @@ import com.sitewhere.instance.spi.user.grpc.IUserManagementGrpcServer;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
 import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
-import com.sitewhere.spi.tenant.ITenantAdministration;
 import com.sitewhere.spi.user.IUserManagement;
 
 /**
  * API for instance management microservice.
- * 
- * @author Derek
  */
-public interface IInstanceManagementMicroservice<T extends IFunctionIdentifier>
-	extends IGlobalMicroservice<T>, ITenantAdministration {
+public interface IInstanceManagementMicroservice<T extends IFunctionIdentifier> extends IGlobalMicroservice<T> {
 
     /**
      * Get instance template manager instance.
@@ -40,6 +37,13 @@ public interface IInstanceManagementMicroservice<T extends IFunctionIdentifier>
      * @return
      */
     public IScriptSynchronizer getInstanceScriptSynchronizer();
+
+    /**
+     * Get instance management gRPC server.
+     * 
+     * @return
+     */
+    public IInstanceManagementGrpcServer getInstanceManagementGrpcServer();
 
     /**
      * Get user management implementation.

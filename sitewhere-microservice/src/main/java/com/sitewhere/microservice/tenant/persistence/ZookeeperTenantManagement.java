@@ -89,6 +89,7 @@ public class ZookeeperTenantManagement extends LifecycleComponent implements ITe
      */
     @Override
     public ITenant getTenant(UUID id) throws SiteWhereException {
+	getLogger().info(String.format("Getting tenant by UUID %s", id.toString()));
 	String tenantPath = getTenantModelPath(id);
 	CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
 	try {
@@ -109,6 +110,7 @@ public class ZookeeperTenantManagement extends LifecycleComponent implements ITe
      */
     @Override
     public ITenant getTenantByToken(String token) throws SiteWhereException {
+	getLogger().info(String.format("Getting tenant by token %s", token));
 	ISearchResults<ITenant> all = listTenants(new TenantSearchCriteria(1, 0));
 	for (ITenant tenant : all.getResults()) {
 	    if (tenant.getToken().equals(token)) {
@@ -125,6 +127,7 @@ public class ZookeeperTenantManagement extends LifecycleComponent implements ITe
      */
     @Override
     public ISearchResults<ITenant> listTenants(ITenantSearchCriteria criteria) throws SiteWhereException {
+	getLogger().info("Listing all tenants.");
 	try {
 	    CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
 	    List<String> children = curator.getChildren()

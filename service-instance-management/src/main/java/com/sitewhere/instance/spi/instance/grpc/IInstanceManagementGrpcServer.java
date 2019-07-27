@@ -5,12 +5,12 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.instance.spi.user.grpc;
+package com.sitewhere.instance.spi.instance.grpc;
 
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
- * Binds to a port and listens for user management GRPC requests.
+ * Binds to a port and listens for instance management GRPC requests.
  */
-public interface IUserManagementGrpcServer extends ILifecycleComponent {
+public interface IInstanceManagementGrpcServer extends ILifecycleComponent {
 }

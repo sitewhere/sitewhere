@@ -318,8 +318,6 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
     public IUser getUserByUsername(String username) throws SiteWhereException {
 	try {
 	    UserTO match = getUserService().read(username);
-	    getLogger().info(String.format("User data returned in getUserByUsername()\n\n%s",
-		    MarshalUtils.marshalJsonAsPrettyString(match)));
 	    return convertUser(match);
 	} catch (Throwable t) {
 	    throw new SiteWhereException("Unable to get user by username.", t);

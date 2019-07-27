@@ -138,7 +138,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	    try {
 		SecurityContextHolder.getContext()
 			.setAuthentication(getMicroservice().getSystemUser().getAuthentication());
-		ITenant tenant = getMicroservice().getTenantManagementApiChannel().getTenantByToken(tenantToken);
+		ITenant tenant = getMicroservice().getCachedTenantManagement().getTenantByToken(tenantToken);
 		if ((tenant == null) || (!tenant.getAuthenticationToken().equals(tenantAuth))) {
 		    throw new SiteWhereException("Auth token passed for tenant id is not correct.");
 		}

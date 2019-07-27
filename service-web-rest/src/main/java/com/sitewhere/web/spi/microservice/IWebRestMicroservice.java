@@ -12,16 +12,15 @@ import com.sitewhere.grpc.client.spi.client.IBatchManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceStateApiChannel;
+import com.sitewhere.grpc.client.spi.client.IInstanceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiChannel;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
 import com.sitewhere.spi.microservice.state.ITopologyStateAggregator;
-import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.user.IUserManagement;
 
 /**
@@ -30,6 +29,13 @@ import com.sitewhere.spi.user.IUserManagement;
  * @author Derek
  */
 public interface IWebRestMicroservice<T extends IFunctionIdentifier> extends IGlobalMicroservice<T> {
+
+    /**
+     * Instance API access via GRPC channel.
+     * 
+     * @return
+     */
+    public IInstanceManagementApiChannel<?> getInstanceManagementApiChannel();
 
     /**
      * User API access via GRPC channel.
@@ -44,20 +50,6 @@ public interface IWebRestMicroservice<T extends IFunctionIdentifier> extends IGl
      * @return
      */
     public IUserManagement getCachedUserManagement();
-
-    /**
-     * Tenant API access via GRPC channel.
-     * 
-     * @return
-     */
-    public ITenantManagementApiChannel<?> getTenantManagementApiChannel();
-
-    /**
-     * Get wrapper for caching data from the tenant management API channel.
-     * 
-     * @return
-     */
-    public ITenantManagement getCachedTenantManagement();
 
     /**
      * Device management API access via GRPC channel.
