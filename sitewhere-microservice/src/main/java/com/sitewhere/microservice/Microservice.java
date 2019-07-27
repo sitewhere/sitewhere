@@ -28,6 +28,7 @@ import com.evanlennick.retry4j.config.RetryConfigBuilder;
 import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.listener.RetryListener;
 import com.sitewhere.Version;
+import com.sitewhere.grpc.client.tenant.CachedTenantManagement;
 import com.sitewhere.microservice.kafka.tenant.TenantManagementKafkaTriggers;
 import com.sitewhere.microservice.kafka.tenant.TenantModelProducer;
 import com.sitewhere.microservice.management.MicroserviceManagementGrpcServer;
@@ -118,6 +119,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     /** Tenant management implementation */
     private ITenantManagement tenantManagement;
+
+    /** Cached version of tenant management API */
+    private ITenantManagement cachedTenantManagement;
 
     /** Version information */
     private IVersion version = new Version();
@@ -218,10 +222,10 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	initialize.addStartStep(this, getZookeeperManager(), true);
 
 	// Initialize tenant management API.
-	initialize.addInitializeStep(this, getTenantManagement(), true);
+	initialize.addInitializeStep(this, getCachedTenantManagement(), true);
 
 	// Start HTTP tenant management API.
-	initialize.addStartStep(this, getTenantManagement(), true);
+	initialize.addStartStep(this, getCachedTenantManagement(), true);
 
 	// Initialize HTTP metrics server.
 	initialize.addInitializeStep(this, getMetricsServer(), true);
@@ -272,6 +276,8 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
      */
     protected void initializeManagementApis() {
 	this.tenantManagement = new TenantManagementKafkaTriggers(new ZookeeperTenantManagement());
+	this.cachedTenantManagement = new CachedTenantManagement(this.tenantManagement,
+		new CachedTenantManagement.CacheSettings());
     }
 
     /**
@@ -320,7 +326,7 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	stop.addStopStep(this, getMetricsServer());
 
 	// Tenant management API.
-	stop.addStopStep(this, getTenantManagement());
+	stop.addStopStep(this, getCachedTenantManagement());
 
 	// Terminate Zk manager.
 	stop.addStopStep(this, getZookeeperManager());
@@ -608,6 +614,18 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     public void setTenantManagement(ITenantManagement tenantManagement) {
 	this.tenantManagement = tenantManagement;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getCachedTenantManagement()
+     */
+    @Override
+    public ITenantManagement getCachedTenantManagement() {
+	return cachedTenantManagement;
+    }
+
+    public void setCachedTenantManagement(ITenantManagement cachedTenantManagement) {
+	this.cachedTenantManagement = cachedTenantManagement;
     }
 
     /*

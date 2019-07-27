@@ -719,7 +719,7 @@ public class Instance extends RestControllerBase {
     }
 
     public ITenantManagement getTenantManagement() {
-	return getMicroservice().getTenantManagementApiChannel();
+	return getMicroservice().getCachedTenantManagement();
     }
 
     public IScriptManagement getScriptManagement() {

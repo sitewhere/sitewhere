@@ -38,7 +38,7 @@ public class TenantUtils {
      */
     public static Tenant copy(ITenant source) throws SiteWhereException {
 	Tenant tenant = new Tenant();
-	Tenant.copy(source, tenant);
+	TenantUtils.copy(source, tenant);
 	return tenant;
     }
 }

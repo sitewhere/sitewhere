@@ -14,6 +14,7 @@ import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.devicestate.DeviceStateApiChannel;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
+import com.sitewhere.grpc.client.instance.InstanceManagementApiChannel;
 import com.sitewhere.grpc.client.label.LabelGenerationApiChannel;
 import com.sitewhere.grpc.client.schedule.ScheduleManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
@@ -21,12 +22,10 @@ import com.sitewhere.grpc.client.spi.client.IBatchManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceStateApiChannel;
+import com.sitewhere.grpc.client.spi.client.IInstanceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiChannel;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
-import com.sitewhere.grpc.client.tenant.CachedTenantManagementApiChannel;
-import com.sitewhere.grpc.client.tenant.TenantManagementApiChannel;
 import com.sitewhere.grpc.client.user.CachedUserManagementApiChannel;
 import com.sitewhere.grpc.client.user.UserManagementApiChannel;
 import com.sitewhere.microservice.GlobalMicroservice;
@@ -40,7 +39,6 @@ import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.state.ITopologyStateAggregator;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.web.configuration.WebRestModelProvider;
 import com.sitewhere.web.spi.microservice.IWebRestMicroservice;
@@ -59,17 +57,14 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
     /** Web/REST configuration file name */
     private static final String CONFIGURATION_PATH = MicroserviceIdentifier.WebRest.getPath() + ".xml";
 
+    /** Instance management API channel */
+    private IInstanceManagementApiChannel<?> instanceManagementApiChannel;
+
     /** User management API channel */
     private IUserManagementApiChannel<?> userManagementApiChannel;
 
     /** Cached user management implementation */
     private IUserManagement cachedUserManagement;
-
-    /** Tenant management API channel */
-    private ITenantManagementApiChannel<?> tenantManagementApiChannel;
-
-    /** Cached tenant management implementation */
-    private ITenantManagement cachedTenantManagement;
 
     /** Device management API channel */
     private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
@@ -162,11 +157,11 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 	// Initialize topology state aggregator.
 	init.addInitializeStep(this, getTopologyStateAggregator(), true);
 
+	// Initialize instance management API channel + cache.
+	init.addInitializeStep(this, getInstanceManagementApiChannel(), true);
+
 	// Initialize user management API channel + cache.
 	init.addInitializeStep(this, getCachedUserManagement(), true);
-
-	// Initialize tenant management API channel + cache.
-	init.addInitializeStep(this, getCachedTenantManagement(), true);
 
 	// Initialize device management API channel + cache.
 	init.addInitializeStep(this, getCachedDeviceManagement(), true);
@@ -199,15 +194,13 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
      * @throws SiteWhereException
      */
     protected void createGrpcComponents() throws SiteWhereException {
+	// Instance management.
+	this.instanceManagementApiChannel = new InstanceManagementApiChannel(getInstanceSettings());
+
 	// User management.
 	this.userManagementApiChannel = new UserManagementApiChannel(getInstanceSettings());
 	this.cachedUserManagement = new CachedUserManagementApiChannel(userManagementApiChannel,
 		new CachedUserManagementApiChannel.CacheSettings());
-
-	// Tenant management.
-	this.tenantManagementApiChannel = new TenantManagementApiChannel(getInstanceSettings());
-	this.cachedTenantManagement = new CachedTenantManagementApiChannel(tenantManagementApiChannel,
-		new CachedTenantManagementApiChannel.CacheSettings());
 
 	// Device management.
 	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
@@ -250,11 +243,11 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 	// Start topology state aggregator.
 	start.addStartStep(this, getTopologyStateAggregator(), true);
 
+	// Start instance mangement API channel.
+	start.addStartStep(this, getInstanceManagementApiChannel(), true);
+
 	// Start user mangement API channel + cache.
 	start.addStartStep(this, getCachedUserManagement(), true);
-
-	// Start tenant mangement API channel + cache.
-	start.addStartStep(this, getCachedTenantManagement(), true);
 
 	// Start device mangement API channel + cache.
 	start.addStartStep(this, getCachedDeviceManagement(), true);
@@ -292,11 +285,11 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
+	// Stop instance mangement API channel.
+	stop.addStopStep(this, getInstanceManagementApiChannel());
+
 	// Stop user mangement API channel + cache.
 	stop.addStopStep(this, getCachedUserManagement());
-
-	// Stop tenant mangement API channel + cache.
-	stop.addStopStep(this, getCachedTenantManagement());
 
 	// Stop device mangement API channel + cache.
 	stop.addStopStep(this, getCachedDeviceManagement());
@@ -328,6 +321,19 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 
     /*
      * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
+     * getInstanceManagementApiChannel()
+     */
+    @Override
+    public IInstanceManagementApiChannel<?> getInstanceManagementApiChannel() {
+	return instanceManagementApiChannel;
+    }
+
+    public void setInstanceManagementApiChannel(IInstanceManagementApiChannel<?> instanceManagementApiChannel) {
+	this.instanceManagementApiChannel = instanceManagementApiChannel;
+    }
+
+    /*
+     * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
      * getUserManagementApiChannel()
      */
     @Override
@@ -350,32 +356,6 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 
     public void setCachedUserManagement(IUserManagement cachedUserManagement) {
 	this.cachedUserManagement = cachedUserManagement;
-    }
-
-    /*
-     * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
-     * getTenantManagementApiChannel()
-     */
-    @Override
-    public ITenantManagementApiChannel<?> getTenantManagementApiChannel() {
-	return tenantManagementApiChannel;
-    }
-
-    public void setTenantManagementApiChannel(ITenantManagementApiChannel<?> tenantManagementApiChannel) {
-	this.tenantManagementApiChannel = tenantManagementApiChannel;
-    }
-
-    /*
-     * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
-     * getCachedTenantManagement()
-     */
-    @Override
-    public ITenantManagement getCachedTenantManagement() {
-	return cachedTenantManagement;
-    }
-
-    public void setCachedTenantManagement(ITenantManagement cachedTenantManagement) {
-	this.cachedTenantManagement = cachedTenantManagement;
     }
 
     /*

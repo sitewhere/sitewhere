@@ -27,11 +27,11 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.instance.IInstanceManagement;
 import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.tenant.ITenant;
-import com.sitewhere.spi.tenant.ITenantAdministration;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.SiteWhereAuthority;
@@ -176,7 +176,7 @@ public class Tenants extends RestControllerBase {
 	if (checkAuthFor(SiteWhereAuthority.AdminTenants, false)
 		|| checkAuthFor(SiteWhereAuthority.AdminOwnTenant, false)) {
 	}
-	return getTenantAdministration().getTenantTemplates();
+	return getInstanceManagement().getTenantTemplates();
     }
 
     /**
@@ -192,7 +192,7 @@ public class Tenants extends RestControllerBase {
 	if (checkAuthFor(SiteWhereAuthority.AdminTenants, false)
 		|| checkAuthFor(SiteWhereAuthority.AdminOwnTenant, false)) {
 	}
-	return getTenantAdministration().getDatasetTemplates();
+	return getInstanceManagement().getDatasetTemplates();
     }
 
     /**
@@ -230,10 +230,10 @@ public class Tenants extends RestControllerBase {
     }
 
     private ITenantManagement getTenantManagement() {
-	return getMicroservice().getTenantManagementApiChannel();
+	return getMicroservice().getTenantManagement();
     }
 
-    private ITenantAdministration getTenantAdministration() {
-	return getMicroservice().getTenantManagementApiChannel();
+    private IInstanceManagement getInstanceManagement() {
+	return getMicroservice().getInstanceManagementApiChannel();
     }
 }

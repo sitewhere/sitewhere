@@ -9,11 +9,12 @@ package com.sitewhere.grpc.client.spi.client;
 
 import com.sitewhere.grpc.client.GrpcChannel;
 import com.sitewhere.grpc.client.spi.IApiChannel;
-import com.sitewhere.spi.tenant.ITenantManagement;
+import com.sitewhere.spi.instance.IInstanceManagement;
 
 /**
- * Provides an {@link IApiChannel} that supplies the {@link ITenantManagement}
+ * Provides an {@link IApiChannel} that supplies the {@link IInstanceManagement}
  * API.
  */
-public interface ITenantManagementApiChannel<T extends GrpcChannel<?, ?>> extends ITenantManagement, IApiChannel<T> {
+public interface IInstanceManagementApiChannel<T extends GrpcChannel<?, ?>>
+	extends IInstanceManagement, IApiChannel<T> {
 }

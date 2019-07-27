@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.sitewhere.instance.configuration.InstanceManagementModelProvider;
 import com.sitewhere.instance.initializer.GroovyTenantModelInitializer;
 import com.sitewhere.instance.initializer.GroovyUserModelInitializer;
+import com.sitewhere.instance.spi.instance.grpc.IInstanceManagementGrpcServer;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.instance.spi.templates.IInstanceTemplate;
 import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
@@ -31,6 +32,7 @@ import com.sitewhere.instance.tenant.templates.TenantTemplateManager;
 import com.sitewhere.instance.user.persistence.SyncopeUserManagement;
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
+import com.sitewhere.microservice.grpc.instance.InstanceManagementGrpcServer;
 import com.sitewhere.microservice.grpc.tenant.TenantManagementGrpcServer;
 import com.sitewhere.microservice.grpc.user.UserManagementGrpcServer;
 import com.sitewhere.microservice.kafka.tenant.TenantBootstrapModelConsumer;
@@ -41,6 +43,7 @@ import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.instance.IInstanceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
@@ -55,7 +58,7 @@ import com.sitewhere.spi.user.IUserManagement;
  * Microservice that provides instance management functionality.
  */
 public class InstanceManagementMicroservice extends GlobalMicroservice<MicroserviceIdentifier>
-	implements IInstanceManagementMicroservice<MicroserviceIdentifier> {
+	implements IInstanceManagementMicroservice<MicroserviceIdentifier>, IInstanceManagement {
 
     /** Microservice name */
     private static final String NAME = "Instance Management";
@@ -68,6 +71,9 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
     /** Instance script synchronizer */
     private IScriptSynchronizer instanceScriptSynchronizer;
+
+    /** Provides server for instance management GRPC requests */
+    private IInstanceManagementGrpcServer instanceManagementGrpcServer;
 
     /** Responds to user management GRPC requests */
     private IUserManagementGrpcServer userManagementGrpcServer;
@@ -188,6 +194,9 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Initialize tenant dataset template manager.
 	init.addInitializeStep(this, getTenantDatasetTemplateManager(), true);
 
+	// Initialize instance management GRPC server.
+	init.addInitializeStep(this, getInstanceManagementGrpcServer(), true);
+
 	// Initialize tenant management GRPC server.
 	init.addInitializeStep(this, getTenantManagementGrpcServer(), true);
 
@@ -218,8 +227,9 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
      * Create components that interact via GRPC.
      */
     protected void createGrpcComponents() {
+	this.instanceManagementGrpcServer = new InstanceManagementGrpcServer(this, this);
 	this.userManagementGrpcServer = new UserManagementGrpcServer(this, getUserManagement());
-	this.tenantManagementGrpcServer = new TenantManagementGrpcServer(this, getTenantManagement(), this);
+	this.tenantManagementGrpcServer = new TenantManagementGrpcServer(this, getTenantManagement());
     }
 
     /**
@@ -256,7 +266,10 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Start tenant dataset template manager.
 	start.addStartStep(this, getTenantDatasetTemplateManager(), true);
 
-	// Start GRPC server.
+	// Start instance management GRPC server.
+	start.addStartStep(this, getInstanceManagementGrpcServer(), true);
+
+	// Start tenant management GRPC server.
 	start.addStartStep(this, getTenantManagementGrpcServer(), true);
 
 	// Start tenant bootstrap model consumer.
@@ -291,11 +304,14 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Stop tenant bootstrap model consumer.
 	stop.addStopStep(this, getTenantBootstrapModelConsumer());
 
-	// Stop GRPC manager.
-	stop.addStopStep(this, getTenantManagementGrpcServer());
-
 	// Stop user management GRPC server.
 	stop.addStopStep(this, getUserManagementGrpcServer());
+
+	// Stop tenant management GRPC manager.
+	stop.addStopStep(this, getTenantManagementGrpcServer());
+
+	// Stop instance management GRPC manager.
+	stop.addStopStep(this, getInstanceManagementGrpcServer());
 
 	// Stop tenant dataset template manager.
 	stop.addStopStep(this, getTenantDatasetTemplateManager());
@@ -573,7 +589,7 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     }
 
     /*
-     * @see com.sitewhere.spi.tenant.ITenantAdministration#getTenantTemplates()
+     * @see com.sitewhere.spi.instance.IInstanceManagement#getTenantTemplates()
      */
     @Override
     public List<ITenantTemplate> getTenantTemplates() throws SiteWhereException {
@@ -581,7 +597,7 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     }
 
     /*
-     * @see com.sitewhere.spi.tenant.ITenantAdministration#getDatasetTemplates()
+     * @see com.sitewhere.spi.instance.IInstanceManagement#getDatasetTemplates()
      */
     @Override
     public List<IDatasetTemplate> getDatasetTemplates() throws SiteWhereException {
@@ -614,6 +630,19 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
     public void setInstanceScriptSynchronizer(IScriptSynchronizer instanceScriptSynchronizer) {
 	this.instanceScriptSynchronizer = instanceScriptSynchronizer;
+    }
+
+    /*
+     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * getInstanceManagementGrpcServer()
+     */
+    @Override
+    public IInstanceManagementGrpcServer getInstanceManagementGrpcServer() {
+	return instanceManagementGrpcServer;
+    }
+
+    public void setInstanceManagementGrpcServer(IInstanceManagementGrpcServer instanceManagementGrpcServer) {
+	this.instanceManagementGrpcServer = instanceManagementGrpcServer;
     }
 
     /*
