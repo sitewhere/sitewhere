@@ -13,11 +13,7 @@ import com.sitewhere.microservice.configuration.ConfigurableMicroservice;
 import com.sitewhere.microservice.configuration.TenantPathInfo;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.error.ErrorCode;
-import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
-import com.sitewhere.spi.microservice.configuration.ITenantPathInfo;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineManager;
@@ -127,16 +123,6 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * getTenantEngineForPathInfo(com.sitewhere.spi.microservice.configuration.
-     * ITenantPathInfo)
-     */
-    @Override
-    public IMicroserviceTenantEngine getTenantEngineForPathInfo(ITenantPathInfo pathInfo) throws SiteWhereException {
-	return getTenantEngineManager().getTenantEngineForPathInfo(pathInfo);
-    }
-
-    /*
      * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
      * getConfigurationPath()
      */
@@ -156,40 +142,11 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
 	if (isConfigurationCacheReady()) {
 	    try {
 		TenantPathInfo pathInfo = TenantPathInfo.compute(path, this);
-		IMicroserviceTenantEngine engine = getTenantEngineManager().getTenantEngineForPathInfo(pathInfo);
-		if (engine != null) {
-		    engine.onConfigurationAdded(pathInfo.getPath(), data);
-		}
+		getTenantEngineManager().onConfigurationAdded(pathInfo, data);
 	    } catch (SiteWhereException e) {
 		getLogger().error("Error processing configuration addition.", e);
 	    }
 	}
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * getTenantConfiguration(java.util.UUID)
-     */
-    @Override
-    public byte[] getTenantConfiguration(UUID tenantId) throws SiteWhereException {
-	T engine = getTenantEngineByTenantId(tenantId);
-	if (engine == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR);
-	}
-	return engine.getModuleConfiguration();
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * updateTenantConfiguration(java.util.UUID, byte[])
-     */
-    @Override
-    public void updateTenantConfiguration(UUID tenantId, byte[] content) throws SiteWhereException {
-	T engine = getTenantEngineByTenantId(tenantId);
-	if (engine == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR);
-	}
-	engine.updateModuleConfiguration(content);
     }
 
     /*
@@ -211,10 +168,7 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
 		// Otherwise, only report updates to tenant-specific paths.
 		else {
 		    TenantPathInfo pathInfo = TenantPathInfo.compute(path, this);
-		    IMicroserviceTenantEngine engine = getTenantEngineForPathInfo(pathInfo);
-		    if (engine != null) {
-			engine.onConfigurationUpdated(pathInfo.getPath(), data);
-		    }
+		    getTenantEngineManager().onConfigurationUpdated(pathInfo, data);
 		}
 	    } catch (SiteWhereException e) {
 		getLogger().error("Error processing configuration update.", e);
@@ -233,10 +187,7 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
 	if (isConfigurationCacheReady()) {
 	    try {
 		TenantPathInfo pathInfo = TenantPathInfo.compute(path, this);
-		IMicroserviceTenantEngine engine = getTenantEngineForPathInfo(pathInfo);
-		if (engine != null) {
-		    engine.onConfigurationDeleted(pathInfo.getPath());
-		}
+		getTenantEngineManager().onConfigurationDeleted(pathInfo);
 	    } catch (SiteWhereException e) {
 		getLogger().error("Error processing configuration delete.", e);
 	    }

@@ -37,13 +37,48 @@ public interface ITenantEngineManager<T extends IMicroserviceTenantEngine> exten
     public T assureTenantEngineAvailable(UUID tenantId) throws TenantEngineNotAvailableException;
 
     /**
-     * Get tenant engine base on path information.
+     * Get configuration for the given tenant.
      * 
-     * @param pathInfo
+     * @param tenantId
      * @return
      * @throws SiteWhereException
      */
-    public IMicroserviceTenantEngine getTenantEngineForPathInfo(ITenantPathInfo pathInfo) throws SiteWhereException;
+    public byte[] getTenantConfiguration(UUID tenantId) throws SiteWhereException;
+
+    /**
+     * Update configuration for the given tenant.
+     * 
+     * @param tenantId
+     * @param content
+     * @throws SiteWhereException
+     */
+    public void updateTenantConfiguration(UUID tenantId, byte[] content) throws SiteWhereException;
+
+    /**
+     * Handle configuration added.
+     * 
+     * @param pathInfo
+     * @param data
+     * @throws SiteWhereException
+     */
+    public void onConfigurationAdded(ITenantPathInfo pathInfo, byte[] data) throws SiteWhereException;
+
+    /**
+     * Handle configuration updated.
+     * 
+     * @param pathInfo
+     * @param data
+     * @throws SiteWhereException
+     */
+    public void onConfigurationUpdated(ITenantPathInfo pathInfo, byte[] data) throws SiteWhereException;
+
+    /**
+     * Handle configuration deleted.
+     * 
+     * @param pathInfo
+     * @throws SiteWhereException
+     */
+    public void onConfigurationDeleted(ITenantPathInfo pathInfo) throws SiteWhereException;
 
     /**
      * Shuts down and restarts the given tenant engine.
