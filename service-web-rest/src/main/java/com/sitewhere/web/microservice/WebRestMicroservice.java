@@ -157,7 +157,7 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 	// Initialize topology state aggregator.
 	init.addInitializeStep(this, getTopologyStateAggregator(), true);
 
-	// Initialize instance management API channel + cache.
+	// Initialize instance management API channel.
 	init.addInitializeStep(this, getInstanceManagementApiChannel(), true);
 
 	// Initialize user management API channel + cache.

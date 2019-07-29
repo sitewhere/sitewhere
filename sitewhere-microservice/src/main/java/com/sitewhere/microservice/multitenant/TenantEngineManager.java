@@ -33,6 +33,9 @@ import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.ServiceNotAvailableException;
@@ -238,11 +241,38 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.ITenantEngineManager#
-     * getTenantEngineForPathInfo(com.sitewhere.spi.microservice.configuration.
-     * ITenantPathInfo)
+     * getTenantConfiguration(java.util.UUID)
      */
     @Override
-    public IMicroserviceTenantEngine getTenantEngineForPathInfo(ITenantPathInfo pathInfo) throws SiteWhereException {
+    public byte[] getTenantConfiguration(UUID tenantId) throws SiteWhereException {
+	T engine = getTenantEngineByTenantId(tenantId);
+	if (engine == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR);
+	}
+	return engine.getModuleConfiguration();
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.ITenantEngineManager#
+     * updateTenantConfiguration(java.util.UUID, byte[])
+     */
+    @Override
+    public void updateTenantConfiguration(UUID tenantId, byte[] content) throws SiteWhereException {
+	T engine = getTenantEngineByTenantId(tenantId);
+	if (engine == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR);
+	}
+	engine.updateModuleConfiguration(content);
+    }
+
+    /**
+     * Get tenant engine based on configuration path information.
+     * 
+     * @param pathInfo
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IMicroserviceTenantEngine getTenantEngineForPathInfo(ITenantPathInfo pathInfo) throws SiteWhereException {
 	if (pathInfo != null) {
 	    IMicroserviceTenantEngine engine = getTenantEngineByTenantId(pathInfo.getTenantId());
 	    if (engine != null) {
@@ -252,6 +282,57 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 	    }
 	}
 	return null;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.ITenantEngineManager#
+     * onConfigurationAdded(com.sitewhere.spi.microservice.configuration.
+     * ITenantPathInfo, byte[])
+     */
+    @Override
+    public void onConfigurationAdded(ITenantPathInfo pathInfo, byte[] data) throws SiteWhereException {
+	try {
+	    IMicroserviceTenantEngine engine = getTenantEngineForPathInfo(pathInfo);
+	    if (engine != null) {
+		engine.onConfigurationAdded(pathInfo.getPath(), data);
+	    }
+	} catch (SiteWhereException e) {
+	    getLogger().error("Error processing configuration addition.", e);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.ITenantEngineManager#
+     * onConfigurationUpdated(com.sitewhere.spi.microservice.configuration.
+     * ITenantPathInfo, byte[])
+     */
+    @Override
+    public void onConfigurationUpdated(ITenantPathInfo pathInfo, byte[] data) throws SiteWhereException {
+	try {
+	    IMicroserviceTenantEngine engine = getTenantEngineForPathInfo(pathInfo);
+	    if (engine != null) {
+		engine.onConfigurationUpdated(pathInfo.getPath(), data);
+	    }
+	} catch (SiteWhereException e) {
+	    getLogger().error("Error processing configuration update.", e);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.ITenantEngineManager#
+     * onConfigurationDeleted(com.sitewhere.spi.microservice.configuration.
+     * ITenantPathInfo)
+     */
+    @Override
+    public void onConfigurationDeleted(ITenantPathInfo pathInfo) throws SiteWhereException {
+	try {
+	    IMicroserviceTenantEngine engine = getTenantEngineForPathInfo(pathInfo);
+	    if (engine != null) {
+		engine.onConfigurationDeleted(pathInfo.getPath());
+	    }
+	} catch (SiteWhereException e) {
+	    getLogger().error("Error processing configuration update.", e);
+	}
     }
 
     /*
