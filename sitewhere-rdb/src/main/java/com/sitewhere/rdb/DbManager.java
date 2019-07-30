@@ -142,11 +142,6 @@ public class DbManager {
         return bean;
     }
 
-    public DeviceEventRepository getDeviceEventRepository() {
-        DeviceEventRepository bean = ApplicationContextUtils.getBean(DeviceEventRepository.class);
-        return bean;
-    }
-
     public MapMultiTenantConnectionProviderImpl getMapMultiTenantConnectionProvider() {
         MapMultiTenantConnectionProviderImpl bean = ApplicationContextUtils.getBean(MapMultiTenantConnectionProviderImpl.class);
         return bean;
