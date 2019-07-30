@@ -7,17 +7,10 @@
  */
 package com.sitewhere.device.marshaling;
 
-import org.apache.commons.lang.StringUtils;
-
-import com.sitewhere.rest.model.batch.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceCommandInvocation;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.area.IArea;
-import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.ICommandParameter;
-import com.sitewhere.spi.device.group.IDeviceGroup;
 
 /**
  * Helper class that creates an HTML version of a command for display in the
@@ -62,48 +55,6 @@ public class CommandHtmlHelper {
 	    }
 	}
 	html += ")";
-	return html;
-    }
-
-    /**
-     * Get HTML that indicates critieria used to determine which devices are
-     * included in a batch command invocation request.
-     * 
-     * @param criteria
-     * @param relativePath
-     * @return
-     * @throws SiteWhereException
-     */
-    public static String getHtml(BatchCommandForCriteriaRequest criteria, IDeviceManagement devices,
-	    String relativePath) throws SiteWhereException {
-	if (StringUtils.isEmpty(criteria.getDeviceTypeToken())) {
-	    throw new SiteWhereException("Device type token must be populated to generate HTML.");
-	}
-	IDeviceType deviceType = devices.getDeviceTypeByToken(criteria.getDeviceTypeToken());
-	if (deviceType == null) {
-	    throw new SiteWhereException("Invalid device type reference: " + criteria.getDeviceTypeToken());
-	}
-	String html = "all devices";
-	if (!StringUtils.isEmpty(criteria.getAreaToken())) {
-	    IArea area = devices.getAreaByToken(criteria.getAreaToken());
-	    if (area == null) {
-		throw new SiteWhereException("Invalid area reference: " + criteria.getAreaToken());
-	    }
-	    html += " belonging to area <a href=\"" + relativePath + "/areas/" + area.getToken() + ".html\">"
-		    + area.getName() + "</a>";
-	}
-	html += " with device type <a href=\"" + relativePath + "/devicetypes/" + deviceType.getToken() + ".html\">"
-		+ deviceType.getName() + "</a>";
-	if (!StringUtils.isEmpty(criteria.getGroupToken())) {
-	    IDeviceGroup group = devices.getDeviceGroupByToken(criteria.getGroupToken());
-	    if (group == null) {
-		throw new SiteWhereException("Invalid group reference: " + criteria.getGroupToken());
-	    }
-	    html += " and belonging to group <a href=\"" + relativePath + "/groups/" + group.getToken() + ".html\">"
-		    + group.getName() + "</a>";
-	} else if (!StringUtils.isEmpty(criteria.getGroupsWithRole())) {
-	    html += " and belonging to groups with role <strong>" + criteria.getGroupsWithRole() + "</strong>";
-	}
 	return html;
     }
 }
