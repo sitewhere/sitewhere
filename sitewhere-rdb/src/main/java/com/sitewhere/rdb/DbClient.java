@@ -1,10 +1,8 @@
 package com.sitewhere.rdb;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sitewhere.configuration.instance.rdb.RDBConfiguration;
-import com.sitewhere.rdb.multitenancy.MapMultiTenantConnectionProviderImpl;
-import com.sitewhere.rdb.multitenancy.TenantContext;
+import com.sitewhere.rdb.multitenancy.DvdRentalTenantContext;
+import com.sitewhere.rdb.multitenancy.MultiTenantDvdRentalProperties;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.server.lifecycle.parameters.StringComponentParameter;
 import com.sitewhere.spi.SiteWhereException;
@@ -67,13 +65,10 @@ public abstract class DbClient extends TenantEngineLifecycleComponent implements
         getLogger().info("Relation database client will connect to " + hostname.getValue() + ":"
                 + configuration.getUrl() + " for database '" + databaseName.getValue() + "'");
 
+        String tenantId = this.getTenantEngine().getTenant().getId().toString();
+        MultiTenantDvdRentalProperties.ADD_NEW_DATASOURCE(configuration, tenantId);
+        DvdRentalTenantContext.setTenantId(tenantId);
         dbManager.start();
-
-        // Set current tenant
-        TenantContext.setCurrentTenant(this.getTenantEngine().getTenant().getName());
-
-        MapMultiTenantConnectionProviderImpl provider = dbManager.getMapMultiTenantConnectionProvider();
-        provider.registerTenantConnectionProvider(TenantContext.getCurrentTenant(), configuration);
     }
 
     @Override

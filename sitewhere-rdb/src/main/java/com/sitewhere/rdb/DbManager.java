@@ -1,10 +1,14 @@
 package com.sitewhere.rdb;
 
-import com.sitewhere.rdb.multitenancy.MapMultiTenantConnectionProviderImpl;
+import com.sitewhere.configuration.instance.rdb.RDBConfiguration;
+import com.sitewhere.rdb.entities.Device;
+import com.sitewhere.rdb.multitenancy.DvdRentalTenantContext;
+import com.sitewhere.rdb.multitenancy.MultiTenantDvdRentalProperties;
 import com.sitewhere.rdb.repositories.*;
-import com.sitewhere.rdb.repositories.event.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+
+import java.util.Date;
 
 /**
  * DbManager is a database client for data management
@@ -112,38 +116,40 @@ public class DbManager {
         return bean;
     }
 
-    public DeviceAlertRepository getDeviceAlertRepository() {
-        DeviceAlertRepository bean = ApplicationContextUtils.getBean(DeviceAlertRepository.class);
-        return bean;
-    }
+    public static void main(String[] args) {
+        // Define two datasources
+        RDBConfiguration config1 = new RDBConfiguration();
+        config1.setUrl("jdbc:postgresql://114.116.1.182:5432/tenancy_1");
+        config1.setUsername("MultiTenancy");
+        config1.setPassword("123456");
+        config1.setDriver("org.postgresql.Driver");
 
-    public DeviceCommandInvocationRepository getDeviceCommandInvocationRepository() {
-        DeviceCommandInvocationRepository bean = ApplicationContextUtils.getBean(DeviceCommandInvocationRepository.class);
-        return bean;
-    }
+        RDBConfiguration config2 = new RDBConfiguration();
+        config2.setUrl("jdbc:postgresql://114.116.1.182:5432/tenancy_2");
+        config2.setUsername("MultiTenancy");
+        config2.setPassword("123456");
+        config2.setDriver("org.postgresql.Driver");
 
-    public DeviceCommandResponseRepository getDeviceCommandResponseRepository() {
-        DeviceCommandResponseRepository bean = ApplicationContextUtils.getBean(DeviceCommandResponseRepository.class);
-        return bean;
-    }
+        // Register these two datasources to rdb
+        MultiTenantDvdRentalProperties.ADD_NEW_DATASOURCE(config1, "tenancy_1");
+        MultiTenantDvdRentalProperties.ADD_NEW_DATASOURCE(config2, "tenancy_2");
 
-    public DeviceLocationRepository getDeviceLocationRepository() {
-        DeviceLocationRepository bean = ApplicationContextUtils.getBean(DeviceLocationRepository.class);
-        return bean;
-    }
+        // Set current tenantId
+        DvdRentalTenantContext.setTenantId("tenancy_2");
+        DbManager manager = new DbManager();
+        manager.start();
+        // Operate database
+        Device devcie = new Device();
+        devcie.setComments("iphone6");
+        devcie.setCreatedDate(new Date());
+        devcie.setStatus("hello6");
+        manager.getDeviceRepository().save(devcie);
 
-    public DeviceMeasurementRepository getDeviceMeasurementRepository() {
-        DeviceMeasurementRepository bean = ApplicationContextUtils.getBean(DeviceMeasurementRepository.class);
-        return bean;
-    }
-
-    public DeviceStateChangeRepository getDeviceStateChangeRepository() {
-        DeviceStateChangeRepository bean = ApplicationContextUtils.getBean(DeviceStateChangeRepository.class);
-        return bean;
-    }
-
-    public MapMultiTenantConnectionProviderImpl getMapMultiTenantConnectionProvider() {
-        MapMultiTenantConnectionProviderImpl bean = ApplicationContextUtils.getBean(MapMultiTenantConnectionProviderImpl.class);
-        return bean;
+//        DvdRentalTenantContext.setTenantId("tenancy_2");
+//        Device devcie2 = new Device();
+//        devcie2.setComments("iphone8");
+//        devcie2.setCreatedDate(new Date());
+//        devcie2.setStatus("hello8");
+//        manager.getDeviceRepository().deleteAll();
     }
 }
