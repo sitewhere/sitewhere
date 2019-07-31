@@ -23,6 +23,7 @@ import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.grpc.EventManagementImpl;
 import com.sitewhere.microservice.kafka.KafkaEventPersistenceTriggers;
+import com.sitewhere.microservice.kafka.OutboundCommandInvocationsProducer;
 import com.sitewhere.microservice.kafka.OutboundEventsProducer;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
@@ -79,6 +80,9 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 	// Load event management implementation.
 	initializeManagementImplementations();
 
+	// Initialize Kafka components.
+	initializeKafkaComponents();
+
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
 
@@ -114,7 +118,16 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 
 	this.eventManagementImpl = new EventManagementImpl((IEventManagementMicroservice) getMicroservice(),
 		getEventManagement());
+    }
+
+    /**
+     * Initialize Kafka components.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void initializeKafkaComponents() throws SiteWhereException {
 	this.outboundEventsProducer = new OutboundEventsProducer();
+	this.outboundCommandInvocationsProducer = new OutboundCommandInvocationsProducer();
     }
 
     /*

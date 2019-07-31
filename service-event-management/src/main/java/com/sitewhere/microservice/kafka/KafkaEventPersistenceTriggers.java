@@ -37,19 +37,15 @@ import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
  */
 public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorator {
 
-    /** Enriches events and delivers them via Kafka */
-    private OutboundPayloadEnrichmentLogic enrichmentLogic;
-
     public KafkaEventPersistenceTriggers(IEventManagementTenantEngine tenantEngine, IDeviceEventManagement delegate) {
 	super(delegate);
-	this.enrichmentLogic = new OutboundPayloadEnrichmentLogic(tenantEngine);
     }
 
     /**
      * Forward the given event to the Kafka persisted events topic.
      * 
      * @param deviceAssignmentId
-     * @param event
+     * @param events
      * @return
      * @throws SiteWhereException
      */
@@ -57,7 +53,7 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
 	    throws SiteWhereException {
 	getLogger().debug(String.format("Forwarding %d events to outbound topic.", events.size()));
 	for (T event : events) {
-	    getEnrichmentLogic().enrichAndDeliver(event);
+	    OutboundPayloadEnrichmentLogic.enrichAndDeliver(getEventManagementTenantEngine(), event);
 	}
 	return events;
     }
@@ -133,7 +129,7 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
 	return forwardEvents(deviceAssignmentId, super.addDeviceStateChanges(deviceAssignmentId, request));
     }
 
-    protected OutboundPayloadEnrichmentLogic getEnrichmentLogic() {
-	return enrichmentLogic;
+    protected IEventManagementTenantEngine getEventManagementTenantEngine() {
+	return (IEventManagementTenantEngine) getTenantEngine();
     }
 }
