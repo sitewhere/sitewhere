@@ -735,8 +735,8 @@ public class Assignments extends RestControllerBase {
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	assureDeviceCommand(assignment.getDeviceTypeId(), request.getCommandToken());
-	IScheduledJobCreateRequest job = ScheduledJobHelper.createCommandInvocationJob(UUID.randomUUID().toString(),
-		token, request.getCommandToken(), request.getParameterValues(), scheduleToken);
+	IScheduledJobCreateRequest job = ScheduledJobHelper.createCommandInvocationJob(token, request.getCommandToken(),
+		request.getParameterValues(), scheduleToken);
 	return getScheduleManagement().createScheduledJob(job);
     }
 

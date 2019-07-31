@@ -9,11 +9,10 @@ package com.sitewhere.schedule;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
-import org.apache.commons.lang.StringUtils;
-
-import com.sitewhere.rest.model.batch.request.BatchCommandForCriteriaRequest;
-import com.sitewhere.rest.model.datatype.JsonDateSerializer;
+import com.sitewhere.rest.model.batch.request.InvocationByAssignmentCriteriaRequest;
+import com.sitewhere.rest.model.batch.request.InvocationByDeviceCriteriaRequest;
 import com.sitewhere.rest.model.scheduling.request.ScheduledJobCreateRequest;
 import com.sitewhere.spi.scheduling.JobConstants;
 import com.sitewhere.spi.scheduling.ScheduledJobState;
@@ -31,18 +30,16 @@ public class ScheduledJobHelper {
     /**
      * Create job that will invoke a command on an assignment.
      * 
-     * @param token
      * @param assignmentToken
      * @param commandToken
      * @param parameters
      * @param scheduleToken
      * @return
      */
-    public static IScheduledJobCreateRequest createCommandInvocationJob(String token, String assignmentToken,
-	    String commandToken, Map<String, String> parameters, String scheduleToken) {
+    public static IScheduledJobCreateRequest createCommandInvocationJob(String assignmentToken, String commandToken,
+	    Map<String, String> parameters, String scheduleToken) {
 	ScheduledJobCreateRequest job = new ScheduledJobCreateRequest();
-
-	job.setToken(token);
+	job.setToken(UUID.randomUUID().toString());
 	job.setJobType(ScheduledJobType.CommandInvocation);
 
 	Map<String, String> config = new HashMap<String, String>();
@@ -59,24 +56,24 @@ public class ScheduledJobHelper {
     }
 
     /**
-     * Create request for a job that uses criteria to choose a list of devices on
-     * which a command will be invoked.
+     * Create request for a job that uses device criteria to choose a list of
+     * devices on which a command will be invoked.
      * 
-     * @param token
      * @param request
      * @param scheduleToken
      * @return
      */
-    public static IScheduledJobCreateRequest createBatchCommandInvocationJobByCriteria(String token,
-	    BatchCommandForCriteriaRequest request, String scheduleToken) {
+    public static IScheduledJobCreateRequest createBatchCommandInvocationJobForDeviceCriteria(
+	    InvocationByDeviceCriteriaRequest request, String scheduleToken) {
 	ScheduledJobCreateRequest job = new ScheduledJobCreateRequest();
-	job.setToken(token);
+	job.setToken(UUID.randomUUID().toString());
 	job.setJobType(ScheduledJobType.BatchCommandInvocation);
 	job.setJobState(ScheduledJobState.Unsubmitted);
 
 	Map<String, String> config = new HashMap<String, String>();
 
 	// Store command information.
+	config.put(JobConstants.InvocationByDeviceCriteria.DEVICE_TYPE_TOKEN, request.getDeviceTypeToken());
 	config.put(JobConstants.CommandInvocation.COMMAND_TOKEN, request.getCommandToken());
 	for (String key : request.getParameterValues().keySet()) {
 	    String value = request.getParameterValues().get(key);
@@ -84,24 +81,48 @@ public class ScheduledJobHelper {
 	}
 
 	// Store criteria information.
-	config.put(JobConstants.BatchCommandInvocation.DEVICE_TYPE_TOKEN, request.getDeviceTypeToken());
-	if (!StringUtils.isEmpty(request.getAreaToken())) {
-	    config.put(JobConstants.BatchCommandInvocation.AREA_TOKEN, request.getAreaToken());
+	job.setJobConfiguration(config);
+	job.setScheduleToken(scheduleToken);
+
+	return job;
+    }
+
+    /**
+     * Create request for a job that uses assignment criteria to choose a list of
+     * devices on which a command will be invoked.
+     * 
+     * @param request
+     * @param scheduleToken
+     * @return
+     */
+    public static IScheduledJobCreateRequest createBatchCommandInvocationJobForAssignmentCriteria(
+	    InvocationByAssignmentCriteriaRequest request, String scheduleToken) {
+	ScheduledJobCreateRequest job = new ScheduledJobCreateRequest();
+	job.setToken(UUID.randomUUID().toString());
+	job.setJobType(ScheduledJobType.BatchCommandInvocation);
+	job.setJobState(ScheduledJobState.Unsubmitted);
+
+	Map<String, String> config = new HashMap<String, String>();
+
+	// Store command information.
+	config.put(JobConstants.InvocationByAssignmentCriteria.DEVICE_TYPE_TOKEN, request.getDeviceTypeToken());
+	config.put(JobConstants.CommandInvocation.COMMAND_TOKEN, request.getCommandToken());
+	for (String key : request.getParameterValues().keySet()) {
+	    String value = request.getParameterValues().get(key);
+	    config.put(JobConstants.CommandInvocation.PARAMETER_PREFIX + key, value);
 	}
-	if (!StringUtils.isEmpty(request.getGroupToken())) {
-	    config.put(JobConstants.BatchCommandInvocation.GROUP_TOKEN, request.getGroupToken());
+
+	for (String token : request.getCustomerTokens()) {
+	    config.put(JobConstants.InvocationByAssignmentCriteria.CUSTOMER_TOKEN_PREFIX + token, token);
 	}
-	if (!StringUtils.isEmpty(request.getGroupsWithRole())) {
-	    config.put(JobConstants.BatchCommandInvocation.GROUP_ROLE, request.getGroupsWithRole());
+	for (String token : request.getAreaTokens()) {
+	    config.put(JobConstants.InvocationByAssignmentCriteria.AREA_TOKEN_PREFIX + token, token);
 	}
-	if (request.getStartDate() != null) {
-	    config.put(JobConstants.BatchCommandInvocation.START_DATE,
-		    JsonDateSerializer.serialize(request.getStartDate()));
+	for (String token : request.getAssetTokens()) {
+	    config.put(JobConstants.InvocationByAssignmentCriteria.ASSET_TOKEN_PREFIX + token, token);
 	}
-	if (request.getEndDate() != null) {
-	    config.put(JobConstants.BatchCommandInvocation.END_DATE,
-		    JsonDateSerializer.serialize(request.getEndDate()));
-	}
+
+	// Store criteria information.
 	job.setJobConfiguration(config);
 	job.setScheduleToken(scheduleToken);
 

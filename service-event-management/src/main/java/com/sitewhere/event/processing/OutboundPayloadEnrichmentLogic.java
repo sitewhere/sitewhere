@@ -27,20 +27,11 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 /**
  * Logic for taking a persisted event payload, enriching it with extra
  * device/assignment data, then forwarding it to a topic for further processing.
- * 
- * @author Derek
  */
 public class OutboundPayloadEnrichmentLogic {
 
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(OutboundPayloadEnrichmentLogic.class);
-
-    /** Handle to inbound processing tenant engine */
-    private IEventManagementTenantEngine tenantEngine;
-
-    public OutboundPayloadEnrichmentLogic(IEventManagementTenantEngine tenantEngine) {
-	this.tenantEngine = tenantEngine;
-    }
 
     /**
      * Process a persited event payload by enriching it and forwarding to a topic
@@ -49,18 +40,20 @@ public class OutboundPayloadEnrichmentLogic {
      * @param payload
      * @throws SiteWhereException
      */
-    public void enrichAndDeliver(IDeviceEvent event) throws SiteWhereException {
+    public static void enrichAndDeliver(IEventManagementTenantEngine engine, IDeviceEvent event)
+	    throws SiteWhereException {
 	try {
 	    LOGGER.debug("Looking up device assignment.");
-	    IDeviceAssignment assignment = getCachedDeviceManagement()
-		    .getDeviceAssignment(event.getDeviceAssignmentId());
+	    IEventManagementMicroservice microservice = (IEventManagementMicroservice) engine.getMicroservice();
+	    IDeviceManagement deviceManagement = microservice.getCachedDeviceManagement();
+	    IDeviceAssignment assignment = deviceManagement.getDeviceAssignment(event.getDeviceAssignmentId());
 	    if (assignment == null) {
 		// TODO: Is there a separate topic for these events?
 		throw new SiteWhereException("Event references non-existent device assignment.");
 	    }
 
 	    LOGGER.debug("Looking up device.");
-	    IDevice device = getCachedDeviceManagement().getDevice(assignment.getDeviceId());
+	    IDevice device = deviceManagement.getDevice(assignment.getDeviceId());
 	    if (device == null) {
 		// TODO: Is there a separate topic for these events?
 		throw new SiteWhereException("Event references assignment for non-existent device.");
@@ -84,29 +77,16 @@ public class OutboundPayloadEnrichmentLogic {
 	    // Send enriched payload to topic.
 	    GEnrichedEventPayload grpc = EventModelConverter.asGrpcEnrichedEventPayload(enriched);
 	    byte[] message = EventModelMarshaler.buildEnrichedEventPayloadMessage(grpc);
-	    getTenantEngine().getOutboundEventsProducer().send(device.getToken(), message);
+	    engine.getOutboundEventsProducer().send(device.getToken(), message);
 
 	    // Send enriched command invocations to topic.
 	    if (event.getEventType() == DeviceEventType.CommandInvocation) {
-		getTenantEngine().getOutboundCommandInvocationsProducer().send(device.getToken(), message);
+		engine.getOutboundCommandInvocationsProducer().send(device.getToken(), message);
 	    }
 	} catch (SiteWhereException e) {
 	    throw e;
 	} catch (Throwable t) {
 	    throw new SiteWhereException("Unhandled exception in event enrichment logic.", t);
 	}
-    }
-
-    /**
-     * Get device management implementation.
-     * 
-     * @return
-     */
-    protected IDeviceManagement getCachedDeviceManagement() {
-	return ((IEventManagementMicroservice) getTenantEngine().getMicroservice()).getCachedDeviceManagement();
-    }
-
-    protected IEventManagementTenantEngine getTenantEngine() {
-	return tenantEngine;
     }
 }
