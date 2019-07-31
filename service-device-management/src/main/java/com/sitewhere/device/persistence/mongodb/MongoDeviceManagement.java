@@ -148,15 +148,18 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	// Devices.
 	getMongoClient().getDevicesCollection().createIndex(new Document(MongoPersistentEntity.PROP_TOKEN, 1),
 		new IndexOptions().unique(true).background(true));
+	// Device search.
+	getMongoClient().getDeviceAssignmentsCollection().createIndex(new Document(MongoDevice.PROP_DEVICE_TYPE_ID, 1),
+		new IndexOptions().background(true));
 
 	// Device assignments.
 	getMongoClient().getDeviceAssignmentsCollection().createIndex(new Document(MongoPersistentEntity.PROP_TOKEN, 1),
 		new IndexOptions().unique(true).background(true));
 	// Device assignment search.
-	getMongoClient().getDeviceAssignmentsCollection().createIndex(
-		new Document(MongoDeviceAssignment.PROP_CUSTOMER_ID, 1).append(MongoDeviceAssignment.PROP_AREA_ID, 1)
-			.append(MongoDeviceAssignment.PROP_ASSET_ID, 1).append(MongoDeviceAssignment.PROP_STATUS, 1),
-		new IndexOptions().background(true));
+	getMongoClient().getDeviceAssignmentsCollection().createIndex(new Document(MongoDeviceAssignment.PROP_STATUS, 1)
+		.append(MongoDeviceAssignment.PROP_DEVICE_ID, 1).append(MongoDeviceAssignment.PROP_DEVICE_TYPE_ID, 1)
+		.append(MongoDeviceAssignment.PROP_CUSTOMER_ID, 1).append(MongoDeviceAssignment.PROP_AREA_ID, 1)
+		.append(MongoDeviceAssignment.PROP_ASSET_ID, 1), new IndexOptions().background(true));
 
 	// Device group indexes.
 	getMongoClient().getDeviceGroupsCollection().createIndex(new Document(MongoPersistentEntity.PROP_TOKEN, 1),
@@ -1172,6 +1175,10 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	if ((criteria.getDeviceTokens() != null) && (criteria.getDeviceTokens().size() > 0)) {
 	    List<UUID> ids = DeviceManagementUtils.getDeviceIds(criteria.getDeviceTokens(), this);
 	    query.append(MongoDeviceAssignment.PROP_DEVICE_ID, new Document("$in", ids));
+	}
+	if ((criteria.getDeviceTypeTokens() != null) && (criteria.getDeviceTypeTokens().size() > 0)) {
+	    List<UUID> ids = DeviceManagementUtils.getDeviceTypeIds(criteria.getDeviceTypeTokens(), this);
+	    query.append(MongoDeviceAssignment.PROP_DEVICE_TYPE_ID, new Document("$in", ids));
 	}
 	if ((criteria.getCustomerTokens() != null) && (criteria.getCustomerTokens().size() > 0)) {
 	    List<UUID> ids = DeviceManagementUtils.getCustomerIds(criteria.getCustomerTokens(), this);
