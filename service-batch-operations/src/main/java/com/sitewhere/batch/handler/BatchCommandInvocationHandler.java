@@ -27,6 +27,7 @@ import com.sitewhere.spi.batch.request.IBatchElementCreateRequest;
 import com.sitewhere.spi.batch.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandTarget;
@@ -71,7 +72,10 @@ public class BatchCommandInvocationHandler extends TenantEngineLifecycleComponen
 	IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(device.getDeviceTypeId(),
 		deviceCommandToken);
 	if (command == null) {
-	    throw new SiteWhereException("Invalid command token referenced by batch command invocation.");
+	    IDeviceType type = getDeviceManagement().getDeviceType(device.getDeviceTypeId());
+	    throw new SiteWhereException(String.format(
+		    "Invalid command token (%s) for device type '%s' referenced by batch command invocation.",
+		    deviceCommandToken, type.getName()));
 	}
 
 	// Find the current assignment information for the device.
