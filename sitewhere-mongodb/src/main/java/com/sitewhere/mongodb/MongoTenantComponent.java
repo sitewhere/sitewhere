@@ -7,6 +7,10 @@
  */
 package com.sitewhere.mongodb;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -25,6 +29,9 @@ public abstract class MongoTenantComponent<T extends MongoDbClient> extends Tena
     /** Number of retries before writing warnings to log */
     private static final int WARN_AFTER_RETRIES = 20;
 
+    /** Threads used for indexing */
+    private ExecutorService indexer;
+
     public MongoTenantComponent() {
     }
 
@@ -39,14 +46,29 @@ public abstract class MongoTenantComponent<T extends MongoDbClient> extends Tena
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	if (getIndexer() != null) {
+	    getIndexer().shutdownNow();
+	}
+	this.indexer = Executors.newSingleThreadExecutor(new IndexerThreadFactory());
+
 	// Don't allow the component to start until MongoDB is available.
 	getLogger().info("Waiting for MongoDB to become available...");
 	waitForMongoAvailable();
 
-	// Ensure that collection indexes exist.
-	getLogger().info("Verifying indexes for MongoDB collections...");
-	ensureIndexes();
-	getLogger().info("Index verification complete.");
+	// Run index validate/create in background.
+	getIndexer().submit(new Indexer());
+    }
+
+    /*
+     * @see
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	if (getIndexer() != null) {
+	    getIndexer().shutdownNow();
+	}
     }
 
     /**
@@ -89,4 +111,34 @@ public abstract class MongoTenantComponent<T extends MongoDbClient> extends Tena
      * @throws SiteWhereException
      */
     public abstract T getMongoClient() throws SiteWhereException;
+
+    protected ExecutorService getIndexer() {
+	return indexer;
+    }
+
+    /**
+     * Runs indexing code in background thread.
+     */
+    protected class Indexer implements Runnable {
+
+	@Override
+	public void run() {
+	    // Ensure that collection indexes exist.
+	    getLogger().info("Verifying indexes for MongoDB collections...");
+	    try {
+		ensureIndexes();
+		getLogger().info("Index verification complete.");
+	    } catch (SiteWhereException e) {
+		getLogger().error("Unable to create/update MongoDB indexes.", e);
+	    }
+	}
+    }
+
+    /** Used for naming indexer thread */
+    private class IndexerThreadFactory implements ThreadFactory {
+
+	public Thread newThread(Runnable r) {
+	    return new Thread(r, "MongoDB Indexer");
+	}
+    }
 }
