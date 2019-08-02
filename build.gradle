@@ -33,7 +33,7 @@ ext['grpc.version'] = '1.21.0'
 ext['guava.version'] = '27.1-jre'
 ext['netty.version'] = '4.1.34.Final'
 ext['groovy.version'] = '2.4.12'
-ext['mongodb.version'] = '3.4.2'
+ext['mongodb.version'] = '3.10.1'
 ext['solr.version'] = '6.4.0'
 ext['siddhi.version'] = '3.1.2'
 
