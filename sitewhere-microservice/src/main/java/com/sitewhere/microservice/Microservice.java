@@ -25,7 +25,6 @@ import com.evanlennick.retry4j.CallExecutorBuilder;
 import com.evanlennick.retry4j.Status;
 import com.evanlennick.retry4j.config.RetryConfig;
 import com.evanlennick.retry4j.config.RetryConfigBuilder;
-import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.listener.RetryListener;
 import com.sitewhere.Version;
 import com.sitewhere.grpc.client.tenant.CachedTenantManagement;
@@ -350,31 +349,24 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void waitForInstanceInitialization() throws SiteWhereException {
-	try {
-	    getLogger().info("Verifying that instance has been bootstrapped...");
-	    Callable<Boolean> bootstrapCheck = () -> {
-		return getZookeeperManager().getCurator().checkExists()
-			.forPath(getInstanceConfigBootstrappedMarker()) == null ? false : true;
-	    };
-	    RetryConfig config = new RetryConfigBuilder().retryOnReturnValue(Boolean.FALSE).withMaxNumberOfTries(12)
-		    .withDelayBetweenTries(Duration.ofSeconds(2)).withFibonacciBackoff().build();
-	    RetryListener listener = new RetryListener<Boolean>() {
+	getLogger().info("Verifying that instance has been bootstrapped...");
+	Callable<Boolean> bootstrapCheck = () -> {
+	    return getZookeeperManager().getCurator().checkExists()
+		    .forPath(getInstanceConfigBootstrappedMarker()) == null ? false : true;
+	};
+	RetryConfig config = new RetryConfigBuilder().retryOnReturnValue(Boolean.FALSE).retryIndefinitely()
+		.withDelayBetweenTries(Duration.ofSeconds(2)).withRandomBackoff().build();
+	RetryListener listener = new RetryListener<Boolean>() {
 
-		@Override
-		public void onEvent(Status<Boolean> status) {
-		    getLogger().info(String.format(
-			    "Unable to locate bootstrap marker on attempt %d (total wait so far %dms). Retrying after fallback...",
-			    status.getTotalTries(), status.getTotalElapsedDuration().toMillis()));
-		}
-	    };
-	    new CallExecutorBuilder().config(config).afterFailedTryListener(listener).build().execute(bootstrapCheck);
-	    getLogger().info("Confirmed that instance was bootstrapped.");
-	} catch (RetriesExhaustedException e) {
-	    Status status = e.getStatus();
-	    throw new SiteWhereException(
-		    String.format("Unable to find instance bootstrap indicator for after %d attempts (%dms).",
-			    status.getTotalTries(), status.getTotalElapsedDuration().toMillis()));
-	}
+	    @Override
+	    public void onEvent(Status<Boolean> status) {
+		getLogger().info(String.format(
+			"Unable to locate bootstrap marker on attempt %d (total wait so far %dms). Retrying after fallback...",
+			status.getTotalTries(), status.getTotalElapsedDuration().toMillis()));
+	    }
+	};
+	new CallExecutorBuilder().config(config).afterFailedTryListener(listener).build().execute(bootstrapCheck);
+	getLogger().info("Confirmed that instance was bootstrapped.");
     }
 
     /*

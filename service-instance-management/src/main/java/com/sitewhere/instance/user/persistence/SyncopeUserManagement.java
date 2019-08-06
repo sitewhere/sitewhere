@@ -16,6 +16,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -42,7 +43,6 @@ import com.evanlennick.retry4j.CallExecutorBuilder;
 import com.evanlennick.retry4j.Status;
 import com.evanlennick.retry4j.config.RetryConfig;
 import com.evanlennick.retry4j.config.RetryConfigBuilder;
-import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.listener.RetryListener;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.rest.model.search.SearchResults;
@@ -72,7 +72,7 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
 public class SyncopeUserManagement extends LifecycleComponent implements IUserManagement {
 
     /** Number of seconds between fallback attempts for connecting to Syncope */
-    private static final int CONNECT_SECS_BETWEEN_RETRIES = 7;
+    private static final int CONNECT_SECS_BETWEEN_RETRIES = 10;
 
     /** Default Syncope username */
     private static final String SYNCOPE_USERNAME = "synadmin";
@@ -134,7 +134,7 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Wait for connection in background thread.
-	this.waiter = Executors.newSingleThreadExecutor();
+	this.waiter = Executors.newSingleThreadExecutor(new SyncopeWaiterThreadFactory());
 	waiter.execute(new SyncopeConnectionWaiter());
 
 	// Prepare executor for refreshing access token.
@@ -527,38 +527,28 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 		    settings.getSyncopePort());
 	    SyncopeClientFactoryBean clientFactory = new SyncopeClientFactoryBean().setAddress(syncopeUrl);
 
-	    try {
-		getLogger().info(String.format("Attempting to connect to Syncope at '%s:%d' as '%s'...",
-			settings.getSyncopeHost(), settings.getSyncopePort(), SYNCOPE_USERNAME));
-		Callable<Boolean> connectCheck = () -> {
-		    SyncopeUserManagement.this.client = clientFactory.create(SYNCOPE_USERNAME, SYNCOPE_PASSWORD);
-		    getSyncopeAvailable().countDown();
-		    refresher.scheduleAtFixedRate(new SyncopeConnectionRefresher(), TOKEN_REFRESH_IN_MINUTES,
-			    TOKEN_REFRESH_IN_MINUTES, TimeUnit.MINUTES);
-		    return true;
-		};
-		RetryConfig config = new RetryConfigBuilder().retryOnAnyException().withMaxNumberOfTries(10)
-			.withDelayBetweenTries(Duration.ofSeconds(CONNECT_SECS_BETWEEN_RETRIES))
-			.withExponentialBackoff().build();
-		RetryListener listener = new RetryListener<Boolean>() {
-
-		    @Override
-		    public void onEvent(Status<Boolean> status) {
-			getLogger().info(String.format(
-				"Unable to connect to Syncope on attempt %d [%s] (total wait so far %dms). Retrying after fallback...",
-				status.getTotalTries(), status.getLastExceptionThatCausedRetry().getMessage(),
-				status.getTotalElapsedDuration().toMillis()));
-		    }
-		};
-		new CallExecutorBuilder().config(config).afterFailedTryListener(listener).build().execute(connectCheck);
-	    } catch (RetriesExhaustedException e) {
-		Status status = e.getStatus();
-		getLogger().error(String.format("Unable to connect to Syncope at '%s:%d' after %d attempts (%dms).",
-			settings.getSyncopeHost(), settings.getSyncopePort(), status.getTotalTries(),
-			status.getTotalElapsedDuration().toMillis()));
-		getConnectionFailed().set(true);
+	    getLogger().info(String.format("Attempting to connect to Syncope at '%s:%d' as '%s'...",
+		    settings.getSyncopeHost(), settings.getSyncopePort(), SYNCOPE_USERNAME));
+	    Callable<Boolean> connectCheck = () -> {
+		SyncopeUserManagement.this.client = clientFactory.create(SYNCOPE_USERNAME, SYNCOPE_PASSWORD);
 		getSyncopeAvailable().countDown();
-	    }
+		refresher.scheduleAtFixedRate(new SyncopeConnectionRefresher(), TOKEN_REFRESH_IN_MINUTES,
+			TOKEN_REFRESH_IN_MINUTES, TimeUnit.MINUTES);
+		return true;
+	    };
+	    RetryConfig config = new RetryConfigBuilder().retryOnAnyException().retryIndefinitely()
+		    .withDelayBetweenTries(Duration.ofSeconds(CONNECT_SECS_BETWEEN_RETRIES)).withFixedBackoff().build();
+	    RetryListener listener = new RetryListener<Boolean>() {
+
+		@Override
+		public void onEvent(Status<Boolean> status) {
+		    getLogger().info(String.format(
+			    "Unable to connect to Syncope on attempt %d [%s] (total wait so far %dms). Retrying after fallback...",
+			    status.getTotalTries(), status.getLastExceptionThatCausedRetry().getMessage(),
+			    status.getTotalElapsedDuration().toMillis()));
+		}
+	    };
+	    new CallExecutorBuilder().config(config).afterFailedTryListener(listener).build().execute(connectCheck);
 	}
     }
 
@@ -571,6 +561,14 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 	public void run() {
 	    getLogger().debug("Refreshing access token...");
 	    getClient().refresh();
+	}
+    }
+
+    /** Used for naming microservice heartbeat thread */
+    private class SyncopeWaiterThreadFactory implements ThreadFactory {
+
+	public Thread newThread(Runnable r) {
+	    return new Thread(r, "Syncope Init");
 	}
     }
 
