@@ -152,9 +152,13 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	    groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize device model."),
 		    getMicroservice()));
 	    for (String script : scripts) {
+		getLogger().info(String.format("Applying bootstrap script '%s'.", script));
 		GroovyDeviceModelInitializer initializer = new GroovyDeviceModelInitializer(groovy, script);
 		initializer.initialize(getDeviceManagement(), getAssetManagement());
 	    }
+	} catch (Throwable e) {
+	    getLogger().error("Unhandled exception in bootstrap script.", e);
+	    throw new SiteWhereException(e);
 	} finally {
 	    SecurityContextHolder.getContext().setAuthentication(previous);
 	}
