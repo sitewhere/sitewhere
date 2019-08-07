@@ -194,9 +194,13 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 	    groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize event model."),
 		    getMicroservice()));
 	    for (String script : scripts) {
+		getLogger().info(String.format("Applying bootstrap script '%s'.", script));
 		GroovyEventModelInitializer initializer = new GroovyEventModelInitializer(groovy, script);
 		initializer.initialize(getCachedDeviceManagement(), getEventManagement());
 	    }
+	} catch (Throwable e) {
+	    getLogger().error("Unhandled exception in bootstrap script.", e);
+	    throw new SiteWhereException(e);
 	} finally {
 	    SecurityContextHolder.getContext().setAuthentication(previous);
 	}

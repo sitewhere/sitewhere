@@ -133,9 +133,13 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
 	    groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize asset model."),
 		    getMicroservice()));
 	    for (String script : scripts) {
+		getLogger().info(String.format("Applying bootstrap script '%s'.", script));
 		GroovyAssetModelInitializer initializer = new GroovyAssetModelInitializer(groovy, script);
 		initializer.initialize(getAssetManagement());
 	    }
+	} catch (Throwable e) {
+	    getLogger().error("Unhandled exception in bootstrap script.", e);
+	    throw new SiteWhereException(e);
 	} finally {
 	    SecurityContextHolder.getContext().setAuthentication(previous);
 	}
