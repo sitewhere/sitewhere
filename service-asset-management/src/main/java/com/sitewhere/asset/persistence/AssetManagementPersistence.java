@@ -44,13 +44,10 @@ public class AssetManagementPersistence extends Persistence {
 	AssetType type = new AssetType();
 	Persistence.brandedEntityCreateLogic(request, type);
 
-	type.setDescription(request.getDescription());
-
 	require("Name", request.getName());
 	type.setName(request.getName());
 
-	require("Image URL", request.getImageUrl());
-	type.setImageUrl(request.getImageUrl());
+	type.setDescription(request.getDescription());
 
 	return type;
     }
@@ -71,9 +68,6 @@ public class AssetManagementPersistence extends Persistence {
 	}
 	if (request.getDescription() != null) {
 	    target.setDescription(request.getDescription());
-	}
-	if (request.getImageUrl() != null) {
-	    target.setImageUrl(request.getImageUrl());
 	}
     }
 
@@ -106,13 +100,10 @@ public class AssetManagementPersistence extends Persistence {
 	Asset asset = new Asset();
 	Persistence.brandedEntityCreateLogic(request, asset);
 
-	asset.setAssetTypeId(assetType.getId());
-
 	require("Name", request.getName());
 	asset.setName(request.getName());
 
-	require("Image URL", request.getImageUrl());
-	asset.setImageUrl(request.getImageUrl());
+	asset.setAssetTypeId(assetType.getId());
 
 	return asset;
     }
@@ -134,9 +125,6 @@ public class AssetManagementPersistence extends Persistence {
 	}
 	if (request.getName() != null) {
 	    target.setName(request.getName());
-	}
-	if (request.getImageUrl() != null) {
-	    target.setImageUrl(request.getImageUrl());
 	}
     }
 

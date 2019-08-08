@@ -19,6 +19,10 @@ import com.mongodb.MongoCredential;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.event.CommandFailedEvent;
+import com.mongodb.event.CommandListener;
+import com.mongodb.event.CommandStartedEvent;
+import com.mongodb.event.CommandSucceededEvent;
 import com.sitewhere.configuration.instance.mongodb.MongoConfiguration;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.server.lifecycle.parameters.StringComponentParameter;
@@ -34,7 +38,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * @author Derek
  */
 public abstract class MongoDbClient extends TenantEngineLifecycleComponent
-	implements IDiscoverableTenantLifecycleComponent {
+	implements IDiscoverableTenantLifecycleComponent, CommandListener {
 
     /** MongoDB client */
     private MongoClient client;
@@ -93,7 +97,8 @@ public abstract class MongoDbClient extends TenantEngineLifecycleComponent
 		MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
 		builder.serverSelectionTimeout(-1); // Wait indefinitely for server selection.
 		builder.maxConnectionIdleTime(60 * 60 * 1000); // 1hour
-		builder.connectionsPerHost(10);
+		builder.applicationName("SiteWhere/" + getMicroservice().getName());
+		builder.addCommandListener(this);
 
 		getLogger().info("MongoDB Connection: hosts=" + getHostname().getValue() + " ports="
 			+ getConfiguration().getPort() + " replicaSet=" + getConfiguration().getReplicaSetName());
@@ -102,11 +107,11 @@ public abstract class MongoDbClient extends TenantEngineLifecycleComponent
 		List<ServerAddress> addresses = parseServerAddresses();
 
 		// Indicator for whether a replica set is being used.
-		boolean isUsingReplicaSet = ((addresses.size() > 1)
-			&& (!StringUtils.isEmpty(getConfiguration().getReplicaSetName())));
+		boolean isUsingReplicaSet = !StringUtils.isEmpty(getConfiguration().getReplicaSetName());
 
 		if (isUsingReplicaSet) {
-		    getLogger().info("MongoDB using replicated mode.");
+		    getLogger().info("MongoDB using replica set mode.");
+		    builder.requiredReplicaSetName(getConfiguration().getReplicaSetName());
 		} else {
 		    getLogger().info("MongoDB using standalone mode.");
 		}
@@ -131,7 +136,6 @@ public abstract class MongoDbClient extends TenantEngineLifecycleComponent
 		    }
 		}
 
-		// Force interaction to test connectivity.
 		getDatabase().listCollectionNames();
 		return;
 	    } catch (MongoTimeoutException e) {
@@ -139,6 +143,31 @@ public abstract class MongoDbClient extends TenantEngineLifecycleComponent
 			+ getHostname().getValue() + ":" + getConfiguration().getPort() + ".", e);
 	    }
 	}
+    }
+
+    /*
+     * @see com.mongodb.event.CommandListener#commandStarted(com.mongodb.event.
+     * CommandStartedEvent)
+     */
+    @Override
+    public void commandStarted(CommandStartedEvent event) {
+    }
+
+    /*
+     * @see com.mongodb.event.CommandListener#commandSucceeded(com.mongodb.event.
+     * CommandSucceededEvent)
+     */
+    @Override
+    public void commandSucceeded(CommandSucceededEvent event) {
+    }
+
+    /*
+     * @see com.mongodb.event.CommandListener#commandFailed(com.mongodb.event.
+     * CommandFailedEvent)
+     */
+    @Override
+    public void commandFailed(CommandFailedEvent event) {
+	getLogger().warn("MongoDB command failed.", event);
     }
 
     /**

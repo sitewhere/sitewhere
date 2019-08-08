@@ -236,7 +236,7 @@ public class DeviceGroups extends RestControllerBase {
      * @throws SiteWhereException
      */
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "/{groupToken}/elements", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{groupToken}/elements", method = RequestMethod.POST)
     @ApiOperation(value = "Add elements to device group")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceGroupElement> addDeviceGroupElements(
