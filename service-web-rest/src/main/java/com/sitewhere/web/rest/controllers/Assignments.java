@@ -1054,37 +1054,19 @@ public class Assignments extends RestControllerBase {
     }
 
     /**
-     * Assert that a device stream exists and throw an exception if not.
+     * Create date range search criteria.
      * 
-     * @param assignmentId
-     * @param id
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param response
      * @return
-     * @throws SiteWhereException
      */
-    // protected IDeviceStream assertDeviceStream(UUID assignmentId, String id)
-    // throws SiteWhereException {
-    // IDeviceStream stream = getDeviceManagement().getDeviceStream(assignmentId,
-    // id);
-    // if (stream == null) {
-    // throw new SiteWhereSystemException(ErrorCode.InvalidStreamId,
-    // ErrorLevel.ERROR);
-    // }
-    // return stream;
-    // }
-
     protected static IDateRangeSearchCriteria createDateRangeSearchCriteria(int page, int pageSize, String startDate,
 	    String endDate, HttpServletResponse response) {
 	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
 	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
-
-	if (parsedEndDate == null) {
-	    parsedEndDate = new Date();
-	}
-
-	if (parsedStartDate == null) {
-	    parsedStartDate = new Date(java.lang.System.currentTimeMillis() - DEFAULT_EVENT_QUERY_DATE_RANGE);
-	}
-
 	return new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
     }
 
