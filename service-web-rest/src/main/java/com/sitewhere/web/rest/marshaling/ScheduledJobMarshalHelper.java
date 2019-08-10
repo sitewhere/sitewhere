@@ -16,12 +16,10 @@ import org.apache.commons.logging.LogFactory;
 import com.sitewhere.device.marshaling.CommandHtmlHelper;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceTypeMarshalHelper;
-import com.sitewhere.rest.model.batch.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.rest.model.common.PersistentEntity;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceCommandInvocation;
 import com.sitewhere.rest.model.scheduling.ScheduledJob;
-import com.sitewhere.schedule.BatchCommandInvocationJobParser;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -129,14 +127,13 @@ public class ScheduledJobMarshalHelper {
     protected void includeCommandInvocationContext(ScheduledJob job) throws SiteWhereException {
 	String assnToken = job.getJobConfiguration().get(JobConstants.CommandInvocation.ASSIGNMENT_TOKEN);
 	String commandToken = job.getJobConfiguration().get(JobConstants.CommandInvocation.COMMAND_TOKEN);
-	if (assnToken != null) {
-	    IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(assnToken);
-	    if (assignment != null) {
-		job.getContext().put("assignment", getAssignmentHelper().convert(assignment, getAssetManagement()));
-	    }
+	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(assnToken);
+	if (assignment != null) {
+	    job.getContext().put("assignment", getAssignmentHelper().convert(assignment, getAssetManagement()));
 	}
 	if (commandToken != null) {
-	    IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(commandToken);
+	    IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(assignment.getDeviceTypeId(),
+		    commandToken);
 	    if (command != null) {
 		Map<String, String> paramValues = new HashMap<String, String>();
 		for (String key : job.getJobConfiguration().keySet()) {
@@ -166,19 +163,15 @@ public class ScheduledJobMarshalHelper {
      * @throws SiteWhereException
      */
     protected void includeBatchCommandInvocationContext(ScheduledJob job) throws SiteWhereException {
-	String deviceTypeToken = job.getJobConfiguration().get(JobConstants.BatchCommandInvocation.DEVICE_TYPE_TOKEN);
-	if (deviceTypeToken != null) {
-	    IDeviceType deviceType = getDeviceManagement().getDeviceTypeByToken(deviceTypeToken);
-	    if (deviceType != null) {
-		job.getContext().put("deviceType", getDeviceTypeHelper().convert(deviceType));
-	    }
-	    BatchCommandForCriteriaRequest criteria = BatchCommandInvocationJobParser.parse(job.getJobConfiguration());
-	    String html = CommandHtmlHelper.getHtml(criteria, getDeviceManagement(), "..");
-	    job.getContext().put("criteriaHtml", html);
+	String deviceTypeToken = job.getJobConfiguration()
+		.get(JobConstants.InvocationByDeviceCriteria.DEVICE_TYPE_TOKEN);
+	IDeviceType deviceType = getDeviceManagement().getDeviceTypeByToken(deviceTypeToken);
+	if (deviceType != null) {
+	    job.getContext().put("deviceType", getDeviceTypeHelper().convert(deviceType));
 	}
 	String commandToken = job.getJobConfiguration().get(JobConstants.CommandInvocation.COMMAND_TOKEN);
 	if (commandToken != null) {
-	    IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(commandToken);
+	    IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(deviceType.getId(), commandToken);
 	    if (command != null) {
 		Map<String, String> paramValues = new HashMap<String, String>();
 		for (String key : job.getJobConfiguration().keySet()) {
@@ -192,10 +185,8 @@ public class ScheduledJobMarshalHelper {
 		MarshaledDeviceCommandInvocation invocation = new MarshaledDeviceCommandInvocation();
 		invocation.setCommand(DeviceCommand.copy(command));
 		invocation.setParameterValues(paramValues);
-		String html = CommandHtmlHelper.getHtml(invocation);
 
 		job.getContext().put("command", command);
-		job.getContext().put("invocationHtml", html);
 	    }
 	}
     }

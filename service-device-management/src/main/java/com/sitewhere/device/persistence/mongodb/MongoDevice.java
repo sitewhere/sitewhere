@@ -8,6 +8,7 @@
 package com.sitewhere.device.persistence.mongodb;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,7 +43,7 @@ public class MongoDevice implements MongoConverter<IDevice> {
     public static final String PROP_COMMENTS = "comm";
 
     /** Property for current assignment */
-    public static final String PROP_ASSIGNMENT_ID = "asid";
+    public static final String PROP_ACTIVE_ASSIGNMENT_IDS = "asid";
 
     /*
      * (non-Javadoc)
@@ -73,7 +74,7 @@ public class MongoDevice implements MongoConverter<IDevice> {
 	target.append(PROP_PARENT_DEVICE_ID, source.getParentDeviceId());
 	target.append(PROP_STATUS, source.getStatus());
 	target.append(PROP_COMMENTS, source.getComments());
-	target.append(PROP_ASSIGNMENT_ID, source.getDeviceAssignmentId());
+	target.append(PROP_ACTIVE_ASSIGNMENT_IDS, source.getActiveDeviceAssignmentIds());
 
 	// Save nested list of mappings.
 	List<Document> mappings = new ArrayList<Document>();
@@ -97,13 +98,21 @@ public class MongoDevice implements MongoConverter<IDevice> {
 	UUID parentDeviceId = (UUID) source.get(PROP_PARENT_DEVICE_ID);
 	String status = (String) source.get(PROP_STATUS);
 	String comments = (String) source.get(PROP_COMMENTS);
-	UUID assignmentId = (UUID) source.get(PROP_ASSIGNMENT_ID);
+	Object assignments = source.get(PROP_ACTIVE_ASSIGNMENT_IDS);
+
+	// Backward compatibility with single assignment logic.
+	if (assignments instanceof UUID) {
+	    UUID assignmentId = (UUID) assignments;
+	    target.setActiveDeviceAssignmentIds(Collections.singletonList(assignmentId));
+	} else {
+	    List<UUID> assignmentIds = (List<UUID>) assignments;
+	    target.setActiveDeviceAssignmentIds(assignmentIds);
+	}
 
 	target.setDeviceTypeId(typeId);
 	target.setParentDeviceId(parentDeviceId);
 	target.setStatus(status);
 	target.setComments(comments);
-	target.setDeviceAssignmentId(assignmentId);
 
 	List<Document> mappings = (List<Document>) source.get(PROP_DEVICE_ELEMENT_MAPPINGS);
 	if (mappings != null) {

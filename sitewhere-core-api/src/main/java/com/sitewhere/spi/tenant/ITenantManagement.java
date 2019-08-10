@@ -17,8 +17,6 @@ import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
 
 /**
  * Interface for tenant management operations.
- * 
- * @author Derek
  */
 public interface ITenantManagement extends ILifecycleComponent {
 

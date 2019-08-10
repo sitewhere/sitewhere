@@ -20,6 +20,7 @@ import com.sitewhere.event.persistence.DeviceEventManagementPersistence;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
+import com.sitewhere.mongodb.MongoTenantComponent;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
@@ -27,11 +28,11 @@ import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.DeviceEventIndex;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -59,16 +60,15 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Device event management implementation that uses MongoDB for persistence.
- * 
- * @author Derek
  */
-public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent implements IDeviceEventManagement {
+public class MongoDeviceEventManagement extends MongoTenantComponent<DeviceEventManagementMongoClient>
+	implements IDeviceEventManagement {
 
     /** Converter lookup */
     private static IMongoConverterLookup LOOKUP = new MongoConverters();
 
     /** Injected with global SiteWhere Mongo client */
-    private IDeviceEventManagementMongoClient mongoClient;
+    private DeviceEventManagementMongoClient mongoClient;
 
     /** Device event buffer implementation */
     private IDeviceEventBuffer eventBuffer;
@@ -92,8 +92,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Ensure that collection indexes exist.
-	ensureIndexes();
+	super.start(monitor);
 
 	// Support bulk inserts for events.
 	if (isUseBulkEventInserts()) {
@@ -119,25 +118,32 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 	if (getEventBuffer() != null) {
 	    getEventBuffer().stop();
 	}
+	super.stop(monitor);
     }
 
-    /**
-     * Ensure that expected collection indexes exist.
-     * 
-     * @throws SiteWhereException
+    /*
+     * @see com.sitewhere.mongodb.MongoTenantComponent#ensureIndexes()
      */
-    protected void ensureIndexes() throws SiteWhereException {
+    @Override
+    public void ensureIndexes() throws SiteWhereException {
 	getMongoClient().getEventsCollection().createIndex(new BasicDBObject(MongoDeviceEvent.PROP_ALTERNATE_ID, 1),
-		new IndexOptions().unique(true).sparse(true));
+		new IndexOptions().unique(true).sparse(true).background(true));
 	getMongoClient().getEventsCollection()
 		.createIndex(new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_ID, 1)
-			.append(MongoDeviceEvent.PROP_EVENT_TYPE, 1).append(MongoDeviceEvent.PROP_EVENT_DATE, -1));
-	getMongoClient().getEventsCollection().createIndex(new BasicDBObject(MongoDeviceEvent.PROP_CUSTOMER_ID, 1)
-		.append(MongoDeviceEvent.PROP_EVENT_TYPE, 1).append(MongoDeviceEvent.PROP_EVENT_DATE, -1));
-	getMongoClient().getEventsCollection().createIndex(new BasicDBObject(MongoDeviceEvent.PROP_AREA_ID, 1)
-		.append(MongoDeviceEvent.PROP_EVENT_TYPE, 1).append(MongoDeviceEvent.PROP_EVENT_DATE, -1));
-	getMongoClient().getEventsCollection().createIndex(new BasicDBObject(MongoDeviceEvent.PROP_ASSET_ID, 1)
-		.append(MongoDeviceEvent.PROP_EVENT_TYPE, 1).append(MongoDeviceEvent.PROP_EVENT_DATE, -1));
+			.append(MongoDeviceEvent.PROP_EVENT_TYPE, 1).append(MongoDeviceEvent.PROP_EVENT_DATE, -1),
+			new IndexOptions().background(true));
+	getMongoClient().getEventsCollection()
+		.createIndex(new BasicDBObject(MongoDeviceEvent.PROP_CUSTOMER_ID, 1)
+			.append(MongoDeviceEvent.PROP_EVENT_TYPE, 1).append(MongoDeviceEvent.PROP_EVENT_DATE, -1),
+			new IndexOptions().background(true));
+	getMongoClient().getEventsCollection()
+		.createIndex(new BasicDBObject(MongoDeviceEvent.PROP_AREA_ID, 1)
+			.append(MongoDeviceEvent.PROP_EVENT_TYPE, 1).append(MongoDeviceEvent.PROP_EVENT_DATE, -1),
+			new IndexOptions().background(true));
+	getMongoClient().getEventsCollection()
+		.createIndex(new BasicDBObject(MongoDeviceEvent.PROP_ASSET_ID, 1)
+			.append(MongoDeviceEvent.PROP_EVENT_TYPE, 1).append(MongoDeviceEvent.PROP_EVENT_DATE, -1),
+			new IndexOptions().background(true));
     }
 
     /*
@@ -312,8 +318,10 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 	List<IDeviceCommandInvocation> result = new ArrayList<>();
 	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
 	for (IDeviceCommandInvocationCreateRequest request : requests) {
+	    IDeviceCommand command = getCachedDeviceManagement().getDeviceCommandByToken(assignment.getDeviceTypeId(),
+		    request.getCommandToken());
 	    DeviceCommandInvocation ci = DeviceEventManagementPersistence.deviceCommandInvocationCreateLogic(assignment,
-		    request);
+		    command, request);
 
 	    MongoCollection<Document> events = getMongoClient().getEventsCollection();
 	    Document ciObject = MongoDeviceCommandInvocation.toDocument(ci);
@@ -444,7 +452,7 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
      * @throws SiteWhereException
      */
     protected IDeviceAssignment assertDeviceAssignmentById(UUID id) throws SiteWhereException {
-	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(id);
+	IDeviceAssignment assignment = getCachedDeviceManagement().getDeviceAssignment(id);
 	if (assignment == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentId, ErrorLevel.ERROR);
 	}
@@ -476,8 +484,8 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 	throw new SiteWhereException("Unknown index: " + index.name());
     }
 
-    protected IDeviceManagement getDeviceManagement() {
-	return ((IEventManagementMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
+    protected IDeviceManagement getCachedDeviceManagement() {
+	return ((IEventManagementMicroservice) getTenantEngine().getMicroservice()).getCachedDeviceManagement();
     }
 
     /**
@@ -514,11 +522,15 @@ public class MongoDeviceEventManagement extends TenantEngineLifecycleComponent i
 	this.bulkInsertMaxChunkSize = bulkInsertMaxChunkSize;
     }
 
-    public IDeviceEventManagementMongoClient getMongoClient() {
+    /*
+     * @see com.sitewhere.mongodb.MongoTenantComponent#getMongoClient()
+     */
+    @Override
+    public DeviceEventManagementMongoClient getMongoClient() {
 	return mongoClient;
     }
 
-    public void setMongoClient(IDeviceEventManagementMongoClient mongoClient) {
+    public void setMongoClient(DeviceEventManagementMongoClient mongoClient) {
 	this.mongoClient = mongoClient;
     }
 }

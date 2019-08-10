@@ -9,6 +9,7 @@ package com.sitewhere.communication.protobuf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,14 +41,14 @@ public class ProtobufMessageBuilder {
      * 
      * @param execution
      * @param nested
-     * @param assignment
+     * @param assignments
      * @param tenant
      * @param deviceManagement
      * @return
      * @throws SiteWhereException
      */
     public static byte[] createMessage(IDeviceCommandExecution execution, IDeviceNestingContext nested,
-	    IDeviceAssignment assignment, ITenant tenant, IDeviceManagement deviceManagement)
+	    List<IDeviceAssignment> assignments, ITenant tenant, IDeviceManagement deviceManagement)
 	    throws SiteWhereException {
 	IDeviceType deviceType = deviceManagement.getDeviceType(execution.getCommand().getDeviceTypeId());
 	DescriptorProtos.FileDescriptorProto fdproto = getFileDescriptor(deviceType, tenant, deviceManagement);

@@ -9,6 +9,7 @@ package com.sitewhere.commands.encoding.protobuf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import com.google.protobuf.ByteString;
 import com.sitewhere.commands.spi.ICommandExecutionEncoder;
@@ -42,8 +43,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 /**
  * Implementation of {@link ICommandExecutionEncoder} that uses Google Protocol
  * Buffers to encode the execution.
- * 
- * @author Derek
  */
 public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
 	implements ICommandExecutionEncoder<byte[]> {
@@ -53,33 +52,29 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.ICommandExecutionEncoder#encode(
-     * com.sitewhere .spi.device.command.IDeviceCommandExecution,
-     * com.sitewhere.spi.device.IDeviceNestingContext,
-     * com.sitewhere.spi.device.IDeviceAssignment)
+     * @see
+     * com.sitewhere.commands.spi.ICommandExecutionEncoder#encode(com.sitewhere.spi.
+     * device.command.IDeviceCommandExecution,
+     * com.sitewhere.spi.device.IDeviceNestingContext, java.util.List)
      */
     @Override
-    public byte[] encode(IDeviceCommandExecution execution, IDeviceNestingContext nested, IDeviceAssignment assignment)
-	    throws SiteWhereException {
-	byte[] encoded = ProtobufMessageBuilder.createMessage(execution, nested, assignment,
+    public byte[] encode(IDeviceCommandExecution execution, IDeviceNestingContext nested,
+	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	byte[] encoded = ProtobufMessageBuilder.createMessage(execution, nested, assignments,
 		getTenantEngine().getTenant(), getDeviceManagement());
 	getLogger().debug("Protobuf message: 0x" + DataUtils.bytesToHex(encoded));
 	return encoded;
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.ICommandExecutionEncoder#
-     * encodeSystemCommand (com.sitewhere.spi.device.command.ISystemCommand,
-     * com.sitewhere.spi.device.IDeviceNestingContext,
-     * com.sitewhere.spi.device.IDeviceAssignment)
+     * @see
+     * com.sitewhere.commands.spi.ICommandExecutionEncoder#encodeSystemCommand(com.
+     * sitewhere.spi.device.command.ISystemCommand,
+     * com.sitewhere.spi.device.IDeviceNestingContext, java.util.List)
      */
     @Override
     public byte[] encodeSystemCommand(ISystemCommand command, IDeviceNestingContext nested,
-	    IDeviceAssignment assignment) throws SiteWhereException {
+	    List<IDeviceAssignment> assignments) throws SiteWhereException {
 	switch (command.getType()) {
 	case RegistrationAck: {
 	    IRegistrationAckCommand ack = (IRegistrationAckCommand) command;

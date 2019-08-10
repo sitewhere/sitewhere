@@ -18,8 +18,6 @@ import com.sitewhere.spi.asset.IAsset;
 
 /**
  * Used to load or save asset information to MongoDB.
- * 
- * @author Derek
  */
 public class MongoAsset implements MongoConverter<IAsset> {
 

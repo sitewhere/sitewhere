@@ -60,10 +60,8 @@ import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.schedule.ScheduledJobHelper;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
-import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.charting.IChartSeries;
@@ -118,13 +116,12 @@ public class Assignments extends RestControllerBase {
     @ApiOperation(value = "Create a new device assignment")
     public DeviceAssignment createDeviceAssignment(@RequestBody DeviceAssignmentCreateRequest request,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceManagement management = getDeviceManagement();
-	IDeviceAssignment created = management.createDeviceAssignment(request);
-	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
+	IDeviceAssignment created = getDeviceManagement().createDeviceAssignment(request);
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getCachedDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
 	helper.setIncludeArea(true);
-	return helper.convert(created, getAssetManagement());
+	return helper.convert(created, getCachedAssetManagement());
     }
 
     /**
@@ -140,13 +137,13 @@ public class Assignments extends RestControllerBase {
     public DeviceAssignment getDeviceAssignment(
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	IDeviceAssignment assignment = assureAssignment(token, servletRequest);
-	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
+	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(token);
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getCachedDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
 	helper.setIncludeArea(true);
 	helper.setIncludeDeviceType(true);
-	return helper.convert(assignment, getAssetManagement());
+	return helper.convert(assignment, getCachedAssetManagement());
     }
 
     /**
@@ -163,11 +160,11 @@ public class Assignments extends RestControllerBase {
 	    throws SiteWhereException {
 	IDeviceAssignment existing = assertDeviceAssignment(token);
 	IDeviceAssignment assignment = getDeviceManagement().deleteDeviceAssignment(existing.getId());
-	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getCachedDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
 	helper.setIncludeArea(true);
-	return helper.convert(assignment, getAssetManagement());
+	return helper.convert(assignment, getCachedAssetManagement());
     }
 
     /**
@@ -185,11 +182,11 @@ public class Assignments extends RestControllerBase {
 	    @RequestBody DeviceAssignmentCreateRequest request) throws SiteWhereException {
 	IDeviceAssignment existing = assertDeviceAssignment(token);
 	IDeviceAssignment result = getDeviceManagement().updateDeviceAssignment(existing.getId(), request);
-	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getCachedDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
 	helper.setIncludeArea(true);
-	return helper.convert(result, getAssetManagement());
+	return helper.convert(result, getCachedAssetManagement());
     }
 
     /**
@@ -249,39 +246,30 @@ public class Assignments extends RestControllerBase {
 	// Build criteria.
 	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(page, pageSize);
 	if (deviceToken != null) {
-	    IDevice device = getDeviceManagement().getDeviceByToken(deviceToken);
-	    if (device == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidDeviceToken, ErrorLevel.ERROR);
-	    }
-	    criteria.setDeviceId(device.getId());
+	    criteria.setDeviceTokens(Collections.singletonList(deviceToken));
 	}
 
 	// If limiting by customer, look up customer and contained customers.
 	if (customerToken != null) {
-	    List<UUID> customerIds = Customers.resolveCustomerIds(customerToken, true, getDeviceManagement());
-	    criteria.setCustomerIds(customerIds);
+	    List<String> customers = Customers.resolveCustomerTokensRecursive(customerToken, true,
+		    getDeviceManagement());
+	    criteria.setCustomerTokens(customers);
 	}
 
 	// If limiting by area, look up area and contained areas.
 	if (areaToken != null) {
-	    List<UUID> areaIds = Areas.resolveAreaIds(areaToken, true, getDeviceManagement());
-	    criteria.setAreaIds(areaIds);
+	    List<String> areas = Areas.resolveAreaTokensRecursive(areaToken, true, getDeviceManagement());
+	    criteria.setAreaTokens(areas);
 	}
 
 	// If limiting by asset, look up asset.
 	if (assetToken != null) {
-	    IAsset asset = getAssetManagement().getAssetByToken(assetToken);
-	    if (asset == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidAssetToken, ErrorLevel.ERROR);
-	    }
-	    List<UUID> assetIds = new ArrayList<>();
-	    assetIds.add(asset.getId());
-	    criteria.setAssetIds(assetIds);
+	    criteria.setAssetTokens(Collections.singletonList(assetToken));
 	}
 
 	// Perform search.
 	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
-	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getCachedDeviceManagement());
 	helper.setIncludeDevice(includeDevice);
 	helper.setIncludeCustomer(includeCustomer);
 	helper.setIncludeArea(includeArea);
@@ -289,7 +277,53 @@ public class Assignments extends RestControllerBase {
 
 	List<IDeviceAssignment> results = new ArrayList<>();
 	for (IDeviceAssignment assn : matches.getResults()) {
-	    results.add(helper.convert(assn, getAssetManagement()));
+	    results.add(helper.convert(assn, getCachedAssetManagement()));
+	}
+	return new SearchResults<IDeviceAssignment>(results, matches.getNumResults());
+    }
+
+    /**
+     * Perform and advanced search of device assignments.
+     * 
+     * @param includeDevice
+     * @param includeCustomer
+     * @param includeArea
+     * @param includeAsset
+     * @param criteria
+     * @param response
+     * @return
+     * @throws SiteWhereException
+     */
+    @PostMapping(value = "/search")
+    @ApiOperation(value = "Search device assignments with advanced criteria")
+    public ISearchResults<IDeviceAssignment> searchDeviceAssignments(
+	    @ApiParam(value = "Include device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
+	    @ApiParam(value = "Include customer information", required = false) @RequestParam(defaultValue = "false") boolean includeCustomer,
+	    @ApiParam(value = "Include area information", required = false) @RequestParam(defaultValue = "false") boolean includeArea,
+	    @ApiParam(value = "Include asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
+	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") Integer page,
+	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") Integer pageSize,
+	    @RequestBody DeviceAssignmentSearchCriteria criteria, HttpServletResponse response)
+	    throws SiteWhereException {
+	// Allow request parameters to override paging criteria.
+	if (page != null) {
+	    criteria.setPageNumber(page);
+	}
+	if (pageSize != null) {
+	    criteria.setPageSize(pageSize);
+	}
+
+	// Perform search.
+	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getCachedDeviceManagement());
+	helper.setIncludeDevice(includeDevice);
+	helper.setIncludeCustomer(includeCustomer);
+	helper.setIncludeArea(includeArea);
+	helper.setIncludeAsset(includeAsset);
+
+	List<IDeviceAssignment> results = new ArrayList<>();
+	for (IDeviceAssignment assn : matches.getResults()) {
+	    results.add(helper.convert(assn, getCachedAssetManagement()));
 	}
 	return new SearchResults<IDeviceAssignment>(results, matches.getNumResults());
     }
@@ -679,7 +713,8 @@ public class Assignments extends RestControllerBase {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	IDeviceCommandInvocation result = new BlockingDeviceEventManagement(getDeviceEventManagement())
 		.addDeviceCommandInvocations(assignment.getId(), request).get(0);
-	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(getDeviceManagement());
+	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(
+		getCachedDeviceManagement());
 	return helper.convert(result);
     }
 
@@ -698,9 +733,10 @@ public class Assignments extends RestControllerBase {
 	    @ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 	    @ApiParam(value = "Schedule token", required = true) @PathVariable String scheduleToken)
 	    throws SiteWhereException {
-	assureDeviceCommand(request.getCommandToken());
-	IScheduledJobCreateRequest job = ScheduledJobHelper.createCommandInvocationJob(UUID.randomUUID().toString(),
-		token, request.getCommandToken(), request.getParameterValues(), scheduleToken);
+	IDeviceAssignment assignment = assertDeviceAssignment(token);
+	assureDeviceCommand(assignment.getDeviceTypeId(), request.getCommandToken());
+	IScheduledJobCreateRequest job = ScheduledJobHelper.createCommandInvocationJob(token, request.getCommandToken(),
+		request.getParameterValues(), scheduleToken);
 	return getScheduleManagement().createScheduledJob(job);
     }
 
@@ -730,7 +766,8 @@ public class Assignments extends RestControllerBase {
 	List<UUID> ids = getDeviceAssignmentIds(bulk);
 	ISearchResults<IDeviceCommandInvocation> matches = new BlockingDeviceEventManagement(getDeviceEventManagement())
 		.listDeviceCommandInvocationsForIndex(DeviceEventIndex.Assignment, ids, criteria);
-	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(getDeviceManagement());
+	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(
+		getCachedDeviceManagement());
 	helper.setIncludeCommand(includeCommand);
 	List<IDeviceCommandInvocation> converted = new ArrayList<IDeviceCommandInvocation>();
 	for (IDeviceCommandInvocation invocation : matches.getResults()) {
@@ -767,7 +804,8 @@ public class Assignments extends RestControllerBase {
 	ISearchResults<IDeviceCommandInvocation> matches = new BlockingDeviceEventManagement(getDeviceEventManagement())
 		.listDeviceCommandInvocationsForIndex(DeviceEventIndex.Assignment,
 			Collections.singletonList(assignment.getId()), criteria);
-	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(getDeviceManagement());
+	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(
+		getCachedDeviceManagement());
 	helper.setIncludeCommand(includeCommand);
 	List<IDeviceCommandInvocation> converted = new ArrayList<IDeviceCommandInvocation>();
 	for (IDeviceCommandInvocation invocation : matches.getResults()) {
@@ -934,11 +972,11 @@ public class Assignments extends RestControllerBase {
 	IDeviceManagement management = getDeviceManagement();
 	IDeviceAssignment existing = assertDeviceAssignment(token);
 	IDeviceAssignment updated = management.endDeviceAssignment(existing.getId());
-	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getCachedDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
 	helper.setIncludeArea(true);
-	return helper.convert(updated, getAssetManagement());
+	return helper.convert(updated, getCachedAssetManagement());
     }
 
     /**
@@ -961,58 +999,23 @@ public class Assignments extends RestControllerBase {
 	request.setStatus(DeviceAssignmentStatus.Missing);
 
 	IDeviceAssignment updated = management.updateDeviceAssignment(existing.getId(), request);
-	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getCachedDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
 	helper.setIncludeArea(true);
-	return helper.convert(updated, getAssetManagement());
-    }
-
-    /**
-     * Get an assignment by unique token. Throw an exception if not found.
-     * 
-     * @param token
-     * @param servletRequest
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IDeviceAssignment assureAssignment(String token, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(token);
-	if (assignment == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
-	}
-	return assignment;
-    }
-
-    /**
-     * Gets an assignment given its unique token. This implementation skips the
-     * validation which ensures the authenticated user has access to the tenant. It
-     * should *only* be used to access resources that are not protected.
-     * 
-     * @param token
-     * @param servletRequest
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IDeviceAssignment assureAssignmentWithoutUserValidation(String token, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(token);
-	if (assignment == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
-	}
-	return assignment;
+	return helper.convert(updated, getCachedAssetManagement());
     }
 
     /**
      * Get a device command by token. Throw an exception if not found.
      * 
+     * @param deviceTypeId
      * @param commandToken
      * @return
      * @throws SiteWhereException
      */
-    protected IDeviceCommand assureDeviceCommand(String commandToken) throws SiteWhereException {
-	IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(commandToken);
+    protected IDeviceCommand assureDeviceCommand(UUID deviceTypeId, String commandToken) throws SiteWhereException {
+	IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(deviceTypeId, commandToken);
 	if (command == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandId, ErrorLevel.ERROR);
 	}
@@ -1027,7 +1030,7 @@ public class Assignments extends RestControllerBase {
      * @throws SiteWhereException
      */
     protected IDeviceAssignment assertDeviceAssignment(String token) throws SiteWhereException {
-	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(token);
+	IDeviceAssignment assignment = getCachedDeviceManagement().getDeviceAssignmentByToken(token);
 	if (assignment == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
 	}
@@ -1051,37 +1054,19 @@ public class Assignments extends RestControllerBase {
     }
 
     /**
-     * Assert that a device stream exists and throw an exception if not.
+     * Create date range search criteria.
      * 
-     * @param assignmentId
-     * @param id
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @param response
      * @return
-     * @throws SiteWhereException
      */
-    // protected IDeviceStream assertDeviceStream(UUID assignmentId, String id)
-    // throws SiteWhereException {
-    // IDeviceStream stream = getDeviceManagement().getDeviceStream(assignmentId,
-    // id);
-    // if (stream == null) {
-    // throw new SiteWhereSystemException(ErrorCode.InvalidStreamId,
-    // ErrorLevel.ERROR);
-    // }
-    // return stream;
-    // }
-
     protected static IDateRangeSearchCriteria createDateRangeSearchCriteria(int page, int pageSize, String startDate,
 	    String endDate, HttpServletResponse response) {
 	Date parsedStartDate = parseDateOrSendBadResponse(startDate, response);
 	Date parsedEndDate = parseDateOrSendBadResponse(endDate, response);
-
-	if (parsedEndDate == null) {
-	    parsedEndDate = new Date();
-	}
-
-	if (parsedStartDate == null) {
-	    parsedStartDate = new Date(java.lang.System.currentTimeMillis() - DEFAULT_EVENT_QUERY_DATE_RANGE);
-	}
-
 	return new DateRangeSearchCriteria(page, pageSize, parsedStartDate, parsedEndDate);
     }
 
@@ -1114,12 +1099,16 @@ public class Assignments extends RestControllerBase {
 	return getMicroservice().getDeviceManagementApiChannel();
     }
 
+    private IDeviceManagement getCachedDeviceManagement() {
+	return getMicroservice().getCachedDeviceManagement();
+    }
+
     private IDeviceEventManagementApiChannel<?> getDeviceEventManagement() {
 	return getMicroservice().getDeviceEventManagementApiChannel();
     }
 
-    private IAssetManagement getAssetManagement() {
-	return getMicroservice().getAssetManagementApiChannel();
+    private IAssetManagement getCachedAssetManagement() {
+	return getMicroservice().getCachedAssetManagement();
     }
 
     private IScheduleManagement getScheduleManagement() {

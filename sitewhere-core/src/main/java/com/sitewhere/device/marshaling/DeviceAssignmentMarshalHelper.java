@@ -10,12 +10,15 @@ package com.sitewhere.device.marshaling;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sitewhere.asset.marshaling.AssetMarshalHelper;
 import com.sitewhere.device.marshaling.invalid.InvalidAsset;
 import com.sitewhere.rest.model.common.PersistentEntity;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceAssignment;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.customer.ICustomer;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -83,20 +86,22 @@ public class DeviceAssignmentMarshalHelper {
 	    result.setAssetName(asset.getName());
 	    result.setAssetImageUrl(asset.getImageUrl());
 	    if (isIncludeAsset()) {
-		result.setAsset(asset);
+		result.setAsset(new AssetMarshalHelper(assetManagement).convert(asset));
 	    }
 	}
 
 	// If customer is assigned, look it up.
 	result.setCustomerId(source.getCustomerId());
 	if ((isIncludeCustomer()) && (source.getCustomerId() != null)) {
-	    result.setCustomer(getDeviceManagement().getCustomer(source.getCustomerId()));
+	    ICustomer customer = getDeviceManagement().getCustomer(source.getCustomerId());
+	    result.setCustomer(new CustomerMarshalHelper(deviceManagement, assetManagement).convert(customer));
 	}
 
 	// If area is assigned, look it up.
 	result.setAreaId(source.getAreaId());
 	if ((isIncludeArea()) && (source.getAreaId() != null)) {
-	    result.setArea(getDeviceManagement().getArea(source.getAreaId()));
+	    IArea area = getDeviceManagement().getArea(source.getAreaId());
+	    result.setArea(new AreaMarshalHelper(deviceManagement, assetManagement).convert(area));
 	}
 
 	// Add device information.

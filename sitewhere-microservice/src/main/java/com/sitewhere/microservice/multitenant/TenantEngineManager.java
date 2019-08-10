@@ -7,9 +7,10 @@
  */
 package com.sitewhere.microservice.multitenant;
 
-import java.util.List;
+import java.time.Duration;
 import java.util.UUID;
 import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,14 +19,23 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.zookeeper.data.Stat;
 
+import com.evanlennick.retry4j.CallExecutorBuilder;
+import com.evanlennick.retry4j.Status;
+import com.evanlennick.retry4j.config.RetryConfig;
+import com.evanlennick.retry4j.config.RetryConfigBuilder;
+import com.evanlennick.retry4j.listener.RetryListener;
 import com.google.common.collect.MapMaker;
-import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.microservice.security.SystemUserRunnable;
+import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.ServiceNotAvailableException;
@@ -33,9 +43,11 @@ import com.sitewhere.spi.microservice.configuration.ITenantPathInfo;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineManager;
 import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
+import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.tenant.ITenantManagement;
 
 /**
  * Tenant engine manager implementation.
@@ -45,6 +57,9 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicroserviceTenantEngine>
 	extends LifecycleComponent implements ITenantEngineManager<T> {
+
+    /** Number of seconds between fallback attempts for checking tenant bootstrap */
+    private static final int BOOTSTRAP_CHECK_MAX_SECS_BETWEEN_RETRIES = 15;
 
     /** Max number of tenants being added/removed concurrently */
     private static final int MAX_CONCURRENT_TENANT_OPERATIONS = 5;
@@ -87,6 +102,7 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 		new TenantOperationsThreadFactory());
 
 	// Initialize tenant engines.
+	waitForTenantsBootstrapped();
 	initializeTenantEngines();
     }
 
@@ -126,11 +142,6 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 	// Shut down any tenant operations.
 	if (tenantOperations != null) {
 	    tenantOperations.shutdown();
-	}
-
-	// Shut down tenant management API channel.
-	if (getTenantManagementApiChannel() != null) {
-	    getTenantManagementApiChannel().terminate(monitor);
 	}
 
 	super.terminate(monitor);
@@ -173,6 +184,33 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
     }
 
     /**
+     * Wait for tenants to be bootstrapped by instance management microservice.
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected void waitForTenantsBootstrapped() {
+	Callable<Boolean> connectCheck = () -> {
+	    Stat existing = getMicroservice().getZookeeperManager().getCurator().checkExists()
+		    .forPath(getMultitenantMicroservice().getInstanceTenantsBootstrappedMarker());
+	    if (existing == null) {
+		throw new SiteWhereException("Tenants not bootstrapped within waiting period.");
+	    }
+	    return true;
+	};
+	RetryConfig config = new RetryConfigBuilder().retryOnAnyException().retryIndefinitely().withRandomBackoff()
+		.withDelayBetweenTries(Duration.ofSeconds(BOOTSTRAP_CHECK_MAX_SECS_BETWEEN_RETRIES)).build();
+	RetryListener<Boolean> listener = new RetryListener<Boolean>() {
+
+	    @Override
+	    public void onEvent(Status<Boolean> status) {
+		getLogger().info(String.format(
+			"Waiting for tenants to be bootstrapped. Attempt %d (total wait so far %dms). Retrying after fallback...",
+			status.getTotalTries(), status.getTotalElapsedDuration().toMillis()));
+	    }
+	};
+	new CallExecutorBuilder().config(config).afterFailedTryListener(listener).build().execute(connectCheck);
+    }
+
+    /**
      * Initialize tenant engines by inspecting the list of tenant configurations,
      * loading tenant information, then creating a tenant engine for each.
      * 
@@ -181,30 +219,19 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
     protected void initializeTenantEngines() throws SiteWhereException {
 	CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
 	try {
-	    String tenantConfig = getMultitenantMicroservice().getInstanceTenantsConfigurationPath();
-	    if (curator.checkExists().forPath(tenantConfig) != null) {
-		List<String> tenantIds = curator.getChildren().forPath(tenantConfig);
-		if (tenantIds.size() > 0) {
-		    getLogger()
-			    .info(String.format("Queueing %d tenant engines for initialization...", tenantIds.size()));
-		} else {
-		    getLogger().info("No tenants found. Skipping tenant engine initialization.");
-		}
-		for (String tenantIdStr : tenantIds) {
-		    UUID tenantId = UUID.fromString(tenantIdStr);
-		    if (getTenantEngineByTenantId(tenantId) == null) {
-			String configured = getMultitenantMicroservice()
-				.getInstanceTenantConfiguredIndicatorPath(tenantId);
-			// Only initialize tenants which have been bootstrapped.
-			if (curator.checkExists().forPath(configured) != null) {
-			    if (!getTenantInitializationQueue().contains(tenantId)) {
-				getTenantInitializationQueue().offer(tenantId);
-			    }
+	    ISearchResults<ITenant> tenants = getTenantManagement().listTenants(new TenantSearchCriteria(1, 0));
+	    for (ITenant tenant : tenants.getResults()) {
+		if (getTenantEngineByTenantId(tenant.getId()) == null) {
+		    String configured = getMultitenantMicroservice()
+			    .getInstanceTenantConfiguredIndicatorPath(tenant.getId());
+
+		    // Only initialize tenants which have been bootstrapped.
+		    if (curator.checkExists().forPath(configured) != null) {
+			if (!getTenantInitializationQueue().contains(tenant.getId())) {
+			    getTenantInitializationQueue().offer(tenant.getId());
 			}
 		    }
 		}
-	    } else {
-		throw new SiteWhereException("Zookeeper path for tenant configurations was not found.");
 	    }
 	} catch (Throwable e) {
 	    throw new SiteWhereException("Unhandled exception while processing tenant engines for initialization.", e);
@@ -213,11 +240,38 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.ITenantEngineManager#
-     * getTenantEngineForPathInfo(com.sitewhere.spi.microservice.configuration.
-     * ITenantPathInfo)
+     * getTenantConfiguration(java.util.UUID)
      */
     @Override
-    public IMicroserviceTenantEngine getTenantEngineForPathInfo(ITenantPathInfo pathInfo) throws SiteWhereException {
+    public byte[] getTenantConfiguration(UUID tenantId) throws SiteWhereException {
+	T engine = getTenantEngineByTenantId(tenantId);
+	if (engine == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR);
+	}
+	return engine.getModuleConfiguration();
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.ITenantEngineManager#
+     * updateTenantConfiguration(java.util.UUID, byte[])
+     */
+    @Override
+    public void updateTenantConfiguration(UUID tenantId, byte[] content) throws SiteWhereException {
+	T engine = getTenantEngineByTenantId(tenantId);
+	if (engine == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR);
+	}
+	engine.updateModuleConfiguration(content);
+    }
+
+    /**
+     * Get tenant engine based on configuration path information.
+     * 
+     * @param pathInfo
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IMicroserviceTenantEngine getTenantEngineForPathInfo(ITenantPathInfo pathInfo) throws SiteWhereException {
 	if (pathInfo != null) {
 	    IMicroserviceTenantEngine engine = getTenantEngineByTenantId(pathInfo.getTenantId());
 	    if (engine != null) {
@@ -227,6 +281,57 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 	    }
 	}
 	return null;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.ITenantEngineManager#
+     * onConfigurationAdded(com.sitewhere.spi.microservice.configuration.
+     * ITenantPathInfo, byte[])
+     */
+    @Override
+    public void onConfigurationAdded(ITenantPathInfo pathInfo, byte[] data) throws SiteWhereException {
+	try {
+	    IMicroserviceTenantEngine engine = getTenantEngineForPathInfo(pathInfo);
+	    if (engine != null) {
+		engine.onConfigurationAdded(pathInfo.getPath(), data);
+	    }
+	} catch (SiteWhereException e) {
+	    getLogger().error("Error processing configuration addition.", e);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.ITenantEngineManager#
+     * onConfigurationUpdated(com.sitewhere.spi.microservice.configuration.
+     * ITenantPathInfo, byte[])
+     */
+    @Override
+    public void onConfigurationUpdated(ITenantPathInfo pathInfo, byte[] data) throws SiteWhereException {
+	try {
+	    IMicroserviceTenantEngine engine = getTenantEngineForPathInfo(pathInfo);
+	    if (engine != null) {
+		engine.onConfigurationUpdated(pathInfo.getPath(), data);
+	    }
+	} catch (SiteWhereException e) {
+	    getLogger().error("Error processing configuration update.", e);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.ITenantEngineManager#
+     * onConfigurationDeleted(com.sitewhere.spi.microservice.configuration.
+     * ITenantPathInfo)
+     */
+    @Override
+    public void onConfigurationDeleted(ITenantPathInfo pathInfo) throws SiteWhereException {
+	try {
+	    IMicroserviceTenantEngine engine = getTenantEngineForPathInfo(pathInfo);
+	    if (engine != null) {
+		engine.onConfigurationDeleted(pathInfo.getPath());
+	    }
+	} catch (SiteWhereException e) {
+	    getLogger().error("Error processing configuration update.", e);
+	}
     }
 
     /*
@@ -379,7 +484,7 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 		try {
 		    tenantId = getTenantInitializationQueue().take();
 		    getLogger().info(String.format("Starting processing for tenant id '%s'.", tenantId.toString()));
-		    tenant = getTenantManagementApiChannel().getTenant(tenantId);
+		    tenant = getTenantManagement().getTenant(tenantId);
 		} catch (InterruptedException e) {
 		    getLogger().info("Tenant startup queue shutting down.");
 		    return;
@@ -585,8 +690,8 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 	return ((MultitenantMicroservice<I, T>) getMicroservice());
     }
 
-    protected ITenantManagementApiChannel<?> getTenantManagementApiChannel() {
-	return getMultitenantMicroservice().getTenantManagementApiChannel();
+    protected ITenantManagement getTenantManagement() {
+	return getMultitenantMicroservice().getTenantManagement();
     }
 
     /** Used for naming tenant operation threads */

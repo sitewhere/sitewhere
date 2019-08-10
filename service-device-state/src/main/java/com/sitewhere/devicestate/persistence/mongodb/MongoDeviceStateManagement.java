@@ -7,6 +7,8 @@
  */
 package com.sitewhere.devicestate.persistence.mongodb;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.bson.Document;
@@ -22,6 +24,7 @@ import com.sitewhere.rest.model.device.state.DeviceState;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -176,20 +179,82 @@ public class MongoDeviceStateManagement extends TenantEngineLifecycleComponent i
 	    dateClause.append("$lte", criteria.getLastInteractionDateBefore());
 	    query.put(MongoDeviceState.PROP_LAST_INTERACTION_DATE, dateClause);
 	}
-	if ((criteria.getDeviceTypeIds() != null) && (criteria.getDeviceTypeIds().size() > 0)) {
-	    query.append(MongoDeviceState.PROP_DEVICE_TYPE_ID, new Document("$in", criteria.getDeviceTypeIds()));
+	if ((criteria.getDeviceTypeTokens() != null) && (criteria.getDeviceTypeTokens().size() > 0)) {
+	    query.append(MongoDeviceState.PROP_DEVICE_TYPE_ID,
+		    new Document("$in", getDeviceTypeIds(criteria.getDeviceTypeTokens())));
 	}
-	if ((criteria.getCustomerIds() != null) && (criteria.getCustomerIds().size() > 0)) {
-	    query.append(MongoDeviceState.PROP_CUSTOMER_ID, new Document("$in", criteria.getCustomerIds()));
+	if ((criteria.getCustomerTokens() != null) && (criteria.getCustomerTokens().size() > 0)) {
+	    query.append(MongoDeviceState.PROP_CUSTOMER_ID,
+		    new Document("$in", getCustomerIds(criteria.getCustomerTokens())));
 	}
-	if ((criteria.getAreaIds() != null) && (criteria.getAreaIds().size() > 0)) {
-	    query.append(MongoDeviceState.PROP_AREA_ID, new Document("$in", criteria.getAreaIds()));
+	if ((criteria.getAreaTokens() != null) && (criteria.getAreaTokens().size() > 0)) {
+	    query.append(MongoDeviceState.PROP_AREA_ID, new Document("$in", getAreaIds(criteria.getAreaTokens())));
 	}
-	if ((criteria.getAssetIds() != null) && (criteria.getAssetIds().size() > 0)) {
-	    query.append(MongoDeviceState.PROP_ASSET_ID, new Document("$in", criteria.getAssetIds()));
+	if ((criteria.getAssetTokens() != null) && (criteria.getAssetTokens().size() > 0)) {
+	    query.append(MongoDeviceState.PROP_ASSET_ID, new Document("$in", getAssetIds(criteria.getAssetTokens())));
 	}
 	Document sort = new Document(MongoDeviceState.PROP_LAST_INTERACTION_DATE, 1);
 	return MongoPersistence.search(IDeviceState.class, states, query, sort, criteria, LOOKUP);
+    }
+
+    /**
+     * Get ids for device types based on tokens.
+     * 
+     * @param tokens
+     * @return
+     * @throws SiteWhereException
+     */
+    protected List<UUID> getDeviceTypeIds(List<String> tokens) throws SiteWhereException {
+	List<UUID> result = new ArrayList<>();
+	for (String token : tokens) {
+	    result.add(getDeviceManagement().getDeviceTypeByToken(token).getId());
+	}
+	return result;
+    }
+
+    /**
+     * Get ids for customers based on tokens.
+     * 
+     * @param tokens
+     * @return
+     * @throws SiteWhereException
+     */
+    protected List<UUID> getCustomerIds(List<String> tokens) throws SiteWhereException {
+	List<UUID> result = new ArrayList<>();
+	for (String token : tokens) {
+	    result.add(getDeviceManagement().getCustomerByToken(token).getId());
+	}
+	return result;
+    }
+
+    /**
+     * Get ids for areas based on tokens.
+     * 
+     * @param tokens
+     * @return
+     * @throws SiteWhereException
+     */
+    protected List<UUID> getAreaIds(List<String> tokens) throws SiteWhereException {
+	List<UUID> result = new ArrayList<>();
+	for (String token : tokens) {
+	    result.add(getDeviceManagement().getAreaByToken(token).getId());
+	}
+	return result;
+    }
+
+    /**
+     * Get ids for assets based on tokens.
+     * 
+     * @param tokens
+     * @return
+     * @throws SiteWhereException
+     */
+    protected List<UUID> getAssetIds(List<String> tokens) throws SiteWhereException {
+	List<UUID> result = new ArrayList<>();
+	for (String token : tokens) {
+	    result.add(getAssetManagement().getAssetByToken(token).getId());
+	}
+	return result;
     }
 
     /*
@@ -263,6 +328,15 @@ public class MongoDeviceStateManagement extends TenantEngineLifecycleComponent i
      * @return
      */
     public IDeviceManagement getDeviceManagement() {
-	return ((DeviceStateMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
+	return ((DeviceStateMicroservice) getTenantEngine().getMicroservice()).getCachedDeviceManagement();
+    }
+
+    /**
+     * Get asset management implementation from microservice.
+     * 
+     * @return
+     */
+    public IAssetManagement getAssetManagement() {
+	return ((DeviceStateMicroservice) getTenantEngine().getMicroservice()).getCachedAssetManagement();
     }
 }

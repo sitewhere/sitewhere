@@ -12,17 +12,22 @@ import java.util.UUID;
 import com.sitewhere.grpc.client.cache.CacheConfiguration;
 import com.sitewhere.grpc.client.spi.cache.ICacheConfiguration;
 import com.sitewhere.grpc.client.spi.cache.ICacheProvider;
+import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
+import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.tenant.ITenantSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.tenant.ITenantManagement;
+import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
 
 /**
- * Adds caching support to tenant management API channel.
- * 
- * @author Derek
+ * Adds caching support to tenant management API.
  */
-public class CachedTenantManagementApiChannel extends TenantManagementApiChannel {
+public class CachedTenantManagement extends TenantEngineLifecycleComponent implements ITenantManagement {
+
+    /** Wrapped API */
+    private ITenantManagement wrapped;
 
     /** Tenant cache */
     private ICacheProvider<String, ITenant> tenantByTokenCache;
@@ -30,46 +35,46 @@ public class CachedTenantManagementApiChannel extends TenantManagementApiChannel
     /** Tenant by id cache */
     private ICacheProvider<UUID, ITenant> tenantByIdCache;
 
-    public CachedTenantManagementApiChannel(IInstanceSettings settings, CacheSettings cache) {
-	super(settings);
+    public CachedTenantManagement(ITenantManagement wrapped, CacheSettings cache) {
+	this.wrapped = wrapped;
 	this.tenantByTokenCache = new TenantManagementCacheProviders.TenantByTokenCache(cache.getTenantConfiguration());
 	this.tenantByIdCache = new TenantManagementCacheProviders.TenantByIdCache(cache.getTenantConfiguration());
     }
 
     /*
      * @see
-     * com.sitewhere.grpc.client.ApiChannel#initialize(com.sitewhere.spi.server.
-     * lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+     * spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	initializeNestedComponent(getWrapped(), monitor, true);
 	initializeNestedComponent(getTenantByTokenCache(), monitor, true);
 	initializeNestedComponent(getTenantByIdCache(), monitor, true);
-	super.initialize(monitor);
     }
 
     /*
      * @see
-     * com.sitewhere.grpc.client.ApiChannel#start(com.sitewhere.spi.server.lifecycle
-     * .ILifecycleProgressMonitor)
+     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	startNestedComponent(getWrapped(), monitor, true);
 	startNestedComponent(getTenantByTokenCache(), monitor, true);
 	startNestedComponent(getTenantByIdCache(), monitor, true);
-	super.start(monitor);
     }
 
     /*
      * @see
-     * com.sitewhere.grpc.client.ApiChannel#stop(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
+     * server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	stopNestedComponent(getWrapped(), monitor);
 	stopNestedComponent(getTenantByTokenCache(), monitor);
 	stopNestedComponent(getTenantByIdCache(), monitor);
-	super.stop(monitor);
     }
 
     /*
@@ -81,7 +86,7 @@ public class CachedTenantManagementApiChannel extends TenantManagementApiChannel
     public ITenant getTenant(UUID id) throws SiteWhereException {
 	ITenant tenant = getTenantByIdCache().getCacheEntry(null, id);
 	if (tenant == null) {
-	    tenant = super.getTenant(id);
+	    tenant = getWrapped().getTenant(id);
 	    getTenantByIdCache().setCacheEntry(null, id, tenant);
 	}
 	return tenant;
@@ -96,10 +101,47 @@ public class CachedTenantManagementApiChannel extends TenantManagementApiChannel
     public ITenant getTenantByToken(String token) throws SiteWhereException {
 	ITenant tenant = getTenantByTokenCache().getCacheEntry(null, token);
 	if (tenant == null) {
-	    tenant = super.getTenantByToken(token);
+	    tenant = getWrapped().getTenantByToken(token);
 	    getTenantByTokenCache().setCacheEntry(null, token, tenant);
 	}
 	return tenant;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.tenant.ITenantManagement#createTenant(com.sitewhere.spi.
+     * tenant.request.ITenantCreateRequest)
+     */
+    @Override
+    public ITenant createTenant(ITenantCreateRequest request) throws SiteWhereException {
+	return getWrapped().createTenant(request);
+    }
+
+    /*
+     * @see com.sitewhere.spi.tenant.ITenantManagement#updateTenant(java.util.UUID,
+     * com.sitewhere.spi.tenant.request.ITenantCreateRequest)
+     */
+    @Override
+    public ITenant updateTenant(UUID id, ITenantCreateRequest request) throws SiteWhereException {
+	return getWrapped().updateTenant(id, request);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.tenant.ITenantManagement#listTenants(com.sitewhere.spi.
+     * search.tenant.ITenantSearchCriteria)
+     */
+    @Override
+    public ISearchResults<ITenant> listTenants(ITenantSearchCriteria criteria) throws SiteWhereException {
+	return getWrapped().listTenants(criteria);
+    }
+
+    /*
+     * @see com.sitewhere.spi.tenant.ITenantManagement#deleteTenant(java.util.UUID)
+     */
+    @Override
+    public ITenant deleteTenant(UUID tenantId) throws SiteWhereException {
+	return getWrapped().deleteTenant(tenantId);
     }
 
     /**
@@ -119,19 +161,15 @@ public class CachedTenantManagementApiChannel extends TenantManagementApiChannel
 	}
     }
 
-    public ICacheProvider<String, ITenant> getTenantByTokenCache() {
+    protected ICacheProvider<String, ITenant> getTenantByTokenCache() {
 	return tenantByTokenCache;
     }
 
-    public void setTenantByTokenCache(ICacheProvider<String, ITenant> tenantByTokenCache) {
-	this.tenantByTokenCache = tenantByTokenCache;
-    }
-
-    public ICacheProvider<UUID, ITenant> getTenantByIdCache() {
+    protected ICacheProvider<UUID, ITenant> getTenantByIdCache() {
 	return tenantByIdCache;
     }
 
-    public void setTenantByIdCache(ICacheProvider<UUID, ITenant> tenantByIdCache) {
-	this.tenantByIdCache = tenantByIdCache;
+    protected ITenantManagement getWrapped() {
+	return wrapped;
     }
 }

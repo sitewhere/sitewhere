@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.instance.spi.tenant.kafka;
+package com.sitewhere.spi.microservice.kafka.tenant;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer;

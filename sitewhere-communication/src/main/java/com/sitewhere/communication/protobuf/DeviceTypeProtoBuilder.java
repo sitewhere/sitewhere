@@ -41,7 +41,7 @@ public class DeviceTypeProtoBuilder {
 	StringBuffer buffer = new StringBuffer();
 
 	DeviceCommandSearchCriteria criteria = new DeviceCommandSearchCriteria(1, 0);
-	criteria.setDeviceTypeId(deviceType.getId());
+	criteria.setDeviceTypeToken(deviceType.getToken());
 	ISearchResults<IDeviceCommand> commands = deviceManagement.listDeviceCommands(criteria);
 
 	generateProto(deviceType, commands.getResults(), buffer);

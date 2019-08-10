@@ -49,6 +49,7 @@ public class BatchElementMarshalHelper {
 	element.setBatchOperationId(source.getBatchOperationId());
 	element.setDeviceId(source.getDeviceId());
 	element.setProcessingStatus(source.getProcessingStatus());
+	element.setProcessedDate(source.getProcessedDate());
 
 	if (isIncludeDevice()) {
 	    IDevice device = deviceManagement.getDevice(source.getDeviceId());

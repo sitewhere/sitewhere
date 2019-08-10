@@ -92,7 +92,7 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
 	    IArea area = getAreaFor(registration);
 
 	    // Make sure device is assigned.
-	    if (device.getDeviceAssignmentId() == null) {
+	    if (device.getActiveDeviceAssignmentIds().size() == 0) {
 		getLogger().debug("Handling unassigned device for registration.");
 		DeviceAssignmentCreateRequest assnCreate = new DeviceAssignmentCreateRequest();
 		assnCreate.setDeviceToken(device.getToken());

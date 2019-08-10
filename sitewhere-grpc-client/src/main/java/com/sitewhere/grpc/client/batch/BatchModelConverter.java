@@ -55,8 +55,6 @@ import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 
 /**
  * Convert batch entities between SiteWhere API model and GRPC model.
- * 
- * @author Derek
  */
 public class BatchModelConverter {
 
@@ -456,6 +454,7 @@ public class BatchModelConverter {
 	api.setBatchOperationId(CommonModelConverter.asApiUuid(grpc.getBatchOperationId()));
 	api.setDeviceId(CommonModelConverter.asApiUuid(grpc.getDeviceId()));
 	api.setProcessingStatus(BatchModelConverter.asApiElementProcessingStatus(grpc.getProcessingStatus()));
+	api.setProcessedDate(CommonModelConverter.asApiDate(grpc.getProcessedDate()));
 	api.setMetadata(grpc.getMetadataMap());
 	return api;
     }
@@ -475,6 +474,7 @@ public class BatchModelConverter {
 	if (api.getProcessingStatus() != null) {
 	    grpc.setProcessingStatus(BatchModelConverter.asGrpcElementProcessingStatus(api.getProcessingStatus()));
 	}
+	grpc.setProcessedDate(CommonModelConverter.asGrpcDate(api.getProcessedDate()));
 	grpc.putAllMetadata(api.getMetadata());
 	return grpc.build();
     }

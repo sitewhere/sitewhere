@@ -9,6 +9,7 @@ package com.sitewhere.device.persistence.mongodb;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,8 +23,10 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.result.DeleteResult;
 import com.sitewhere.common.MarshalUtils;
+import com.sitewhere.device.DeviceManagementUtils;
 import com.sitewhere.device.microservice.DeviceManagementMicroservice;
 import com.sitewhere.device.persistence.DeviceManagementPersistence;
+import com.sitewhere.device.persistence.TreeBuilder;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
 import com.sitewhere.mongodb.MongoTenantComponent;
@@ -43,6 +46,10 @@ import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
+import com.sitewhere.rest.model.search.TreeNode;
+import com.sitewhere.rest.model.search.area.AreaSearchCriteria;
+import com.sitewhere.rest.model.search.customer.CustomerSearchCriteria;
+import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceCommandSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceStatusSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
@@ -122,36 +129,51 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
     public void ensureIndexes() throws SiteWhereException {
 	// Area indexes.
 	getMongoClient().getAreasCollection().createIndex(new Document(MongoPersistentEntity.PROP_TOKEN, 1),
-		new IndexOptions().unique(true));
+		new IndexOptions().unique(true).background(true));
 
-	// Device-type-related indexes.
+	// Device type indexes.
 	getMongoClient().getDeviceTypesCollection().createIndex(new Document(MongoPersistentEntity.PROP_TOKEN, 1),
-		new IndexOptions().unique(true));
+		new IndexOptions().unique(true).background(true));
+
+	// Device command indexes.
+	getMongoClient().getDeviceCommandsCollection().createIndex(
+		new Document(MongoDeviceStatus.PROP_DEVICE_TYPE_ID, 1).append(MongoPersistentEntity.PROP_TOKEN, 1),
+		new IndexOptions().unique(true).background(true));
+
+	// Device status indexes.
 	getMongoClient().getDeviceStatusesCollection().createIndex(
-		new Document(MongoDeviceStatus.PROP_DEVICE_TYPE_ID, 1).append(MongoDeviceStatus.PROP_CODE, 1),
-		new IndexOptions().unique(true));
+		new Document(MongoDeviceStatus.PROP_DEVICE_TYPE_ID, 1).append(MongoPersistentEntity.PROP_TOKEN, 1),
+		new IndexOptions().unique(true).background(true));
 
 	// Devices.
 	getMongoClient().getDevicesCollection().createIndex(new Document(MongoPersistentEntity.PROP_TOKEN, 1),
-		new IndexOptions().unique(true));
+		new IndexOptions().unique(true).background(true));
+	// Device search.
+	getMongoClient().getDeviceAssignmentsCollection().createIndex(new Document(MongoDevice.PROP_DEVICE_TYPE_ID, 1),
+		new IndexOptions().background(true));
 
 	// Device assignments.
 	getMongoClient().getDeviceAssignmentsCollection().createIndex(new Document(MongoPersistentEntity.PROP_TOKEN, 1),
-		new IndexOptions().unique(true));
-	getMongoClient().getDeviceAssignmentsCollection()
-		.createIndex(new Document(MongoDeviceAssignment.PROP_AREA_ID, 1)
-			.append(MongoDeviceAssignment.PROP_ASSET_ID, 1).append(MongoDeviceAssignment.PROP_STATUS, 1));
+		new IndexOptions().unique(true).background(true));
+	// Device assignment search.
+	getMongoClient().getDeviceAssignmentsCollection().createIndex(new Document(MongoDeviceAssignment.PROP_STATUS, 1)
+		.append(MongoDeviceAssignment.PROP_DEVICE_ID, 1).append(MongoDeviceAssignment.PROP_DEVICE_TYPE_ID, 1)
+		.append(MongoDeviceAssignment.PROP_CUSTOMER_ID, 1).append(MongoDeviceAssignment.PROP_AREA_ID, 1)
+		.append(MongoDeviceAssignment.PROP_ASSET_ID, 1), new IndexOptions().background(true));
 
 	// Device group indexes.
 	getMongoClient().getDeviceGroupsCollection().createIndex(new Document(MongoPersistentEntity.PROP_TOKEN, 1),
-		new IndexOptions().unique(true));
-	getMongoClient().getDeviceGroupsCollection().createIndex(new Document(MongoDeviceGroup.PROP_ROLES, 1));
+		new IndexOptions().unique(true).background(true));
+	// Device group search by role.
+	getMongoClient().getDeviceGroupsCollection().createIndex(new Document(MongoDeviceGroup.PROP_ROLES, 1),
+		new IndexOptions().background(true));
 
 	// Device group element indexes.
 	getMongoClient().getGroupElementsCollection().createIndex(new Document(MongoDeviceGroupElement.PROP_GROUP_ID, 1)
-		.append(MongoDeviceGroupElement.PROP_DEVICE_ID, 1), new IndexOptions().unique(true));
+		.append(MongoDeviceGroupElement.PROP_DEVICE_ID, 1), new IndexOptions().unique(true).background(true));
 	getMongoClient().getGroupElementsCollection().createIndex(
-		new Document(MongoDeviceGroupElement.PROP_GROUP_ID, 1).append(MongoDeviceGroupElement.PROP_ROLES, 1));
+		new Document(MongoDeviceGroupElement.PROP_GROUP_ID, 1).append(MongoDeviceGroupElement.PROP_ROLES, 1),
+		new IndexOptions().background(true));
     }
 
     /*
@@ -322,7 +344,7 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	}
 
 	DeviceCommandSearchCriteria criteria = new DeviceCommandSearchCriteria(1, 0);
-	criteria.setDeviceTypeId(deviceType.getId());
+	criteria.setDeviceTypeToken(deviceType.getToken());
 	ISearchResults<IDeviceCommand> existing = listDeviceCommands(criteria);
 
 	// Use common logic so all backend implementations work the same.
@@ -349,14 +371,13 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceCommandByToken(java.
-     * lang.String )
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceCommandByToken(java.util.
+     * UUID, java.lang.String)
      */
     @Override
-    public IDeviceCommand getDeviceCommandByToken(String token) throws SiteWhereException {
-	Document result = getDeviceCommandDocumentByToken(token);
+    public IDeviceCommand getDeviceCommandByToken(UUID deviceTypeId, String token) throws SiteWhereException {
+	Document result = getDeviceCommandDocumentByToken(deviceTypeId, token);
 	if (result != null) {
 	    return MongoDeviceCommand.fromDocument(result);
 	}
@@ -385,7 +406,7 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	}
 
 	DeviceCommandSearchCriteria criteria = new DeviceCommandSearchCriteria(1, 0);
-	criteria.setDeviceTypeId(deviceType.getId());
+	criteria.setDeviceTypeToken(deviceType.getToken());
 	ISearchResults<IDeviceCommand> existing = listDeviceCommands(criteria);
 
 	// Use common update logic.
@@ -408,8 +429,9 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	    throws SiteWhereException {
 	MongoCollection<Document> commands = getMongoClient().getDeviceCommandsCollection();
 	Document dbCriteria = new Document();
-	if (criteria.getDeviceTypeId() != null) {
-	    dbCriteria.put(MongoDeviceCommand.PROP_DEVICE_TYPE_ID, criteria.getDeviceTypeId());
+	if (criteria.getDeviceTypeToken() != null) {
+	    IDeviceType type = getDeviceTypeByToken(criteria.getDeviceTypeToken());
+	    dbCriteria.put(MongoDeviceCommand.PROP_DEVICE_TYPE_ID, type.getId());
 	}
 	Document sort = new Document(MongoDeviceCommand.PROP_NAME, 1);
 	return MongoPersistence.search(IDeviceCommand.class, commands, dbCriteria, sort, criteria, LOOKUP);
@@ -431,13 +453,15 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
     /**
      * Return the {@link Document} for the device command with the given token.
      * 
+     * @param deviceTypeId
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    protected Document getDeviceCommandDocumentByToken(String token) throws SiteWhereException {
+    protected Document getDeviceCommandDocumentByToken(UUID deviceTypeId, String token) throws SiteWhereException {
 	MongoCollection<Document> commands = getMongoClient().getDeviceCommandsCollection();
-	Document query = new Document(MongoPersistentEntity.PROP_TOKEN, token);
+	Document query = new Document(MongoDeviceCommand.PROP_DEVICE_TYPE_ID, deviceTypeId)
+		.append(MongoPersistentEntity.PROP_TOKEN, token);
 	return commands.find(query).first();
     }
 
@@ -487,7 +511,7 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	}
 
 	DeviceStatusSearchCriteria criteria = new DeviceStatusSearchCriteria(1, 0);
-	criteria.setDeviceTypeId(deviceType.getId());
+	criteria.setDeviceTypeToken(deviceType.getToken());
 	ISearchResults<IDeviceStatus> existing = listDeviceStatuses(criteria);
 
 	// Use common logic so all backend implementations work the same.
@@ -515,12 +539,12 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStatusByToken(java.lang.
-     * String)
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStatusByToken(java.util.
+     * UUID, java.lang.String)
      */
     @Override
-    public IDeviceStatus getDeviceStatusByToken(String token) throws SiteWhereException {
-	Document result = getDeviceStatusDocumentByToken(token);
+    public IDeviceStatus getDeviceStatusByToken(UUID deviceTypeId, String token) throws SiteWhereException {
+	Document result = getDeviceStatusDocumentByToken(deviceTypeId, token);
 	if (result != null) {
 	    return MongoDeviceStatus.fromDocument(result);
 	}
@@ -549,7 +573,7 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	}
 
 	DeviceStatusSearchCriteria criteria = new DeviceStatusSearchCriteria(1, 0);
-	criteria.setDeviceTypeId(deviceType.getId());
+	criteria.setDeviceTypeToken(deviceType.getToken());
 	ISearchResults<IDeviceStatus> existing = listDeviceStatuses(criteria);
 
 	// Use common update logic.
@@ -572,8 +596,9 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	    throws SiteWhereException {
 	MongoCollection<Document> statuses = getMongoClient().getDeviceStatusesCollection();
 	Document dbCriteria = new Document();
-	if (criteria.getDeviceTypeId() != null) {
-	    dbCriteria.put(MongoDeviceStatus.PROP_DEVICE_TYPE_ID, criteria.getDeviceTypeId());
+	if (criteria.getDeviceTypeToken() != null) {
+	    IDeviceType type = getDeviceTypeByToken(criteria.getDeviceTypeToken());
+	    dbCriteria.put(MongoDeviceStatus.PROP_DEVICE_TYPE_ID, type.getId());
 	}
 	if (criteria.getCode() != null) {
 	    dbCriteria.put(MongoDeviceStatus.PROP_CODE, criteria.getCode());
@@ -601,9 +626,10 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
      * @return
      * @throws SiteWhereException
      */
-    protected Document getDeviceStatusDocumentByToken(String token) throws SiteWhereException {
+    protected Document getDeviceStatusDocumentByToken(UUID deviceTypeId, String token) throws SiteWhereException {
 	MongoCollection<Document> statuses = getMongoClient().getDeviceStatusesCollection();
-	Document query = new Document(MongoPersistentEntity.PROP_TOKEN, token);
+	Document query = new Document(MongoDeviceStatus.PROP_DEVICE_TYPE_ID, token)
+		.append(MongoPersistentEntity.PROP_TOKEN, token);
 	return statuses.find(query).first();
     }
 
@@ -725,16 +751,17 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getCurrentDeviceAssignment(java.
+     * com.sitewhere.spi.device.IDeviceManagement#getActiveDeviceAssignments(java.
      * util.UUID)
      */
     @Override
-    public IDeviceAssignment getCurrentDeviceAssignment(UUID deviceId) throws SiteWhereException {
-	IDevice device = getApiDeviceById(deviceId);
-	if (device.getDeviceAssignmentId() == null) {
-	    return null;
+    public List<IDeviceAssignment> getActiveDeviceAssignments(UUID deviceId) throws SiteWhereException {
+	IDevice device = MongoDevice.fromDocument(assertDevice(deviceId));
+	List<IDeviceAssignment> active = new ArrayList<>();
+	for (UUID uuid : device.getActiveDeviceAssignmentIds()) {
+	    active.add(getDeviceAssignment(uuid));
 	}
-	return getDeviceAssignment(device.getDeviceAssignmentId());
+	return active;
     }
 
     /*
@@ -747,7 +774,7 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
 	Document dbCriteria = new Document();
 	if (criteria.isExcludeAssigned()) {
-	    dbCriteria.put(MongoDevice.PROP_ASSIGNMENT_ID, null);
+	    dbCriteria.put(MongoDevice.PROP_ACTIVE_ASSIGNMENT_IDS, new Document("$not", new Document("$size", 0)));
 	}
 	MongoPersistence.addDateSearchCriteria(dbCriteria, MongoPersistentEntity.PROP_CREATED_DATE, criteria);
 
@@ -847,12 +874,7 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
      */
     @Override
     public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request) throws SiteWhereException {
-	// Verify device is not already assigned.
 	IDevice existing = getDeviceByToken(request.getDeviceToken());
-	if (existing.getDeviceAssignmentId() != null) {
-	    throw new SiteWhereSystemException(ErrorCode.DeviceAlreadyAssigned, ErrorLevel.ERROR);
-	}
-	Document deviceDb = assertDevice(existing.getId());
 
 	// Look up customer if specified.
 	ICustomer customer = null;
@@ -885,21 +907,40 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	// Use common logic to load assignment from request.
 	DeviceAssignment newAssignment = DeviceManagementPersistence.deviceAssignmentCreateLogic(request, customer,
 		area, asset, existing);
-	if (newAssignment.getToken() == null) {
-	    newAssignment.setToken(UUID.randomUUID().toString());
-	}
 
 	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
 	Document created = MongoDeviceAssignment.toDocument(newAssignment);
 	MongoPersistence.insert(assignments, created, ErrorCode.DuplicateDeviceAssignment);
 
-	// Update device to point to created assignment.
-	MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
-	Document query = new Document(MongoPersistentEntity.PROP_TOKEN, request.getDeviceToken());
-	deviceDb.put(MongoDevice.PROP_ASSIGNMENT_ID, newAssignment.getId());
-	MongoPersistence.update(devices, query, deviceDb);
+	// Update field containing active assignments list.
+	updateDeviceActiveAssignments(existing);
 
 	return newAssignment;
+    }
+
+    /**
+     * Update field containing list of active assignments for device.
+     * 
+     * @param device
+     * @throws SiteWhereException
+     */
+    protected void updateDeviceActiveAssignments(IDevice device) throws SiteWhereException {
+	MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
+	Document query = new Document(MongoPersistentEntity.PROP_TOKEN, device.getToken());
+
+	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(1, 0);
+	criteria.setDeviceTokens(Collections.singletonList(device.getToken()));
+	criteria.setAssignmentStatuses(Collections.singletonList(DeviceAssignmentStatus.Active));
+	ISearchResults<IDeviceAssignment> matches = listDeviceAssignments(criteria);
+
+	List<UUID> uuids = new ArrayList<>();
+	for (IDeviceAssignment assignment : matches.getResults()) {
+	    uuids.add(assignment.getId());
+	}
+
+	Document deviceDb = assertDevice(device.getId());
+	deviceDb.put(MongoDevice.PROP_ACTIVE_ASSIGNMENT_IDS, uuids);
+	MongoPersistence.update(devices, query, deviceDb);
     }
 
     /*
@@ -1127,23 +1168,48 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	}
 	MongoCollection<Document> assignments = getMongoClient().getDeviceAssignmentsCollection();
 	Document query = new Document();
-	if (criteria.getStatus() != null) {
-	    query.append(MongoDeviceAssignment.PROP_STATUS, criteria.getStatus().name());
+	if ((criteria.getAssignmentStatuses() != null) && (criteria.getAssignmentStatuses().size() > 0)) {
+	    List<String> names = DeviceManagementUtils.getAssignmentStatusNames(criteria.getAssignmentStatuses());
+	    query.append(MongoDeviceAssignment.PROP_STATUS, new Document("$in", names));
 	}
-	if (criteria.getDeviceId() != null) {
-	    query.append(MongoDeviceAssignment.PROP_DEVICE_ID, criteria.getDeviceId());
+	if ((criteria.getDeviceTokens() != null) && (criteria.getDeviceTokens().size() > 0)) {
+	    List<UUID> ids = DeviceManagementUtils.getDeviceIds(criteria.getDeviceTokens(), this);
+	    query.append(MongoDeviceAssignment.PROP_DEVICE_ID, new Document("$in", ids));
 	}
-	if ((criteria.getCustomerIds() != null) && (criteria.getCustomerIds().size() > 0)) {
-	    query.append(MongoDeviceAssignment.PROP_CUSTOMER_ID, new Document("$in", criteria.getCustomerIds()));
+	if ((criteria.getDeviceTypeTokens() != null) && (criteria.getDeviceTypeTokens().size() > 0)) {
+	    List<UUID> ids = DeviceManagementUtils.getDeviceTypeIds(criteria.getDeviceTypeTokens(), this);
+	    query.append(MongoDeviceAssignment.PROP_DEVICE_TYPE_ID, new Document("$in", ids));
 	}
-	if ((criteria.getAreaIds() != null) && (criteria.getAreaIds().size() > 0)) {
-	    query.append(MongoDeviceAssignment.PROP_AREA_ID, new Document("$in", criteria.getAreaIds()));
+	if ((criteria.getCustomerTokens() != null) && (criteria.getCustomerTokens().size() > 0)) {
+	    List<UUID> ids = DeviceManagementUtils.getCustomerIds(criteria.getCustomerTokens(), this);
+	    query.append(MongoDeviceAssignment.PROP_CUSTOMER_ID, new Document("$in", ids));
 	}
-	if ((criteria.getAssetIds() != null) && (criteria.getAssetIds().size() > 0)) {
-	    query.append(MongoDeviceAssignment.PROP_ASSET_ID, new Document("$in", criteria.getAssetIds()));
+	if ((criteria.getAreaTokens() != null) && (criteria.getAreaTokens().size() > 0)) {
+	    List<UUID> ids = DeviceManagementUtils.getAreaIds(criteria.getAreaTokens(), this);
+	    query.append(MongoDeviceAssignment.PROP_AREA_ID, new Document("$in", ids));
+	}
+	if ((criteria.getAssetTokens() != null) && (criteria.getAssetTokens().size() > 0)) {
+	    List<UUID> ids = getAssetIds(criteria.getAssetTokens());
+	    query.append(MongoDeviceAssignment.PROP_ASSET_ID, new Document("$in", ids));
 	}
 	Document sort = new Document(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
 	return MongoPersistence.search(IDeviceAssignment.class, assignments, query, sort, criteria, LOOKUP);
+    }
+
+    /**
+     * Look up a list of asset tokens to get the corresponding list of asset ids.
+     * 
+     * @param tokens
+     * @return
+     * @throws SiteWhereException
+     */
+    protected List<UUID> getAssetIds(List<String> tokens) throws SiteWhereException {
+	List<UUID> result = new ArrayList<>();
+	for (String token : tokens) {
+	    IAsset asset = getAssetManagement().getAssetByToken(token);
+	    result.add(asset.getId());
+	}
+	return result;
     }
 
     /*
@@ -1160,13 +1226,10 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	Document query = new Document(MongoPersistentEntity.PROP_ID, id);
 	MongoPersistence.update(assignments, query, match);
 
-	// Remove device assignment reference.
-	MongoCollection<Document> devices = getMongoClient().getDevicesCollection();
+	// Update list of active assignments.
 	UUID deviceId = (UUID) match.get(MongoDeviceAssignment.PROP_DEVICE_ID);
-	Document deviceMatch = getDeviceDocumentById(deviceId);
-	deviceMatch.put(MongoDevice.PROP_ASSIGNMENT_ID, null);
-	query = new Document(MongoPersistentEntity.PROP_ID, deviceId);
-	MongoPersistence.update(devices, query, deviceMatch);
+	IDevice device = MongoDevice.fromDocument(assertDevice(deviceId));
+	updateDeviceActiveAssignments(device);
 
 	DeviceAssignment assignment = MongoDeviceAssignment.fromDocument(match);
 	return assignment;
@@ -1309,8 +1372,7 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	}
 
 	// Look up parent customer.
-	ICustomer parentCustomer = (request.getParentCustomerToken() != null)
-		? getCustomerByToken(request.getParentCustomerToken())
+	ICustomer parentCustomer = (request.getParentToken() != null) ? getCustomerByToken(request.getParentToken())
 		: null;
 
 	// Use common logic so all backend implementations work the same.
@@ -1398,14 +1460,31 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	Document query = new Document();
 	if ((criteria.getRootOnly() != null) && (criteria.getRootOnly().booleanValue() == true)) {
 	    query.append(MongoCustomer.PROP_PARENT_CUSTOMER_ID, null);
-	} else if (criteria.getParentCustomerId() != null) {
-	    query.append(MongoCustomer.PROP_PARENT_CUSTOMER_ID, criteria.getParentCustomerId());
+	} else if (criteria.getParentCustomerToken() != null) {
+	    ICustomer parent = getCustomerByToken(criteria.getParentCustomerToken());
+	    if (parent == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidCustomerToken, ErrorLevel.ERROR);
+	    }
+	    query.append(MongoCustomer.PROP_PARENT_CUSTOMER_ID, parent.getId());
 	}
-	if (criteria.getCustomerTypeId() != null) {
-	    query.append(MongoCustomer.PROP_CUSTOMER_TYPE_ID, criteria.getCustomerTypeId());
+	if (criteria.getCustomerTypeToken() != null) {
+	    ICustomerType type = getCustomerTypeByToken(criteria.getCustomerTypeToken());
+	    if (type == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidCustomerTypeToken, ErrorLevel.ERROR);
+	    }
+	    query.append(MongoCustomer.PROP_CUSTOMER_TYPE_ID, type.getId());
 	}
 	Document sort = new Document(MongoArea.PROP_NAME, 1);
 	return MongoPersistence.search(ICustomer.class, customers, query, sort, criteria, LOOKUP);
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getCustomersTree()
+     */
+    @Override
+    public List<TreeNode> getCustomersTree() throws SiteWhereException {
+	ISearchResults<ICustomer> all = listCustomers(new CustomerSearchCriteria(1, 0));
+	return TreeBuilder.buildTree(all.getResults());
     }
 
     /*
@@ -1532,7 +1611,7 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	}
 
 	// Look up parent area.
-	IArea parentArea = (request.getParentAreaToken() != null) ? getAreaByToken(request.getParentAreaToken()) : null;
+	IArea parentArea = (request.getParentToken() != null) ? getAreaByToken(request.getParentToken()) : null;
 
 	// Use common logic so all backend implementations work the same.
 	Area area = DeviceManagementPersistence.areaCreateLogic(request, areaType, parentArea);
@@ -1617,14 +1696,25 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 	Document query = new Document();
 	if ((criteria.getRootOnly() != null) && (criteria.getRootOnly().booleanValue() == true)) {
 	    query.append(MongoArea.PROP_PARENT_AREA_ID, null);
-	} else if (criteria.getParentAreaId() != null) {
-	    query.append(MongoArea.PROP_PARENT_AREA_ID, criteria.getParentAreaId());
+	} else if (criteria.getParentAreaToken() != null) {
+	    IArea parent = MongoArea.fromDocument(assertArea(criteria.getParentAreaToken()));
+	    query.append(MongoArea.PROP_PARENT_AREA_ID, parent.getId());
 	}
-	if (criteria.getAreaTypeId() != null) {
-	    query.append(MongoArea.PROP_AREA_TYPE_ID, criteria.getAreaTypeId());
+	if (criteria.getAreaTypeToken() != null) {
+	    IAreaType type = MongoAreaType.fromDocument(assertAreaType(criteria.getAreaTypeToken()));
+	    query.append(MongoArea.PROP_AREA_TYPE_ID, type.getId());
 	}
 	Document sort = new Document(MongoArea.PROP_NAME, 1);
 	return MongoPersistence.search(IArea.class, areas, query, sort, criteria, LOOKUP);
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getAreasTree()
+     */
+    @Override
+    public List<TreeNode> getAreasTree() throws SiteWhereException {
+	ISearchResults<IArea> all = listAreas(new AreaSearchCriteria(1, 0));
+	return TreeBuilder.buildTree(all.getResults());
     }
 
     /*
@@ -1723,8 +1813,9 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
 
 	// Query based on search criteria.
 	Document query = new Document();
-	if (criteria.getAreaId() != null) {
-	    query.append(MongoZone.PROP_AREA_ID, criteria.getAreaId());
+	if (criteria.getAreaToken() != null) {
+	    IArea area = getAreaByToken(criteria.getAreaToken());
+	    query.append(MongoZone.PROP_AREA_ID, area.getId());
 	}
 
 	Document sort = new Document(MongoPersistentEntity.PROP_CREATED_DATE, -1);
@@ -2133,6 +2224,22 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
     }
 
     /**
+     * Return the {@link Document} for the area type with the given token. Throws an
+     * exception if the token is not found.
+     * 
+     * @param hardwareId
+     * @return
+     * @throws SiteWhereException
+     */
+    protected Document assertAreaType(String token) throws SiteWhereException {
+	Document match = getAreaTypeDocumentByToken(token);
+	if (match == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaTypeToken, ErrorLevel.INFO);
+	}
+	return match;
+    }
+
+    /**
      * Get the DBObject containing area type information that matches the given id.
      * 
      * @param token
@@ -2383,7 +2490,7 @@ public class MongoDeviceManagement extends MongoTenantComponent<DeviceManagement
      * @return
      */
     public IAssetManagement getAssetManagement() {
-	return ((DeviceManagementMicroservice) getTenantEngine().getMicroservice()).getAssetManagementApiChannel();
+	return ((DeviceManagementMicroservice) getTenantEngine().getMicroservice()).getCachedAssetManagement();
     }
 
     /*

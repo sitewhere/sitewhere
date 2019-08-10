@@ -8,6 +8,7 @@
 package com.sitewhere.device.persistence;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -149,7 +150,7 @@ public class DeviceManagementPersistence extends Persistence {
 	Persistence.brandedEntityCreateLogic(request, area);
 
 	area.setCustomerTypeId(customerType.getId());
-	area.setParentCustomerId(parentCustomer != null ? parentCustomer.getId() : null);
+	area.setParentId(parentCustomer != null ? parentCustomer.getId() : null);
 	area.setName(request.getName());
 	area.setDescription(request.getDescription());
 	area.setImageUrl(request.getImageUrl());
@@ -243,7 +244,7 @@ public class DeviceManagementPersistence extends Persistence {
 	Persistence.brandedEntityCreateLogic(request, area);
 
 	area.setAreaTypeId(areaType.getId());
-	area.setParentAreaId(parentArea != null ? parentArea.getId() : null);
+	area.setParentId(parentArea != null ? parentArea.getId() : null);
 	area.setName(request.getName());
 	area.setDescription(request.getDescription());
 	area.setImageUrl(request.getImageUrl());
@@ -393,38 +394,7 @@ public class DeviceManagementPersistence extends Persistence {
 	command.setDescription(request.getDescription());
 	command.getParameters().addAll(request.getParameters());
 
-	checkDuplicateCommand(command, existing);
-
 	return command;
-    }
-
-    /**
-     * Checks whether a command is already in the given list (same name and
-     * namespace).
-     * 
-     * @param command
-     * @param existing
-     * @throws SiteWhereException
-     */
-    protected static void checkDuplicateCommand(DeviceCommand command, List<IDeviceCommand> existing)
-	    throws SiteWhereException {
-	boolean duplicate = false;
-	for (IDeviceCommand current : existing) {
-	    if (current.getName().equals(command.getName())) {
-		if (current.getNamespace() == null) {
-		    if (command.getNamespace() == null) {
-			duplicate = true;
-			break;
-		    }
-		} else if (current.getNamespace().equals(command.getNamespace())) {
-		    duplicate = true;
-		    break;
-		}
-	    }
-	}
-	if (duplicate) {
-	    throw new SiteWhereSystemException(ErrorCode.DeviceCommandExists, ErrorLevel.ERROR);
-	}
     }
 
     /**
@@ -444,16 +414,10 @@ public class DeviceManagementPersistence extends Persistence {
 	    target.setDeviceTypeId(deviceType.getId());
 	}
 	if (request.getName() != null) {
-	    if (!request.getName().equals(target.getName())) {
-		checkDuplicateCommand(target, existing);
-		target.setName(request.getName());
-	    }
+	    target.setName(request.getName());
 	}
 	if (request.getNamespace() != null) {
-	    if (!request.getNamespace().equals(target.getNamespace())) {
-		checkDuplicateCommand(target, existing);
-		target.setNamespace(request.getNamespace());
-	    }
+	    target.setNamespace(request.getNamespace());
 	}
 
 	if (request.getDescription() != null) {
@@ -630,12 +594,12 @@ public class DeviceManagementPersistence extends Persistence {
      * @throws SiteWhereException
      */
     public static void deviceDeleteLogic(IDevice device, IDeviceManagement deviceManagement) throws SiteWhereException {
-	if (device.getDeviceAssignmentId() != null) {
+	if (device.getActiveDeviceAssignmentIds().size() > 0) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceCanNotBeDeletedIfAssigned, ErrorLevel.ERROR);
 	}
 
 	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(1, 1);
-	criteria.setDeviceId(device.getId());
+	criteria.setDeviceTokens(Collections.singletonList(device.getToken()));
 	ISearchResults<IDeviceAssignment> assignments = deviceManagement.listDeviceAssignments(criteria);
 	if (assignments.getNumResults() > 0) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceDeleteHasAssignments, ErrorLevel.ERROR);
@@ -973,8 +937,9 @@ public class DeviceManagementPersistence extends Persistence {
 	zone.setAreaId(area.getId());
 	zone.setName(request.getName());
 	zone.setBorderColor(request.getBorderColor());
+	zone.setBorderOpacity(request.getBorderOpacity());
 	zone.setFillColor(request.getFillColor());
-	zone.setOpacity(request.getOpacity());
+	zone.setFillOpacity(request.getFillOpacity());
 	zone.setBounds(Location.copy(request.getBounds()));
 
 	return zone;
@@ -997,11 +962,14 @@ public class DeviceManagementPersistence extends Persistence {
 	if (request.getBorderColor() != null) {
 	    target.setBorderColor(request.getBorderColor());
 	}
+	if (request.getBorderOpacity() != null) {
+	    target.setBorderOpacity(request.getBorderOpacity());
+	}
 	if (request.getFillColor() != null) {
 	    target.setFillColor(request.getFillColor());
 	}
-	if (request.getOpacity() != null) {
-	    target.setOpacity(request.getOpacity());
+	if (request.getFillOpacity() != null) {
+	    target.setFillOpacity(request.getFillOpacity());
 	}
 	if (request.getBounds() != null) {
 	    target.setBounds(Location.copy(request.getBounds()));

@@ -25,12 +25,15 @@ import com.evanlennick.retry4j.CallExecutorBuilder;
 import com.evanlennick.retry4j.Status;
 import com.evanlennick.retry4j.config.RetryConfig;
 import com.evanlennick.retry4j.config.RetryConfigBuilder;
-import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.listener.RetryListener;
 import com.sitewhere.Version;
+import com.sitewhere.grpc.client.tenant.CachedTenantManagement;
+import com.sitewhere.microservice.kafka.tenant.TenantManagementKafkaTriggers;
+import com.sitewhere.microservice.kafka.tenant.TenantModelProducer;
 import com.sitewhere.microservice.management.MicroserviceManagementGrpcServer;
 import com.sitewhere.microservice.scripting.ScriptTemplateManager;
 import com.sitewhere.microservice.state.MicroserviceStateUpdatesKafkaProducer;
+import com.sitewhere.microservice.tenant.persistence.ZookeeperTenantManagement;
 import com.sitewhere.rest.model.configuration.ConfigurationModel;
 import com.sitewhere.rest.model.microservice.state.MicroserviceDetails;
 import com.sitewhere.rest.model.microservice.state.MicroserviceState;
@@ -47,6 +50,8 @@ import com.sitewhere.spi.microservice.configuration.model.IElementRole;
 import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
+import com.sitewhere.spi.microservice.kafka.tenant.ITenantModelProducer;
+import com.sitewhere.spi.microservice.metrics.IMetricsServer;
 import com.sitewhere.spi.microservice.scripting.IScriptTemplateManager;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
@@ -58,6 +63,7 @@ import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.system.IVersion;
+import com.sitewhere.spi.tenant.ITenantManagement;
 
 /**
  * Common base class for all SiteWhere microservices.
@@ -94,6 +100,10 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     @Autowired
     private IZookeeperManager zookeeperManager;
 
+    /** Metrics server */
+    @Autowired
+    private IMetricsServer metricsServer;
+
     /** JWT token management */
     @Autowired
     private ITokenManagement tokenManagement;
@@ -106,6 +116,12 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     @Autowired
     private IKafkaTopicNaming kafkaTopicNaming;
 
+    /** Tenant management implementation */
+    private ITenantManagement tenantManagement;
+
+    /** Cached version of tenant management API */
+    private ITenantManagement cachedTenantManagement;
+
     /** Version information */
     private IVersion version = new Version();
 
@@ -117,6 +133,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     /** Kafka producer for microservice state updates */
     private IMicroserviceStateUpdatesKafkaProducer stateUpdatesKafkaProducer;
+
+    /** Reflects tenant model updates to Kafka topic */
+    private ITenantModelProducer tenantModelProducer = new TenantModelProducer();
 
     /** Script template manager instance */
     private IScriptTemplateManager scriptTemplateManager;
@@ -174,6 +193,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	// Initialize GRPC components.
 	initializeGrpcComponents();
 
+	// Initialize management APIs.
+	initializeManagementApis();
+
 	// Initialize state management components.
 	initializeStateManagement();
 
@@ -198,11 +220,29 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	// Start Zookeeper configuration management.
 	initialize.addStartStep(this, getZookeeperManager(), true);
 
+	// Initialize tenant management API.
+	initialize.addInitializeStep(this, getCachedTenantManagement(), true);
+
+	// Start HTTP tenant management API.
+	initialize.addStartStep(this, getCachedTenantManagement(), true);
+
+	// Initialize HTTP metrics server.
+	initialize.addInitializeStep(this, getMetricsServer(), true);
+
+	// Start HTTP metrics server.
+	initialize.addStartStep(this, getMetricsServer(), true);
+
 	// Initialize Kafka producer for reporting state.
 	initialize.addInitializeStep(this, getStateUpdatesKafkaProducer(), true);
 
 	// Start Kafka producer for reporting state.
 	initialize.addStartStep(this, getStateUpdatesKafkaProducer(), true);
+
+	// Initialize Kafka producer for reporting tenant updates.
+	initialize.addInitializeStep(this, getTenantModelProducer(), true);
+
+	// Start Kafka producer for reporting tenant updates.
+	initialize.addStartStep(this, getTenantModelProducer(), true);
 
 	// Execute initialization steps.
 	initialize.execute(monitor);
@@ -228,6 +268,15 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
      */
     protected void initializeGrpcComponents() {
 	this.microserviceManagementGrpcServer = new MicroserviceManagementGrpcServer(this);
+    }
+
+    /**
+     * Initialize management APIs.
+     */
+    protected void initializeManagementApis() {
+	this.tenantManagement = new TenantManagementKafkaTriggers(new ZookeeperTenantManagement());
+	this.cachedTenantManagement = new CachedTenantManagement(this.tenantManagement,
+		new CachedTenantManagement.CacheSettings());
     }
 
     /**
@@ -266,8 +315,17 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
 
+	// Stop Kafka producer for reporting tenant updates.
+	stop.addStopStep(this, getTenantModelProducer());
+
 	// Stop Kafka producer for reporting state.
 	stop.addStopStep(this, getStateUpdatesKafkaProducer());
+
+	// HTTP metrics server.
+	stop.addStopStep(this, getMetricsServer());
+
+	// Tenant management API.
+	stop.addStopStep(this, getCachedTenantManagement());
 
 	// Terminate Zk manager.
 	stop.addStopStep(this, getZookeeperManager());
@@ -291,31 +349,24 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void waitForInstanceInitialization() throws SiteWhereException {
-	try {
-	    getLogger().info("Verifying that instance has been bootstrapped...");
-	    Callable<Boolean> bootstrapCheck = () -> {
-		return getZookeeperManager().getCurator().checkExists()
-			.forPath(getInstanceConfigBootstrappedMarker()) == null ? false : true;
-	    };
-	    RetryConfig config = new RetryConfigBuilder().retryOnReturnValue(Boolean.FALSE).withMaxNumberOfTries(12)
-		    .withDelayBetweenTries(Duration.ofSeconds(2)).withFibonacciBackoff().build();
-	    RetryListener listener = new RetryListener<Boolean>() {
+	getLogger().info("Verifying that instance has been bootstrapped...");
+	Callable<Boolean> bootstrapCheck = () -> {
+	    return getZookeeperManager().getCurator().checkExists()
+		    .forPath(getInstanceConfigBootstrappedMarker()) == null ? false : true;
+	};
+	RetryConfig config = new RetryConfigBuilder().retryOnReturnValue(Boolean.FALSE).retryIndefinitely()
+		.withDelayBetweenTries(Duration.ofSeconds(2)).withRandomBackoff().build();
+	RetryListener listener = new RetryListener<Boolean>() {
 
-		@Override
-		public void onEvent(Status<Boolean> status) {
-		    getLogger().info(String.format(
-			    "Unable to locate bootstrap marker on attempt %d (total wait so far %dms). Retrying after fallback...",
-			    status.getTotalTries(), status.getTotalElapsedDuration().toMillis()));
-		}
-	    };
-	    new CallExecutorBuilder().config(config).afterFailedTryListener(listener).build().execute(bootstrapCheck);
-	    getLogger().info("Confirmed that instance was bootstrapped.");
-	} catch (RetriesExhaustedException e) {
-	    Status status = e.getStatus();
-	    throw new SiteWhereException(
-		    String.format("Unable to find instance bootstrap indicator for after %d attempts (%dms).",
-			    status.getTotalTries(), status.getTotalElapsedDuration().toMillis()));
-	}
+	    @Override
+	    public void onEvent(Status<Boolean> status) {
+		getLogger().info(String.format(
+			"Unable to locate bootstrap marker on attempt %d (total wait so far %dms). Retrying after fallback...",
+			status.getTotalTries(), status.getTotalElapsedDuration().toMillis()));
+	    }
+	};
+	new CallExecutorBuilder().config(config).afterFailedTryListener(listener).build().execute(bootstrapCheck);
+	getLogger().info("Confirmed that instance was bootstrapped.");
     }
 
     /*
@@ -522,6 +573,18 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     }
 
     /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getMetricsServer()
+     */
+    @Override
+    public IMetricsServer getMetricsServer() {
+	return metricsServer;
+    }
+
+    public void setMetricsServer(IMetricsServer metricsServer) {
+	this.metricsServer = metricsServer;
+    }
+
+    /*
      * @see com.sitewhere.microservice.spi.IMicroservice#getTokenManagement()
      */
     @Override
@@ -531,6 +594,30 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     public void setTokenManagement(ITokenManagement tokenManagement) {
 	this.tokenManagement = tokenManagement;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getTenantManagement()
+     */
+    @Override
+    public ITenantManagement getTenantManagement() {
+	return tenantManagement;
+    }
+
+    public void setTenantManagement(ITenantManagement tenantManagement) {
+	this.tenantManagement = tenantManagement;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getCachedTenantManagement()
+     */
+    @Override
+    public ITenantManagement getCachedTenantManagement() {
+	return cachedTenantManagement;
+    }
+
+    public void setCachedTenantManagement(ITenantManagement cachedTenantManagement) {
+	this.cachedTenantManagement = cachedTenantManagement;
     }
 
     /*
@@ -582,6 +669,18 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     public void setStateUpdatesKafkaProducer(IMicroserviceStateUpdatesKafkaProducer stateUpdatesKafkaProducer) {
 	this.stateUpdatesKafkaProducer = stateUpdatesKafkaProducer;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getTenantModelProducer()
+     */
+    @Override
+    public ITenantModelProducer getTenantModelProducer() {
+	return tenantModelProducer;
+    }
+
+    public void setTenantModelProducer(ITenantModelProducer tenantModelProducer) {
+	this.tenantModelProducer = tenantModelProducer;
     }
 
     /*

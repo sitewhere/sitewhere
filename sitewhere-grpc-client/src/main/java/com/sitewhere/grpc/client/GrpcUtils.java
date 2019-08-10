@@ -57,7 +57,7 @@ public class GrpcUtils {
     public static void handleClientMethodEntry(IApiChannel<?> channel, MethodDescriptor<?, ?> method,
 	    DebugParameter... parameters) {
 	LOGGER.debug(channel.getClass().getSimpleName() + " connected to '" + channel.getFunctionIdentifier().getPath()
-		+ "' received call to  " + method.getFullMethodName() + ".");
+		+ "' sending call to  " + method.getFullMethodName() + ".");
 	if (LOGGER.isTraceEnabled()) {
 	    for (DebugParameter parameter : parameters) {
 		if (parameter.getContent() instanceof String) {
@@ -269,14 +269,14 @@ public class GrpcUtils {
 	    Status status = Status.fromCode(Code.FAILED_PRECONDITION)
 		    .withDescription(sysex.getCode().getCode() + ":" + sysex.getCode().getMessage());
 	    thrown = status.asException();
+	} else if (t instanceof TenantEngineNotAvailableException) {
+	    TenantEngineNotAvailableException sw = (TenantEngineNotAvailableException) t;
+	    Status status = Status.fromCode(Code.UNAVAILABLE).withDescription(sw.getMessage());
+	    thrown = status.asException();
 	} else if (t instanceof SiteWhereException) {
 	    SiteWhereException sw = (SiteWhereException) t;
 	    Status status = Status.fromCode(Code.FAILED_PRECONDITION)
 		    .withDescription(ErrorCode.Error.getCode() + ":" + sw.getMessage());
-	    thrown = status.asException();
-	} else if (t instanceof TenantEngineNotAvailableException) {
-	    TenantEngineNotAvailableException sw = (TenantEngineNotAvailableException) t;
-	    Status status = Status.fromCode(Code.UNAVAILABLE).withDescription(sw.getMessage());
 	    thrown = status.asException();
 	} else {
 	    thrown = Status.fromThrowable(t).asException();

@@ -8,6 +8,7 @@
 package com.sitewhere.web.rest.controllers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,16 +44,12 @@ import com.sitewhere.rest.model.device.asset.DeviceLocationWithAsset;
 import com.sitewhere.rest.model.device.asset.DeviceMeasurementsWithAsset;
 import com.sitewhere.rest.model.device.asset.DeviceStateChangeWithAsset;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.rest.model.search.area.AreaSearchCriteria;
 import com.sitewhere.rest.model.search.customer.CustomerSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.area.IArea;
-import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.customer.ICustomer;
-import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -69,6 +67,7 @@ import com.sitewhere.spi.label.ILabel;
 import com.sitewhere.spi.label.ILabelGeneration;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.ITreeNode;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
 import com.sitewhere.web.rest.RestControllerBase;
@@ -122,7 +121,8 @@ public class Customers extends RestControllerBase {
 	    @ApiParam(value = "Include parent customer information", required = false) @RequestParam(defaultValue = "true") boolean includeParentCustomer)
 	    throws SiteWhereException {
 	ICustomer existing = assertCustomer(customerToken);
-	CustomerMarshalHelper helper = new CustomerMarshalHelper(getDeviceManagement(), getAssetManagement());
+	CustomerMarshalHelper helper = new CustomerMarshalHelper(getCachedDeviceManagement(),
+		getCachedAssetManagement());
 	helper.setIncludeCustomerType(includeCustomerType);
 	helper.setIncludeParentCustomer(includeParentCustomer);
 	return helper.convert(existing);
@@ -201,7 +201,8 @@ public class Customers extends RestControllerBase {
 
 	// Perform search.
 	ISearchResults<ICustomer> matches = getDeviceManagement().listCustomers(criteria);
-	CustomerMarshalHelper helper = new CustomerMarshalHelper(getDeviceManagement(), getAssetManagement());
+	CustomerMarshalHelper helper = new CustomerMarshalHelper(getCachedDeviceManagement(),
+		getCachedAssetManagement());
 	helper.setIncludeCustomerType(includeCustomerType);
 
 	List<ICustomer> results = new ArrayList<ICustomer>();
@@ -209,6 +210,18 @@ public class Customers extends RestControllerBase {
 	    results.add(helper.convert(customer));
 	}
 	return new SearchResults<ICustomer>(results, matches.getNumResults());
+    }
+
+    /**
+     * List all customers in a hierarchical tree format.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    @GetMapping(value = "/tree")
+    @ApiOperation(value = "List all customers in tree format")
+    public List<? extends ITreeNode> getCustomersTree() throws SiteWhereException {
+	return getDeviceManagement().getCustomersTree();
     }
 
     /**
@@ -226,62 +239,9 @@ public class Customers extends RestControllerBase {
 	    String parentCustomerToken, String customerTypeToken) throws SiteWhereException {
 	// Build criteria.
 	CustomerSearchCriteria criteria = new CustomerSearchCriteria(page, pageSize);
+	criteria.setParentCustomerToken(parentCustomerToken);
+	criteria.setCustomerTypeToken(customerTypeToken);
 	criteria.setRootOnly(rootOnly);
-
-	// Look up parent customer if provided.
-	if (parentCustomerToken != null) {
-	    ICustomer parent = getDeviceManagement().getCustomerByToken(parentCustomerToken);
-	    if (parent == null) {
-		throw new SiteWhereException("Invalid parent customer token.");
-	    }
-	    criteria.setParentCustomerId(parent.getId());
-	}
-
-	// Look up customer type if provided.
-	if (customerTypeToken != null) {
-	    ICustomerType customerType = getDeviceManagement().getCustomerTypeByToken(customerTypeToken);
-	    if (customerType == null) {
-		throw new SiteWhereException("Invalid customer type token.");
-	    }
-	    criteria.setCustomerTypeId(customerType.getId());
-	}
-
-	return criteria;
-    }
-
-    /**
-     * Build area search criteria from parameters.
-     * 
-     * @param page
-     * @param pageSize
-     * @param rootOnly
-     * @param parentAreaToken
-     * @param areaTypeToken
-     * @return
-     * @throws SiteWhereException
-     */
-    protected AreaSearchCriteria buildAreaSearchCriteria(int page, int pageSize, boolean rootOnly,
-	    String parentAreaToken, String areaTypeToken) throws SiteWhereException {
-	// Build criteria.
-	AreaSearchCriteria criteria = new AreaSearchCriteria(page, pageSize);
-	criteria.setRootOnly(rootOnly);
-
-	// Look up parent area if provided.
-	if (parentAreaToken != null) {
-	    IArea parent = getDeviceManagement().getAreaByToken(parentAreaToken);
-	    if (parent != null) {
-		criteria.setParentAreaId(parent.getId());
-	    }
-	}
-
-	// Look up area type if provided.
-	if (areaTypeToken != null) {
-	    IAreaType areaType = getDeviceManagement().getAreaTypeByToken(areaTypeToken);
-	    if (areaType != null) {
-		criteria.setAreaTypeId(areaType.getId());
-	    }
-	}
-
 	return criteria;
     }
 
@@ -324,7 +284,7 @@ public class Customers extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletResponse response) throws SiteWhereException {
-	List<UUID> customers = resolveCustomerIds(customerToken, true, getDeviceManagement());
+	List<UUID> customers = resolveCustomerIdsRecursive(customerToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
 		endDate, response);
 	ISearchResults<IDeviceMeasurement> results = getDeviceEventManagement()
@@ -332,7 +292,7 @@ public class Customers extends RestControllerBase {
 
 	List<IDeviceMeasurement> wrapped = new ArrayList<IDeviceMeasurement>();
 	for (IDeviceMeasurement result : results.getResults()) {
-	    wrapped.add(new DeviceMeasurementsWithAsset(result, getAssetManagement()));
+	    wrapped.add(new DeviceMeasurementsWithAsset(result, getCachedAssetManagement()));
 	}
 	return new SearchResults<IDeviceMeasurement>(wrapped, results.getNumResults());
     }
@@ -359,7 +319,7 @@ public class Customers extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletResponse response) throws SiteWhereException {
-	List<UUID> customers = resolveCustomerIds(customerToken, true, getDeviceManagement());
+	List<UUID> customers = resolveCustomerIdsRecursive(customerToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
 		endDate, response);
 	ISearchResults<IDeviceLocation> results = getDeviceEventManagement()
@@ -368,7 +328,7 @@ public class Customers extends RestControllerBase {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceLocation> wrapped = new ArrayList<IDeviceLocation>();
 	for (IDeviceLocation result : results.getResults()) {
-	    wrapped.add(new DeviceLocationWithAsset(result, getAssetManagement()));
+	    wrapped.add(new DeviceLocationWithAsset(result, getCachedAssetManagement()));
 	}
 	return new SearchResults<IDeviceLocation>(wrapped, results.getNumResults());
     }
@@ -395,7 +355,7 @@ public class Customers extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletResponse response) throws SiteWhereException {
-	List<UUID> customers = resolveCustomerIds(customerToken, true, getDeviceManagement());
+	List<UUID> customers = resolveCustomerIdsRecursive(customerToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
 		endDate, response);
 	ISearchResults<IDeviceAlert> results = getDeviceEventManagement()
@@ -404,7 +364,7 @@ public class Customers extends RestControllerBase {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceAlert> wrapped = new ArrayList<IDeviceAlert>();
 	for (IDeviceAlert result : results.getResults()) {
-	    wrapped.add(new DeviceAlertWithAsset(result, getAssetManagement()));
+	    wrapped.add(new DeviceAlertWithAsset(result, getCachedAssetManagement()));
 	}
 	return new SearchResults<IDeviceAlert>(wrapped, results.getNumResults());
     }
@@ -431,7 +391,7 @@ public class Customers extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletResponse response) throws SiteWhereException {
-	List<UUID> customers = resolveCustomerIds(customerToken, true, getDeviceManagement());
+	List<UUID> customers = resolveCustomerIdsRecursive(customerToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
 		endDate, response);
 	ISearchResults<IDeviceCommandInvocation> results = getDeviceEventManagement()
@@ -440,7 +400,7 @@ public class Customers extends RestControllerBase {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceCommandInvocation> wrapped = new ArrayList<IDeviceCommandInvocation>();
 	for (IDeviceCommandInvocation result : results.getResults()) {
-	    wrapped.add(new DeviceCommandInvocationWithAsset(result, getAssetManagement()));
+	    wrapped.add(new DeviceCommandInvocationWithAsset(result, getCachedAssetManagement()));
 	}
 	return new SearchResults<IDeviceCommandInvocation>(wrapped, results.getNumResults());
     }
@@ -467,7 +427,7 @@ public class Customers extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletResponse response) throws SiteWhereException {
-	List<UUID> customers = resolveCustomerIds(customerToken, true, getDeviceManagement());
+	List<UUID> customers = resolveCustomerIdsRecursive(customerToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
 		endDate, response);
 	ISearchResults<IDeviceCommandResponse> results = getDeviceEventManagement()
@@ -476,7 +436,7 @@ public class Customers extends RestControllerBase {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceCommandResponse> wrapped = new ArrayList<IDeviceCommandResponse>();
 	for (IDeviceCommandResponse result : results.getResults()) {
-	    wrapped.add(new DeviceCommandResponseWithAsset(result, getAssetManagement()));
+	    wrapped.add(new DeviceCommandResponseWithAsset(result, getCachedAssetManagement()));
 	}
 	return new SearchResults<IDeviceCommandResponse>(wrapped, results.getNumResults());
     }
@@ -503,7 +463,7 @@ public class Customers extends RestControllerBase {
 	    @ApiParam(value = "Start date", required = false) @RequestParam(required = false) String startDate,
 	    @ApiParam(value = "End date", required = false) @RequestParam(required = false) String endDate,
 	    HttpServletResponse response) throws SiteWhereException {
-	List<UUID> customers = resolveCustomerIds(customerToken, true, getDeviceManagement());
+	List<UUID> customers = resolveCustomerIdsRecursive(customerToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
 		endDate, response);
 	ISearchResults<IDeviceStateChange> results = getDeviceEventManagement()
@@ -512,7 +472,7 @@ public class Customers extends RestControllerBase {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceStateChange> wrapped = new ArrayList<IDeviceStateChange>();
 	for (IDeviceStateChange result : results.getResults()) {
-	    wrapped.add(new DeviceStateChangeWithAsset(result, getAssetManagement()));
+	    wrapped.add(new DeviceStateChangeWithAsset(result, getCachedAssetManagement()));
 	}
 	return new SearchResults<IDeviceStateChange>(wrapped, results.getNumResults());
     }
@@ -545,26 +505,26 @@ public class Customers extends RestControllerBase {
 	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(page, pageSize);
 	DeviceAssignmentStatus decodedStatus = (status != null) ? DeviceAssignmentStatus.valueOf(status) : null;
 	if (decodedStatus != null) {
-	    criteria.setStatus(decodedStatus);
+	    criteria.setAssignmentStatuses(Collections.singletonList(decodedStatus));
 	}
-	List<UUID> customers = resolveCustomerIds(customerToken, true, getDeviceManagement());
-	criteria.setCustomerIds(customers);
+	List<String> customers = resolveCustomerTokensRecursive(customerToken, true, getDeviceManagement());
+	criteria.setCustomerTokens(customers);
 
 	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
-	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getCachedDeviceManagement());
 	helper.setIncludeDevice(includeDevice);
 	helper.setIncludeCustomer(includeCustomer);
 	helper.setIncludeArea(includeArea);
 	helper.setIncludeAsset(includeAsset);
 	List<DeviceAssignment> converted = new ArrayList<DeviceAssignment>();
 	for (IDeviceAssignment assignment : matches.getResults()) {
-	    converted.add(helper.convert(assignment, getAssetManagement()));
+	    converted.add(helper.convert(assignment, getCachedAssetManagement()));
 	}
 	return new SearchResults<DeviceAssignment>(converted, matches.getNumResults());
     }
 
     /**
-     * Resolve ids recursively for contained customers based on customer token.
+     * Resolve tokens for all customers that are children of a given customer.
      * 
      * @param customerToken
      * @param recursive
@@ -572,7 +532,26 @@ public class Customers extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    public static List<UUID> resolveCustomerIds(String customerToken, boolean recursive,
+    public static List<String> resolveCustomerTokensRecursive(String customerToken, boolean recursive,
+	    IDeviceManagement deviceManagement) throws SiteWhereException {
+	List<ICustomer> customers = resolveCustomers(customerToken, recursive, deviceManagement);
+	List<String> ids = new ArrayList<>();
+	for (ICustomer customer : customers) {
+	    ids.add(customer.getToken());
+	}
+	return ids;
+    }
+
+    /**
+     * Resolve ids for all customers that are children of a given customer.
+     * 
+     * @param customerToken
+     * @param recursive
+     * @param deviceManagement
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<UUID> resolveCustomerIdsRecursive(String customerToken, boolean recursive,
 	    IDeviceManagement deviceManagement) throws SiteWhereException {
 	List<ICustomer> customers = resolveCustomers(customerToken, recursive, deviceManagement);
 	List<UUID> ids = new ArrayList<>();
@@ -641,12 +620,16 @@ public class Customers extends RestControllerBase {
 	return getMicroservice().getDeviceManagementApiChannel();
     }
 
+    private IDeviceManagement getCachedDeviceManagement() {
+	return getMicroservice().getCachedDeviceManagement();
+    }
+
     private IDeviceEventManagement getDeviceEventManagement() {
 	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiChannel());
     }
 
-    private IAssetManagement getAssetManagement() {
-	return getMicroservice().getAssetManagementApiChannel();
+    private IAssetManagement getCachedAssetManagement() {
+	return getMicroservice().getCachedAssetManagement();
     }
 
     private ILabelGeneration getLabelGeneration() {

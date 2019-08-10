@@ -40,8 +40,6 @@ import com.sitewhere.spi.search.asset.IAssetTypeSearchCritiera;
 
 /**
  * Convert asset entities between SiteWhere API model and GRPC model.
- * 
- * @author Derek
  */
 public class AssetModelConverter {
 
@@ -297,7 +295,7 @@ public class AssetModelConverter {
     public static AssetSearchCriteria asApiAssetSearchCriteria(GAssetSearchCriteria grpc) throws SiteWhereException {
 	AssetSearchCriteria api = new AssetSearchCriteria(grpc.getPaging().getPageNumber(),
 		grpc.getPaging().getPageSize());
-	api.setAssetTypeId(grpc.hasAssetTypeId() ? CommonModelConverter.asApiUuid(grpc.getAssetTypeId()) : null);
+	api.setAssetTypeToken(grpc.hasAssetTypeToken() ? grpc.getAssetTypeToken().getValue() : null);
 	return api;
     }
 
@@ -311,8 +309,8 @@ public class AssetModelConverter {
     public static GAssetSearchCriteria asGrpcAssetSearchCriteria(IAssetSearchCriteria api) throws SiteWhereException {
 	GAssetSearchCriteria.Builder gcriteria = GAssetSearchCriteria.newBuilder();
 	gcriteria.setPaging(CommonModelConverter.asGrpcPaging(api));
-	if (api.getAssetTypeId() != null) {
-	    gcriteria.setAssetTypeId(CommonModelConverter.asGrpcUuid(api.getAssetTypeId()));
+	if (api.getAssetTypeToken() != null) {
+	    gcriteria.setAssetTypeToken(GOptionalString.newBuilder().setValue(api.getAssetTypeToken()));
 	}
 	return gcriteria.build();
     }

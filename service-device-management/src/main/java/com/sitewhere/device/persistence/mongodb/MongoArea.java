@@ -63,7 +63,7 @@ public class MongoArea implements MongoConverter<IArea> {
      */
     public static void toDocument(IArea source, Document target) {
 	target.append(PROP_AREA_TYPE_ID, source.getAreaTypeId());
-	target.append(PROP_PARENT_AREA_ID, source.getParentAreaId());
+	target.append(PROP_PARENT_AREA_ID, source.getParentId());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_DESCRIPTION, source.getDescription());
 
@@ -84,7 +84,7 @@ public class MongoArea implements MongoConverter<IArea> {
 	String description = (String) source.get(PROP_DESCRIPTION);
 
 	target.setAreaTypeId(areaTypeId);
-	target.setParentAreaId(parentAreaId);
+	target.setParentId(parentAreaId);
 	target.setName(name);
 	target.setDescription(description);
 	target.setBounds(MongoBoundedEntity.loadBounds(source));

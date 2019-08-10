@@ -27,6 +27,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.errors.InvalidReplicationFactorException;
+import org.apache.kafka.common.errors.RetriableException;
 import org.apache.kafka.common.errors.TopicExistsException;
 import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
@@ -112,19 +113,32 @@ public abstract class MicroserviceKafkaProducer extends TenantEngineLifecycleCom
      */
     @Override
     public Future<RecordMetadata> send(String key, byte[] message) throws SiteWhereException {
-	ProducerRecord<String, byte[]> record = new ProducerRecord<String, byte[]>(getTargetTopicName(), key, message);
-	try {
-	    if (getKafkaAvailable().getCount() != 0) {
-		getLogger().info("Producer waiting on Kafka to become available...");
+	while (true) {
+	    ProducerRecord<String, byte[]> record = new ProducerRecord<String, byte[]>(getTargetTopicName(), key,
+		    message);
+	    try {
+		if (getKafkaAvailable().getCount() != 0) {
+		    getLogger().info("Producer waiting on Kafka to become available...");
+		}
+		getKafkaAvailable().await();
+		return getProducer().send(record);
+	    } catch (RetriableException e) {
+		// Wait before attempting to send again.
+		try {
+		    getLogger().info(
+			    String.format("Got retriable exception [%s] while sending Kafka payload. Waiting to retry.",
+				    e.getMessage()));
+		    Thread.sleep(5000);
+		} catch (InterruptedException e1) {
+		    getLogger().info("Interrupted while waiting to send Kafka payload.");
+		}
+	    } catch (InterruptedException e) {
+		throw new SiteWhereException("Producer interrupted while waiting for Kafka.", e);
+	    } catch (IllegalStateException e) {
+		throw new SiteWhereException("Producer unable to send record.", e);
+	    } catch (Throwable e) {
+		throw new SiteWhereException("Unhandled exception in producer while sending record.", e);
 	    }
-	    getKafkaAvailable().await();
-	    return getProducer().send(record);
-	} catch (InterruptedException e) {
-	    throw new SiteWhereException("Producer interrupted while waiting for Kafka.", e);
-	} catch (IllegalStateException e) {
-	    throw new SiteWhereException("Producer unable to send record.", e);
-	} catch (Throwable e) {
-	    throw new SiteWhereException("Unhandled exception in producer while sending record.", e);
 	}
     }
 

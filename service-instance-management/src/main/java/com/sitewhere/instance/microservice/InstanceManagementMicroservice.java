@@ -17,27 +17,25 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.sitewhere.instance.configuration.InstanceManagementModelProvider;
 import com.sitewhere.instance.initializer.GroovyTenantModelInitializer;
 import com.sitewhere.instance.initializer.GroovyUserModelInitializer;
+import com.sitewhere.instance.spi.instance.grpc.IInstanceManagementGrpcServer;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.instance.spi.templates.IInstanceTemplate;
 import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
 import com.sitewhere.instance.spi.tenant.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.instance.spi.tenant.kafka.ITenantBootstrapModelConsumer;
-import com.sitewhere.instance.spi.tenant.kafka.ITenantModelProducer;
 import com.sitewhere.instance.spi.tenant.templates.IDatasetTemplateManager;
 import com.sitewhere.instance.spi.tenant.templates.ITenantTemplateManager;
 import com.sitewhere.instance.spi.user.grpc.IUserManagementGrpcServer;
 import com.sitewhere.instance.templates.InstanceTemplateManager;
-import com.sitewhere.instance.tenant.persistence.ZookeeperTenantManagement;
 import com.sitewhere.instance.tenant.templates.DatasetTemplateManager;
 import com.sitewhere.instance.tenant.templates.TenantTemplateManager;
 import com.sitewhere.instance.user.persistence.SyncopeUserManagement;
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
+import com.sitewhere.microservice.grpc.instance.InstanceManagementGrpcServer;
 import com.sitewhere.microservice.grpc.tenant.TenantManagementGrpcServer;
 import com.sitewhere.microservice.grpc.user.UserManagementGrpcServer;
 import com.sitewhere.microservice.kafka.tenant.TenantBootstrapModelConsumer;
-import com.sitewhere.microservice.kafka.tenant.TenantManagementKafkaTriggers;
-import com.sitewhere.microservice.kafka.tenant.TenantModelProducer;
 import com.sitewhere.microservice.kafka.user.UserManagementKafkaTriggers;
 import com.sitewhere.microservice.scripting.InstanceScriptSynchronizer;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
@@ -45,6 +43,7 @@ import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.instance.IInstanceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
@@ -53,14 +52,13 @@ import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
-import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.user.IUserManagement;
 
 /**
  * Microservice that provides instance management functionality.
  */
 public class InstanceManagementMicroservice extends GlobalMicroservice<MicroserviceIdentifier>
-	implements IInstanceManagementMicroservice<MicroserviceIdentifier> {
+	implements IInstanceManagementMicroservice<MicroserviceIdentifier>, IInstanceManagement {
 
     /** Microservice name */
     private static final String NAME = "Instance Management";
@@ -74,6 +72,9 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     /** Instance script synchronizer */
     private IScriptSynchronizer instanceScriptSynchronizer;
 
+    /** Provides server for instance management GRPC requests */
+    private IInstanceManagementGrpcServer instanceManagementGrpcServer;
+
     /** Responds to user management GRPC requests */
     private IUserManagementGrpcServer userManagementGrpcServer;
 
@@ -83,17 +84,11 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     /** Responds to tenant management GRPC requests */
     private ITenantManagementGrpcServer tenantManagementGrpcServer;
 
-    /** Tenant management implementation */
-    private ITenantManagement tenantManagement;
-
     /** Tenant template manager */
     private ITenantTemplateManager tenantConfigurationTemplateManager = new TenantTemplateManager();
 
     /** Dataset template manager */
     private IDatasetTemplateManager tenantDatasetTemplateManager = new DatasetTemplateManager();
-
-    /** Reflects tenant model updates to Kafka topic */
-    private ITenantModelProducer tenantModelProducer;
 
     /** Watches tenant model updates and bootstraps new tenants */
     private ITenantBootstrapModelConsumer tenantBootstrapModelConsumer;
@@ -193,23 +188,20 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Create step that will start components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
-	// Initialize tenant management implementation.
-	init.addInitializeStep(this, getTenantManagement(), true);
-
 	// Initialize tenant configuration template manager.
 	init.addInitializeStep(this, getTenantConfigurationTemplateManager(), true);
 
 	// Initialize tenant dataset template manager.
 	init.addInitializeStep(this, getTenantDatasetTemplateManager(), true);
 
+	// Initialize instance management GRPC server.
+	init.addInitializeStep(this, getInstanceManagementGrpcServer(), true);
+
 	// Initialize tenant management GRPC server.
 	init.addInitializeStep(this, getTenantManagementGrpcServer(), true);
 
 	// Initialize tenant bootstrap model consumer.
 	init.addInitializeStep(this, getTenantBootstrapModelConsumer(), true);
-
-	// Initialize tenant model producer.
-	init.addInitializeStep(this, getTenantModelProducer(), true);
 
 	// Initialize user management implementation.
 	init.addInitializeStep(this, getUserManagement(), true);
@@ -229,15 +221,15 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
      */
     protected void createManagementImplementations() {
 	this.userManagement = new UserManagementKafkaTriggers(new SyncopeUserManagement());
-	this.tenantManagement = new TenantManagementKafkaTriggers(new ZookeeperTenantManagement());
     }
 
     /**
      * Create components that interact via GRPC.
      */
     protected void createGrpcComponents() {
+	this.instanceManagementGrpcServer = new InstanceManagementGrpcServer(this, this);
 	this.userManagementGrpcServer = new UserManagementGrpcServer(this, getUserManagement());
-	this.tenantManagementGrpcServer = new TenantManagementGrpcServer(this, getTenantManagement(), this);
+	this.tenantManagementGrpcServer = new TenantManagementGrpcServer(this, getTenantManagement());
     }
 
     /**
@@ -246,7 +238,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
      * @throws SiteWhereException
      */
     protected void createKafkaComponents() throws SiteWhereException {
-	this.tenantModelProducer = new TenantModelProducer();
 	this.tenantBootstrapModelConsumer = new TenantBootstrapModelConsumer();
     }
 
@@ -269,23 +260,20 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Verify or create Zk configuration based on instance template.
 	start.addStep(verifyOrBootstrapInstanceConfigurationModel());
 
-	// Start tenant management implementation.
-	start.addStartStep(this, getTenantManagement(), true);
-
 	// Start tenant configuration template manager.
 	start.addStartStep(this, getTenantConfigurationTemplateManager(), true);
 
 	// Start tenant dataset template manager.
 	start.addStartStep(this, getTenantDatasetTemplateManager(), true);
 
-	// Start GRPC server.
+	// Start instance management GRPC server.
+	start.addStartStep(this, getInstanceManagementGrpcServer(), true);
+
+	// Start tenant management GRPC server.
 	start.addStartStep(this, getTenantManagementGrpcServer(), true);
 
 	// Start tenant bootstrap model consumer.
 	start.addStartStep(this, getTenantBootstrapModelConsumer(), true);
-
-	// Start tenant model producer.
-	start.addStartStep(this, getTenantModelProducer(), true);
 
 	// Boostrap tenants from instance template configuration.
 	start.addStep(initializeTenantModelFromInstanceTemplate());
@@ -313,17 +301,17 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
-	// Stop tenant model producer.
-	stop.addStopStep(this, getTenantModelProducer());
-
 	// Stop tenant bootstrap model consumer.
 	stop.addStopStep(this, getTenantBootstrapModelConsumer());
 
-	// Stop GRPC manager.
-	stop.addStopStep(this, getTenantManagementGrpcServer());
-
 	// Stop user management GRPC server.
 	stop.addStopStep(this, getUserManagementGrpcServer());
+
+	// Stop tenant management GRPC manager.
+	stop.addStopStep(this, getTenantManagementGrpcServer());
+
+	// Stop instance management GRPC manager.
+	stop.addStopStep(this, getInstanceManagementGrpcServer());
 
 	// Stop tenant dataset template manager.
 	stop.addStopStep(this, getTenantDatasetTemplateManager());
@@ -336,9 +324,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
 	// Stop instance template manager.
 	stop.addStopStep(this, getInstanceTemplateManager());
-
-	// Stop tenant management implementation.
-	stop.addStopStep(this, getTenantManagement());
 
 	// Stop user management implementation.
 	stop.addStopStep(this, getUserManagement());
@@ -604,7 +589,7 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     }
 
     /*
-     * @see com.sitewhere.spi.tenant.ITenantAdministration#getTenantTemplates()
+     * @see com.sitewhere.spi.instance.IInstanceManagement#getTenantTemplates()
      */
     @Override
     public List<ITenantTemplate> getTenantTemplates() throws SiteWhereException {
@@ -612,7 +597,7 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     }
 
     /*
-     * @see com.sitewhere.spi.tenant.ITenantAdministration#getDatasetTemplates()
+     * @see com.sitewhere.spi.instance.IInstanceManagement#getDatasetTemplates()
      */
     @Override
     public List<IDatasetTemplate> getDatasetTemplates() throws SiteWhereException {
@@ -645,6 +630,19 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
     public void setInstanceScriptSynchronizer(IScriptSynchronizer instanceScriptSynchronizer) {
 	this.instanceScriptSynchronizer = instanceScriptSynchronizer;
+    }
+
+    /*
+     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * getInstanceManagementGrpcServer()
+     */
+    @Override
+    public IInstanceManagementGrpcServer getInstanceManagementGrpcServer() {
+	return instanceManagementGrpcServer;
+    }
+
+    public void setInstanceManagementGrpcServer(IInstanceManagementGrpcServer instanceManagementGrpcServer) {
+	this.instanceManagementGrpcServer = instanceManagementGrpcServer;
     }
 
     /*
@@ -688,19 +686,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
     /*
      * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
-     * getTenantManagement()
-     */
-    @Override
-    public ITenantManagement getTenantManagement() {
-	return tenantManagement;
-    }
-
-    public void setTenantManagement(ITenantManagement tenantManagement) {
-	this.tenantManagement = tenantManagement;
-    }
-
-    /*
-     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
      * getTenantConfigurationTemplateManager()
      */
     @Override
@@ -723,19 +708,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
     public void setTenantDatasetTemplateManager(IDatasetTemplateManager tenantDatasetTemplateManager) {
 	this.tenantDatasetTemplateManager = tenantDatasetTemplateManager;
-    }
-
-    /*
-     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
-     * getTenantModelProducer()
-     */
-    @Override
-    public ITenantModelProducer getTenantModelProducer() {
-	return tenantModelProducer;
-    }
-
-    public void setTenantModelProducer(ITenantModelProducer tenantModelProducer) {
-	this.tenantModelProducer = tenantModelProducer;
     }
 
     /*

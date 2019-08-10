@@ -29,8 +29,6 @@ import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Base class for cache providers.
- * 
- * @author Derek
  *
  * @param <K>
  * @param <V>

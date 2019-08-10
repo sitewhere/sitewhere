@@ -31,8 +31,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 /**
  * Base class for Kafka consumers that process state updates for microservices
  * and their managed tenant engines.
- * 
- * @author Derek
  */
 public abstract class MicroserviceStateUpdatesKafkaConsumer extends DirectKafkaConsumer
 	implements IMicroserviceStateUpdatesKafkaConsumer {

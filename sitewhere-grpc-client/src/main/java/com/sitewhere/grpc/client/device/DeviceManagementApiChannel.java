@@ -51,6 +51,7 @@ import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.ITreeNode;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAlarmSearchCriteria;
@@ -345,6 +346,23 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     }
 
     /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getCustomersTree()
+     */
+    @Override
+    public List<ITreeNode> getCustomersTree() throws SiteWhereException {
+	try {
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetCustomersTreeMethod());
+	    GGetCustomersTreeRequest.Builder grequest = GGetCustomersTreeRequest.newBuilder();
+	    GGetCustomersTreeResponse gresponse = getGrpcChannel().getBlockingStub().getCustomersTree(grequest.build());
+	    List<ITreeNode> results = DeviceModelConverter.asApiTreeNodes(gresponse.getCustomersList());
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetCustomersTreeMethod(), results);
+	    return results;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetCustomersTreeMethod(), t);
+	}
+    }
+
+    /*
      * @see
      * com.sitewhere.spi.device.IDeviceManagement#deleteCustomer(java.util.UUID)
      */
@@ -600,6 +618,23 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 	    return results;
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getListAreasMethod(), t);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.IDeviceManagement#getAreasTree()
+     */
+    @Override
+    public List<ITreeNode> getAreasTree() throws SiteWhereException {
+	try {
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetAreasTreeMethod());
+	    GGetAreasTreeRequest.Builder grequest = GGetAreasTreeRequest.newBuilder();
+	    GGetAreasTreeResponse gresponse = getGrpcChannel().getBlockingStub().getAreasTree(grequest.build());
+	    List<ITreeNode> results = DeviceModelConverter.asApiTreeNodes(gresponse.getAreasList());
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetAreasTreeMethod(), results);
+	    return results;
+	} catch (Throwable t) {
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetAreasTreeMethod(), t);
 	}
     }
 
@@ -911,16 +946,16 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceCommandByToken(java.
-     * lang.String)
+     * @see
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceCommandByToken(java.util.
+     * UUID, java.lang.String)
      */
     @Override
-    public IDeviceCommand getDeviceCommandByToken(String token) throws SiteWhereException {
+    public IDeviceCommand getDeviceCommandByToken(UUID deviceTypeId, String token) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetDeviceCommandByTokenMethod());
 	    GGetDeviceCommandByTokenRequest.Builder grequest = GGetDeviceCommandByTokenRequest.newBuilder();
+	    grequest.setDeviceTypeId(CommonModelConverter.asGrpcUuid(deviceTypeId));
 	    grequest.setToken(token);
 	    GGetDeviceCommandByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getDeviceCommandByToken(grequest.build());
@@ -1050,14 +1085,15 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStatusByToken(java.lang.
-     * String)
+     * com.sitewhere.spi.device.IDeviceManagement#getDeviceStatusByToken(java.util.
+     * UUID, java.lang.String)
      */
     @Override
-    public IDeviceStatus getDeviceStatusByToken(String token) throws SiteWhereException {
+    public IDeviceStatus getDeviceStatusByToken(UUID deviceTypeId, String token) throws SiteWhereException {
 	try {
 	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetDeviceStatusMethod());
 	    GGetDeviceStatusByTokenRequest.Builder grequest = GGetDeviceStatusByTokenRequest.newBuilder();
+	    grequest.setDeviceTypeId(CommonModelConverter.asGrpcUuid(deviceTypeId));
 	    grequest.setToken(token);
 	    GGetDeviceStatusByTokenResponse gresponse = getGrpcChannel().getBlockingStub()
 		    .getDeviceStatusByToken(grequest.build());
@@ -1374,24 +1410,23 @@ public class DeviceManagementApiChannel extends MultitenantApiChannel<DeviceMana
 
     /*
      * @see
-     * com.sitewhere.spi.device.IDeviceManagement#getCurrentDeviceAssignment(java.
+     * com.sitewhere.spi.device.IDeviceManagement#getActiveDeviceAssignments(java.
      * util.UUID)
      */
     @Override
-    public IDeviceAssignment getCurrentDeviceAssignment(UUID deviceId) throws SiteWhereException {
+    public List<IDeviceAssignment> getActiveDeviceAssignments(UUID deviceId) throws SiteWhereException {
 	try {
-	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetCurrentAssignmentForDeviceMethod());
-	    GGetCurrentAssignmentForDeviceRequest.Builder grequest = GGetCurrentAssignmentForDeviceRequest.newBuilder();
+	    GrpcUtils.handleClientMethodEntry(this, DeviceManagementGrpc.getGetActiveAssignmentsForDeviceMethod());
+	    GGetActiveAssignmentsForDeviceRequest.Builder grequest = GGetActiveAssignmentsForDeviceRequest.newBuilder();
 	    grequest.setId(CommonModelConverter.asGrpcUuid(deviceId));
-	    GGetCurrentAssignmentForDeviceResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .getCurrentAssignmentForDevice(grequest.build());
-	    IDeviceAssignment response = (gresponse.hasAssignment())
-		    ? DeviceModelConverter.asApiDeviceAssignment(gresponse.getAssignment())
-		    : null;
-	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetCurrentAssignmentForDeviceMethod(), response);
+	    GGetActiveAssignmentsForDeviceResponse gresponse = getGrpcChannel().getBlockingStub()
+		    .getActiveAssignmentsForDevice(grequest.build());
+	    List<IDeviceAssignment> response = DeviceModelConverter
+		    .asApiDeviceAssignments(gresponse.getAssignmentList());
+	    GrpcUtils.logClientMethodResponse(DeviceManagementGrpc.getGetActiveAssignmentsForDeviceMethod(), response);
 	    return response;
 	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetCurrentAssignmentForDeviceMethod(),
+	    throw GrpcUtils.handleClientMethodException(DeviceManagementGrpc.getGetActiveAssignmentsForDeviceMethod(),
 		    t);
 	}
     }

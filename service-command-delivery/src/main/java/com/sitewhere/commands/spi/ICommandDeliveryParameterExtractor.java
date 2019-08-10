@@ -7,6 +7,8 @@
  */
 package com.sitewhere.commands.spi;
 
+import java.util.List;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -26,11 +28,11 @@ public interface ICommandDeliveryParameterExtractor<T> extends ITenantEngineLife
      * Extract required delivery parameters from the given sources.
      * 
      * @param nesting
-     * @param assignment
+     * @param assignments
      * @param execution
      * @return
      * @throws SiteWhereException
      */
-    public T extractDeliveryParameters(IDeviceNestingContext nesting, IDeviceAssignment assignment,
+    public T extractDeliveryParameters(IDeviceNestingContext nesting, List<IDeviceAssignment> assignments,
 	    IDeviceCommandExecution execution) throws SiteWhereException;
 }

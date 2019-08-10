@@ -7,6 +7,8 @@
  */
 package com.sitewhere.commands.spi;
 
+import java.util.List;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -58,20 +60,20 @@ public interface ICommandDestination<T, P> extends ITenantEngineLifecycleCompone
      * 
      * @param execution
      * @param nesting
-     * @param assignment
+     * @param assignments
      * @throws SiteWhereException
      */
     public void deliverCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
-	    IDeviceAssignment assignment) throws SiteWhereException;
+	    List<IDeviceAssignment> assignments) throws SiteWhereException;
 
     /**
      * Deliver a system command.
      * 
      * @param command
      * @param nesting
-     * @param assignment
+     * @param assignments
      * @throws SiteWhereException
      */
     public void deliverSystemCommand(ISystemCommand command, IDeviceNestingContext nesting,
-	    IDeviceAssignment assignment) throws SiteWhereException;
+	    List<IDeviceAssignment> assignments) throws SiteWhereException;
 }

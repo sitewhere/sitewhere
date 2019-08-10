@@ -167,7 +167,7 @@ public abstract class MicroserviceKafkaConsumer extends TenantEngineLifecycleCom
 	private AtomicInteger counter = new AtomicInteger();
 
 	public Thread newThread(Runnable r) {
-	    return new Thread(r, "Microservice Consumer " + counter.incrementAndGet());
+	    return new Thread(r, "Kafka Consumer " + counter.incrementAndGet());
 	}
     }
 }

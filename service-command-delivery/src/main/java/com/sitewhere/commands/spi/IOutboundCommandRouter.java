@@ -28,22 +28,22 @@ public interface IOutboundCommandRouter extends ITenantEngineLifecycleComponent 
      * 
      * @param execution
      * @param nesting
-     * @param assignment
+     * @param assignments
      * @return
      * @throws SiteWhereException
      */
     public List<ICommandDestination<?, ?>> getDestinationsFor(IDeviceCommandExecution execution,
-	    IDeviceNestingContext nesting, IDeviceAssignment assignment) throws SiteWhereException;
+	    IDeviceNestingContext nesting, List<IDeviceAssignment> assignments) throws SiteWhereException;
 
     /**
      * Compute list of destinations for the given system command.
      * 
      * @param command
      * @param nesting
-     * @param assignment
+     * @param assignments
      * @return
      * @throws SiteWhereException
      */
     public List<ICommandDestination<?, ?>> getDestinationsFor(ISystemCommand command, IDeviceNestingContext nesting,
-	    IDeviceAssignment assignment) throws SiteWhereException;
+	    List<IDeviceAssignment> assignments) throws SiteWhereException;
 }

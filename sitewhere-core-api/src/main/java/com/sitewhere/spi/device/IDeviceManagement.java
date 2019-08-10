@@ -34,6 +34,7 @@ import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.ITreeNode;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceAlarmSearchCriteria;
@@ -55,7 +56,7 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
      * Create a new device type.
      * 
      * @param request
-     *                    information about new type
+     *            information about new type
      * @return device type that was created
      * @throws SiteWhereException
      */
@@ -74,10 +75,10 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
      * Get a device type by unique token.
      * 
      * @param token
-     *                  unique device type token
+     *            unique device type token
      * @return corresponding device type or null if not found
      * @throws SiteWhereException
-     *                                if implementation encountered an error
+     *             if implementation encountered an error
      */
     public IDeviceType getDeviceTypeByToken(String token) throws SiteWhereException;
 
@@ -85,12 +86,12 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
      * Update an existing device type.
      * 
      * @param token
-     *                    unique device type id
+     *            unique device type id
      * @param request
-     *                    updated information
+     *            updated information
      * @return updated device type
      * @throws SiteWhereException
-     *                                if implementation encountered an error
+     *             if implementation encountered an error
      */
     public IDeviceType updateDeviceType(UUID id, IDeviceTypeCreateRequest request) throws SiteWhereException;
 
@@ -131,13 +132,14 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     public IDeviceCommand getDeviceCommand(UUID id) throws SiteWhereException;
 
     /**
-     * Get a device command by unique token.
+     * Get a device command by token.
      * 
+     * @param deviceTypeId
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceCommand getDeviceCommandByToken(String token) throws SiteWhereException;
+    public IDeviceCommand getDeviceCommandByToken(UUID deviceTypeId, String token) throws SiteWhereException;
 
     /**
      * Update an existing device command.
@@ -189,11 +191,12 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     /**
      * Get a device status by unique token.
      * 
+     * @param deviceTypeId
      * @param token
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceStatus getDeviceStatusByToken(String token) throws SiteWhereException;
+    public IDeviceStatus getDeviceStatusByToken(UUID deviceTypeId, String token) throws SiteWhereException;
 
     /**
      * Update an existing device status.
@@ -327,13 +330,13 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     public IDeviceAssignment getDeviceAssignmentByToken(String token) throws SiteWhereException;
 
     /**
-     * Gets the current assignment for a device. Null if none.
+     * Gets list of active assignments for a device.
      * 
      * @param deviceId
      * @return
      * @throws SiteWhereException
      */
-    public IDeviceAssignment getCurrentDeviceAssignment(UUID deviceId) throws SiteWhereException;
+    public List<IDeviceAssignment> getActiveDeviceAssignments(UUID deviceId) throws SiteWhereException;
 
     /**
      * Update an existing device assignment.
@@ -532,6 +535,14 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
     public ISearchResults<ICustomer> listCustomers(ICustomerSearchCriteria criteria) throws SiteWhereException;
 
     /**
+     * Get tree structure for customers hierarchy.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<? extends ITreeNode> getCustomersTree() throws SiteWhereException;
+
+    /**
      * Delete a customer.
      * 
      * @param id
@@ -649,6 +660,14 @@ public interface IDeviceManagement extends ITenantEngineLifecycleComponent {
      * @throws SiteWhereException
      */
     public ISearchResults<IArea> listAreas(IAreaSearchCriteria criteria) throws SiteWhereException;
+
+    /**
+     * Get tree structure for areas hierarchy.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public List<? extends ITreeNode> getAreasTree() throws SiteWhereException;
 
     /**
      * Delete an area.

@@ -28,8 +28,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 /**
  * Kafka producer for state updates in microservices and their managed tenant
  * engines.
- * 
- * @author Derek
  */
 public class MicroserviceStateUpdatesKafkaProducer extends MicroserviceKafkaProducer
 	implements IMicroserviceStateUpdatesKafkaProducer {

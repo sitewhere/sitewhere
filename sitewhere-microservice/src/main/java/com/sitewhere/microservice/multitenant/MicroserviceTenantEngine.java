@@ -18,7 +18,6 @@ import com.evanlennick.retry4j.CallExecutorBuilder;
 import com.evanlennick.retry4j.Status;
 import com.evanlennick.retry4j.config.RetryConfig;
 import com.evanlennick.retry4j.config.RetryConfigBuilder;
-import com.evanlennick.retry4j.exception.RetriesExhaustedException;
 import com.evanlennick.retry4j.listener.RetryListener;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.configuration.ConfigurationUtils;
@@ -522,44 +521,35 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void waitForTenantDatasetBootstrapped(IFunctionIdentifier identifier) throws SiteWhereException {
-	try {
-	    getLogger().info(
-		    String.format("Verifying that module '%s' has been bootstrapped.", identifier.getShortName()));
-	    String path = ((IConfigurableMicroservice<?>) getMicroservice())
-		    .getInstanceTenantStatePath(getTenant().getId()) + "/" + identifier.getPath() + "/"
-		    + MicroserviceTenantEngine.DATASET_BOOTSTRAPPED_NAME;
-	    Callable<Boolean> bootstrapCheck = () -> {
-		return getMicroservice().getZookeeperManager().getCurator().checkExists().forPath(path) == null ? false
-			: true;
-	    };
-	    RetryConfig config = new RetryConfigBuilder().retryOnReturnValue(Boolean.FALSE).withMaxNumberOfTries(12)
-		    .withDelayBetweenTries(Duration.ofSeconds(1)).withFibonacciBackoff().build();
-	    RetryListener perFail = new RetryListener<Boolean>() {
+	getLogger().info(String.format("Verifying that module '%s' has been bootstrapped.", identifier.getShortName()));
+	String path = ((IConfigurableMicroservice<?>) getMicroservice()).getInstanceTenantStatePath(getTenant().getId())
+		+ "/" + identifier.getPath() + "/" + MicroserviceTenantEngine.DATASET_BOOTSTRAPPED_NAME;
+	Callable<Boolean> bootstrapCheck = () -> {
+	    return getMicroservice().getZookeeperManager().getCurator().checkExists().forPath(path) == null ? false
+		    : true;
+	};
+	RetryConfig config = new RetryConfigBuilder().retryOnReturnValue(Boolean.FALSE).retryIndefinitely()
+		.withDelayBetweenTries(Duration.ofSeconds(2)).withRandomBackoff().build();
+	RetryListener perFail = new RetryListener<Boolean>() {
 
-		@Override
-		public void onEvent(Status<Boolean> status) {
-		    getLogger().info(String.format(
-			    "Unable to locate bootstrap marker for '%s' on attempt %d (total wait so far %dms). Retrying after fallback...",
-			    identifier.getShortName(), status.getTotalTries(),
-			    status.getTotalElapsedDuration().toMillis()));
-		}
-	    };
-	    RetryListener success = new RetryListener<Boolean>() {
+	    @Override
+	    public void onEvent(Status<Boolean> status) {
+		getLogger().info(String.format(
+			"Unable to locate bootstrap marker for '%s' on attempt %d (total wait so far %dms). Retrying after fallback...",
+			identifier.getShortName(), status.getTotalTries(),
+			status.getTotalElapsedDuration().toMillis()));
+	    }
+	};
+	RetryListener success = new RetryListener<Boolean>() {
 
-		@Override
-		public void onEvent(Status<Boolean> status) {
-		    getLogger().info(String.format("Located bootstrap marker for '%s' in %dms.",
-			    identifier.getShortName(), status.getTotalElapsedDuration().toMillis()));
-		}
-	    };
-	    new CallExecutorBuilder().config(config).afterFailedTryListener(perFail).onSuccessListener(success).build()
-		    .execute(bootstrapCheck);
-	} catch (RetriesExhaustedException e) {
-	    Status status = e.getStatus();
-	    throw new SiteWhereException(String.format(
-		    "Unable to find bootstrap indicator for '%s' after %d attempts (%dms).", identifier.getShortName(),
-		    status.getTotalTries(), status.getTotalElapsedDuration().toMillis()));
-	}
+	    @Override
+	    public void onEvent(Status<Boolean> status) {
+		getLogger().info(String.format("Located bootstrap marker for '%s' in %dms.", identifier.getShortName(),
+			status.getTotalElapsedDuration().toMillis()));
+	    }
+	};
+	new CallExecutorBuilder().config(config).afterFailedTryListener(perFail).onSuccessListener(success).build()
+		.execute(bootstrapCheck);
     }
 
     /*

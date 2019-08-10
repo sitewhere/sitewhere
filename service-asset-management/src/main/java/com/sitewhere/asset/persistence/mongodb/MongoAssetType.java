@@ -17,8 +17,6 @@ import com.sitewhere.spi.asset.IAssetType;
 
 /**
  * Used to load or save asset type information to MongoDB.
- * 
- * @author Derek
  */
 public class MongoAssetType implements MongoConverter<IAssetType> {
 

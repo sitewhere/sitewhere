@@ -7,6 +7,7 @@
  */
 package com.sitewhere.commands.destination.coap;
 
+import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor;
@@ -19,8 +20,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Pulls CoAP parameters from device metadata.
- * 
- * @author Derek
  */
 public class MetadataCoapParameterExtractor extends TenantEngineLifecycleComponent
 	implements ICommandDeliveryParameterExtractor<CoapParameters> {
@@ -54,16 +53,12 @@ public class MetadataCoapParameterExtractor extends TenantEngineLifecycleCompone
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.communication.
-     * ICommandDeliveryParameterExtractor#
+     * @see com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor#
      * extractDeliveryParameters(com.sitewhere.spi.device.IDeviceNestingContext,
-     * com.sitewhere.spi.device.IDeviceAssignment,
-     * com.sitewhere.spi.device.command.IDeviceCommandExecution)
+     * java.util.List, com.sitewhere.spi.device.command.IDeviceCommandExecution)
      */
     @Override
-    public CoapParameters extractDeliveryParameters(IDeviceNestingContext nesting, IDeviceAssignment assignment,
+    public CoapParameters extractDeliveryParameters(IDeviceNestingContext nesting, List<IDeviceAssignment> assignments,
 	    IDeviceCommandExecution execution) throws SiteWhereException {
 	// Load hostname and port from device metadata.
 	Map<String, String> deviceMeta = nesting.getGateway().getMetadata();

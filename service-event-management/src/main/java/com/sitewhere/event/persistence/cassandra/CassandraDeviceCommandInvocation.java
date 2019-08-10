@@ -44,7 +44,7 @@ public class CassandraDeviceCommandInvocation implements ICassandraEventBinder<I
     public static final String FIELD_TARGET_ID = "target_id";
 
     // Command token field.
-    public static final String FIELD_COMMAND_TOKEN = "command_token";
+    public static final String FIELD_COMMAND_ID = "command_id";
 
     // Command parameters field.
     public static final String FIELD_COMMAND_PARAMS = "command_params";
@@ -103,7 +103,7 @@ public class CassandraDeviceCommandInvocation implements ICassandraEventBinder<I
 	udt.setString(FIELD_INITIATOR_ID, invocation.getInitiatorId());
 	udt.setByte(FIELD_TARGET, getIndicatorForCommandTarget(invocation.getTarget()));
 	udt.setString(FIELD_TARGET_ID, invocation.getTargetId());
-	udt.setString(FIELD_COMMAND_TOKEN, invocation.getCommandToken());
+	udt.setUUID(FIELD_COMMAND_ID, invocation.getDeviceCommandId());
 	udt.setMap(FIELD_COMMAND_PARAMS, invocation.getParameterValues());
 	bound.setUDTValue(FIELD_INVOCATION, udt);
     }
@@ -125,7 +125,7 @@ public class CassandraDeviceCommandInvocation implements ICassandraEventBinder<I
 	invocation.setInitiatorId(udt.getString(FIELD_INITIATOR_ID));
 	invocation.setTarget(getCommandTargetForIndicator(udt.getByte(FIELD_TARGET)));
 	invocation.setTargetId(udt.getString(FIELD_TARGET_ID));
-	invocation.setCommandToken(udt.getString(FIELD_COMMAND_TOKEN));
+	invocation.setDeviceCommandId(udt.getUUID(FIELD_COMMAND_ID));
 	invocation.setParameterValues(udt.getMap(FIELD_COMMAND_PARAMS, String.class, String.class));
     }
 

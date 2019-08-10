@@ -8,8 +8,8 @@
 package com.sitewhere.device.marshaling;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 import com.sitewhere.rest.model.common.BrandedEntity;
 import com.sitewhere.rest.model.customer.Customer;
@@ -19,6 +19,7 @@ import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.customer.ICustomer;
+import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -73,25 +74,25 @@ public class CustomerMarshalHelper {
 	}
 	MarshaledCustomer customer = new MarshaledCustomer();
 	customer.setCustomerTypeId(source.getCustomerTypeId());
-	customer.setParentCustomerId(source.getParentCustomerId());
+	customer.setParentId(source.getParentId());
 	customer.setName(source.getName());
 	customer.setDescription(source.getDescription());
 	BrandedEntity.copy(source, customer);
 	if (isIncludeCustomerType()) {
-	    customer.setCustomerType(getDeviceManagement().getCustomerType(source.getCustomerTypeId()));
+	    ICustomerType type = getDeviceManagement().getCustomerType(source.getCustomerTypeId());
+	    customer.setCustomerType(new CustomerTypeMarshalHelper(getDeviceManagement()).convert(type));
 	}
 	if (isIncludeParentCustomer()) {
-	    if (source.getParentCustomerId() != null) {
-		ICustomer parent = getDeviceManagement().getCustomer(source.getParentCustomerId());
-		customer.setParentCustomer(parent);
+	    if (source.getParentId() != null) {
+		ICustomer parent = getDeviceManagement().getCustomer(source.getParentId());
+		customer.setParentCustomer(
+			new CustomerMarshalHelper(getDeviceManagement(), getAssetManagement()).convert(parent));
 	    }
 	}
 	if (isIncludeAssignments()) {
-	    List<UUID> customerIds = new ArrayList<>();
-	    customerIds.add(customer.getId());
 	    DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(1, 0);
-	    criteria.setStatus(DeviceAssignmentStatus.Active);
-	    criteria.setCustomerIds(customerIds);
+	    criteria.setAssignmentStatuses(Collections.singletonList(DeviceAssignmentStatus.Active));
+	    criteria.setCustomerTokens(Collections.singletonList(customer.getToken()));
 	    ISearchResults<IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
 	    List<DeviceAssignment> assignments = new ArrayList<DeviceAssignment>();
 	    for (IDeviceAssignment match : matches.getResults()) {

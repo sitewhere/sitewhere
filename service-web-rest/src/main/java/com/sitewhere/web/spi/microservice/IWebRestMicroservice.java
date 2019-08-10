@@ -12,13 +12,16 @@ import com.sitewhere.grpc.client.spi.client.IBatchManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceStateApiChannel;
+import com.sitewhere.grpc.client.spi.client.IInstanceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiChannel;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.ITenantManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
+import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
 import com.sitewhere.spi.microservice.state.ITopologyStateAggregator;
+import com.sitewhere.spi.user.IUserManagement;
 
 /**
  * Microservice that provides web/REST functionality.
@@ -28,6 +31,13 @@ import com.sitewhere.spi.microservice.state.ITopologyStateAggregator;
 public interface IWebRestMicroservice<T extends IFunctionIdentifier> extends IGlobalMicroservice<T> {
 
     /**
+     * Instance API access via GRPC channel.
+     * 
+     * @return
+     */
+    public IInstanceManagementApiChannel<?> getInstanceManagementApiChannel();
+
+    /**
      * User API access via GRPC channel.
      * 
      * @return
@@ -35,11 +45,11 @@ public interface IWebRestMicroservice<T extends IFunctionIdentifier> extends IGl
     public IUserManagementApiChannel<?> getUserManagementApiChannel();
 
     /**
-     * Tenant API access via GRPC channel.
+     * Get wrapper for caching data from the user management API channel.
      * 
      * @return
      */
-    public ITenantManagementApiChannel<?> getTenantManagementApiChannel();
+    public IUserManagement getCachedUserManagement();
 
     /**
      * Device management API access via GRPC channel.
@@ -47,6 +57,13 @@ public interface IWebRestMicroservice<T extends IFunctionIdentifier> extends IGl
      * @return
      */
     public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel();
+
+    /**
+     * Caching wrapper around device management API channel.
+     * 
+     * @return
+     */
+    public IDeviceManagement getCachedDeviceManagement();
 
     /**
      * Device event management API access via GRPC channel.
@@ -61,6 +78,13 @@ public interface IWebRestMicroservice<T extends IFunctionIdentifier> extends IGl
      * @return
      */
     public IAssetManagementApiChannel<?> getAssetManagementApiChannel();
+
+    /**
+     * Get wrapper for caching data from the asset management API channel.
+     * 
+     * @return
+     */
+    public IAssetManagement getCachedAssetManagement();
 
     /**
      * Batch management API access via GRPC channel.

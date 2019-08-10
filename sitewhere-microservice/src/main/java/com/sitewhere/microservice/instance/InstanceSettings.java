@@ -58,6 +58,10 @@ public class InstanceSettings implements IInstanceSettings {
     @Value("#{systemEnvironment['sitewhere.syncope.port'] ?: '8080'}")
     private int syncopePort;
 
+    /** Prometheus HTTP port info for microservices */
+    @Value("#{systemEnvironment['sitewhere.metrics.port'] ?: '9090'}")
+    private int metricsHttpPort;
+
     /** Number of retries on gRPC exponential backoff */
     @Value("#{systemEnvironment['sitewhere.grpc.maxRetryCount'] ?: '6'}")
     private double grpcMaxRetryCount;
@@ -225,6 +229,20 @@ public class InstanceSettings implements IInstanceSettings {
 
     public void setSyncopePort(int syncopePort) {
 	this.syncopePort = syncopePort;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.instance.IInstanceSettings#getMetricsHttpPort(
+     * )
+     */
+    @Override
+    public int getMetricsHttpPort() {
+	return metricsHttpPort;
+    }
+
+    public void setMetricsHttpPort(int metricsHttpPort) {
+	this.metricsHttpPort = metricsHttpPort;
     }
 
     /*

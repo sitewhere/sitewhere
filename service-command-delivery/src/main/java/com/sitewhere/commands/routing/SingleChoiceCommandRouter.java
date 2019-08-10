@@ -38,12 +38,11 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
      * @see
      * com.sitewhere.commands.spi.IOutboundCommandRouter#getDestinationsFor(com.
      * sitewhere.spi.device.command.IDeviceCommandExecution,
-     * com.sitewhere.spi.device.IDeviceNestingContext,
-     * com.sitewhere.spi.device.IDeviceAssignment)
+     * com.sitewhere.spi.device.IDeviceNestingContext, java.util.List)
      */
     @Override
     public List<ICommandDestination<?, ?>> getDestinationsFor(IDeviceCommandExecution execution,
-	    IDeviceNestingContext nesting, IDeviceAssignment assignment) throws SiteWhereException {
+	    IDeviceNestingContext nesting, List<IDeviceAssignment> assignments) throws SiteWhereException {
 	return destinations;
     }
 
@@ -51,12 +50,11 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
      * @see
      * com.sitewhere.commands.spi.IOutboundCommandRouter#getDestinationsFor(com.
      * sitewhere.spi.device.command.ISystemCommand,
-     * com.sitewhere.spi.device.IDeviceNestingContext,
-     * com.sitewhere.spi.device.IDeviceAssignment)
+     * com.sitewhere.spi.device.IDeviceNestingContext, java.util.List)
      */
     @Override
     public List<ICommandDestination<?, ?>> getDestinationsFor(ISystemCommand command, IDeviceNestingContext nesting,
-	    IDeviceAssignment assignment) throws SiteWhereException {
+	    List<IDeviceAssignment> assignments) throws SiteWhereException {
 	return destinations;
     }
 

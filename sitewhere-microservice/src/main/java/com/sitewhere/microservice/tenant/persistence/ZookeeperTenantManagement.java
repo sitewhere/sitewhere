@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.instance.tenant.persistence;
+package com.sitewhere.microservice.tenant.persistence;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -16,7 +16,6 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.zookeeper.data.Stat;
 
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.rest.model.search.Pager;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
@@ -26,6 +25,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.tenant.ITenantSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -60,7 +60,7 @@ public class ZookeeperTenantManagement extends LifecycleComponent implements ITe
 	    Stat existing = curator.checkExists().forPath(tenantPath);
 	    if (existing == null) {
 		getLogger().debug("Zk node for tenant '" + request.getToken() + "' not found. Creating...");
-		return storeTenant(tenant);
+		return createZookeeperTenant(tenant);
 	    } else {
 		throw new SiteWhereSystemException(ErrorCode.DuplicateUser, ErrorLevel.ERROR);
 	    }
@@ -75,13 +75,14 @@ public class ZookeeperTenantManagement extends LifecycleComponent implements ITe
      */
     @Override
     public ITenant updateTenant(UUID id, ITenantCreateRequest request) throws SiteWhereException {
-	Tenant match = TenantUtils.copy(getTenant(id));
-	if (match == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR);
+	ITenant existing = getTenant(id);
+	if (existing == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR);
 	}
 
-	TenantManagementPersistenceLogic.tenantUpdateLogic(request, match);
-	return storeTenant(match);
+	Tenant updated = TenantUtils.copy(existing);
+	TenantManagementPersistenceLogic.tenantUpdateLogic(request, updated);
+	return updateZookeeperTenant(updated);
     }
 
     /*
@@ -89,6 +90,7 @@ public class ZookeeperTenantManagement extends LifecycleComponent implements ITe
      */
     @Override
     public ITenant getTenant(UUID id) throws SiteWhereException {
+	getLogger().info(String.format("Getting tenant by UUID %s", id.toString()));
 	String tenantPath = getTenantModelPath(id);
 	CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
 	try {
@@ -109,6 +111,7 @@ public class ZookeeperTenantManagement extends LifecycleComponent implements ITe
      */
     @Override
     public ITenant getTenantByToken(String token) throws SiteWhereException {
+	getLogger().info(String.format("Getting tenant by token %s", token));
 	ISearchResults<ITenant> all = listTenants(new TenantSearchCriteria(1, 0));
 	for (ITenant tenant : all.getResults()) {
 	    if (tenant.getToken().equals(token)) {
@@ -125,13 +128,18 @@ public class ZookeeperTenantManagement extends LifecycleComponent implements ITe
      */
     @Override
     public ISearchResults<ITenant> listTenants(ITenantSearchCriteria criteria) throws SiteWhereException {
+	getLogger().info("Listing all tenants.");
 	try {
 	    CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
 	    List<String> children = curator.getChildren()
-		    .forPath(getInstanceManagementMicroservice().getInstanceTenantsConfigurationPath());
+		    .forPath(getConfigurableMicroservice().getInstanceTenantsConfigurationPath());
 	    List<ITenant> tenants = new ArrayList<>();
 	    for (String child : children) {
-		tenants.add(getTenant(UUID.fromString(child)));
+		try {
+		    tenants.add(getTenant(UUID.fromString(child)));
+		} catch (SiteWhereException e) {
+		    getLogger().info("Unable to retrieve tenant for list. Data may be corrupt.", e);
+		}
 	    }
 	    tenants.sort(new Comparator<ITenant>() {
 
@@ -158,7 +166,7 @@ public class ZookeeperTenantManagement extends LifecycleComponent implements ITe
 	try {
 	    ITenant tenant = getTenant(tenantId);
 	    CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
-	    String path = getTenantModelPath(tenantId);
+	    String path = getConfigurableMicroservice().getInstanceTenantConfigurationPath(tenantId);
 	    curator.delete().deletingChildrenIfNeeded().forPath(path);
 	    return tenant;
 	} catch (Exception e) {
@@ -174,7 +182,7 @@ public class ZookeeperTenantManagement extends LifecycleComponent implements ITe
      * @throws SiteWhereException
      */
     protected String getTenantModelPath(UUID tenantId) throws SiteWhereException {
-	return getInstanceManagementMicroservice().getInstanceTenantConfigurationPath(tenantId) + "/" + TENANT_JSON;
+	return getConfigurableMicroservice().getInstanceTenantConfigurationPath(tenantId) + "/" + TENANT_JSON;
     }
 
     /**
@@ -184,7 +192,7 @@ public class ZookeeperTenantManagement extends LifecycleComponent implements ITe
      * @return
      * @throws SiteWhereException
      */
-    protected ITenant storeTenant(ITenant tenant) throws SiteWhereException {
+    protected ITenant createZookeeperTenant(ITenant tenant) throws SiteWhereException {
 	CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
 	String tenantPath = getTenantModelPath(tenant.getId());
 	try {
@@ -196,7 +204,29 @@ public class ZookeeperTenantManagement extends LifecycleComponent implements ITe
 	}
     }
 
-    protected IInstanceManagementMicroservice<?> getInstanceManagementMicroservice() {
-	return (IInstanceManagementMicroservice<?>) getMicroservice();
+    /**
+     * Update a tenant in Zookeeper.
+     * 
+     * @param tenant
+     * @return
+     * @throws SiteWhereException
+     */
+    protected ITenant updateZookeeperTenant(ITenant tenant) throws SiteWhereException {
+	CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
+	String tenantPath = getTenantModelPath(tenant.getId());
+	try {
+	    if (curator.checkExists().forPath(tenantPath) != null) {
+		curator.setData().forPath(tenantPath, MarshalUtils.marshalJsonAsPrettyString(tenant).getBytes());
+	    } else {
+		throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR);
+	    }
+	    return tenant;
+	} catch (Exception e) {
+	    throw new SiteWhereException("Unable to store tenant information in Zookeeper.", e);
+	}
+    }
+
+    protected IConfigurableMicroservice<?> getConfigurableMicroservice() {
+	return (IConfigurableMicroservice<?>) getMicroservice();
     }
 }

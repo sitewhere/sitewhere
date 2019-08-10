@@ -18,6 +18,8 @@ import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
+import com.sitewhere.spi.microservice.kafka.tenant.ITenantModelProducer;
+import com.sitewhere.spi.microservice.metrics.IMetricsServer;
 import com.sitewhere.spi.microservice.scripting.IScriptTemplateManager;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
@@ -27,6 +29,7 @@ import com.sitewhere.spi.microservice.state.IMicroserviceStateUpdatesKafkaProduc
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.system.IVersion;
+import com.sitewhere.spi.tenant.ITenantManagement;
 
 /**
  * Functionality common to all SiteWhere microservices.
@@ -137,6 +140,20 @@ public interface IMicroservice<T extends IFunctionIdentifier>
     public ITokenManagement getTokenManagement();
 
     /**
+     * Get tenant management API.
+     * 
+     * @return
+     */
+    public ITenantManagement getTenantManagement();
+
+    /**
+     * Get tenant management API with caching enabled.
+     * 
+     * @return
+     */
+    public ITenantManagement getCachedTenantManagement();
+
+    /**
      * Get system superuser.
      * 
      * @return
@@ -164,6 +181,13 @@ public interface IMicroservice<T extends IFunctionIdentifier>
      * @return
      */
     public IMicroserviceStateUpdatesKafkaProducer getStateUpdatesKafkaProducer();
+
+    /**
+     * Get tenant model producer.
+     * 
+     * @return
+     */
+    public ITenantModelProducer getTenantModelProducer();
 
     /**
      * Get manager for script templates which provide examples of
@@ -243,6 +267,13 @@ public interface IMicroservice<T extends IFunctionIdentifier>
      * @return
      */
     public IZookeeperManager getZookeeperManager();
+
+    /**
+     * Get metrics server.
+     * 
+     * @return
+     */
+    public IMetricsServer getMetricsServer();
 
     /**
      * Wait for SiteWhere instance configuration metadata to become initialized

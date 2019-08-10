@@ -14,10 +14,10 @@ import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCrea
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.search.device.DeviceCommandSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceActions;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandTarget;
@@ -71,9 +71,9 @@ public class DeviceActions implements IDeviceActions {
     @Override
     public void sendCommand(IDeviceAssignment assignment, String commandName, Map<String, String> parameters)
 	    throws SiteWhereException {
-	IDevice device = getDeviceManagement().getDevice(assignment.getDeviceId());
+	IDeviceType type = getDeviceManagement().getDeviceType(assignment.getDeviceTypeId());
 	DeviceCommandSearchCriteria criteria = new DeviceCommandSearchCriteria(1, 0);
-	criteria.setDeviceTypeId(device.getDeviceTypeId());
+	criteria.setDeviceTypeToken(type.getToken());
 	ISearchResults<IDeviceCommand> commands = getDeviceManagement().listDeviceCommands(criteria);
 	IDeviceCommand match = null;
 	for (IDeviceCommand command : commands.getResults()) {

@@ -29,6 +29,7 @@ import com.sitewhere.microservice.security.InvalidJwtException;
 import com.sitewhere.microservice.security.JwtExpiredException;
 import com.sitewhere.security.SitewhereGrantedAuthority;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.multitenant.InvalidTenantException;
 import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.security.ITenantAwareAuthentication;
@@ -111,6 +112,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	    } catch (TenantEngineNotAvailableException e) {
 		LOGGER.debug("Requested tenant engine was not available.", e);
 		response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "Tenant engine not available.");
+	    } catch (InvalidTenantException e) {
+		LOGGER.debug(e.getMessage(), e);
+		response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, e.getMessage());
 	    } catch (Throwable e) {
 		LOGGER.error("Unhandled exception in token authentication filter.", e);
 		response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing JWT.");
@@ -138,9 +142,11 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	    try {
 		SecurityContextHolder.getContext()
 			.setAuthentication(getMicroservice().getSystemUser().getAuthentication());
-		ITenant tenant = getMicroservice().getTenantManagementApiChannel().getTenantByToken(tenantToken);
-		if ((tenant == null) || (!tenant.getAuthenticationToken().equals(tenantAuth))) {
-		    throw new SiteWhereException("Auth token passed for tenant id is not correct.");
+		ITenant tenant = getMicroservice().getCachedTenantManagement().getTenantByToken(tenantToken);
+		if (tenant == null) {
+		    throw new InvalidTenantException("The requested tenant does not exist.");
+		} else if (!tenant.getAuthenticationToken().equals(tenantAuth)) {
+		    throw new InvalidTenantException("Tenant authentication token is invalid.");
 		}
 		((ITenantAwareAuthentication) authenticated).setTenant(tenant);
 		LOGGER.debug("Added tenant to authentication: " + tenant.getId());

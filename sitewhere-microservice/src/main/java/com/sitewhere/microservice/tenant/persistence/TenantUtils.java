@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.instance.tenant.persistence;
+package com.sitewhere.microservice.tenant.persistence;
 
 import com.sitewhere.rest.model.common.BrandedEntity;
 import com.sitewhere.rest.model.tenant.Tenant;
@@ -38,7 +38,7 @@ public class TenantUtils {
      */
     public static Tenant copy(ITenant source) throws SiteWhereException {
 	Tenant tenant = new Tenant();
-	Tenant.copy(source, tenant);
+	TenantUtils.copy(source, tenant);
 	return tenant;
     }
 }

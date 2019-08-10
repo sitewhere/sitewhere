@@ -58,6 +58,7 @@ import com.sitewhere.spi.device.request.IDeviceStatusCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceTypeCreateRequest;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.ITreeNode;
 import com.sitewhere.spi.search.device.IDeviceCommandSearchCriteria;
 
 import io.grpc.stub.StreamObserver;
@@ -401,6 +402,32 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getCustomersTree(com.sitewhere.grpc.service.GGetCustomersTreeRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getCustomersTree(GGetCustomersTreeRequest request,
+	    StreamObserver<GGetCustomersTreeResponse> responseObserver) {
+	try {
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetCustomersTreeMethod());
+	    List<? extends ITreeNode> apiResult = getDeviceManagement().getCustomersTree();
+	    GGetCustomersTreeResponse.Builder response = GGetCustomersTreeResponse.newBuilder();
+	    for (ITreeNode node : apiResult) {
+		response.addCustomers(DeviceModelConverter.asGrpcTreeNode(node));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetCustomersTreeMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetCustomersTreeMethod());
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
      * deleteCustomer(com.sitewhere.grpc.service.GDeleteCustomerRequest,
      * io.grpc.stub.StreamObserver)
      */
@@ -720,6 +747,30 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getListAreasMethod(), e, responseObserver);
 	} finally {
 	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getListAreasMethod());
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getAreasTree(com.sitewhere.grpc.service.GGetAreasTreeRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getAreasTree(GGetAreasTreeRequest request, StreamObserver<GGetAreasTreeResponse> responseObserver) {
+	try {
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetAreasTreeMethod());
+	    List<? extends ITreeNode> apiResult = getDeviceManagement().getAreasTree();
+	    GGetAreasTreeResponse.Builder response = GGetAreasTreeResponse.newBuilder();
+	    for (ITreeNode node : apiResult) {
+		response.addAreas(DeviceModelConverter.asGrpcTreeNode(node));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetAreasTreeMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetAreasTreeMethod());
 	}
     }
 
@@ -1129,7 +1180,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GGetDeviceCommandByTokenResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetDeviceCommandByTokenMethod());
-	    IDeviceCommand apiResult = getDeviceManagement().getDeviceCommandByToken(request.getToken());
+	    IDeviceCommand apiResult = getDeviceManagement().getDeviceCommandByToken(
+		    CommonModelConverter.asApiUuid(request.getDeviceTypeId()), request.getToken());
 	    GGetDeviceCommandByTokenResponse.Builder response = GGetDeviceCommandByTokenResponse.newBuilder();
 	    if (apiResult != null) {
 		response.setCommand(DeviceModelConverter.asGrpcDeviceCommand(apiResult));
@@ -1298,7 +1350,8 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GGetDeviceStatusByTokenResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetDeviceStatusByTokenMethod());
-	    IDeviceStatus apiResult = getDeviceManagement().getDeviceStatusByToken(request.getToken());
+	    IDeviceStatus apiResult = getDeviceManagement().getDeviceStatusByToken(
+		    CommonModelConverter.asApiUuid(request.getDeviceTypeId()), request.getToken());
 	    GGetDeviceStatusByTokenResponse.Builder response = GGetDeviceStatusByTokenResponse.newBuilder();
 	    if (apiResult != null) {
 		response.setStatus(DeviceModelConverter.asGrpcDeviceStatus(apiResult));
@@ -1991,32 +2044,30 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
-     * getCurrentAssignmentForDevice(com.sitewhere.grpc.service.
-     * GGetCurrentAssignmentForDeviceRequest, io.grpc.stub.StreamObserver)
+     * getActiveAssignmentsForDevice(com.sitewhere.grpc.service.
+     * GGetActiveAssignmentsForDeviceRequest, io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getCurrentAssignmentForDevice(GGetCurrentAssignmentForDeviceRequest request,
-	    StreamObserver<GGetCurrentAssignmentForDeviceResponse> responseObserver) {
+    public void getActiveAssignmentsForDevice(GGetActiveAssignmentsForDeviceRequest request,
+	    StreamObserver<GGetActiveAssignmentsForDeviceResponse> responseObserver) {
 	try {
-	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetCurrentAssignmentForDeviceMethod());
-	    IDeviceAssignment apiResult = getDeviceManagement()
-		    .getCurrentDeviceAssignment(CommonModelConverter.asApiUuid(request.getId()));
-	    GGetCurrentAssignmentForDeviceResponse.Builder response = GGetCurrentAssignmentForDeviceResponse
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetActiveAssignmentsForDeviceMethod());
+	    List<IDeviceAssignment> apiResult = getDeviceManagement()
+		    .getActiveDeviceAssignments(CommonModelConverter.asApiUuid(request.getId()));
+	    GGetActiveAssignmentsForDeviceResponse.Builder response = GGetActiveAssignmentsForDeviceResponse
 		    .newBuilder();
 	    if (apiResult != null) {
-		response.setAssignment(DeviceModelConverter.asGrpcDeviceAssignment(apiResult));
+		response.addAllAssignment(DeviceModelConverter.asGrpcDeviceAssignments(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetCurrentAssignmentForDeviceMethod(), e,
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetActiveAssignmentsForDeviceMethod(), e,
 		    responseObserver);
 	} finally {
-	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetCurrentAssignmentForDeviceMethod());
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetActiveAssignmentsForDeviceMethod());
 	}
     }
 

@@ -32,11 +32,14 @@ public class MongoZone implements MongoConverter<IZone> {
     /** Property for border color */
     public static final String PROP_BORDER_COLOR = "cdcl";
 
+    /** Property for border opacity */
+    public static final String PROP_BORDER_OPACITY = "bpac";
+
     /** Property for fill color */
     public static final String PROP_FILL_COLOR = "flcl";
 
-    /** Property for opacity */
-    public static final String PROP_OPACITY = "opac";
+    /** Property for fill opacity */
+    public static final String PROP_FILL_OPACITY = "opac";
 
     /*
      * (non-Javadoc)
@@ -68,8 +71,9 @@ public class MongoZone implements MongoConverter<IZone> {
 	target.append(PROP_AREA_ID, source.getAreaId());
 	target.append(PROP_NAME, source.getName());
 	target.append(PROP_BORDER_COLOR, source.getBorderColor());
+	target.append(PROP_BORDER_OPACITY, source.getBorderOpacity());
 	target.append(PROP_FILL_COLOR, source.getFillColor());
-	target.append(PROP_OPACITY, source.getOpacity());
+	target.append(PROP_FILL_OPACITY, source.getFillOpacity());
 
 	MongoBoundedEntity.saveBounds(source, target);
 	MongoPersistentEntity.toDocument(source, target);
@@ -85,14 +89,16 @@ public class MongoZone implements MongoConverter<IZone> {
 	UUID areaId = (UUID) source.get(PROP_AREA_ID);
 	String name = (String) source.get(PROP_NAME);
 	String borderColor = (String) source.get(PROP_BORDER_COLOR);
+	Double borderOpacity = (Double) source.get(PROP_BORDER_OPACITY);
 	String fillColor = (String) source.get(PROP_FILL_COLOR);
-	Double opacity = (Double) source.get(PROP_OPACITY);
+	Double fillOpacity = (Double) source.get(PROP_FILL_OPACITY);
 
 	target.setAreaId(areaId);
 	target.setName(name);
 	target.setBorderColor(borderColor);
+	target.setBorderOpacity(borderOpacity);
 	target.setFillColor(fillColor);
-	target.setOpacity(opacity);
+	target.setFillOpacity(fillOpacity);
 	target.setBounds(MongoBoundedEntity.loadBounds(source));
 
 	MongoPersistentEntity.fromDocument(source, target);

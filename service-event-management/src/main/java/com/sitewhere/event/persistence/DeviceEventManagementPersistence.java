@@ -25,6 +25,7 @@ import com.sitewhere.rest.model.device.streaming.DeviceStreamData;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.command.ICommandParameter;
+import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
@@ -197,13 +198,13 @@ public class DeviceEventManagementPersistence extends Persistence {
      * @throws SiteWhereException
      */
     public static DeviceCommandInvocation deviceCommandInvocationCreateLogic(IDeviceAssignment assignment,
-	    IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
+	    IDeviceCommand command, IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
 	requireNotNull("Initiator", request.getInitiator());
 	requireNotNull("Target", request.getTarget());
 
 	DeviceCommandInvocation ci = new DeviceCommandInvocation();
 	deviceEventCreateLogic(request, assignment, ci);
-	ci.setCommandToken(request.getCommandToken());
+	ci.setDeviceCommandId(command.getId());
 	ci.setInitiator(request.getInitiator());
 	ci.setInitiatorId(request.getInitiatorId());
 	ci.setTarget(request.getTarget());

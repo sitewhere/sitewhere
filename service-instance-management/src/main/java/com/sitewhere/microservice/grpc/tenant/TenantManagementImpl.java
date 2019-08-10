@@ -7,8 +7,6 @@
  */
 package com.sitewhere.microservice.grpc.tenant;
 
-import java.util.List;
-
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
 import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
@@ -17,14 +15,10 @@ import com.sitewhere.grpc.service.GCreateTenantRequest;
 import com.sitewhere.grpc.service.GCreateTenantResponse;
 import com.sitewhere.grpc.service.GDeleteTenantRequest;
 import com.sitewhere.grpc.service.GDeleteTenantResponse;
-import com.sitewhere.grpc.service.GGetDatasetTemplatesRequest;
-import com.sitewhere.grpc.service.GGetDatasetTemplatesResponse;
 import com.sitewhere.grpc.service.GGetTenantByIdRequest;
 import com.sitewhere.grpc.service.GGetTenantByIdResponse;
 import com.sitewhere.grpc.service.GGetTenantByTokenRequest;
 import com.sitewhere.grpc.service.GGetTenantByTokenResponse;
-import com.sitewhere.grpc.service.GGetTenantTemplatesRequest;
-import com.sitewhere.grpc.service.GGetTenantTemplatesResponse;
 import com.sitewhere.grpc.service.GListTenantsRequest;
 import com.sitewhere.grpc.service.GListTenantsResponse;
 import com.sitewhere.grpc.service.GUpdateTenantRequest;
@@ -32,11 +26,8 @@ import com.sitewhere.grpc.service.GUpdateTenantResponse;
 import com.sitewhere.grpc.service.TenantManagementGrpc;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.spi.microservice.IMicroservice;
-import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
-import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.tenant.ITenant;
-import com.sitewhere.spi.tenant.ITenantAdministration;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
 
@@ -44,8 +35,6 @@ import io.grpc.stub.StreamObserver;
 
 /**
  * Implements server logic for tenant management GRPC requests.
- * 
- * @author Derek
  */
 public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementImplBase
 	implements IGrpcApiImplementation {
@@ -56,14 +45,9 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
     /** Tenant management persistence */
     private ITenantManagement tenantMangagement;
 
-    /** Tenant administration */
-    private ITenantAdministration tenantAdministration;
-
-    public TenantManagementImpl(IInstanceManagementMicroservice<?> microservice, ITenantManagement tenantManagement,
-	    ITenantAdministration tenantAdministration) {
+    public TenantManagementImpl(IInstanceManagementMicroservice<?> microservice, ITenantManagement tenantManagement) {
 	this.microservice = microservice;
 	this.tenantMangagement = tenantManagement;
-	this.tenantAdministration = tenantAdministration;
     }
 
     /*
@@ -220,54 +204,6 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
 
     /*
      * @see
-     * com.sitewhere.grpc.service.TenantManagementGrpc.TenantManagementImplBase#
-     * getTenantTemplates(com.sitewhere.grpc.service.GGetTenantTemplatesRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getTenantTemplates(GGetTenantTemplatesRequest request,
-	    StreamObserver<GGetTenantTemplatesResponse> responseObserver) {
-	try {
-	    GrpcUtils.handleServerMethodEntry(this, TenantManagementGrpc.getGetTenantTemplatesMethod());
-	    List<ITenantTemplate> apiResult = getTenantAdministration().getTenantTemplates();
-	    GGetTenantTemplatesResponse.Builder response = GGetTenantTemplatesResponse.newBuilder();
-	    response.addAllTemplate(TenantModelConverter.asGrpcTenantTemplateList(apiResult));
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.getGetTenantTemplatesMethod(), e,
-		    responseObserver);
-	} finally {
-	    GrpcUtils.handleServerMethodExit(TenantManagementGrpc.getGetTenantTemplatesMethod());
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.TenantManagementGrpc.TenantManagementImplBase#
-     * getDatasetTemplates(com.sitewhere.grpc.service.GGetDatasetTemplatesRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getDatasetTemplates(GGetDatasetTemplatesRequest request,
-	    StreamObserver<GGetDatasetTemplatesResponse> responseObserver) {
-	try {
-	    GrpcUtils.handleServerMethodEntry(this, TenantManagementGrpc.getGetDatasetTemplatesMethod());
-	    List<IDatasetTemplate> apiResult = getTenantAdministration().getDatasetTemplates();
-	    GGetDatasetTemplatesResponse.Builder response = GGetDatasetTemplatesResponse.newBuilder();
-	    response.addAllTemplate(TenantModelConverter.asGrpcDatasetTemplateList(apiResult));
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.getGetDatasetTemplatesMethod(), e,
-		    responseObserver);
-	} finally {
-	    GrpcUtils.handleServerMethodExit(TenantManagementGrpc.getGetDatasetTemplatesMethod());
-	}
-    }
-
-    /*
-     * @see
      * com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation#getMicroservice()
      */
     @Override
@@ -277,9 +213,5 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
 
     protected ITenantManagement getTenantMangagement() {
 	return tenantMangagement;
-    }
-
-    protected ITenantAdministration getTenantAdministration() {
-	return tenantAdministration;
     }
 }
