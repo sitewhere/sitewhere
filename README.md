@@ -5,27 +5,26 @@
 
 ---
 
-SiteWhere is an industrial-strength open source IoT Application Enablement Platform 
-that facilitates the ingestion, storage, processing, and integration of device data 
-at massive scale. The platform has been designed from the ground up to take advantage of the latest
-technologies in order to scale efficiently to the loads expected in large IoT
-projects. 
+SiteWhere is an industrial strength, open source IoT Application Enablement Platform 
+which facilitates the ingestion, storage, processing, and integration of IoT device data 
+at massive scale. The platform leverages a microservices architecture which runs on top of 
+cutting-edge technologies such as Kubernetes, Istio, and Kafka in order to scale efficiently 
+to the loads expected in large IoT projects. 
 
-![SiteWhere Electron App](https://s3.amazonaws.com/sitewhere-web/github-readme/vue-user-interface.png "SiteWhere Electron Application")
+![SiteWhere Administration](https://sitewhere-web.s3.amazonaws.com/github-readme/admin-ui-2.1.0.png "SiteWhere Administration")
 
-SiteWhere embraces a completely distributed architecture using [Kubernetes](https://kubernetes.io/)
-as the infrastructure and a variety of microservices to build out the system.
-This approach allows customization and scaling at a fine-grained level
-so that the system may be tailored to many potential IoT use cases. SiteWhere
-is built with a framework approach using clearly defined APIs so that new
-technologies may easily be integrated as the IoT ecosystem evolves.
+SiteWhere embraces a distributed architecture which runs on [Kubernetes](https://kubernetes.io/)
+and provides both the infrastructure such as highly-available databases and MQTT brokers as 
+well as microservices to facilitate various aspects of IoT project development. The platform is 
+built with a framework approach using clearly defined APIs so that new technologies may easily 
+be integrated as the IoT ecosystem evolves.
 
-## Kubernetes
+## Deployment and Orchestration
 
 SiteWhere is composed of Java-based microservices which are built as
 [Docker](https://www.docker.com/) images and deployed to Kubernetes for
-orchestration. To simplify deployement, [Helm](https://helm.sh/) is used to
-provide standard templates for various deployment scenarios. Helm
+orchestration. To simplify installation and configuration, [Helm](https://helm.sh/) 
+is used to provide standard templates for various deployment scenarios. Helm
 [charts](https://github.com/sitewhere/sitewhere-recipes/tree/master/charts)
 are provided which supply all of the dependencies needed to run a complete
 SiteWhere instance, including both the microservices and infrastructure
@@ -34,26 +33,33 @@ and other supporting technologies.
 
 ## Microservices
 
-SiteWhere 2.0 introduces a much different architectural approach than was used
-in the 1.x platform. While the core APIs are mostly unchanged, the system implementation
-has moved from a monolithic structure to one based on microservices. This approach
-provides a number of advantages over the previous architecture.
-
-![SiteWhere Architecture](http://sitewhere.io/docs/en/2.0.EA1/_images/microservices-diagram.png "SiteWhere 2.0 Architecture")
-
-### Separation of Concerns
-
-Each microservice is a completely self-contained entity that has its
+Rather than a monolithic approach, SiteWhere is based on many microservices
+running as a distributed system. Each microservice is a completely self-contained entity that has its
 own configuration schema, internal components, data persistence, and
 interactions with the event processing pipeline. SiteWhere microservices
 are built on top of a custom microservice framework and run as separate
 [Spring Boot](https://projects.spring.io/spring-boot/) processes, each
 contained in its own [Docker](https://www.docker.com/) image.
 
+![SiteWhere Architecture](https://sitewhere-web.s3.amazonaws.com/github-readme/sitewhere-microservices.png "SiteWhere 2.0 Architecture")
+
+## Service Mesh
+
+SiteWhere leverages [Istio](https://istio.io/) to provide a service mesh for
+the system microservices, allowing the platform to be scaled dynamically while 
+also providing a great deal of control over how data is routed. Istio allows
+modern methods such as canary testing and fault injection to be used to 
+provide a more robust and fault-tolerant system. It also allows for detailed
+monitoring and tracing of the data flowing through the components.
+
+### Separation of Concerns
+
 Separating the system logic into microservices allows the interactions
-between various areas of the system to be more clearly defined. This
-transition has resulted in a more understandable and maintainable
-system and should continue to pay dividends as more features are added.
+between various areas of the system to be more clearly defined. It also allows
+parts of the pipeline to be shutdown or fail gracefully without preventing other
+parts of the system from functioning. The event processing pipeline, which spans
+many of the microservices, is buffered by Kafka so that data processing has
+strong delivery guarantees while maintaining high throughput.
 
 ### Scale What You Need. Leave Out What You Don't
 
