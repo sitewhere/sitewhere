@@ -43,7 +43,7 @@ contained in its own [Docker](https://www.docker.com/) image.
 
 ![SiteWhere Architecture](https://sitewhere-web.s3.amazonaws.com/github-readme/sitewhere-microservices.png "SiteWhere 2.0 Architecture")
 
-## Service Mesh
+### Service Mesh
 
 SiteWhere leverages [Istio](https://istio.io/) to provide a service mesh for
 the system microservices, allowing the platform to be scaled dynamically while 
@@ -103,17 +103,6 @@ needs increase over time, new storage devices can be made available
 dynamically. The underlying [Ceph](https://ceph.com/) architecture
 used by Rook.io can handle _exobytes_ of data while allowing data
 to be resilient to failures at the node, rack, or even datacenter level.
-
-### Service Discovery with HashiCorp Consul
-
-With the dynamic nature of the microservices architecture, it is imporant
-for microservices to be able to efficiently locate running instances of
-the various other services they interact with. SiteWhere 2.0 leverages
-[Consul](https://www.consul.io/) for service discovery. Each microservice
-registers with Consul and provides a steady stream of updates to the
-(potentially replicated) central store. As instances of microservices are
-added or removed, SiteWhere dynamically adjusts connectivity to take
-advantage of the available resources.
 
 ## High Performance Data Processing Pipeline
 
