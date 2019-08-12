@@ -103,9 +103,6 @@ public class Assignments extends RestControllerBase {
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(Assignments.class);
 
-    /** Default date range for event queries */
-    private static final long DEFAULT_EVENT_QUERY_DATE_RANGE = 24 * 60 * 60 * 1000;
-
     /**
      * Used by AJAX calls to create a device assignment.
      * 
