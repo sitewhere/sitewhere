@@ -41,7 +41,7 @@ apply plugin: 'distribution'
     
 allprojects {
     group = 'com.sitewhere'
-	version = '2.1.0'
+	version = '2.1.1'
 	
     repositories {
         maven { url "http://repo.maven.apache.org/maven2" }
