@@ -139,6 +139,8 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 
 	// Prepare executor for refreshing access token.
 	this.refresher = Executors.newSingleThreadScheduledExecutor();
+	refresher.scheduleAtFixedRate(new SyncopeConnectionRefresher(), TOKEN_REFRESH_IN_MINUTES,
+		TOKEN_REFRESH_IN_MINUTES, TimeUnit.MINUTES);
     }
 
     /*
@@ -532,8 +534,6 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 	    Callable<Boolean> connectCheck = () -> {
 		SyncopeUserManagement.this.client = clientFactory.create(SYNCOPE_USERNAME, SYNCOPE_PASSWORD);
 		getSyncopeAvailable().countDown();
-		refresher.scheduleAtFixedRate(new SyncopeConnectionRefresher(), TOKEN_REFRESH_IN_MINUTES,
-			TOKEN_REFRESH_IN_MINUTES, TimeUnit.MINUTES);
 		return true;
 	    };
 	    RetryConfig config = new RetryConfigBuilder().retryOnAnyException().retryIndefinitely()
@@ -559,8 +559,16 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 
 	@Override
 	public void run() {
-	    getLogger().debug("Refreshing access token...");
-	    getClient().refresh();
+	    if (getSyncopeAvailable().getCount() == 0) {
+		getLogger().debug("Refreshing Syncope access token...");
+		try {
+		    getClient().refresh();
+		} catch (Throwable t) {
+		    getLogger().error("Unable to refresh Syncope access token.", t);
+		}
+	    } else {
+		getLogger().debug("Skipping Syncope token refresh until connection is established.");
+	    }
 	}
     }
 
