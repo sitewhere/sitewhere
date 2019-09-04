@@ -28,6 +28,8 @@
 			<xsd:choice>
 				<xsd:element ref="rdb-datastore" />
 				<xsd:element ref="rdb-datastore-reference" />
+				<xsd:element ref="mongodb-datastore" />
+				<xsd:element ref="mongodb-datastore-reference" />
 			</xsd:choice>
 		</xsd:complexType>
 	</xsd:element>
