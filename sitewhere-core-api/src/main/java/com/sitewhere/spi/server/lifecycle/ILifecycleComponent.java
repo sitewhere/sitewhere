@@ -96,6 +96,22 @@ public interface ILifecycleComponent {
     public Map<UUID, ILifecycleComponent> getLifecycleComponents();
 
     /**
+     * Provisions the component and any nested components.
+     * 
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    public void lifecycleProvision(ILifecycleProgressMonitor monitor) throws SiteWhereException;
+
+    /**
+     * Provision the component.
+     * 
+     * @param monitor
+     * @throws SiteWhereException
+     */
+    public void provision(ILifecycleProgressMonitor monitor) throws SiteWhereException;
+
+    /**
      * Initializes the component while keeping up with lifeycle information.
      * 
      * @param monitor
