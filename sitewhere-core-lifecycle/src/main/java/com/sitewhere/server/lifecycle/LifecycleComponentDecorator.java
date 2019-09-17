@@ -147,6 +147,25 @@ public class LifecycleComponentDecorator<T extends ILifecycleComponent> implemen
     }
 
     /*
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecycleProvision(com
+     * .sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void lifecycleProvision(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	getDelegate().lifecycleProvision(monitor);
+    }
+
+    /*
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#provision(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void provision(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	getDelegate().provision(monitor);
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#

@@ -22,6 +22,8 @@ public enum GrpcServiceIdentifier implements IGrpcServiceIdentifier {
 
     EventManagement("com.sitewhere.grpc.service.DeviceEventManagement"),
 
+    InstanceManagement("com.sitewhere.grpc.service.InstanceManagement"),
+
     LabelGeneration("com.sitewhere.grpc.service.LabelGeneration"),
 
     DeviceState("com.sitewhere.grpc.service.DeviceState"),

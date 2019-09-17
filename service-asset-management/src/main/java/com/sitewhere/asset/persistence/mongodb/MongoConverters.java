@@ -17,8 +17,6 @@ import com.sitewhere.spi.asset.IAssetType;
 
 /**
  * Manages classes used to convert between Mongo and SPI objects.
- * 
- * @author Derek
  */
 public class MongoConverters implements IMongoConverterLookup {
 

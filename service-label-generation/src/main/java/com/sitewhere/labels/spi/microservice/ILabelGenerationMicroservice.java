@@ -10,6 +10,8 @@ package com.sitewhere.labels.spi.microservice;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.labels.spi.grpc.ILabelGenerationGrpcServer;
+import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
@@ -36,9 +38,23 @@ public interface ILabelGenerationMicroservice
     public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel();
 
     /**
+     * Caching wrapper around device management API channel.
+     * 
+     * @return
+     */
+    public IDeviceManagement getCachedDeviceManagement();
+
+    /**
      * Get asset management API access via GRPC channel.
      * 
      * @return
      */
     public IAssetManagementApiChannel<?> getAssetManagementApiChannel();
+
+    /**
+     * Get wrapper for caching data from the asset management API channel.
+     * 
+     * @return
+     */
+    public IAssetManagement getCachedAssetManagement();
 }

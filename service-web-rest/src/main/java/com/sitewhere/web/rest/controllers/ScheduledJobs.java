@@ -122,7 +122,7 @@ public class ScheduledJobs extends RestControllerBase {
 	} else {
 	    List<IScheduledJob> converted = new ArrayList<IScheduledJob>();
 	    ScheduledJobMarshalHelper helper = new ScheduledJobMarshalHelper(getScheduleManagement(),
-		    getDeviceManagement(), getAssetManagement(), true);
+		    getCachedDeviceManagement(), getCachedAssetManagement(), true);
 	    for (IScheduledJob job : results.getResults()) {
 		converted.add(helper.convert(job));
 	    }
@@ -149,11 +149,11 @@ public class ScheduledJobs extends RestControllerBase {
 	return getMicroservice().getScheduleManagementApiChannel();
     }
 
-    private IDeviceManagement getDeviceManagement() {
-	return getMicroservice().getDeviceManagementApiChannel();
+    private IDeviceManagement getCachedDeviceManagement() {
+	return getMicroservice().getCachedDeviceManagement();
     }
 
-    private IAssetManagement getAssetManagement() {
-	return getMicroservice().getAssetManagementApiChannel();
+    private IAssetManagement getCachedAssetManagement() {
+	return getMicroservice().getCachedAssetManagement();
     }
 }

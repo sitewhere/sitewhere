@@ -122,7 +122,7 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	    GBinaryContent.Builder configuration = GBinaryContent.newBuilder();
 
 	    if (getMicroservice() instanceof IMultitenantMicroservice) {
-		byte[] content = ((IMultitenantMicroservice<?, ?>) getMicroservice())
+		byte[] content = ((IMultitenantMicroservice<?, ?>) getMicroservice()).getTenantEngineManager()
 			.getTenantConfiguration(CommonModelConverter.asApiUuid(request.getTenantId()));
 		configuration.setContent(ByteString.copyFrom(content));
 	    } else {
@@ -182,7 +182,7 @@ public class MicroserviceManagementImpl extends MicroserviceManagementGrpc.Micro
 	    byte[] content = request.getConfiguration().getContent().toByteArray();
 
 	    if (getMicroservice() instanceof IMultitenantMicroservice) {
-		((IMultitenantMicroservice<?, ?>) getMicroservice())
+		((IMultitenantMicroservice<?, ?>) getMicroservice()).getTenantEngineManager()
 			.updateTenantConfiguration(CommonModelConverter.asApiUuid(request.getTenantId()), content);
 	    } else {
 		throw new SiteWhereException("Requesting tenant configuration from a global microservice.");

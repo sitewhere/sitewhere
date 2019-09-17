@@ -130,20 +130,20 @@ public class DeviceStateModelConverter {
 	    throws SiteWhereException {
 	DeviceStateSearchCriteria api = new DeviceStateSearchCriteria();
 	api.setLastInteractionDateBefore(CommonModelConverter.asApiDate(grpc.getLastInteractionDateBefore()));
-	if (grpc.getDeviceTypeIdCount() > 0) {
-	    api.setDeviceTypeIds(CommonModelConverter.asApiUuids(grpc.getDeviceTypeIdList()));
+	if (grpc.getDeviceTypeTokenCount() > 0) {
+	    api.setDeviceTypeTokens(grpc.getDeviceTypeTokenList());
 	}
-	if (grpc.getCustomerIdCount() > 0) {
-	    api.setCustomerIds(CommonModelConverter.asApiUuids(grpc.getCustomerIdList()));
+	if (grpc.getCustomerTokenCount() > 0) {
+	    api.setCustomerTokens(grpc.getCustomerTokenList());
 	}
-	if (grpc.getAreaIdCount() > 0) {
-	    api.setAreaIds(CommonModelConverter.asApiUuids(grpc.getAreaIdList()));
+	if (grpc.getAreaTokenCount() > 0) {
+	    api.setAreaTokens(grpc.getAreaTokenList());
 	}
-	if (grpc.getAssetIdCount() > 0) {
-	    api.setAssetIds(CommonModelConverter.asApiUuids(grpc.getAssetIdList()));
+	if (grpc.getAssetTokenCount() > 0) {
+	    api.setAssetTokens(grpc.getAssetTokenList());
 	}
-	api.setPageNumber(grpc.getPageNumber());
-	api.setPageSize(grpc.getPageSize());
+	api.setPageNumber(grpc.getPaging().getPageNumber());
+	api.setPageSize(grpc.getPaging().getPageSize());
 	return api;
     }
 
@@ -158,20 +158,19 @@ public class DeviceStateModelConverter {
 	    throws SiteWhereException {
 	GDeviceStateSearchCriteria.Builder grpc = GDeviceStateSearchCriteria.newBuilder();
 	grpc.setLastInteractionDateBefore(CommonModelConverter.asGrpcDate(api.getLastInteractionDateBefore()));
-	if (api.getDeviceTypeIds() != null) {
-	    grpc.addAllDeviceTypeId(CommonModelConverter.asGrpcUuids(api.getDeviceTypeIds()));
+	if (api.getDeviceTypeTokens() != null) {
+	    grpc.addAllDeviceTypeToken(api.getDeviceTypeTokens());
 	}
-	if (api.getCustomerIds() != null) {
-	    grpc.addAllCustomerId(CommonModelConverter.asGrpcUuids(api.getCustomerIds()));
+	if (api.getCustomerTokens() != null) {
+	    grpc.addAllCustomerToken(api.getCustomerTokens());
 	}
-	if (api.getAreaIds() != null) {
-	    grpc.addAllAreaId(CommonModelConverter.asGrpcUuids(api.getAreaIds()));
+	if (api.getAreaTokens() != null) {
+	    grpc.addAllAreaToken(api.getAreaTokens());
 	}
-	if (api.getAssetIds() != null) {
-	    grpc.addAllAssetId(CommonModelConverter.asGrpcUuids(api.getAssetIds()));
+	if (api.getAssetTokens() != null) {
+	    grpc.addAllAssetToken(api.getAssetTokens());
 	}
-	grpc.setPageNumber(api.getPageNumber());
-	grpc.setPageSize(api.getPageSize());
+	grpc.setPaging(CommonModelConverter.asGrpcPaging(api));
 	return grpc.build();
     }
 

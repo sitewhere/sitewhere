@@ -50,7 +50,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.customer.ICustomer;
-import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -122,7 +121,8 @@ public class Customers extends RestControllerBase {
 	    @ApiParam(value = "Include parent customer information", required = false) @RequestParam(defaultValue = "true") boolean includeParentCustomer)
 	    throws SiteWhereException {
 	ICustomer existing = assertCustomer(customerToken);
-	CustomerMarshalHelper helper = new CustomerMarshalHelper(getDeviceManagement(), getAssetManagement());
+	CustomerMarshalHelper helper = new CustomerMarshalHelper(getCachedDeviceManagement(),
+		getCachedAssetManagement());
 	helper.setIncludeCustomerType(includeCustomerType);
 	helper.setIncludeParentCustomer(includeParentCustomer);
 	return helper.convert(existing);
@@ -201,7 +201,8 @@ public class Customers extends RestControllerBase {
 
 	// Perform search.
 	ISearchResults<ICustomer> matches = getDeviceManagement().listCustomers(criteria);
-	CustomerMarshalHelper helper = new CustomerMarshalHelper(getDeviceManagement(), getAssetManagement());
+	CustomerMarshalHelper helper = new CustomerMarshalHelper(getCachedDeviceManagement(),
+		getCachedAssetManagement());
 	helper.setIncludeCustomerType(includeCustomerType);
 
 	List<ICustomer> results = new ArrayList<ICustomer>();
@@ -238,26 +239,9 @@ public class Customers extends RestControllerBase {
 	    String parentCustomerToken, String customerTypeToken) throws SiteWhereException {
 	// Build criteria.
 	CustomerSearchCriteria criteria = new CustomerSearchCriteria(page, pageSize);
+	criteria.setParentCustomerToken(parentCustomerToken);
+	criteria.setCustomerTypeToken(customerTypeToken);
 	criteria.setRootOnly(rootOnly);
-
-	// Look up parent customer if provided.
-	if (parentCustomerToken != null) {
-	    ICustomer parent = getDeviceManagement().getCustomerByToken(parentCustomerToken);
-	    if (parent == null) {
-		throw new SiteWhereException("Invalid parent customer token.");
-	    }
-	    criteria.setParentCustomerId(parent.getId());
-	}
-
-	// Look up customer type if provided.
-	if (customerTypeToken != null) {
-	    ICustomerType customerType = getDeviceManagement().getCustomerTypeByToken(customerTypeToken);
-	    if (customerType == null) {
-		throw new SiteWhereException("Invalid customer type token.");
-	    }
-	    criteria.setCustomerTypeId(customerType.getId());
-	}
-
 	return criteria;
     }
 
@@ -308,7 +292,7 @@ public class Customers extends RestControllerBase {
 
 	List<IDeviceMeasurement> wrapped = new ArrayList<IDeviceMeasurement>();
 	for (IDeviceMeasurement result : results.getResults()) {
-	    wrapped.add(new DeviceMeasurementsWithAsset(result, getAssetManagement()));
+	    wrapped.add(new DeviceMeasurementsWithAsset(result, getCachedAssetManagement()));
 	}
 	return new SearchResults<IDeviceMeasurement>(wrapped, results.getNumResults());
     }
@@ -344,7 +328,7 @@ public class Customers extends RestControllerBase {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceLocation> wrapped = new ArrayList<IDeviceLocation>();
 	for (IDeviceLocation result : results.getResults()) {
-	    wrapped.add(new DeviceLocationWithAsset(result, getAssetManagement()));
+	    wrapped.add(new DeviceLocationWithAsset(result, getCachedAssetManagement()));
 	}
 	return new SearchResults<IDeviceLocation>(wrapped, results.getNumResults());
     }
@@ -380,7 +364,7 @@ public class Customers extends RestControllerBase {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceAlert> wrapped = new ArrayList<IDeviceAlert>();
 	for (IDeviceAlert result : results.getResults()) {
-	    wrapped.add(new DeviceAlertWithAsset(result, getAssetManagement()));
+	    wrapped.add(new DeviceAlertWithAsset(result, getCachedAssetManagement()));
 	}
 	return new SearchResults<IDeviceAlert>(wrapped, results.getNumResults());
     }
@@ -416,7 +400,7 @@ public class Customers extends RestControllerBase {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceCommandInvocation> wrapped = new ArrayList<IDeviceCommandInvocation>();
 	for (IDeviceCommandInvocation result : results.getResults()) {
-	    wrapped.add(new DeviceCommandInvocationWithAsset(result, getAssetManagement()));
+	    wrapped.add(new DeviceCommandInvocationWithAsset(result, getCachedAssetManagement()));
 	}
 	return new SearchResults<IDeviceCommandInvocation>(wrapped, results.getNumResults());
     }
@@ -452,7 +436,7 @@ public class Customers extends RestControllerBase {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceCommandResponse> wrapped = new ArrayList<IDeviceCommandResponse>();
 	for (IDeviceCommandResponse result : results.getResults()) {
-	    wrapped.add(new DeviceCommandResponseWithAsset(result, getAssetManagement()));
+	    wrapped.add(new DeviceCommandResponseWithAsset(result, getCachedAssetManagement()));
 	}
 	return new SearchResults<IDeviceCommandResponse>(wrapped, results.getNumResults());
     }
@@ -488,7 +472,7 @@ public class Customers extends RestControllerBase {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceStateChange> wrapped = new ArrayList<IDeviceStateChange>();
 	for (IDeviceStateChange result : results.getResults()) {
-	    wrapped.add(new DeviceStateChangeWithAsset(result, getAssetManagement()));
+	    wrapped.add(new DeviceStateChangeWithAsset(result, getCachedAssetManagement()));
 	}
 	return new SearchResults<IDeviceStateChange>(wrapped, results.getNumResults());
     }
@@ -527,14 +511,14 @@ public class Customers extends RestControllerBase {
 	criteria.setCustomerTokens(customers);
 
 	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
-	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getCachedDeviceManagement());
 	helper.setIncludeDevice(includeDevice);
 	helper.setIncludeCustomer(includeCustomer);
 	helper.setIncludeArea(includeArea);
 	helper.setIncludeAsset(includeAsset);
 	List<DeviceAssignment> converted = new ArrayList<DeviceAssignment>();
 	for (IDeviceAssignment assignment : matches.getResults()) {
-	    converted.add(helper.convert(assignment, getAssetManagement()));
+	    converted.add(helper.convert(assignment, getCachedAssetManagement()));
 	}
 	return new SearchResults<DeviceAssignment>(converted, matches.getNumResults());
     }
@@ -636,12 +620,16 @@ public class Customers extends RestControllerBase {
 	return getMicroservice().getDeviceManagementApiChannel();
     }
 
+    private IDeviceManagement getCachedDeviceManagement() {
+	return getMicroservice().getCachedDeviceManagement();
+    }
+
     private IDeviceEventManagement getDeviceEventManagement() {
 	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiChannel());
     }
 
-    private IAssetManagement getAssetManagement() {
-	return getMicroservice().getAssetManagementApiChannel();
+    private IAssetManagement getCachedAssetManagement() {
+	return getMicroservice().getCachedAssetManagement();
     }
 
     private ILabelGeneration getLabelGeneration() {

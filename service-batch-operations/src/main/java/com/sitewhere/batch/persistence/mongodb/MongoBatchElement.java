@@ -73,9 +73,7 @@ public class MongoBatchElement implements MongoConverter<IBatchElement> {
 	if (source.getProcessingStatus() != null) {
 	    target.append(PROP_PROCESSING_STATUS, source.getProcessingStatus().name());
 	}
-	if (source.getProcessedDate() != null) {
-	    target.append(PROP_PROCESSED_DATE, source.getProcessedDate());
-	}
+	target.append(PROP_PROCESSED_DATE, source.getProcessedDate());
 	MongoMetadataProvider.toDocument(source, target);
     }
 

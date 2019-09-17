@@ -17,8 +17,6 @@ import com.sitewhere.spi.device.IDeviceType;
 
 /**
  * Cache providers for device management entities.
- * 
- * @author Derek
  */
 public class DeviceManagementCacheProviders {
 

@@ -15,8 +15,6 @@ import com.sitewhere.spi.asset.IAssetType;
 
 /**
  * Cache providers for asset management entities.
- * 
- * @author Derek
  */
 public class AssetManagementCacheProviders {
 

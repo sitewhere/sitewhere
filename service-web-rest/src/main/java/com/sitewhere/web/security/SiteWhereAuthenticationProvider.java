@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
@@ -134,17 +135,16 @@ public class SiteWhereAuthenticationProvider implements AuthenticationProvider {
     }
 
     /**
-     * Validate that user management is avaliable.
+     * Validate that user management is available.
      * 
      * @return
      * @throws AuthenticationServiceException
      */
     protected IUserManagement validateUserManagement() throws AuthenticationServiceException {
-	if (getMicroservice().getUserManagementApiChannel() == null) {
-	    throw new AuthenticationServiceException(
-		    "User management API channel not initialized. Check logs for details.");
+	if (getMicroservice().getUserManagementApiChannel().getLifecycleStatus() != LifecycleStatus.Started) {
+	    throw new AuthenticationServiceException("User management API not started. See logs for details.");
 	}
-	return getMicroservice().getUserManagementApiChannel();
+	return getMicroservice().getCachedUserManagement();
     }
 
     protected IWebRestMicroservice<?> getMicroservice() {

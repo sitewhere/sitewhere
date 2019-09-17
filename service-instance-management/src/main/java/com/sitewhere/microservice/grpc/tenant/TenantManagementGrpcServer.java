@@ -11,19 +11,16 @@ import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.instance.spi.tenant.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.microservice.grpc.GrpcServer;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
-import com.sitewhere.spi.tenant.ITenantAdministration;
 import com.sitewhere.spi.tenant.ITenantManagement;
 
 /**
  * Hosts a GRPC server that handles tenant management requests.
- * 
- * @author Derek
  */
 public class TenantManagementGrpcServer extends GrpcServer implements ITenantManagementGrpcServer {
 
     public TenantManagementGrpcServer(IInstanceManagementMicroservice<?> microservice,
-	    ITenantManagement tenantManagement, ITenantAdministration tenantAdministration) {
-	super(new TenantManagementImpl(microservice, tenantManagement, tenantAdministration),
-		IGrpcSettings.TENANT_MANAGEMENT_API_PORT, IGrpcSettings.TENANT_MANAGEMENT_API_HEALTH_PORT);
+	    ITenantManagement tenantManagement) {
+	super(new TenantManagementImpl(microservice, tenantManagement), IGrpcSettings.TENANT_MANAGEMENT_API_PORT,
+		IGrpcSettings.TENANT_MANAGEMENT_API_HEALTH_PORT);
     }
 }

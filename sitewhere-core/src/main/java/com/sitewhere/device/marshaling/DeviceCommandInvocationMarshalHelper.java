@@ -7,9 +7,6 @@
  */
 package com.sitewhere.device.marshaling;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,9 +36,6 @@ public class DeviceCommandInvocationMarshalHelper {
     /** Indicates whether to include command information */
     private boolean includeCommand = false;
 
-    /** Cache to prevent repeated command lookups */
-    private Map<String, DeviceCommand> commandsByToken = new HashMap<String, DeviceCommand>();
-
     public DeviceCommandInvocationMarshalHelper(IDeviceManagement deviceManagement) {
 	this(deviceManagement, false);
     }
@@ -66,7 +60,7 @@ public class DeviceCommandInvocationMarshalHelper {
 	result.setInitiatorId(source.getInitiatorId());
 	result.setTarget(source.getTarget());
 	result.setTargetId(source.getTargetId());
-	result.setCommandToken(source.getCommandToken());
+	result.setDeviceCommandId(source.getDeviceCommandId());
 	result.setParameterValues(source.getParameterValues());
 
 	// Copy event fields.
@@ -82,20 +76,16 @@ public class DeviceCommandInvocationMarshalHelper {
 	MetadataProvider.copy(source, result);
 
 	if (isIncludeCommand()) {
-	    if ((source.getCommandToken() == null) || (source.getCommandToken().isEmpty())) {
-		LOGGER.warn("Device invocation is missing command token.");
+	    if (source.getDeviceCommandId() == null) {
+		LOGGER.warn("Device invocation is missing command id.");
 		return result;
 	    }
-	    DeviceCommand command = commandsByToken.get(source.getCommandToken());
-	    if (command == null) {
-		IDeviceCommand found = getDeviceManagement().getDeviceCommandByToken(source.getCommandToken());
-		if (found == null) {
-		    LOGGER.warn("Device invocation references a non-existent command token.");
-		    return result;
-		}
-		command = DeviceCommand.copy(found);
-		commandsByToken.put(command.getToken(), command);
+	    IDeviceCommand found = getDeviceManagement().getDeviceCommand(source.getDeviceCommandId());
+	    if (found == null) {
+		LOGGER.warn("Device invocation references a non-existent command token.");
+		return result;
 	    }
+	    DeviceCommand command = DeviceCommand.copy(found);
 	    if (command != null) {
 		result.setCommand(command);
 		result.setAsHtml(CommandHtmlHelper.getHtml(result));

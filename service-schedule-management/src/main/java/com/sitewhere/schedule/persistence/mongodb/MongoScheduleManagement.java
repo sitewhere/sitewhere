@@ -16,11 +16,11 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.IndexOptions;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
+import com.sitewhere.mongodb.MongoTenantComponent;
 import com.sitewhere.mongodb.common.MongoPersistentEntity;
 import com.sitewhere.rest.model.scheduling.Schedule;
 import com.sitewhere.rest.model.scheduling.ScheduledJob;
 import com.sitewhere.schedule.persistence.ScheduleManagementPersistence;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
@@ -32,7 +32,6 @@ import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -40,41 +39,28 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author dadams
  */
-public class MongoScheduleManagement extends TenantEngineLifecycleComponent implements IScheduleManagement {
+public class MongoScheduleManagement extends MongoTenantComponent<ScheduleManagementMongoClient>
+	implements IScheduleManagement {
 
     /** Converter lookup */
     private static IMongoConverterLookup LOOKUP = new MongoConverters();
 
     /** Injected with global SiteWhere Mongo client */
-    private IScheduleManagementMongoClient mongoClient;
+    private ScheduleManagementMongoClient mongoClient;
 
     public MongoScheduleManagement() {
 	super(LifecycleComponentType.DataStore);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi
-     * .server.lifecycle.ILifecycleProgressMonitor)
+     * @see com.sitewhere.mongodb.MongoTenantComponent#ensureIndexes()
      */
     @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Ensure that collection indexes exist.
-	ensureIndexes();
-    }
-
-    /**
-     * Ensure that expected collection indexes exist.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void ensureIndexes() throws SiteWhereException {
+    public void ensureIndexes() throws SiteWhereException {
 	getMongoClient().getSchedulesCollection().createIndex(new Document(MongoSchedule.PROP_TOKEN, 1),
-		new IndexOptions().unique(true));
+		new IndexOptions().unique(true).background(true));
 	getMongoClient().getScheduledJobsCollection().createIndex(new Document(MongoScheduledJob.PROP_TOKEN, 1),
-		new IndexOptions().unique(true));
+		new IndexOptions().unique(true).background(true));
     }
 
     /*
@@ -328,11 +314,15 @@ public class MongoScheduleManagement extends TenantEngineLifecycleComponent impl
 	}
     }
 
-    public IScheduleManagementMongoClient getMongoClient() {
+    /*
+     * @see com.sitewhere.mongodb.MongoTenantComponent#getMongoClient()
+     */
+    @Override
+    public ScheduleManagementMongoClient getMongoClient() {
 	return mongoClient;
     }
 
-    public void setMongoClient(IScheduleManagementMongoClient mongoClient) {
+    public void setMongoClient(ScheduleManagementMongoClient mongoClient) {
 	this.mongoClient = mongoClient;
     }
 }

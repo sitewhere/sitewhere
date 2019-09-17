@@ -9,8 +9,6 @@ package com.sitewhere.grpc.client.cache;
 
 /**
  * Enumeration of cache identifiers used for interacting with Hazelcast.
- * 
- * @author Derek
  */
 public enum CacheIdentifier {
 

@@ -7,7 +7,6 @@
  */
 package com.sitewhere.grpc.client.tenant;
 
-import java.util.List;
 import java.util.UUID;
 
 import com.sitewhere.grpc.client.ApiChannel;
@@ -18,14 +17,10 @@ import com.sitewhere.grpc.service.GCreateTenantRequest;
 import com.sitewhere.grpc.service.GCreateTenantResponse;
 import com.sitewhere.grpc.service.GDeleteTenantRequest;
 import com.sitewhere.grpc.service.GDeleteTenantResponse;
-import com.sitewhere.grpc.service.GGetDatasetTemplatesRequest;
-import com.sitewhere.grpc.service.GGetDatasetTemplatesResponse;
 import com.sitewhere.grpc.service.GGetTenantByIdRequest;
 import com.sitewhere.grpc.service.GGetTenantByIdResponse;
 import com.sitewhere.grpc.service.GGetTenantByTokenRequest;
 import com.sitewhere.grpc.service.GGetTenantByTokenResponse;
-import com.sitewhere.grpc.service.GGetTenantTemplatesRequest;
-import com.sitewhere.grpc.service.GGetTenantTemplatesResponse;
 import com.sitewhere.grpc.service.GListTenantsRequest;
 import com.sitewhere.grpc.service.GListTenantsResponse;
 import com.sitewhere.grpc.service.GUpdateTenantRequest;
@@ -38,8 +33,6 @@ import com.sitewhere.spi.microservice.grpc.GrpcServiceIdentifier;
 import com.sitewhere.spi.microservice.grpc.IGrpcServiceIdentifier;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
-import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
-import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.tenant.ITenantSearchCriteria;
 import com.sitewhere.spi.tenant.ITenant;
@@ -186,43 +179,6 @@ public class TenantManagementApiChannel extends ApiChannel<TenantManagementGrpcC
 	    return response;
 	} catch (Throwable t) {
 	    throw GrpcUtils.handleClientMethodException(TenantManagementGrpc.getDeleteTenantMethod(), t);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.spi.tenant.ITenantAdministration#getTenantTemplates()
-     */
-    @Override
-    public List<ITenantTemplate> getTenantTemplates() throws SiteWhereException {
-	try {
-	    GrpcUtils.handleClientMethodEntry(this, TenantManagementGrpc.getGetTenantTemplatesMethod());
-	    GGetTenantTemplatesRequest.Builder grequest = GGetTenantTemplatesRequest.newBuilder();
-	    GGetTenantTemplatesResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .getTenantTemplates(grequest.build());
-	    List<ITenantTemplate> response = TenantModelConverter.asApiTenantTemplateList(gresponse.getTemplateList());
-	    GrpcUtils.logClientMethodResponse(TenantManagementGrpc.getGetTenantTemplatesMethod(), response);
-	    return response;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(TenantManagementGrpc.getGetTenantTemplatesMethod(), t);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.spi.tenant.ITenantAdministration#getDatasetTemplates()
-     */
-    @Override
-    public List<IDatasetTemplate> getDatasetTemplates() throws SiteWhereException {
-	try {
-	    GrpcUtils.handleClientMethodEntry(this, TenantManagementGrpc.getGetDatasetTemplatesMethod());
-	    GGetDatasetTemplatesRequest.Builder grequest = GGetDatasetTemplatesRequest.newBuilder();
-	    GGetDatasetTemplatesResponse gresponse = getGrpcChannel().getBlockingStub()
-		    .getDatasetTemplates(grequest.build());
-	    List<IDatasetTemplate> response = TenantModelConverter
-		    .asApiDatasetTemplateList(gresponse.getTemplateList());
-	    GrpcUtils.logClientMethodResponse(TenantManagementGrpc.getGetDatasetTemplatesMethod(), response);
-	    return response;
-	} catch (Throwable t) {
-	    throw GrpcUtils.handleClientMethodException(TenantManagementGrpc.getGetDatasetTemplatesMethod(), t);
 	}
     }
 }

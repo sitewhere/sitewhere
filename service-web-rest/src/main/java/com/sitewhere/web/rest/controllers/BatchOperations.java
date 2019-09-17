@@ -26,8 +26,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sitewhere.batch.BatchUtils;
 import com.sitewhere.batch.marshaling.BatchElementMarshalHelper;
 import com.sitewhere.batch.marshaling.BatchOperationMarshalHelper;
-import com.sitewhere.rest.model.batch.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.rest.model.batch.request.BatchCommandInvocationRequest;
+import com.sitewhere.rest.model.batch.request.InvocationByAssignmentCriteriaRequest;
+import com.sitewhere.rest.model.batch.request.InvocationByDeviceCriteriaRequest;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.batch.BatchOperationSearchCriteria;
 import com.sitewhere.rest.model.search.device.BatchElementSearchCriteria;
@@ -141,20 +142,48 @@ public class BatchOperations extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/command/criteria", method = RequestMethod.POST)
-    @ApiOperation(value = "Create batch command operation based on criteria")
+    @RequestMapping(value = "/command/criteria/device", method = RequestMethod.POST)
+    @ApiOperation(value = "Create batch command operation based on device criteria")
     @Secured({ SiteWhereRoles.REST })
-    public Object createBatchCommandByCriteria(@RequestBody BatchCommandForCriteriaRequest request,
+    public Object createInvocationsByDeviceCriteria(@RequestBody InvocationByDeviceCriteriaRequest request,
 	    @ApiParam(value = "Schedule token", required = false) @RequestParam(required = false) String scheduleToken)
 	    throws SiteWhereException {
 	if (scheduleToken != null) {
 	    IScheduledJobCreateRequest job = ScheduledJobHelper
-		    .createBatchCommandInvocationJobByCriteria(UUID.randomUUID().toString(), request, scheduleToken);
+		    .createBatchCommandInvocationJobForDeviceCriteria(request, scheduleToken);
 	    return getScheduleManagement().createScheduledJob(job);
 	} else {
 	    // Resolve tokens for devices matching criteria.
-	    List<String> deviceTokens = BatchUtils.resolveDeviceTokensForCriteria(request, getDeviceManagement(),
-		    getAssetManagement());
+	    List<String> deviceTokens = BatchUtils.resolveDeviceTokensForDeviceCriteria(request, getDeviceManagement(),
+		    getCachedAssetManagement());
+
+	    // Create batch command invocation.
+	    BatchCommandInvocationRequest invoke = new BatchCommandInvocationRequest();
+	    invoke.setToken(request.getToken());
+	    invoke.setCommandToken(request.getCommandToken());
+	    invoke.setParameterValues(request.getParameterValues());
+	    invoke.setDeviceTokens(deviceTokens);
+
+	    IBatchOperation result = getBatchManagement().createBatchCommandInvocation(invoke);
+	    BatchOperationMarshalHelper helper = new BatchOperationMarshalHelper();
+	    return helper.convert(result);
+	}
+    }
+
+    @RequestMapping(value = "/command/criteria/assignment", method = RequestMethod.POST)
+    @ApiOperation(value = "Create batch command operation based on device assignment criteria")
+    @Secured({ SiteWhereRoles.REST })
+    public Object createInvocationsByAssignmentCriteria(@RequestBody InvocationByAssignmentCriteriaRequest request,
+	    @ApiParam(value = "Schedule token", required = false) @RequestParam(required = false) String scheduleToken)
+	    throws SiteWhereException {
+	if (scheduleToken != null) {
+	    IScheduledJobCreateRequest job = ScheduledJobHelper
+		    .createBatchCommandInvocationJobForAssignmentCriteria(request, scheduleToken);
+	    return getScheduleManagement().createScheduledJob(job);
+	} else {
+	    // Resolve tokens for devices matching criteria.
+	    List<String> deviceTokens = BatchUtils.resolveDeviceTokensForAssignmentCriteria(request,
+		    getDeviceManagement(), getCachedAssetManagement());
 
 	    // Create batch command invocation.
 	    BatchCommandInvocationRequest invoke = new BatchCommandInvocationRequest();
@@ -203,8 +232,8 @@ public class BatchOperations extends RestControllerBase {
 	return getMicroservice().getDeviceManagementApiChannel();
     }
 
-    private IAssetManagement getAssetManagement() {
-	return getMicroservice().getAssetManagementApiChannel();
+    private IAssetManagement getCachedAssetManagement() {
+	return getMicroservice().getCachedAssetManagement();
     }
 
     protected IBatchManagement getBatchManagement() {

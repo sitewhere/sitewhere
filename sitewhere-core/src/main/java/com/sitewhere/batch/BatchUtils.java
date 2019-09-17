@@ -8,70 +8,81 @@
 package com.sitewhere.batch;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
-import com.sitewhere.device.group.DeviceGroupUtils;
+import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.batch.request.IBatchCommandForCriteriaRequest;
+import com.sitewhere.spi.batch.request.IInvocationByAssignmentCriteriaRequest;
+import com.sitewhere.spi.batch.request.IInvocationByDeviceCriteriaRequest;
 import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 
 /**
  * Utility methods for batch operations.
- * 
- * @author Derek
  */
 public class BatchUtils {
 
     /**
-     * Get device tokens based on the given criteria.
+     * Resolve device search criteria to a list of device tokens.
      * 
      * @param criteria
+     * @param deviceManagement
+     * @param assetManagement
      * @return
      * @throws SiteWhereException
      */
-    public static List<String> resolveDeviceTokensForCriteria(IBatchCommandForCriteriaRequest criteria,
+    public static List<String> resolveDeviceTokensForDeviceCriteria(IInvocationByDeviceCriteriaRequest criteria,
 	    IDeviceManagement deviceManagement, IAssetManagement assetManagement) throws SiteWhereException {
 	if (criteria.getDeviceTypeToken() == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceTypeToken, ErrorLevel.ERROR);
 	}
 
-	boolean hasGroup = false;
-	boolean hasGroupsWithRole = false;
-	if ((criteria.getGroupToken() != null) && (criteria.getGroupToken().trim().length() > 0)) {
-	    hasGroup = true;
-	}
-	if ((criteria.getGroupsWithRole() != null) && (criteria.getGroupsWithRole().trim().length() > 0)) {
-	    hasGroupsWithRole = true;
-	}
-	if (hasGroup && hasGroupsWithRole) {
-	    throw new SiteWhereException("Only one of groupToken or groupsWithRole may be specified.");
-	}
+	DeviceSearchCriteria search = new DeviceSearchCriteria(1, 0, null, null);
+	search.setDeviceTypeToken(criteria.getDeviceTypeToken());
+	List<IDevice> matches = deviceManagement.listDevices(search).getResults();
 
-	IDeviceSearchCriteria deviceSearch = new DeviceSearchCriteria(criteria.getDeviceTypeToken(), false, 1, 0,
-		criteria.getStartDate(), criteria.getEndDate());
-
-	Collection<IDevice> matches;
-	if (hasGroup) {
-	    IDeviceGroup group = deviceManagement.getDeviceGroupByToken(criteria.getGroupToken());
-	    matches = DeviceGroupUtils.getDevicesInGroup(group, deviceSearch, deviceManagement, assetManagement);
-	} else if (hasGroupsWithRole) {
-	    matches = DeviceGroupUtils.getDevicesInGroupsWithRole(criteria.getGroupsWithRole(), deviceSearch,
-		    deviceManagement, assetManagement);
-	} else {
-	    matches = deviceManagement.listDevices(deviceSearch).getResults();
-	}
 	List<String> deviceTokens = new ArrayList<String>();
 	for (IDevice match : matches) {
 	    deviceTokens.add(match.getToken());
+	}
+	return deviceTokens;
+    }
+
+    /**
+     * Resolve device assignment search criteria to a list of device tokens.
+     * 
+     * @param criteria
+     * @param deviceManagement
+     * @param assetManagement
+     * @return
+     * @throws SiteWhereException
+     */
+    public static List<String> resolveDeviceTokensForAssignmentCriteria(IInvocationByAssignmentCriteriaRequest criteria,
+	    IDeviceManagement deviceManagement, IAssetManagement assetManagement) throws SiteWhereException {
+	if (criteria.getDeviceTypeToken() == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceTypeToken, ErrorLevel.ERROR);
+	}
+
+	DeviceAssignmentSearchCriteria search = new DeviceAssignmentSearchCriteria(1, 0);
+	search.setDeviceTypeTokens(Collections.singletonList(criteria.getDeviceTypeToken()));
+	search.setCustomerTokens(criteria.getCustomerTokens());
+	search.setAreaTokens(criteria.getAreaTokens());
+	search.setAssetTokens(criteria.getAssetTokens());
+	List<IDeviceAssignment> matches = deviceManagement.listDeviceAssignments(search).getResults();
+
+	List<String> deviceTokens = new ArrayList<String>();
+	for (IDeviceAssignment match : matches) {
+	    IDevice device = deviceManagement.getDevice(match.getDeviceId());
+	    if (!deviceTokens.contains(device.getToken())) {
+		deviceTokens.add(device.getToken());
+	    }
 	}
 	return deviceTokens;
     }

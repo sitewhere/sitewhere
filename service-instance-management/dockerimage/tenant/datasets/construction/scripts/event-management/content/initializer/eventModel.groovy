@@ -156,7 +156,7 @@ def createLocations = { assn, startDate, zone ->
 
 Date start = new Date(System.currentTimeMillis() - (2 * 60 * 60 * 1000));
 def allActiveAssn = deviceBuilder.allActiveAssignments()
-def zone = deviceBuilder.zoneByToken 'workarea'
+def zone = deviceBuilder.zoneByToken 'officepark'
 allActiveAssn.each { assn ->
 	createMeasurements assn, start
 	createLocations assn, start, zone

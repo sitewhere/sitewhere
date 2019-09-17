@@ -60,6 +60,8 @@ public abstract class MultitenantGrpcChannel<B, A> extends GrpcChannel<B, A> imp
 	this.channel = builder.build();
 	this.blockingStub = createBlockingStub();
 	this.asyncStub = createAsyncStub();
+	getLogger()
+		.info(String.format("Creating gRPC client channel connected to %s:%d ...", getHostname(), getPort()));
     }
 
     protected TenantTokenClientInterceptor getTenantTokenInterceptor() {

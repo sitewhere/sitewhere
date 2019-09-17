@@ -121,9 +121,13 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine
 	    groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize schedule model."),
 		    getMicroservice()));
 	    for (String script : scripts) {
+		getLogger().info(String.format("Applying bootstrap script '%s'.", script));
 		GroovyScheduleModelInitializer initializer = new GroovyScheduleModelInitializer(groovy, script);
 		initializer.initialize(getScheduleManagement());
 	    }
+	} catch (Throwable e) {
+	    getLogger().error("Unhandled exception in bootstrap script.", e);
+	    throw new SiteWhereException(e);
 	} finally {
 	    SecurityContextHolder.getContext().setAuthentication(previous);
 	}

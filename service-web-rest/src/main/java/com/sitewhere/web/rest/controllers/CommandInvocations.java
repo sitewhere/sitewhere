@@ -93,7 +93,8 @@ public class CommandInvocations extends RestControllerBase {
 	    throw new SiteWhereException("Event with the corresponding id is not a command invocation.");
 	}
 	IDeviceCommandInvocation invocation = (IDeviceCommandInvocation) found;
-	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(getDeviceManagement());
+	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(
+		getCachedDeviceManagement());
 	helper.setIncludeCommand(true);
 	MarshaledDeviceCommandInvocation converted = helper.convert(invocation);
 	ISearchResults<IDeviceCommandResponse> responses = getDeviceEventManagement()
@@ -121,6 +122,10 @@ public class CommandInvocations extends RestControllerBase {
 
     private IDeviceManagement getDeviceManagement() {
 	return getMicroservice().getDeviceManagementApiChannel();
+    }
+
+    private IDeviceManagement getCachedDeviceManagement() {
+	return getMicroservice().getCachedDeviceManagement();
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {

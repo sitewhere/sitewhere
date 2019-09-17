@@ -8,6 +8,7 @@
 package com.sitewhere.sources.microservice;
 
 import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
+import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
@@ -17,6 +18,7 @@ import com.sitewhere.sources.configuration.EventSourcesModelProvider;
 import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
 import com.sitewhere.sources.spi.microservice.IEventSourcesTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -39,6 +41,9 @@ public class EventSourcesMicroservice extends MultitenantMicroservice<Microservi
 
     /** Device event management API channel */
     private IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel;
+
+    /** Cached device management implementation */
+    private IDeviceManagement cachedDeviceManagement;
 
     /*
      * (non-Javadoc)
@@ -98,8 +103,8 @@ public class EventSourcesMicroservice extends MultitenantMicroservice<Microservi
 	// Composite step for initializing microservice.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
-	// Initialize device management API channel.
-	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
+	// Initialize device management API channel + cache.
+	init.addInitializeStep(this, getCachedDeviceManagement(), true);
 
 	// Initialize device event management API channel.
 	init.addInitializeStep(this, getDeviceEventManagementApiChannel(), true);
@@ -118,8 +123,8 @@ public class EventSourcesMicroservice extends MultitenantMicroservice<Microservi
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
-	// Start device mangement API channel.
-	start.addStartStep(this, getDeviceManagementApiChannel(), true);
+	// Start device mangement API channel + cache.
+	start.addStartStep(this, getCachedDeviceManagement(), true);
 
 	// Start device event mangement API channel.
 	start.addStartStep(this, getDeviceEventManagementApiChannel(), true);
@@ -138,8 +143,8 @@ public class EventSourcesMicroservice extends MultitenantMicroservice<Microservi
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
-	// Stop device mangement API channel.
-	stop.addStopStep(this, getDeviceManagementApiChannel());
+	// Stop device mangement API channel + cache.
+	stop.addStopStep(this, getCachedDeviceManagement());
 
 	// Stop device event mangement API channel.
 	stop.addStopStep(this, getDeviceEventManagementApiChannel());
@@ -153,7 +158,8 @@ public class EventSourcesMicroservice extends MultitenantMicroservice<Microservi
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(getInstanceSettings(),
+	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
+	this.cachedDeviceManagement = new CachedDeviceManagementApiChannel(deviceManagementApiChannel,
 		new CachedDeviceManagementApiChannel.CacheSettings());
 
 	// Device event management.
@@ -171,6 +177,19 @@ public class EventSourcesMicroservice extends MultitenantMicroservice<Microservi
 
     public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
 	this.deviceManagementApiChannel = deviceManagementApiChannel;
+    }
+
+    /*
+     * @see com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice#
+     * getCachedDeviceManagement()
+     */
+    @Override
+    public IDeviceManagement getCachedDeviceManagement() {
+	return cachedDeviceManagement;
+    }
+
+    public void setCachedDeviceManagement(IDeviceManagement cachedDeviceManagement) {
+	this.cachedDeviceManagement = cachedDeviceManagement;
     }
 
     /*

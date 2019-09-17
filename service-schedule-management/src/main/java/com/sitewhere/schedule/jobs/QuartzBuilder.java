@@ -46,7 +46,7 @@ public class QuartzBuilder {
 	    return builder.build();
 	}
 	case BatchCommandInvocation: {
-	    JobBuilder builder = JobBuilder.newJob(BatchCommandInvocationJob.class).withIdentity(job.getToken());
+	    JobBuilder builder = JobBuilder.newJob(InvocationByDeviceCriteriaJob.class).withIdentity(job.getToken());
 	    for (String key : job.getJobConfiguration().keySet()) {
 		builder.usingJobData(key, job.getJobConfiguration().get(key));
 	    }

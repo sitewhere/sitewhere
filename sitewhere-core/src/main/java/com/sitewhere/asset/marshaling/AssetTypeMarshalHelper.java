@@ -8,7 +8,7 @@
 package com.sitewhere.asset.marshaling;
 
 import com.sitewhere.rest.model.asset.AssetType;
-import com.sitewhere.rest.model.common.PersistentEntity;
+import com.sitewhere.rest.model.common.BrandedEntity;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetType;
@@ -40,13 +40,10 @@ public class AssetTypeMarshalHelper {
 	    return null;
 	}
 	AssetType type = new AssetType();
-	type.setId(source.getId());
-	type.setToken(source.getToken());
 	type.setName(source.getName());
 	type.setDescription(source.getDescription());
-	type.setImageUrl(source.getImageUrl());
 	type.setAssetCategory(source.getAssetCategory());
-	PersistentEntity.copy(source, type);
+	BrandedEntity.copy(source, type);
 	return type;
     }
 

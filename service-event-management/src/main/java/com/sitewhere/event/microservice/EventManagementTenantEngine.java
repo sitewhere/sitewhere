@@ -19,17 +19,18 @@ import com.sitewhere.event.spi.kafka.IOutboundCommandInvocationsProducer;
 import com.sitewhere.event.spi.kafka.IOutboundEventsProducer;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.grpc.EventManagementImpl;
 import com.sitewhere.microservice.kafka.KafkaEventPersistenceTriggers;
+import com.sitewhere.microservice.kafka.OutboundCommandInvocationsProducer;
 import com.sitewhere.microservice.kafka.OutboundEventsProducer;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
@@ -79,6 +80,9 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 	// Load event management implementation.
 	initializeManagementImplementations();
 
+	// Initialize Kafka components.
+	initializeKafkaComponents();
+
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
 
@@ -114,7 +118,16 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 
 	this.eventManagementImpl = new EventManagementImpl((IEventManagementMicroservice) getMicroservice(),
 		getEventManagement());
+    }
+
+    /**
+     * Initialize Kafka components.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void initializeKafkaComponents() throws SiteWhereException {
 	this.outboundEventsProducer = new OutboundEventsProducer();
+	this.outboundCommandInvocationsProducer = new OutboundCommandInvocationsProducer();
     }
 
     /*
@@ -181,9 +194,13 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 	    groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize event model."),
 		    getMicroservice()));
 	    for (String script : scripts) {
+		getLogger().info(String.format("Applying bootstrap script '%s'.", script));
 		GroovyEventModelInitializer initializer = new GroovyEventModelInitializer(groovy, script);
-		initializer.initialize(getDeviceManagementApiChannel(), getEventManagement());
+		initializer.initialize(getCachedDeviceManagement(), getEventManagement());
 	    }
+	} catch (Throwable e) {
+	    getLogger().error("Unhandled exception in bootstrap script.", e);
+	    throw new SiteWhereException(e);
 	} finally {
 	    SecurityContextHolder.getContext().setAuthentication(previous);
 	}
@@ -289,7 +306,7 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 	this.outboundCommandInvocationsProducer = outboundCommandInvocationsProducer;
     }
 
-    protected IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
-	return ((IEventManagementMicroservice) getMicroservice()).getDeviceManagementApiChannel();
+    protected IDeviceManagement getCachedDeviceManagement() {
+	return ((IEventManagementMicroservice) getMicroservice()).getCachedDeviceManagement();
     }
 }

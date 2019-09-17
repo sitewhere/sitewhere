@@ -146,7 +146,7 @@ public class CustomerTypes extends RestControllerBase {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<ICustomerType> matches = getDeviceManagement().listCustomerTypes(criteria);
 
-	CustomerTypeMarshalHelper helper = new CustomerTypeMarshalHelper(getDeviceManagement());
+	CustomerTypeMarshalHelper helper = new CustomerTypeMarshalHelper(getCachedDeviceManagement());
 	helper.setIncludeContainedCustomerTypes(includeContainedCustomerTypes);
 
 	List<ICustomerType> results = new ArrayList<ICustomerType>();
@@ -190,6 +190,10 @@ public class CustomerTypes extends RestControllerBase {
 
     private IDeviceManagement getDeviceManagement() {
 	return getMicroservice().getDeviceManagementApiChannel();
+    }
+
+    private IDeviceManagement getCachedDeviceManagement() {
+	return getMicroservice().getCachedDeviceManagement();
     }
 
     private ILabelGeneration getLabelGeneration() {

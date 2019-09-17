@@ -62,7 +62,7 @@ public class DeviceStates extends RestControllerBase {
 
 	// Perform search.
 	ISearchResults<IDeviceState> matches = getDeviceStateManagement().searchDeviceStates(criteria);
-	DeviceStateMarshalHelper helper = new DeviceStateMarshalHelper(getDeviceManagement(),
+	DeviceStateMarshalHelper helper = new DeviceStateMarshalHelper(getCachedDeviceManagement(),
 		getDeviceEventManagement());
 	helper.setIncludeDevice(includeDevice);
 	helper.setIncludeDeviceType(includeDeviceType);
@@ -79,8 +79,8 @@ public class DeviceStates extends RestControllerBase {
 	return new SearchResults<IDeviceState>(results, matches.getNumResults());
     }
 
-    private IDeviceManagement getDeviceManagement() {
-	return getMicroservice().getDeviceManagementApiChannel();
+    private IDeviceManagement getCachedDeviceManagement() {
+	return getMicroservice().getCachedDeviceManagement();
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {

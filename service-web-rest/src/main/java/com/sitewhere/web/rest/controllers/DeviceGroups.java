@@ -213,7 +213,7 @@ public class DeviceGroups extends RestControllerBase {
 	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
 	    HttpServletRequest servletRequest) throws SiteWhereException {
-	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getDeviceManagement())
+	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getCachedDeviceManagement())
 		.setIncludeDetails(includeDetails);
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 
@@ -222,7 +222,7 @@ public class DeviceGroups extends RestControllerBase {
 		criteria);
 	List<IDeviceGroupElement> elmConv = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElement elm : results.getResults()) {
-	    elmConv.add(helper.convert(elm, getAssetManagement()));
+	    elmConv.add(helper.convert(elm, getCachedAssetManagement()));
 	}
 	return new SearchResults<IDeviceGroupElement>(elmConv, results.getNumResults());
     }
@@ -236,14 +236,14 @@ public class DeviceGroups extends RestControllerBase {
      * @throws SiteWhereException
      */
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "/{groupToken}/elements", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{groupToken}/elements", method = RequestMethod.POST)
     @ApiOperation(value = "Add elements to device group")
     @Secured({ SiteWhereRoles.REST })
     public ISearchResults<IDeviceGroupElement> addDeviceGroupElements(
 	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
 	    @RequestBody List<DeviceGroupElementCreateRequest> request, HttpServletRequest servletRequest)
 	    throws SiteWhereException {
-	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getDeviceManagement())
+	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getCachedDeviceManagement())
 		.setIncludeDetails(false);
 	List<IDeviceGroupElementCreateRequest> elements = (List<IDeviceGroupElementCreateRequest>) (List<? extends IDeviceGroupElementCreateRequest>) request;
 
@@ -254,7 +254,7 @@ public class DeviceGroups extends RestControllerBase {
 	List<IDeviceGroupElement> results = getDeviceManagement().addDeviceGroupElements(group.getId(), elements, true);
 	List<IDeviceGroupElement> converted = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElement elm : results) {
-	    converted.add(helper.convert(elm, getAssetManagement()));
+	    converted.add(helper.convert(elm, getCachedAssetManagement()));
 	}
 	return new SearchResults<IDeviceGroupElement>(converted);
     }
@@ -318,13 +318,13 @@ public class DeviceGroups extends RestControllerBase {
     public ISearchResults<IDeviceGroupElement> deleteDeviceGroupElements(
 	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
 	    @RequestBody List<UUID> elementIds) throws SiteWhereException {
-	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getDeviceManagement())
+	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getCachedDeviceManagement())
 		.setIncludeDetails(false);
 
 	List<IDeviceGroupElement> results = getDeviceManagement().removeDeviceGroupElements(elementIds);
 	List<IDeviceGroupElement> converted = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElement elm : results) {
-	    converted.add(helper.convert(elm, getAssetManagement()));
+	    converted.add(helper.convert(elm, getCachedAssetManagement()));
 	}
 	return new SearchResults<IDeviceGroupElement>(converted);
     }
@@ -348,8 +348,12 @@ public class DeviceGroups extends RestControllerBase {
 	return getMicroservice().getDeviceManagementApiChannel();
     }
 
-    private IAssetManagement getAssetManagement() {
-	return getMicroservice().getAssetManagementApiChannel();
+    private IDeviceManagement getCachedDeviceManagement() {
+	return getMicroservice().getCachedDeviceManagement();
+    }
+
+    private IAssetManagement getCachedAssetManagement() {
+	return getMicroservice().getCachedAssetManagement();
     }
 
     private ILabelGeneration getLabelGeneration() {
