@@ -41,11 +41,11 @@ public abstract class MongoTenantComponent<T extends MongoDbClient> extends Tena
 
     /*
      * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
-     * server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.server.lifecycle.LifecycleComponent#provision(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void provision(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (getIndexer() != null) {
 	    getIndexer().shutdownNow();
 	}

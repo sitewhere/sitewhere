@@ -155,6 +155,27 @@ public class LifecycleComponent implements ILifecycleComponent {
     }
 
     /*
+     * @see
+     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecycleProvision(com
+     * .sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void lifecycleProvision(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	provision(monitor);
+	for (ILifecycleComponent nested : getLifecycleComponents().values()) {
+	    nested.lifecycleProvision(monitor);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#provision(com.
+     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void provision(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    }
+
+    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#
