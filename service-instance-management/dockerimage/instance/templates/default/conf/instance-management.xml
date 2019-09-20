@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:im="http://sitewhere.io/schema/sitewhere/microservice/instance-management"
 	xsi:schemaLocation="
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
@@ -22,7 +23,8 @@
 				<!-- Configuration used for global services -->
 				<im:mongodb-configuration id="global"
 					hostname="${mongodb.host:mongodb}" port="${mongodb.port:27017}"
-					databaseName="${mongodb.database:sitewhere}" replicaSetName="${mongodb.replicaset:}" />
+					databaseName="${mongodb.database:sitewhere}"
+					replicaSetName="${mongodb.replicaset:}" />
 
 				<!-- Configuration used for tenant microservices -->
 				<im:mongodb-configuration id="tenant"
@@ -46,7 +48,8 @@
 			<im:cassandra-configurations>
 
 				<im:cassandra-configuration id="tenant"
-					contactPoints="${cassandra.contact.points:cassandra}" keyspace="${cassandra.keyspace:tenant_[[tenant.id]]}" />
+					contactPoints="${cassandra.contact.points:cassandra}"
+					keyspace="${cassandra.keyspace:tenant_[[tenant.id]]}" />
 
 			</im:cassandra-configurations>
 
@@ -55,14 +58,15 @@
 
 				<!-- Configuration used for global services -->
 				<im:mongodb-configuration id="global"
-										  hostname="${mongodb.host:mongodb}" port="${mongodb.port:27017}"
-										  databaseName="${mongodb.database:sitewhere}" replicaSetName="${mongodb.replicaset:}" />
+					hostname="${mongodb.host:mongodb}" port="${mongodb.port:27017}"
+					databaseName="${mongodb.database:sitewhere}"
+					replicaSetName="${mongodb.replicaset:}" />
 
 				<!-- Configuration used for tenant microservices -->
 				<im:mongodb-configuration id="tenant"
-										  hostname="${mongodb.host:mongodb}" port="${mongodb.port:27017}"
-										  databaseName="${mongodb.tenant.prefix:tenant-[[tenant.id]]}"
-										  replicaSetName="${mongodb.replicaset:}" />
+					hostname="${mongodb.host:mongodb}" port="${mongodb.port:27017}"
+					databaseName="${mongodb.tenant.prefix:tenant-[[tenant.id]]}"
+					replicaSetName="${mongodb.replicaset:}" />
 
 			</im:mongodb-configurations>
 
@@ -70,11 +74,9 @@
 
 				<!-- Configuration used for global services -->
 				<im:rdb-configuration id="global"
-										  hostname="${mongodb.host:mongodb}"
-									      password="syncope"
-									      username="syncope"
-										  databaseName="${mongodb.database:sitewhere}"
-									      replicaSetName="${mongodb.replicaset:}" />
+					hostname="${mongodb.host:mongodb}" password="syncope"
+					username="syncope" databaseName="${mongodb.database:sitewhere}"
+					replicaSetName="${mongodb.replicaset:}" />
 			</im:rdb-configurations>
 
 		</im:persistence-configurations>

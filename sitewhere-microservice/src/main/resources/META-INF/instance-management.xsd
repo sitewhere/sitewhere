@@ -230,7 +230,7 @@
 				 substitutionGroup="abstract-persistence-configuration">
 		<xsd:annotation>
 			<xsd:documentation>
-				Provides global configuration for MongoDB that can
+				Provides global configuration for Relation Databases that can
 				be referenced by microservices.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -245,7 +245,7 @@
 								 maxOccurs="unbounded">
 						<xsd:annotation>
 							<xsd:documentation>
-								Configuration data for MongoDB datastores.
+								Configuration data for Relational Databases datastores.
 							</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>

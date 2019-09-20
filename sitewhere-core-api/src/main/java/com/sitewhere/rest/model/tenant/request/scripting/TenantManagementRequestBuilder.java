@@ -66,7 +66,7 @@ public class TenantManagementRequestBuilder {
     }
 
     /**
-     * Persist tenant contructed via builder.
+     * Persist tenant constructed via builder.
      * 
      * @param builder
      * @return
