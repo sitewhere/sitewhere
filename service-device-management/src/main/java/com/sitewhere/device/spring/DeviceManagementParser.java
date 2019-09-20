@@ -62,48 +62,74 @@ public class DeviceManagementParser extends AbstractBeanDefinitionParser {
      * @param element
      * @param context
      */
-    protected void parseDeviceManagementDatastore(Element element, ParserContext context) {
-	DatastoreConfigurationChoice config = DatastoreConfigurationParser.parseDeviceManagementDatastoreChoice(element,
-		context);
-	switch (config.getType()) {
-	case MongoDB: {
-	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(DeviceManagementMongoClient.class);
-	    client.addConstructorArgValue(config.getConfiguration());
-	    context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_MONGODB_CLIENT,
-		    client.getBeanDefinition());
-	    break;
-	}
-	case MongoDBReference: {
-	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(DeviceManagementMongoClient.class);
-	    client.addConstructorArgReference((String) config.getConfiguration());
-	    context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_MONGODB_CLIENT,
-		    client.getBeanDefinition());
-	    break;
-	}
-	case RDB: {
-		BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(RDBDeviceManagement.class);
-		client.addConstructorArgValue(config.getConfiguration());
-		context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_RDB_CLIENT,
-				client.getBeanDefinition());
-		break;
-	}
-	case RDBReference: {
-		BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(RDBDeviceManagement.class);
-		client.addConstructorArgReference((String) config.getConfiguration());
-		context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_RDB_CLIENT,
-				client.getBeanDefinition());
-		break;
-	}
-	default: {
-	    throw new RuntimeException("Invalid datastore configured: " + config.getType());
-	}
+	protected void parseDeviceManagementDatastore(Element element, ParserContext context) {
+		DatastoreConfigurationChoice config = DatastoreConfigurationParser.parseDeviceManagementDatastoreChoice(element,
+				context);
+		BeanDefinitionBuilder management;
+		switch (config.getType()) {
+			case MongoDB: {
+				BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(DeviceManagementMongoClient.class);
+				client.addConstructorArgValue(config.getConfiguration());
+				context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_MONGODB_CLIENT,
+						client.getBeanDefinition());
+
+				management = buildMongoDeviceManagament();
+				context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_DEVICE_MANAGEMENT,
+						management.getBeanDefinition());
+				break;
+			}
+			case MongoDBReference: {
+				BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(DeviceManagementMongoClient.class);
+				client.addConstructorArgReference((String) config.getConfiguration());
+				context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_MONGODB_CLIENT,
+						client.getBeanDefinition());
+
+				management = buildMongoDeviceManagament();
+				context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_DEVICE_MANAGEMENT,
+						management.getBeanDefinition());
+				break;
+			}
+			case RDB: {
+				BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(RDBDeviceManagement.class);
+				client.addConstructorArgValue(config.getConfiguration());
+				context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_RDB_CLIENT,
+						client.getBeanDefinition());
+
+				management = buildRDBDeviceManagament();
+				break;
+			}
+			case RDBReference: {
+				BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(RDBDeviceManagement.class);
+				client.addConstructorArgReference((String) config.getConfiguration());
+				context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_RDB_CLIENT,
+						client.getBeanDefinition());
+
+				management = buildRDBDeviceManagament();
+				context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_DEVICE_MANAGEMENT,
+						management.getBeanDefinition());
+				break;
+			}
+			default: {
+				throw new RuntimeException("Invalid datastore configured: " + config.getType());
+			}
+		}
+
+		context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_DEVICE_MANAGEMENT,
+				management.getBeanDefinition());
+
 	}
 
-	// Build device management implementation.
-	BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(MongoDeviceManagement.class);
-	management.addPropertyReference("mongoClient", DeviceManagementBeans.BEAN_MONGODB_CLIENT);
+	private BeanDefinitionBuilder buildMongoDeviceManagament() {
+		// Build device management implementation.
+		BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(MongoDeviceManagement.class);
+		management.addPropertyReference("mongoClient", DeviceManagementBeans.BEAN_MONGODB_CLIENT);
+		return management;
+	}
 
-	context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_DEVICE_MANAGEMENT,
-		management.getBeanDefinition());
-    }
+	private BeanDefinitionBuilder buildRDBDeviceManagament() {
+		// Build device management implementation.
+		BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(MongoDeviceManagement.class);
+		management.addPropertyReference("rdbClient", DeviceManagementBeans.BEAN_RDB_CLIENT);
+		return management;
+	}
 }

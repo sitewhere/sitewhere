@@ -58,8 +58,11 @@ public interface IInstanceManagementParser {
 	/** InfluxDB configuration elements */
 	InfluxConfigurations("influxdb-configurations"),
 
-	/** InfluxDB configuration elements */
-	CassandraConfigurations("cassandra-configurations");
+	/** Cassandra configuration elements */
+	CassandraConfigurations("cassandra-configurations"),
+
+	/** RDB configuration elements */
+	RDBConfigurations("rdb-configurations");
 
 	/** Event code */
 	private String localName;
@@ -235,4 +238,34 @@ public interface IInstanceManagementParser {
 	    this.localName = localName;
 	}
     }
+
+	public static enum RDBElements {
+
+		/** MongoDB configuration */
+		RDBConfiguration("rdb-configuration");
+
+		/** Event code */
+		private String localName;
+
+		private RDBElements(String localName) {
+			this.localName = localName;
+		}
+
+		public static RDBElements getByLocalName(String localName) {
+			for (RDBElements value : RDBElements.values()) {
+				if (value.getLocalName().equals(localName)) {
+					return value;
+				}
+			}
+			return null;
+		}
+
+		public String getLocalName() {
+			return localName;
+		}
+
+		public void setLocalName(String localName) {
+			this.localName = localName;
+		}
+	}
 }

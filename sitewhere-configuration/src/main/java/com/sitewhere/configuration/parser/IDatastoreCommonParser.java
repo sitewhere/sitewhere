@@ -56,7 +56,13 @@ public interface IDatastoreCommonParser {
 	MongoDBDatastore("mongodb-datastore"),
 
 	/** MongoDB datastore reference */
-	MongoDBReference("mongodb-datastore-reference");
+	MongoDBReference("mongodb-datastore-reference"),
+
+	/** RDB datastore */
+	RDBDatastore("rdb-datastore"),
+
+	/** RDB datastore reference */
+	RDBReference("rdb-datastore-reference");
 
 	/** Event code */
 	private String localName;

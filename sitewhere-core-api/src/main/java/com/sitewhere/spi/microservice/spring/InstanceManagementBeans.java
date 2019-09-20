@@ -25,4 +25,7 @@ public interface InstanceManagementBeans {
 
     /** Bean id base for Solr configurations */
     public static final String BEAN_SOLR_CONFIGURATION_BASE = "solr_";
+
+    /** Bean id base for MongoDB configurations */
+    public static final String BEAN_RDB_CONFIGURATION_BASE = "rdb_";
 }

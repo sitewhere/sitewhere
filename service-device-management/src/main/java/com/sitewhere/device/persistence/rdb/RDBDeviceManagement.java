@@ -13,6 +13,7 @@ import com.sitewhere.device.microservice.DeviceManagementMicroservice;
 import com.sitewhere.device.persistence.DeviceManagementPersistence;
 import com.sitewhere.device.persistence.TreeBuilder;
 import com.sitewhere.rdb.DbClient;
+import com.sitewhere.rdb.RDBTenantComponent;
 import com.sitewhere.rest.model.area.Area;
 import com.sitewhere.rest.model.area.AreaType;
 import com.sitewhere.rest.model.area.Zone;
@@ -70,7 +71,7 @@ import java.util.*;
  *
  * Simeon Chen
  */
-public class RDBDeviceManagement extends TenantEngineLifecycleComponent implements IDeviceManagement {
+public class RDBDeviceManagement extends RDBTenantComponent implements IDeviceManagement {
 
     /** Injected with global SiteWhere relational database client */
     private DbClient dbClient;
@@ -88,13 +89,13 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
         DeviceType deviceType = DeviceManagementPersistence.deviceTypeCreateLogic(request);
         com.sitewhere.rdb.entities.DeviceType created = new com.sitewhere.rdb.entities.DeviceType();
         BeanUtils.copyProperties(deviceType, created);
-        created = dbClient.getDbManager().getDeviceTypeRepository().save(created);
+        created = getRDBClient().getDbManager().getDeviceTypeRepository().save(created);
         return created;
     }
 
     @Override
     public IDeviceType getDeviceType(UUID id) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceType> opt = dbClient.getDbManager().getDeviceTypeRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.DeviceType> opt = getRDBClient().getDbManager().getDeviceTypeRepository().findById(id);
         if(opt.isPresent()) {
             return opt.get();
         }
@@ -103,7 +104,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public IDeviceType getDeviceTypeByToken(String token) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceType> opt = dbClient.getDbManager().getDeviceTypeRepository().findByToken(token);
+        Optional<com.sitewhere.rdb.entities.DeviceType> opt = getRDBClient().getDbManager().getDeviceTypeRepository().findByToken(token);
         if(opt.isPresent()) {
             return opt.get();
         }
@@ -112,7 +113,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public IDeviceType updateDeviceType(UUID id, IDeviceTypeCreateRequest request) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceType> opt = dbClient.getDbManager().getDeviceTypeRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.DeviceType> opt = getRDBClient().getDbManager().getDeviceTypeRepository().findById(id);
         com.sitewhere.rdb.entities.DeviceType updated = null;
         if(opt.isPresent()) {
             updated = opt.get();
@@ -120,7 +121,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             deviceType.setId(id);
             DeviceManagementPersistence.deviceTypeUpdateLogic(request, deviceType);
             BeanUtils.copyProperties(deviceType, updated);
-            updated = dbClient.getDbManager().getDeviceTypeRepository().save(updated);
+            updated = getRDBClient().getDbManager().getDeviceTypeRepository().save(updated);
         }
         return updated;
     }
@@ -135,11 +136,11 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             }
         };
         if (criteria.getPageSize() == 0) {
-            List<com.sitewhere.rdb.entities.DeviceType> result = dbClient.getDbManager().getDeviceTypeRepository().findAll(specification, sort);
+            List<com.sitewhere.rdb.entities.DeviceType> result = getRDBClient().getDbManager().getDeviceTypeRepository().findAll(specification, sort);
             return new SearchResultsConverter().convert(result);
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
-            Page<com.sitewhere.rdb.entities.DeviceType> page = dbClient.getDbManager().getDeviceTypeRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
+            Page<com.sitewhere.rdb.entities.DeviceType> page = getRDBClient().getDbManager().getDeviceTypeRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
             return new SearchResultsConverter().convert(page.getContent());
         }
     }
@@ -147,9 +148,9 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public IDeviceType deleteDeviceType(UUID id) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceType> opt = dbClient.getDbManager().getDeviceTypeRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.DeviceType> opt = getRDBClient().getDbManager().getDeviceTypeRepository().findById(id);
         if(opt.isPresent()) {
-            dbClient.getDbManager().getDeviceTypeRepository().deleteById(id);
+            getRDBClient().getDbManager().getDeviceTypeRepository().deleteById(id);
         }
         return opt.get();
     }
@@ -160,14 +161,14 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
         if (request.getDeviceTypeToken() == null) {
             throw new SiteWhereSystemException(ErrorCode.InvalidDeviceTypeToken, ErrorLevel.ERROR);
         }
-        Optional<com.sitewhere.rdb.entities.DeviceType> opt = dbClient.getDbManager().getDeviceTypeRepository().findByToken(request.getDeviceTypeToken());
+        Optional<com.sitewhere.rdb.entities.DeviceType> opt = getRDBClient().getDbManager().getDeviceTypeRepository().findByToken(request.getDeviceTypeToken());
         if(!opt.isPresent()) {
             throw new SiteWhereSystemException(ErrorCode.InvalidDeviceTypeToken, ErrorLevel.ERROR);
         }
         com.sitewhere.rdb.entities.DeviceType created = opt.get();
 
         DeviceCommandSearchCriteria criteria = new DeviceCommandSearchCriteria(1, 0);
-        criteria.setDeviceTypeId(created.getId());
+        criteria.setDeviceTypeToken(created.getToken());
         ISearchResults<IDeviceCommand> existing = listDeviceCommands(criteria);
 
         DeviceType deviceType = new DeviceType();
@@ -180,13 +181,13 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
         com.sitewhere.rdb.entities.DeviceCommand newCommand = new com.sitewhere.rdb.entities.DeviceCommand();
         BeanUtils.copyProperties(command, newCommand);
 
-        newCommand = dbClient.getDbManager().getDeviceCommandRepository().save(newCommand);
+        newCommand = getRDBClient().getDbManager().getDeviceCommandRepository().save(newCommand);
         return newCommand;
     }
 
     @Override
     public IDeviceCommand getDeviceCommand(UUID id) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceCommand> opt = dbClient.getDbManager().getDeviceCommandRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.DeviceCommand> opt = getRDBClient().getDbManager().getDeviceCommandRepository().findById(id);
         if(opt.isPresent()) {
             return opt.get();
         }
@@ -194,8 +195,13 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
     }
 
     @Override
+    public IDeviceCommand getDeviceCommandByToken(UUID deviceTypeId, String token) throws SiteWhereException {
+        return null;
+    }
+
+    //@Override
     public IDeviceCommand getDeviceCommandByToken(String token) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceCommand> opt = dbClient.getDbManager().getDeviceCommandRepository().findByToken(token);
+        Optional<com.sitewhere.rdb.entities.DeviceCommand> opt = getRDBClient().getDbManager().getDeviceCommandRepository().findByToken(token);
         if(opt.isPresent()) {
             return opt.get();
         }
@@ -204,7 +210,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public IDeviceCommand updateDeviceCommand(UUID id, IDeviceCommandCreateRequest request) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceCommand> opt = dbClient.getDbManager().getDeviceCommandRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.DeviceCommand> opt = getRDBClient().getDbManager().getDeviceCommandRepository().findById(id);
         com.sitewhere.rdb.entities.DeviceCommand updated = new com.sitewhere.rdb.entities.DeviceCommand();
         if(opt.isPresent()) {
             // Validate device type token passed.
@@ -219,7 +225,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             }
 
             DeviceCommandSearchCriteria criteria = new DeviceCommandSearchCriteria(1, 0);
-            criteria.setDeviceTypeId(deviceType.getId());
+            criteria.setDeviceTypeToken(deviceType.getToken());
             ISearchResults<IDeviceCommand> existing = listDeviceCommands(criteria);
 
             DeviceCommand target = new DeviceCommand();
@@ -227,7 +233,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             DeviceManagementPersistence.deviceCommandUpdateLogic(deviceType, request, target, existing.getResults());
             BeanUtils.copyProperties(target, updated);
 
-            updated = dbClient.getDbManager().getDeviceCommandRepository().save(updated);
+            updated = getRDBClient().getDbManager().getDeviceCommandRepository().save(updated);
         }
         return updated;
     }
@@ -239,28 +245,28 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             @Override
             public Predicate toPredicate(Root<com.sitewhere.rdb.entities.DeviceCommand> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 List<Predicate> predicates = new ArrayList<>();
-                if (criteria.getDeviceTypeId() != null) {
+                if (criteria.getDeviceTypeToken() != null) {
                     Path path = root.get("deviceTypeId");
-                    predicates.add(cb.equal(path, criteria.getDeviceTypeId()));
+                    predicates.add(cb.equal(path, criteria.getDeviceTypeToken()));
                 }
                 return query.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
             }
         };
         if (criteria.getPageSize() == 0) {
-            List<com.sitewhere.rdb.entities.DeviceCommand> result = dbClient.getDbManager().getDeviceCommandRepository().findAll(specification, sort);
+            List<com.sitewhere.rdb.entities.DeviceCommand> result = getRDBClient().getDbManager().getDeviceCommandRepository().findAll(specification, sort);
             return new SearchResultsConverter().convert(result);
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
-            Page<com.sitewhere.rdb.entities.DeviceCommand> page = dbClient.getDbManager().getDeviceCommandRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
+            Page<com.sitewhere.rdb.entities.DeviceCommand> page = getRDBClient().getDbManager().getDeviceCommandRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
             return new SearchResultsConverter().convert(page.getContent());
         }
     }
 
     @Override
     public IDeviceCommand deleteDeviceCommand(UUID id) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceCommand> opt = dbClient.getDbManager().getDeviceCommandRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.DeviceCommand> opt = getRDBClient().getDbManager().getDeviceCommandRepository().findById(id);
         if(opt.isPresent()) {
-            dbClient.getDbManager().getDeviceCommandRepository().deleteById(id);
+            getRDBClient().getDbManager().getDeviceCommandRepository().deleteById(id);
         }
         return opt.get();
     }
@@ -275,7 +281,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             throw new SiteWhereSystemException(ErrorCode.InvalidDeviceTypeToken, ErrorLevel.ERROR);
         }
         DeviceStatusSearchCriteria criteria = new DeviceStatusSearchCriteria(1, 0);
-        criteria.setDeviceTypeId(deviceType.getId());
+        criteria.setDeviceTypeToken(deviceType.getToken());
         ISearchResults<IDeviceStatus> existing = listDeviceStatuses(criteria);
 
         // Use common logic so all backend implementations work the same.
@@ -284,13 +290,13 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
         com.sitewhere.rdb.entities.DeviceStatus created = new com.sitewhere.rdb.entities.DeviceStatus();
         BeanUtils.copyProperties(status, created);
-        created = dbClient.getDbManager().getDeviceStatusRepository().save(created);
+        created = getRDBClient().getDbManager().getDeviceStatusRepository().save(created);
         return created;
     }
 
     @Override
     public IDeviceStatus getDeviceStatus(UUID id) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceStatus> opt = dbClient.getDbManager().getDeviceStatusRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.DeviceStatus> opt = getRDBClient().getDbManager().getDeviceStatusRepository().findById(id);
         if(opt.isPresent()) {
             return opt.get();
         }
@@ -298,8 +304,13 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
     }
 
     @Override
+    public IDeviceStatus getDeviceStatusByToken(UUID deviceTypeId, String token) throws SiteWhereException {
+        return null;
+    }
+
+    //@Override
     public IDeviceStatus getDeviceStatusByToken(String token) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceStatus> opt = dbClient.getDbManager().getDeviceStatusRepository().findByToken(token);
+        Optional<com.sitewhere.rdb.entities.DeviceStatus> opt = getRDBClient().getDbManager().getDeviceStatusRepository().findByToken(token);
         if(opt.isPresent()) {
             return opt.get();
         }
@@ -308,7 +319,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public IDeviceStatus updateDeviceStatus(UUID id, IDeviceStatusCreateRequest request) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceStatus> opt = dbClient.getDbManager().getDeviceStatusRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.DeviceStatus> opt = getRDBClient().getDbManager().getDeviceStatusRepository().findById(id);
         if(opt.isPresent()) {
             com.sitewhere.rdb.entities.DeviceStatus updated = opt.get();
 
@@ -323,13 +334,13 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
                 deviceType = getDeviceType(updated.getDeviceTypeId());
             }
             DeviceStatusSearchCriteria criteria = new DeviceStatusSearchCriteria(1, 0);
-            criteria.setDeviceTypeId(deviceType.getId());
+            criteria.setDeviceTypeToken(deviceType.getToken());
             ISearchResults<IDeviceStatus> existing = listDeviceStatuses(criteria);
             DeviceStatus target = new DeviceStatus();
             // Use common update logic.
             DeviceManagementPersistence.deviceStatusUpdateLogic(deviceType, request, target, existing.getResults());
             BeanUtils.copyProperties(target, updated);
-            updated = dbClient.getDbManager().getDeviceStatusRepository().save(updated);
+            updated = getRDBClient().getDbManager().getDeviceStatusRepository().save(updated);
             return updated;
         }
         return null;
@@ -342,9 +353,9 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             @Override
             public Predicate toPredicate(Root<com.sitewhere.rdb.entities.DeviceStatus> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 List<Predicate> predicates = new ArrayList<>();
-                if (criteria.getDeviceTypeId() != null) {
+                if (criteria.getDeviceTypeToken() != null) {
                     Path path = root.get("deviceTypeId");
-                    predicates.add(cb.equal(path, criteria.getDeviceTypeId()));
+                    predicates.add(cb.equal(path, criteria.getDeviceTypeToken()));
                 }
                 if (criteria.getCode() != null) {
                     Path path = root.get("code");
@@ -354,20 +365,20 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             }
         };
         if (criteria.getPageSize() == 0) {
-            List<com.sitewhere.rdb.entities.DeviceStatus> result = dbClient.getDbManager().getDeviceStatusRepository().findAll(specification, sort);
+            List<com.sitewhere.rdb.entities.DeviceStatus> result = getRDBClient().getDbManager().getDeviceStatusRepository().findAll(specification, sort);
             return new SearchResultsConverter().convert(result);
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
-            Page<com.sitewhere.rdb.entities.DeviceStatus> page = dbClient.getDbManager().getDeviceStatusRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
+            Page<com.sitewhere.rdb.entities.DeviceStatus> page = getRDBClient().getDbManager().getDeviceStatusRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
             return new SearchResultsConverter().convert(page.getContent());
         }
     }
 
     @Override
     public IDeviceStatus deleteDeviceStatus(UUID id) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceStatus> opt = dbClient.getDbManager().getDeviceStatusRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.DeviceStatus> opt = getRDBClient().getDbManager().getDeviceStatusRepository().findById(id);
         if(opt.isPresent()) {
-            dbClient.getDbManager().getDeviceStatusRepository().deleteById(id);
+            getRDBClient().getDbManager().getDeviceStatusRepository().deleteById(id);
         }
         return opt.get();
     }
@@ -381,13 +392,13 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
         Device newDevice = DeviceManagementPersistence.deviceCreateLogic(request, deviceType);
         com.sitewhere.rdb.entities.Device created = new com.sitewhere.rdb.entities.Device();
         BeanUtils.copyProperties(newDevice, created);
-        created = dbClient.getDbManager().getDeviceRepository().save(created);
+        created = getRDBClient().getDbManager().getDeviceRepository().save(created);
         return created;
     }
 
     @Override
     public IDevice getDevice(UUID deviceId) throws SiteWhereException {
-        Optional< com.sitewhere.rdb.entities.Device> opt = dbClient.getDbManager().getDeviceRepository().findById(deviceId);
+        Optional< com.sitewhere.rdb.entities.Device> opt = getRDBClient().getDbManager().getDeviceRepository().findById(deviceId);
         if(opt.isPresent()) {
             return opt.get();
         }
@@ -396,7 +407,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public IDevice getDeviceByToken(String token) throws SiteWhereException {
-        Optional< com.sitewhere.rdb.entities.Device> opt = dbClient.getDbManager().getDeviceRepository().findByToken(token);
+        Optional< com.sitewhere.rdb.entities.Device> opt = getRDBClient().getDbManager().getDeviceRepository().findByToken(token);
         if(opt.isPresent()) {
             return opt.get();
         }
@@ -406,7 +417,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
     @Override
     public IDevice updateDevice(UUID deviceId, IDeviceCreateRequest request) throws SiteWhereException {
         getLogger().info("Request:\n\n" + MarshalUtils.marshalJsonAsPrettyString(request));
-        Optional<com.sitewhere.rdb.entities.Device> opt = dbClient.getDbManager().getDeviceRepository().findById(deviceId);
+        Optional<com.sitewhere.rdb.entities.Device> opt = getRDBClient().getDbManager().getDeviceRepository().findById(deviceId);
         com.sitewhere.rdb.entities.Device updated = new com.sitewhere.rdb.entities.Device();
         if(opt.isPresent()) {
             updated = opt.get();
@@ -432,7 +443,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             getLogger().info("Updated:\n\n" + MarshalUtils.marshalJsonAsPrettyString(target));
 
             BeanUtils.copyProperties(target, updated);
-            updated = dbClient.getDbManager().getDeviceRepository().save(updated);
+            updated = getRDBClient().getDbManager().getDeviceRepository().save(updated);
             return updated;
         }
         return null;
@@ -467,11 +478,11 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             }
         };
         if (criteria.getPageSize() == 0) {
-            List<com.sitewhere.rdb.entities.Device> result = dbClient.getDbManager().getDeviceRepository().findAll(specification, sort);
+            List<com.sitewhere.rdb.entities.Device> result = getRDBClient().getDbManager().getDeviceRepository().findAll(specification, sort);
             return new SearchResultsConverter().convert(result);
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
-            Page<com.sitewhere.rdb.entities.Device> page = dbClient.getDbManager().getDeviceRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
+            Page<com.sitewhere.rdb.entities.Device> page = getRDBClient().getDbManager().getDeviceRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
             return new SearchResultsConverter().convert(page.getContent());
         }
     }
@@ -490,9 +501,9 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public IDevice deleteDevice(UUID deviceId) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.Device> opt = dbClient.getDbManager().getDeviceRepository().findById(deviceId);
+        Optional<com.sitewhere.rdb.entities.Device> opt = getRDBClient().getDbManager().getDeviceRepository().findById(deviceId);
         if(opt.isPresent()) {
-            dbClient.getDbManager().getDeviceRepository().deleteById(deviceId);
+            getRDBClient().getDbManager().getDeviceRepository().deleteById(deviceId);
         }
         return opt.get();
     }
@@ -534,13 +545,13 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
         com.sitewhere.rdb.entities.DeviceAssignment created = new com.sitewhere.rdb.entities.DeviceAssignment();
         BeanUtils.copyProperties(newAssignment, created);
-        created = dbClient.getDbManager().getDeviceAssignmentRepository().save(created);
+        created = getRDBClient().getDbManager().getDeviceAssignmentRepository().save(created);
         return created;
     }
 
     @Override
     public IDeviceAssignment getDeviceAssignment(UUID id) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceAssignment> opt = dbClient.getDbManager().getDeviceAssignmentRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.DeviceAssignment> opt = getRDBClient().getDbManager().getDeviceAssignmentRepository().findById(id);
         if(opt.isPresent()) {
             return opt.get();
         }
@@ -549,7 +560,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public IDeviceAssignment getDeviceAssignmentByToken(String token) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceAssignment> opt = dbClient.getDbManager().getDeviceAssignmentRepository().findByToken(token);
+        Optional<com.sitewhere.rdb.entities.DeviceAssignment> opt = getRDBClient().getDbManager().getDeviceAssignmentRepository().findByToken(token);
         if(opt.isPresent()) {
             return opt.get();
         }
@@ -558,13 +569,13 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public List<IDeviceAssignment> getActiveDeviceAssignments(UUID deviceId) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.Device> opt = dbClient.getDbManager().getDeviceRepository().findById(deviceId);
+        Optional<com.sitewhere.rdb.entities.Device> opt = getRDBClient().getDbManager().getDeviceRepository().findById(deviceId);
         if(opt.isPresent()) {
             com.sitewhere.rdb.entities.Device device = opt.get();
             List<IDeviceAssignment> active = new ArrayList<>();
             List<UUID> uuids = device.getActiveDeviceAssignmentIds();
             for(UUID uuid : uuids) {
-                Optional<com.sitewhere.rdb.entities.DeviceAssignment> opt2 = dbClient.getDbManager().getDeviceAssignmentRepository().findById(uuid);
+                Optional<com.sitewhere.rdb.entities.DeviceAssignment> opt2 = getRDBClient().getDbManager().getDeviceAssignmentRepository().findById(uuid);
                 if(opt2.isPresent()) {
                     active.add(opt2.get());
                 }
@@ -576,7 +587,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public IDeviceAssignment updateDeviceAssignment(UUID id, IDeviceAssignmentCreateRequest request) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceAssignment> opt = dbClient.getDbManager().getDeviceAssignmentRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.DeviceAssignment> opt = getRDBClient().getDbManager().getDeviceAssignmentRepository().findById(id);
         if(opt.isPresent()) {
             com.sitewhere.rdb.entities.DeviceAssignment updated = opt.get();
 
@@ -620,7 +631,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             target.setId(updated.getId());
             DeviceManagementPersistence.deviceAssignmentUpdateLogic(device, customer, area, asset, request, target);
             BeanUtils.copyProperties(target, updated);
-            updated = dbClient.getDbManager().getDeviceAssignmentRepository().save(updated);
+            updated = getRDBClient().getDbManager().getDeviceAssignmentRepository().save(updated);
             return updated;
         }
         return null;
@@ -679,18 +690,18 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             }
         };
         if (criteria.getPageSize() == 0) {
-            List<com.sitewhere.rdb.entities.DeviceAssignment> result = dbClient.getDbManager().getDeviceAssignmentRepository().findAll(specification, sort);
+            List<com.sitewhere.rdb.entities.DeviceAssignment> result = getRDBClient().getDbManager().getDeviceAssignmentRepository().findAll(specification, sort);
             return new SearchResultsConverter().convert(result);
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
-            Page<com.sitewhere.rdb.entities.DeviceAssignment> page = dbClient.getDbManager().getDeviceAssignmentRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
+            Page<com.sitewhere.rdb.entities.DeviceAssignment> page = getRDBClient().getDbManager().getDeviceAssignmentRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
             return new SearchResultsConverter().convert(page.getContent());
         }
     }
 
     @Override
     public IDeviceAssignment endDeviceAssignment(UUID id) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceAssignment> opt = dbClient.getDbManager().getDeviceAssignmentRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.DeviceAssignment> opt = getRDBClient().getDbManager().getDeviceAssignmentRepository().findById(id);
         com.sitewhere.rdb.entities.DeviceAssignment updated = null;
         if(opt.isPresent()) {
             updated = opt.get();
@@ -698,7 +709,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             updated.setStatus(DeviceAssignmentStatus.Released);
 
             UUID deviceId = updated.getDeviceId();
-            Optional<com.sitewhere.rdb.entities.Device> opt2 = dbClient.getDbManager().getDeviceRepository().findById(deviceId);
+            Optional<com.sitewhere.rdb.entities.Device> opt2 = getRDBClient().getDbManager().getDeviceRepository().findById(deviceId);
             if (opt2.isPresent()) {
                 com.sitewhere.rdb.entities.Device device = opt2.get();
                 DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(1, 0);
@@ -712,7 +723,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
                 }
 
                 device.setActiveDeviceAssignmentIds(uuids);
-                dbClient.getDbManager().getDeviceRepository().save(device);
+                getRDBClient().getDbManager().getDeviceRepository().save(device);
             }
             return updated;
         }
@@ -721,9 +732,9 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public IDeviceAssignment deleteDeviceAssignment(UUID id) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceAssignment> opt = dbClient.getDbManager().getDeviceAssignmentRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.DeviceAssignment> opt = getRDBClient().getDbManager().getDeviceAssignmentRepository().findById(id);
         if(opt.isPresent()) {
-            dbClient.getDbManager().getDeviceAssignmentRepository().deleteById(id);
+            getRDBClient().getDbManager().getDeviceAssignmentRepository().deleteById(id);
         }
         return opt.get();
     }
@@ -739,13 +750,13 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
         DeviceAlarm newAlarm = DeviceManagementPersistence.deviceAlarmCreateLogic(assignment, request);
         com.sitewhere.rdb.entities.DeviceAlarm created = new com.sitewhere.rdb.entities.DeviceAlarm();
         BeanUtils.copyProperties(newAlarm, created);
-        created = dbClient.getDbManager().getDeviceAlarmRepository().save(created);
+        created = getRDBClient().getDbManager().getDeviceAlarmRepository().save(created);
         return created;
     }
 
     @Override
     public IDeviceAlarm updateDeviceAlarm(UUID id, IDeviceAlarmCreateRequest request) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceAlarm> opt = dbClient.getDbManager().getDeviceAlarmRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.DeviceAlarm> opt = getRDBClient().getDbManager().getDeviceAlarmRepository().findById(id);
         if(opt.isPresent()) {
             com.sitewhere.rdb.entities.DeviceAlarm updated = opt.get();
 
@@ -761,7 +772,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             DeviceManagementPersistence.deviceAlarmUpdateLogic(assignment, request, target);
 
             BeanUtils.copyProperties(target, updated);
-            updated = dbClient.getDbManager().getDeviceAlarmRepository().save(updated);
+            updated = getRDBClient().getDbManager().getDeviceAlarmRepository().save(updated);
             return updated;
         }
         return null;
@@ -769,7 +780,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public IDeviceAlarm getDeviceAlarm(UUID id) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceAlarm> opt = dbClient.getDbManager().getDeviceAlarmRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.DeviceAlarm> opt = getRDBClient().getDbManager().getDeviceAlarmRepository().findById(id);
         if(opt.isPresent()) {
             return opt.get();
         }
@@ -815,20 +826,20 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             }
         };
         if (criteria.getPageSize() == 0) {
-            List<com.sitewhere.rdb.entities.DeviceAlarm> result = dbClient.getDbManager().getDeviceAlarmRepository().findAll(specification, sort);
+            List<com.sitewhere.rdb.entities.DeviceAlarm> result = getRDBClient().getDbManager().getDeviceAlarmRepository().findAll(specification, sort);
             return new SearchResultsConverter().convert(result);
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
-            Page<com.sitewhere.rdb.entities.DeviceAlarm> page = dbClient.getDbManager().getDeviceAlarmRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
+            Page<com.sitewhere.rdb.entities.DeviceAlarm> page = getRDBClient().getDbManager().getDeviceAlarmRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
             return new SearchResultsConverter().convert(page.getContent());
         }
     }
 
     @Override
     public IDeviceAlarm deleteDeviceAlarm(UUID id) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceAlarm> opt = dbClient.getDbManager().getDeviceAlarmRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.DeviceAlarm> opt = getRDBClient().getDbManager().getDeviceAlarmRepository().findById(id);
         if(opt.isPresent()) {
-            dbClient.getDbManager().getDeviceAlarmRepository().deleteById(id);
+            getRDBClient().getDbManager().getDeviceAlarmRepository().deleteById(id);
         }
         return opt.get();
     }
@@ -843,13 +854,13 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
         com.sitewhere.rdb.entities.CustomerType created = new com.sitewhere.rdb.entities.CustomerType();
 
         BeanUtils.copyProperties(type, created);
-        created = dbClient.getDbManager().getCustomerTypeRepository().save(created);
+        created = getRDBClient().getDbManager().getCustomerTypeRepository().save(created);
         return created;
     }
 
     @Override
     public ICustomerType getCustomerType(UUID id) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.CustomerType> opt = dbClient.getDbManager().getCustomerTypeRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.CustomerType> opt = getRDBClient().getDbManager().getCustomerTypeRepository().findById(id);
         if(opt.isPresent()) {
             return opt.get();
         }
@@ -858,7 +869,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public ICustomerType getCustomerTypeByToken(String token) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.CustomerType> opt = dbClient.getDbManager().getCustomerTypeRepository().findByToken(token);
+        Optional<com.sitewhere.rdb.entities.CustomerType> opt = getRDBClient().getDbManager().getCustomerTypeRepository().findByToken(token);
         if(opt.isPresent()) {
             return opt.get();
         }
@@ -867,7 +878,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public ICustomerType updateCustomerType(UUID id, ICustomerTypeCreateRequest request) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.CustomerType> opt = dbClient.getDbManager().getCustomerTypeRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.CustomerType> opt = getRDBClient().getDbManager().getCustomerTypeRepository().findById(id);
         com.sitewhere.rdb.entities.CustomerType updated = null;
         if(opt.isPresent()) {
             updated = opt.get();
@@ -880,7 +891,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             DeviceManagementPersistence.customerTypeUpdateLogic(request, cctids, target);
 
             BeanUtils.copyProperties(target, updated);
-            updated = dbClient.getDbManager().getCustomerTypeRepository().save(updated);
+            updated = getRDBClient().getDbManager().getCustomerTypeRepository().save(updated);
             return updated;
         }
         return null;
@@ -896,20 +907,20 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             }
         };
         if (criteria.getPageSize() == 0) {
-            List<com.sitewhere.rdb.entities.CustomerType> result = dbClient.getDbManager().getCustomerTypeRepository().findAll(specification, sort);
+            List<com.sitewhere.rdb.entities.CustomerType> result = getRDBClient().getDbManager().getCustomerTypeRepository().findAll(specification, sort);
             return new SearchResultsConverter().convert(result);
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
-            Page<com.sitewhere.rdb.entities.CustomerType> page = dbClient.getDbManager().getCustomerTypeRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
+            Page<com.sitewhere.rdb.entities.CustomerType> page = getRDBClient().getDbManager().getCustomerTypeRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
             return new SearchResultsConverter().convert(page.getContent());
         }
     }
 
     @Override
     public ICustomerType deleteCustomerType(UUID id) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.CustomerType> opt = dbClient.getDbManager().getCustomerTypeRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.CustomerType> opt = getRDBClient().getDbManager().getCustomerTypeRepository().findById(id);
         if(opt.isPresent()) {
-            dbClient.getDbManager().getCustomerTypeRepository().deleteById(id);
+            getRDBClient().getDbManager().getCustomerTypeRepository().deleteById(id);
         }
         return opt.get();
     }
@@ -930,13 +941,13 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
         Customer customer = DeviceManagementPersistence.customerCreateLogic(request, customerType, parentCustomer);
         com.sitewhere.rdb.entities.Customer created = new com.sitewhere.rdb.entities.Customer();
         BeanUtils.copyProperties(customer, created);
-        created = dbClient.getDbManager().getCustomerRepository().save(created);
+        created = getRDBClient().getDbManager().getCustomerRepository().save(created);
         return created;
     }
 
     @Override
     public ICustomer getCustomer(UUID id) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.Customer> opt = dbClient.getDbManager().getCustomerRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.Customer> opt = getRDBClient().getDbManager().getCustomerRepository().findById(id);
         if(opt.isPresent()) {
             return opt.get();
         }
@@ -945,7 +956,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public ICustomer getCustomerByToken(String token) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.Customer> opt = dbClient.getDbManager().getCustomerRepository().findByToken(token);
+        Optional<com.sitewhere.rdb.entities.Customer> opt = getRDBClient().getDbManager().getCustomerRepository().findByToken(token);
         if(opt.isPresent()) {
             return opt.get();
         }
@@ -968,7 +979,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
                 return query.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
             }
         };
-        List<com.sitewhere.rdb.entities.Customer> result = dbClient.getDbManager().getCustomerRepository().findAll(specification, sort);
+        List<com.sitewhere.rdb.entities.Customer> result = getRDBClient().getDbManager().getCustomerRepository().findAll(specification, sort);
         List<ICustomer> list = new ArrayList<>();
         for(com.sitewhere.rdb.entities.Customer customer : result) {
             list.add(customer);
@@ -978,7 +989,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public ICustomer updateCustomer(UUID id, ICustomerCreateRequest request) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.Customer> opt = dbClient.getDbManager().getCustomerRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.Customer> opt = getRDBClient().getDbManager().getCustomerRepository().findById(id);
         if(opt.isPresent()) {
             com.sitewhere.rdb.entities.Customer updated = opt.get();
             Customer target = new Customer();
@@ -986,7 +997,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             // Use common update logic.
             DeviceManagementPersistence.customerUpdateLogic(request, target);
             BeanUtils.copyProperties(target, updated);
-            updated = dbClient.getDbManager().getCustomerRepository().save(updated);
+            updated = getRDBClient().getDbManager().getCustomerRepository().save(updated);
             return updated;
         }
         return null;
@@ -1002,23 +1013,23 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
                 if ((criteria.getRootOnly() != null) && (criteria.getRootOnly().booleanValue() == true)) {
                     Path path = root.get("parentId");
                     predicates.add(cb.isNull(path));
-                } else if (criteria.getParentCustomerId() != null) {
+                } else if (criteria.getParentCustomerToken() != null) {
                     Path path = root.get("parentId");
-                    predicates.add(cb.equal(path, criteria.getParentCustomerId()));
+                    predicates.add(cb.equal(path, criteria.getParentCustomerToken()));
                 }
-                if (criteria.getCustomerTypeId() != null) {
+                if (criteria.getParentCustomerToken() != null) {
                     Path path = root.get("customerTypeId");
-                    predicates.add(cb.equal(path, criteria.getCustomerTypeId()));
+                    predicates.add(cb.equal(path, criteria.getParentCustomerToken()));
                 }
                 return query.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
             }
         };
         if (criteria.getPageSize() == 0) {
-            List<com.sitewhere.rdb.entities.Customer> result = dbClient.getDbManager().getCustomerRepository().findAll(specification, sort);
+            List<com.sitewhere.rdb.entities.Customer> result = getRDBClient().getDbManager().getCustomerRepository().findAll(specification, sort);
             return new SearchResultsConverter().convert(result);
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
-            Page<com.sitewhere.rdb.entities.Customer> page = dbClient.getDbManager().getCustomerRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
+            Page<com.sitewhere.rdb.entities.Customer> page = getRDBClient().getDbManager().getCustomerRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
             return new SearchResultsConverter().convert(page.getContent());
         }
     }
@@ -1031,9 +1042,9 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public ICustomer deleteCustomer(UUID id) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.Customer> opt = dbClient.getDbManager().getCustomerRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.Customer> opt = getRDBClient().getDbManager().getCustomerRepository().findById(id);
         if(opt.isPresent()) {
-            dbClient.getDbManager().getCustomerRepository().deleteById(id);
+            getRDBClient().getDbManager().getCustomerRepository().deleteById(id);
         }
         return opt.get();
     }
@@ -1052,7 +1063,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public IAreaType getAreaType(UUID id) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.AreaType> opt = dbClient.getDbManager().getAreaTypeRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.AreaType> opt = getRDBClient().getDbManager().getAreaTypeRepository().findById(id);
         if(opt.isPresent()) {
             return opt.get();
         }
@@ -1061,7 +1072,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public IAreaType getAreaTypeByToken(String token) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.AreaType> opt = dbClient.getDbManager().getAreaTypeRepository().findByToken(token);
+        Optional<com.sitewhere.rdb.entities.AreaType> opt = getRDBClient().getDbManager().getAreaTypeRepository().findByToken(token);
         if(opt.isPresent()) {
             return opt.get();
         }
@@ -1070,7 +1081,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public IAreaType updateAreaType(UUID id, IAreaTypeCreateRequest request) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.AreaType> opt = dbClient.getDbManager().getAreaTypeRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.AreaType> opt = getRDBClient().getDbManager().getAreaTypeRepository().findById(id);
         if(opt.isPresent()) {
             com.sitewhere.rdb.entities.AreaType updated = opt.get();
 
@@ -1083,7 +1094,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             DeviceManagementPersistence.areaTypeUpdateLogic(request, catids, target);
 
             BeanUtils.copyProperties(target, updated);
-            updated = dbClient.getDbManager().getAreaTypeRepository().save(updated);
+            updated = getRDBClient().getDbManager().getAreaTypeRepository().save(updated);
             return updated;
         }
         return null;
@@ -1099,23 +1110,23 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             }
         };
         if (criteria.getPageSize() == 0) {
-            List<com.sitewhere.rdb.entities.AreaType> result = dbClient.getDbManager().getAreaTypeRepository().findAll(specification, sort);
+            List<com.sitewhere.rdb.entities.AreaType> result = getRDBClient().getDbManager().getAreaTypeRepository().findAll(specification, sort);
             return new SearchResultsConverter().convert(result);
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
-            Page<com.sitewhere.rdb.entities.AreaType> page = dbClient.getDbManager().getAreaTypeRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
+            Page<com.sitewhere.rdb.entities.AreaType> page = getRDBClient().getDbManager().getAreaTypeRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
             return new SearchResultsConverter().convert(page.getContent());
         }
     }
 
     @Override
     public IAreaType deleteAreaType(UUID id) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.AreaType> opt = dbClient.getDbManager().getAreaTypeRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.AreaType> opt = getRDBClient().getDbManager().getAreaTypeRepository().findById(id);
         if(!opt.isPresent()) {
             throw new SiteWhereSystemException(ErrorCode.InvalidAreaTypeToken, ErrorLevel.ERROR);
         }
         com.sitewhere.rdb.entities.AreaType deleted = opt.get();
-        dbClient.getDbManager().getAreaTypeRepository().delete(deleted);
+        getRDBClient().getDbManager().getAreaTypeRepository().delete(deleted);
         return deleted;
     }
 
@@ -1134,13 +1145,13 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
         Area area = DeviceManagementPersistence.areaCreateLogic(request, areaType, parentArea);
         com.sitewhere.rdb.entities.Area created = new com.sitewhere.rdb.entities.Area();
         BeanUtils.copyProperties(area, created);
-        created = dbClient.getDbManager().getAreaRepository().save(created);
+        created = getRDBClient().getDbManager().getAreaRepository().save(created);
         return created;
     }
 
     @Override
     public IArea getArea(UUID id) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.Area> opt = dbClient.getDbManager().getAreaRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.Area> opt = getRDBClient().getDbManager().getAreaRepository().findById(id);
         if(opt.isPresent()) {
             return opt.get();
         }
@@ -1149,7 +1160,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public IArea getAreaByToken(String token) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.Area> opt = dbClient.getDbManager().getAreaRepository().findByToken(token);
+        Optional<com.sitewhere.rdb.entities.Area> opt = getRDBClient().getDbManager().getAreaRepository().findByToken(token);
         if(opt.isPresent()) {
             return opt.get();
         }
@@ -1172,7 +1183,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
                 return query.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
             }
         };
-        List<com.sitewhere.rdb.entities.Area> list = dbClient.getDbManager().getAreaRepository().findAll(specification, sort);
+        List<com.sitewhere.rdb.entities.Area> list = getRDBClient().getDbManager().getAreaRepository().findAll(specification, sort);
         List<IArea> newList = new ArrayList<>();
         for(com.sitewhere.rdb.entities.Area a : list) {
             newList.add(a);
@@ -1183,7 +1194,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
     @Override
     public IArea updateArea(UUID id, IAreaCreateRequest request) throws SiteWhereException {
         com.sitewhere.rdb.entities.Area area = null;
-        Optional<com.sitewhere.rdb.entities.Area> opt = dbClient.getDbManager().getAreaRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.Area> opt = getRDBClient().getDbManager().getAreaRepository().findById(id);
         if(opt.isPresent()) {
             area = opt.get();
 
@@ -1193,7 +1204,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             target.setId(area.getId());
             BeanUtils.copyProperties(target, area);
 
-            area = dbClient.getDbManager().getAreaRepository().save(area);
+            area = getRDBClient().getDbManager().getAreaRepository().save(area);
         }
         return area;
     }
@@ -1210,7 +1221,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
                     predicates.add(cb.isNull(path));
                 } else if (criteria.getParentAreaToken() != null) {
                     try {
-                        Optional<com.sitewhere.rdb.entities.Area> opt = dbClient.getDbManager().getAreaRepository().findByToken(criteria.getParentAreaToken());
+                        Optional<com.sitewhere.rdb.entities.Area> opt = getRDBClient().getDbManager().getAreaRepository().findByToken(criteria.getParentAreaToken());
                         com.sitewhere.rdb.entities.Area parent = opt.get();
                         Path path = root.get("parentId");
                         predicates.add(cb.equal(path, parent.getId()));
@@ -1220,7 +1231,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
                 }
                 if (criteria.getAreaTypeToken() != null) {
                     try {
-                        Optional<com.sitewhere.rdb.entities.AreaType> opt = dbClient.getDbManager().getAreaTypeRepository().findByToken(criteria.getAreaTypeToken());
+                        Optional<com.sitewhere.rdb.entities.AreaType> opt = getRDBClient().getDbManager().getAreaTypeRepository().findByToken(criteria.getAreaTypeToken());
                         com.sitewhere.rdb.entities.AreaType type = opt.get();
                         Path path = root.get("areaTypeId");
                         predicates.add(cb.equal(path, type.getId()));
@@ -1232,11 +1243,11 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             }
         };
         if (criteria.getPageSize() == 0) {
-            List<com.sitewhere.rdb.entities.Area> result = dbClient.getDbManager().getAreaRepository().findAll(specification, sort);
+            List<com.sitewhere.rdb.entities.Area> result = getRDBClient().getDbManager().getAreaRepository().findAll(specification, sort);
             return new SearchResultsConverter().convert(result);
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
-            Page<com.sitewhere.rdb.entities.Area> page = dbClient.getDbManager().getAreaRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
+            Page<com.sitewhere.rdb.entities.Area> page = getRDBClient().getDbManager().getAreaRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
             return new SearchResultsConverter().convert(page.getContent());
         }
     }
@@ -1249,9 +1260,9 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public IArea deleteArea(UUID id) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.Area> opt = dbClient.getDbManager().getAreaRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.Area> opt = getRDBClient().getDbManager().getAreaRepository().findById(id);
         if(opt.isPresent()) {
-            dbClient.getDbManager().getAreaRepository().deleteById(id);
+            getRDBClient().getDbManager().getAreaRepository().deleteById(id);
         }
         return opt.get();
     }
@@ -1273,13 +1284,13 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
         Zone zone = DeviceManagementPersistence.zoneCreateLogic(request, area, UUID.randomUUID().toString());
         com.sitewhere.rdb.entities.Zone created = new com.sitewhere.rdb.entities.Zone();
         BeanUtils.copyProperties(zone, created);
-        created = dbClient.getDbManager().getZoneRepository().save(created);
+        created = getRDBClient().getDbManager().getZoneRepository().save(created);
         return created;
     }
 
     @Override
     public IZone getZone(UUID id) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.Zone> opt = dbClient.getDbManager().getZoneRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.Zone> opt = getRDBClient().getDbManager().getZoneRepository().findById(id);
         if(opt.isPresent()) {
             return opt.get();
         }
@@ -1288,7 +1299,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public IZone getZoneByToken(String zoneToken) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.Zone> opt = dbClient.getDbManager().getZoneRepository().findByToken(zoneToken);
+        Optional<com.sitewhere.rdb.entities.Zone> opt = getRDBClient().getDbManager().getZoneRepository().findByToken(zoneToken);
         if(opt.isPresent()) {
             return opt.get();
         }
@@ -1297,14 +1308,14 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public IZone updateZone(UUID id, IZoneCreateRequest request) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.Zone> opt = dbClient.getDbManager().getZoneRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.Zone> opt = getRDBClient().getDbManager().getZoneRepository().findById(id);
         if(opt.isPresent()) {
             com.sitewhere.rdb.entities.Zone updated = opt.get();
             Zone target = new Zone();
             target.setId(updated.getId());
             DeviceManagementPersistence.zoneUpdateLogic(request, target);
             BeanUtils.copyProperties(target, updated);
-            updated = dbClient.getDbManager().getZoneRepository().save(updated);
+            updated = getRDBClient().getDbManager().getZoneRepository().save(updated);
             return updated;
         }
         return null;
@@ -1317,28 +1328,28 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             @Override
             public Predicate toPredicate(Root<com.sitewhere.rdb.entities.Zone> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 List<Predicate> predicates = new ArrayList<>();
-                if (criteria.getAreaId() != null) {
+                if (criteria.getAreaToken() != null) {
                     Path path = root.get("areaId");
-                    predicates.add(cb.equal(path, criteria.getAreaId()));
+                    predicates.add(cb.equal(path, criteria.getAreaToken()));
                 }
                 return query.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
             }
         };
         if (criteria.getPageSize() == 0) {
-            List<com.sitewhere.rdb.entities.Zone> result = dbClient.getDbManager().getZoneRepository().findAll(specification, sort);
+            List<com.sitewhere.rdb.entities.Zone> result = getRDBClient().getDbManager().getZoneRepository().findAll(specification, sort);
             return new SearchResultsConverter().convert(result);
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
-            Page<com.sitewhere.rdb.entities.Zone> page = dbClient.getDbManager().getZoneRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
+            Page<com.sitewhere.rdb.entities.Zone> page = getRDBClient().getDbManager().getZoneRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
             return new SearchResultsConverter().convert(page.getContent());
         }
     }
 
     @Override
     public IZone deleteZone(UUID id) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.Zone> opt = dbClient.getDbManager().getZoneRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.Zone> opt = getRDBClient().getDbManager().getZoneRepository().findById(id);
         if(opt.isPresent()) {
-            dbClient.getDbManager().getZoneRepository().deleteById(id);
+            getRDBClient().getDbManager().getZoneRepository().deleteById(id);
         }
         return opt.get();
     }
@@ -1349,13 +1360,13 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
         DeviceGroup group = DeviceManagementPersistence.deviceGroupCreateLogic(request);
         com.sitewhere.rdb.entities.DeviceGroup created = new com.sitewhere.rdb.entities.DeviceGroup();
         BeanUtils.copyProperties(group, created);
-        created = dbClient.getDbManager().getDeviceGroupRepository().save(created);
+        created = getRDBClient().getDbManager().getDeviceGroupRepository().save(created);
         return created;
     }
 
     @Override
     public IDeviceGroup getDeviceGroup(UUID id) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceGroup> opt = dbClient.getDbManager().getDeviceGroupRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.DeviceGroup> opt = getRDBClient().getDbManager().getDeviceGroupRepository().findById(id);
         if(opt.isPresent()) {
             return opt.get();
         }
@@ -1364,7 +1375,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public IDeviceGroup getDeviceGroupByToken(String token) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceGroup> opt = dbClient.getDbManager().getDeviceGroupRepository().findByToken(token);
+        Optional<com.sitewhere.rdb.entities.DeviceGroup> opt = getRDBClient().getDbManager().getDeviceGroupRepository().findByToken(token);
         if(opt.isPresent()) {
             return opt.get();
         }
@@ -1373,7 +1384,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
 
     @Override
     public IDeviceGroup updateDeviceGroup(UUID id, IDeviceGroupCreateRequest request) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceGroup> opt = dbClient.getDbManager().getDeviceGroupRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.DeviceGroup> opt = getRDBClient().getDbManager().getDeviceGroupRepository().findById(id);
         com.sitewhere.rdb.entities.DeviceGroup updated = null;
         if(opt.isPresent()) {
             updated = opt.get();
@@ -1381,7 +1392,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             target.setId(id);
             DeviceManagementPersistence.deviceGroupUpdateLogic(request, target);
             BeanUtils.copyProperties(target, updated);
-            updated = dbClient.getDbManager().getDeviceGroupRepository().save(updated);
+            updated = getRDBClient().getDbManager().getDeviceGroupRepository().save(updated);
         }
         return updated;
     }
@@ -1396,11 +1407,11 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             }
         };
         if (criteria.getPageSize() == 0) {
-            List<com.sitewhere.rdb.entities.DeviceGroup> result = dbClient.getDbManager().getDeviceGroupRepository().findAll(specification, sort);
+            List<com.sitewhere.rdb.entities.DeviceGroup> result = getRDBClient().getDbManager().getDeviceGroupRepository().findAll(specification, sort);
             return new SearchResultsConverter().convert(result);
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
-            Page<com.sitewhere.rdb.entities.DeviceGroup> page = dbClient.getDbManager().getDeviceGroupRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
+            Page<com.sitewhere.rdb.entities.DeviceGroup> page = getRDBClient().getDbManager().getDeviceGroupRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
             return new SearchResultsConverter().convert(page.getContent());
         }
     }
@@ -1418,27 +1429,27 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             }
         };
         if (criteria.getPageSize() == 0) {
-            List<com.sitewhere.rdb.entities.DeviceGroup> result = dbClient.getDbManager().getDeviceGroupRepository().findAll(specification, sort);
+            List<com.sitewhere.rdb.entities.DeviceGroup> result = getRDBClient().getDbManager().getDeviceGroupRepository().findAll(specification, sort);
             return new SearchResultsConverter().convert(result);
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
-            Page<com.sitewhere.rdb.entities.DeviceGroup> page = dbClient.getDbManager().getDeviceGroupRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
+            Page<com.sitewhere.rdb.entities.DeviceGroup> page = getRDBClient().getDbManager().getDeviceGroupRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
             return new SearchResultsConverter().convert(page.getContent());
         }
     }
 
     @Override
     public IDeviceGroup deleteDeviceGroup(UUID id) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceGroup> opt = dbClient.getDbManager().getDeviceGroupRepository().findById(id);
+        Optional<com.sitewhere.rdb.entities.DeviceGroup> opt = getRDBClient().getDbManager().getDeviceGroupRepository().findById(id);
         if(opt.isPresent()) {
-            dbClient.getDbManager().getDeviceGroupRepository().deleteById(id);
+            getRDBClient().getDbManager().getDeviceGroupRepository().deleteById(id);
         }
         return opt.get();
     }
 
     @Override
     public List<IDeviceGroupElement> addDeviceGroupElements(UUID groupId, List<IDeviceGroupElementCreateRequest> elements, boolean ignoreDuplicates) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceGroupElement> opt = dbClient.getDbManager().getDeviceGroupElementRepository().findById(groupId);
+        Optional<com.sitewhere.rdb.entities.DeviceGroupElement> opt = getRDBClient().getDbManager().getDeviceGroupElementRepository().findById(groupId);
         List<IDeviceGroupElement> results = new ArrayList<IDeviceGroupElement>();
         com.sitewhere.rdb.entities.DeviceGroupElement added = opt.get();
         for (IDeviceGroupElementCreateRequest request : elements) {
@@ -1462,7 +1473,7 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             group.setId(added.getId());
             DeviceGroupElement element = DeviceManagementPersistence.deviceGroupElementCreateLogic(request, group, device, nested);
             BeanUtils.copyProperties(element, added);
-            added = dbClient.getDbManager().getDeviceGroupElementRepository().save(added);
+            added = getRDBClient().getDbManager().getDeviceGroupElementRepository().save(added);
             results.add(added);
         }
         return results;
@@ -1472,10 +1483,10 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
     public List<IDeviceGroupElement> removeDeviceGroupElements(List<UUID> elementIds) throws SiteWhereException {
         List<IDeviceGroupElement> deleted = new ArrayList<IDeviceGroupElement>();
         for (UUID elementId : elementIds) {
-            Optional<com.sitewhere.rdb.entities.DeviceGroupElement> opt = dbClient.getDbManager().getDeviceGroupElementRepository().findById(elementId);
+            Optional<com.sitewhere.rdb.entities.DeviceGroupElement> opt = getRDBClient().getDbManager().getDeviceGroupElementRepository().findById(elementId);
             if(opt.isPresent()) {
                 com.sitewhere.rdb.entities.DeviceGroupElement deleteEle = opt.get();
-                dbClient.getDbManager().getDeviceGroupElementRepository().deleteById(deleteEle.getId());
+                getRDBClient().getDbManager().getDeviceGroupElementRepository().deleteById(deleteEle.getId());
                 deleted.add(deleteEle);
             }
         }
@@ -1494,11 +1505,11 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
             }
         };
         if (criteria.getPageSize() == 0) {
-            List<com.sitewhere.rdb.entities.DeviceGroupElement> result = dbClient.getDbManager().getDeviceGroupElementRepository().findAll(specification);
+            List<com.sitewhere.rdb.entities.DeviceGroupElement> result = getRDBClient().getDbManager().getDeviceGroupElementRepository().findAll(specification);
             return new SearchResultsConverter().convert(result);
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
-            Page<com.sitewhere.rdb.entities.DeviceGroupElement> page = dbClient.getDbManager().getDeviceGroupElementRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize()));
+            Page<com.sitewhere.rdb.entities.DeviceGroupElement> page = getRDBClient().getDbManager().getDeviceGroupElementRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize()));
             return new SearchResultsConverter().convert(page.getContent());
         }
     }
@@ -1583,4 +1594,8 @@ public class RDBDeviceManagement extends TenantEngineLifecycleComponent implemen
         return catids;
     }
 
+    @Override
+    public DbClient getRDBClient() throws SiteWhereException {
+        return dbClient;
+    }
 }

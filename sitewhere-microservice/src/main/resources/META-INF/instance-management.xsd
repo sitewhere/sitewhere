@@ -224,6 +224,48 @@
 		</xsd:sequence>
 	</xsd:complexType>
 
+	<!-- RDB persistence configuration elements -->
+	<xsd:element name="rdb-configurations"
+				 type="rdbConfigurationsType"
+				 substitutionGroup="abstract-persistence-configuration">
+		<xsd:annotation>
+			<xsd:documentation>
+				Provides global configuration for MongoDB that can
+				be referenced by microservices.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="rdbConfigurationsType">
+		<xsd:complexContent>
+			<xsd:extension
+					base="abstractPersistenceConfigurationType">
+				<xsd:sequence>
+					<xsd:element name="rdb-configuration"
+								 type="rdbDatastoreConfigurationType" minOccurs="0"
+								 maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:documentation>
+								Configuration data for MongoDB datastores.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="rdbDatastoreConfigurationType">
+		<xsd:attribute name="id" type="xsd:string"
+					   use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Unique id for datastore configuration.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attributeGroup ref="ds:rdb-attributes" />
+	</xsd:complexType>
+
 	<!-- Used as a placeholder for connector configurations to allow substitutionGroups -->
 	<xsd:element name="abstract-connector-configuration"
 		abstract="true" type="abstractConnectorConfigurationType">

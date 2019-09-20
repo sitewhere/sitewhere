@@ -20,7 +20,7 @@
 		<!-- Use global MongoDB tenant configuration -->
 		<ds:device-management-datastore>
 			<ds:rdb-datastore-reference
-				id="tenant" />
+					id="global" />
 		</ds:device-management-datastore>
 
 	</dm:device-management>

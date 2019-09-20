@@ -50,6 +50,33 @@
 
 			</im:cassandra-configurations>
 
+
+			<im:mongodb-configurations>
+
+				<!-- Configuration used for global services -->
+				<im:mongodb-configuration id="global"
+										  hostname="${mongodb.host:mongodb}" port="${mongodb.port:27017}"
+										  databaseName="${mongodb.database:sitewhere}" replicaSetName="${mongodb.replicaset:}" />
+
+				<!-- Configuration used for tenant microservices -->
+				<im:mongodb-configuration id="tenant"
+										  hostname="${mongodb.host:mongodb}" port="${mongodb.port:27017}"
+										  databaseName="${mongodb.tenant.prefix:tenant-[[tenant.id]]}"
+										  replicaSetName="${mongodb.replicaset:}" />
+
+			</im:mongodb-configurations>
+
+			<im:rdb-configurations>
+
+				<!-- Configuration used for global services -->
+				<im:rdb-configuration id="global"
+										  hostname="${mongodb.host:mongodb}"
+									      password="syncope"
+									      username="syncope"
+										  databaseName="${mongodb.database:sitewhere}"
+									      replicaSetName="${mongodb.replicaset:}" />
+			</im:rdb-configurations>
+
 		</im:persistence-configurations>
 
 		<!-- Global connector configurations -->

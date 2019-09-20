@@ -9,6 +9,7 @@ package com.sitewhere.configuration.datastore;
 
 import java.util.List;
 
+import com.sitewhere.configuration.instance.rdb.RDBConfiguration;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
@@ -37,28 +38,34 @@ public class DatastoreConfigurationParser {
      * @param context
      * @return
      */
-    public static DatastoreConfigurationChoice parseDeviceManagementDatastoreChoice(Element element,
-	    ParserContext context) {
-	List<Element> children = DomUtils.getChildElements(element);
-	for (Element child : children) {
-	    DeviceManagementDatastoreElements type = DeviceManagementDatastoreElements
-		    .getByLocalName(child.getLocalName());
-	    if (type == null) {
-		throw new RuntimeException("Unknown datastore element: " + child.getLocalName());
-	    }
-	    switch (type) {
-	    case MongoDBDatastore: {
-		return parseMongoDbDatastore(child, context);
-	    }
-	    case MongoDBReference: {
-		return parseMongoDbReference(child, context);
-	    }
-	    }
+	public static DatastoreConfigurationChoice parseDeviceManagementDatastoreChoice(Element element,
+																					ParserContext context) {
+		List<Element> children = DomUtils.getChildElements(element);
+		for (Element child : children) {
+			DeviceManagementDatastoreElements type = DeviceManagementDatastoreElements
+					.getByLocalName(child.getLocalName());
+			if (type == null) {
+				throw new RuntimeException("Unknown datastore element: " + child.getLocalName());
+			}
+			switch (type) {
+				case MongoDBDatastore: {
+					return parseMongoDbDatastore(child, context);
+				}
+				case MongoDBReference: {
+					return parseMongoDbReference(child, context);
+				}
+				case RDBDatastore:{
+					return parseRDBDatastore(child, context);
+				}
+				case RDBReference:{
+					return parseRDBReferences(child, context);
+				}
+			}
+		}
+		return null;
 	}
-	return null;
-    }
 
-    /**
+	/**
      * Parse potential configuration options for a event management datastore and
      * return configuration details.
      * 
@@ -134,11 +141,11 @@ public class DatastoreConfigurationParser {
      * @param context
      * @return
      */
-    protected static DatastoreConfigurationChoice parseMongoDbDatastore(Element element, ParserContext context) {
-	BeanDefinitionBuilder configuration = BeanDefinitionBuilder.rootBeanDefinition(MongoConfiguration.class);
-	parseMongoAttributes(element, context, configuration);
-	return new DatastoreConfigurationChoice(DatastoreConfigurationType.MongoDB, configuration.getBeanDefinition());
-    }
+	protected static DatastoreConfigurationChoice parseMongoDbDatastore(Element element, ParserContext context) {
+		BeanDefinitionBuilder configuration = BeanDefinitionBuilder.rootBeanDefinition(MongoConfiguration.class);
+		parseMongoAttributes(element, context, configuration);
+		return new DatastoreConfigurationChoice(DatastoreConfigurationType.MongoDB, configuration.getBeanDefinition());
+	}
 
     /**
      * Parse configuration reference for a MongoDB datastore.
@@ -147,14 +154,43 @@ public class DatastoreConfigurationParser {
      * @param context
      * @return
      */
-    protected static DatastoreConfigurationChoice parseMongoDbReference(Element element, ParserContext context) {
-	Attr id = element.getAttributeNode("id");
-	if (id == null) {
-	    throw new RuntimeException("No id specified for MongoDB configuration.");
+	protected static DatastoreConfigurationChoice parseMongoDbReference(Element element, ParserContext context) {
+		Attr id = element.getAttributeNode("id");
+		if (id == null) {
+			throw new RuntimeException("No id specified for MongoDB configuration.");
+		}
+		String reference = InstanceManagementBeans.BEAN_MONGO_CONFIGURATION_BASE + id.getValue();
+		return new DatastoreConfigurationChoice(DatastoreConfigurationType.MongoDBReference, reference);
 	}
-	String reference = InstanceManagementBeans.BEAN_MONGO_CONFIGURATION_BASE + id.getValue();
-	return new DatastoreConfigurationChoice(DatastoreConfigurationType.MongoDBReference, reference);
-    }
+
+	/**
+	 * Parse configuration for a RDB datastore.
+	 *
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected static DatastoreConfigurationChoice parseRDBDatastore(Element element, ParserContext context) {
+		BeanDefinitionBuilder configuration = BeanDefinitionBuilder.rootBeanDefinition(RDBConfiguration.class);
+		parseRDBAttributes(element, context, configuration);
+		return new DatastoreConfigurationChoice(DatastoreConfigurationType.RDB, configuration.getBeanDefinition());
+	}
+
+	/**
+	 * Parse configuration reference for a RDB datastore.
+	 *
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected static DatastoreConfigurationChoice parseRDBReferences(Element element, ParserContext context) {
+		Attr id = element.getAttributeNode("id");
+		if (id == null) {
+			throw new RuntimeException("No id specified for RDB configuration.");
+		}
+		String reference = InstanceManagementBeans.BEAN_RDB_CONFIGURATION_BASE + id.getValue();
+		return new DatastoreConfigurationChoice(DatastoreConfigurationType.RDBReference, reference);
+	}
 
     /**
      * Common parser logic for MongoDB attributes.
@@ -335,4 +371,8 @@ public class DatastoreConfigurationParser {
 	    configuration.addPropertyValue("keyspace", keyspace.getValue());
 	}
     }
+
+	public static void parseRDBAttributes(Element element, ParserContext context, BeanDefinitionBuilder client) {
+
+	}
 }

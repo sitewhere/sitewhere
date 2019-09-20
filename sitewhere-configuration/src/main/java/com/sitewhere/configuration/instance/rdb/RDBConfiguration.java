@@ -9,10 +9,10 @@ package com.sitewhere.configuration.instance.rdb;
 
 public class RDBConfiguration {
     /** Default hostname for relational database */
-    private static final String DEFAULT_HOSTNAME = "localhost";
+    private static final String DEFAULT_HOSTNAME = "sitewhere-postgresql-headless.default.svc.cluster.local";
 
     /** Default url for relational database */
-    private static final String DEFAULT_URL = "jdbc:postgresql://114.116.1.182:5432/tenant1";
+    private static final String DEFAULT_URL = "jdbc:postgresql://sitewhere-postgresql-headless.default.svc.cluster.local/tenant1";
 
     /** Default database name */
     private static final String DEFAULT_DATABASE_NAME = "sitewhere";
@@ -57,10 +57,10 @@ public class RDBConfiguration {
     private String url = DEFAULT_URL;
 
     /** Username used for authentication */
-    private String username;
+    private String username = "syncope";
 
     /** Password used for authentication */
-    private String password;
+    private String password = "syncope";
 
     /** Replica set name (blank or null for none) */
     private String replicaSetName;

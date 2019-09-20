@@ -77,11 +77,20 @@ public class Zone implements IZone {
     }
 
     @Override
+    public Double getBorderOpacity() {
+        return null;
+    }
+
+    @Override
     public String getFillColor() {
         return fillColor;
     }
 
     @Override
+    public Double getFillOpacity() {
+        return null;
+    }
+
     public Double getOpacity() {
         return opacity;
     }
