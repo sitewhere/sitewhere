@@ -56,6 +56,10 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
 	addElement(createMongoDBPersistenceConfigurationsElement());
 	addElement(createMongoConfigurationElement());
 
+	// RDB persistence configurations.
+	addElement(createRDBPersistenceConfigurationsElement());
+	addElement(createRDBConfigurationElement());
+
 	// InfluxDB persistence configurations.
 	addElement(createInfluxDBPersistenceConfigurationsElement());
 	addElement(createInfluxDBConfigurationElement());
@@ -149,6 +153,46 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
 
 	return builder.build();
     }
+
+
+    /**
+     * Create RDB persistence configurations element.
+     *
+     * @return
+     */
+    protected ElementNode createRDBPersistenceConfigurationsElement() {
+        ElementNode.Builder builder = new ElementNode.Builder(
+                InstanceManagementRoles.RDBConfigurations.getRole().getName(),
+                IInstanceManagementParser.PersistenceConfigurationsElements.RDBConfigurations.getLocalName(),
+                "database", InstanceManagementRoleKeys.RDBConfigurations, this);
+
+        builder.description("Provides global RDB persistence configurations that can be reused in tenants.");
+
+        return builder.build();
+    }
+
+	/**
+	 * Create element configuration for MongoDB settings.
+	 *
+	 * @return
+	 */
+	protected ElementNode createRDBConfigurationElement() {
+		ElementNode.Builder builder = new ElementNode.Builder(
+				InstanceManagementRoles.RDBConfigurations.getRole().getName(),
+				IInstanceManagementParser.RDBElements.RDBConfiguration.getLocalName(), "database",
+				InstanceManagementRoleKeys.RDBConfiguration, this);
+
+		builder.description("Global configuration for RDB data persistence.");
+		builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+
+		builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String,
+				ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+				.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
+		CommonDatastoreProvider.addRDBAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+
+		return builder.build();
+	}
+
 
     /**
      * Create InfluxDB persistence configurations element.

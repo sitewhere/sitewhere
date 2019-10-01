@@ -54,6 +54,11 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 	addElement(createInfluxDbReferenceElement());
 	addElement(createCassandraDatastoreElement());
 	addElement(createCassandraReferenceElement());
+
+	//---
+	addElement(createRDBDatastoreElement());
+	addElement(createRDBReferenceElement());
+	//---
     }
 
     /**
@@ -141,6 +146,49 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 
 	return builder.build();
     }
+
+
+    //-------------------------------------------------
+	/**
+	 * Create RDB datastore element.
+	 *
+	 * @return
+	 */
+	protected ElementNode createRDBDatastoreElement() {
+		ElementNode.Builder builder = new ElementNode.Builder(CommonDatastoreRoles.RDBDatastore.getRole().getName(),
+				IDatastoreCommonParser.DeviceManagementDatastoreElements.RDBDatastore.getLocalName(), "database",
+				CommonDatastoreRoleKeys.RDBDatastore, this);
+
+		builder.description("Use a locally-defined RDB datastore.");
+		builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+
+		addRDBAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+
+		return builder.build();
+	}
+
+	/**
+	 * Create RDB datastore reference element.
+	 *
+	 * @return
+	 */
+	protected ElementNode createRDBReferenceElement() {
+		ElementNode.Builder builder = new ElementNode.Builder(CommonDatastoreRoles.RDBReference.getRole().getName(),
+				IDatastoreCommonParser.DeviceManagementDatastoreElements.RDBReference.getLocalName(), "database",
+				CommonDatastoreRoleKeys.RDBReference, this);
+
+		builder.description("Use a globally-defined RDB datastore.");
+		builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+
+		builder.attribute((new AttributeNode.Builder("Configuration Id", "id", AttributeType.String,
+				ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("Unique id for global configuration")
+				.makeRequired().build()));
+
+		return builder.build();
+	}
+	//-------------------------------------------------
+
+
 
     /**
      * Create InfluxDB datastore element.
@@ -265,6 +313,35 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 				+ "when multiple hosts/ports are specified.")
 			.build()));
     }
+
+	/**
+	 * Adds RDB configuration attributes.
+	 *
+	 * @param builder
+	 * @param connectivity
+	 */
+	public static void addRDBAttributes(ElementNode.Builder builder, IAttributeGroup connectivity) {
+		builder.attribute((new AttributeNode.Builder("Hostname", "hostname", AttributeType.String, connectivity)
+				.description("Hostname for RDB instance").defaultValue("${mongodb.host:sitewhere-postgresql-headless.default.svc.cluster.local}").build()));
+		builder.attribute((new AttributeNode.Builder("Port", "port", AttributeType.Integer, connectivity)
+				.description("Port on which RDB is running").defaultValue("${mongodb.port:5432}").build()));
+		builder.attribute(
+				(new AttributeNode.Builder("Database name", "databaseName", AttributeType.String, connectivity)
+						.description("Database name").defaultValue("${mongodb.database:syncope}").build()));
+		builder.attribute((new AttributeNode.Builder("Username", "username", AttributeType.String, connectivity)
+				.description("Database authentication username").defaultValue("syncope").build()));
+		builder.attribute((new AttributeNode.Builder("Password", "password", AttributeType.String, connectivity).defaultValue("syncope")
+				.description("Database authentication password").build()));
+		builder.attribute(
+				(new AttributeNode.Builder("Replica set name", "replicaSetName", AttributeType.String, connectivity)
+						.description("Name of replica set if using replication.").defaultValue("${mongodb.replicaset:}")
+						.build()));
+		builder.attribute((new AttributeNode.Builder("Auto-configure replication", "autoConfigureReplication",
+				AttributeType.Boolean, connectivity)
+				.description("Indicates whether replication should be configured automatically "
+						+ "when multiple hosts/ports are specified.")
+				.build()));
+	}
 
     /**
      * Adds InfluxDB configuration attributes.

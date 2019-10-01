@@ -1,0 +1,5 @@
+{
+	"id": "rdb",
+	"name": "RDB ",
+	"description": "RDB persistence for all management interfaces"
+}

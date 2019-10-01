@@ -26,6 +26,14 @@ public enum CommonDatastoreRoleKeys implements IRoleKey {
     /** MongoDB global reference */
     MongoDBReference("mongo_ref"),
 
+    //------
+    /** RDB datastore */
+    RDBDatastore("rdb_ds"),
+
+    /** RDB global reference */
+    RDBReference("rdb_ref"),
+    //------
+
     /** Event management datastores */
     EventManagementDatastore("evt_mgmt_ds"),
 

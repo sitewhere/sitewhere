@@ -247,7 +247,7 @@ public class DatastoreConfigurationParser {
 
     /**
      * Parse configuration for a InfluxDB datastore.
-     * 
+     *
      * @param element
      * @param context
      * @return

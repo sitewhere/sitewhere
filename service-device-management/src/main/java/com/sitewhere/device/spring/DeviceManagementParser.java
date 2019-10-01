@@ -7,9 +7,14 @@
  */
 package com.sitewhere.device.spring;
 
-import java.util.List;
-
+import com.sitewhere.configuration.datastore.DatastoreConfigurationChoice;
+import com.sitewhere.configuration.datastore.DatastoreConfigurationParser;
+import com.sitewhere.configuration.parser.IDeviceManagementParser.Elements;
+import com.sitewhere.device.persistence.mongodb.DeviceManagementMongoClient;
+import com.sitewhere.device.persistence.mongodb.MongoDeviceManagement;
+import com.sitewhere.device.persistence.rdb.DeviceManagementRDBClient;
 import com.sitewhere.device.persistence.rdb.RDBDeviceManagement;
+import com.sitewhere.spi.microservice.spring.DeviceManagementBeans;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -17,12 +22,7 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
-import com.sitewhere.configuration.datastore.DatastoreConfigurationChoice;
-import com.sitewhere.configuration.datastore.DatastoreConfigurationParser;
-import com.sitewhere.configuration.parser.IDeviceManagementParser.Elements;
-import com.sitewhere.device.persistence.mongodb.DeviceManagementMongoClient;
-import com.sitewhere.device.persistence.mongodb.MongoDeviceManagement;
-import com.sitewhere.spi.microservice.spring.DeviceManagementBeans;
+import java.util.List;
 
 /**
  * Parses configuration data for the SiteWhere device management microservice.
@@ -74,8 +74,6 @@ public class DeviceManagementParser extends AbstractBeanDefinitionParser {
 						client.getBeanDefinition());
 
 				management = buildMongoDeviceManagament();
-				context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_DEVICE_MANAGEMENT,
-						management.getBeanDefinition());
 				break;
 			}
 			case MongoDBReference: {
@@ -85,12 +83,10 @@ public class DeviceManagementParser extends AbstractBeanDefinitionParser {
 						client.getBeanDefinition());
 
 				management = buildMongoDeviceManagament();
-				context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_DEVICE_MANAGEMENT,
-						management.getBeanDefinition());
 				break;
 			}
 			case RDB: {
-				BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(RDBDeviceManagement.class);
+				BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(DeviceManagementRDBClient.class);
 				client.addConstructorArgValue(config.getConfiguration());
 				context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_RDB_CLIENT,
 						client.getBeanDefinition());
@@ -99,14 +95,12 @@ public class DeviceManagementParser extends AbstractBeanDefinitionParser {
 				break;
 			}
 			case RDBReference: {
-				BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(RDBDeviceManagement.class);
+				BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(DeviceManagementRDBClient.class);
 				client.addConstructorArgReference((String) config.getConfiguration());
 				context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_RDB_CLIENT,
 						client.getBeanDefinition());
 
 				management = buildRDBDeviceManagament();
-				context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_DEVICE_MANAGEMENT,
-						management.getBeanDefinition());
 				break;
 			}
 			default: {
@@ -128,8 +122,8 @@ public class DeviceManagementParser extends AbstractBeanDefinitionParser {
 
 	private BeanDefinitionBuilder buildRDBDeviceManagament() {
 		// Build device management implementation.
-		BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(MongoDeviceManagement.class);
-		management.addPropertyReference("rdbClient", DeviceManagementBeans.BEAN_RDB_CLIENT);
+		BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(RDBDeviceManagement.class);
+		management.addPropertyReference("dbClient", DeviceManagementBeans.BEAN_RDB_CLIENT);
 		return management;
 	}
 }

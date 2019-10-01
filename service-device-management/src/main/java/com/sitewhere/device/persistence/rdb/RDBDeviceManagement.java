@@ -28,7 +28,6 @@ import com.sitewhere.rest.model.search.customer.CustomerSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceCommandSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceStatusSearchCriteria;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.area.IArea;
@@ -56,6 +55,7 @@ import com.sitewhere.spi.search.ITreeNode;
 import com.sitewhere.spi.search.area.IAreaSearchCriteria;
 import com.sitewhere.spi.search.customer.ICustomerSearchCriteria;
 import com.sitewhere.spi.search.device.*;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -71,16 +71,20 @@ import java.util.*;
  *
  * Simeon Chen
  */
-public class RDBDeviceManagement extends RDBTenantComponent implements IDeviceManagement {
+public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBClient> implements IDeviceManagement {
+
+    public RDBDeviceManagement() {
+        super(LifecycleComponentType.DataStore);
+    }
 
     /** Injected with global SiteWhere relational database client */
-    private DbClient dbClient;
+    private DeviceManagementRDBClient dbClient;
 
-    public DbClient getDbClient() {
+    public DeviceManagementRDBClient getDbClient() {
         return dbClient;
     }
 
-    public void setDbClient(DbClient dbClient) {
+    public void setDbClient(DeviceManagementRDBClient dbClient) {
         this.dbClient = dbClient;
     }
 
@@ -1595,7 +1599,7 @@ public class RDBDeviceManagement extends RDBTenantComponent implements IDeviceMa
     }
 
     @Override
-    public DbClient getRDBClient() throws SiteWhereException {
+    public DeviceManagementRDBClient getRDBClient() throws SiteWhereException {
         return dbClient;
     }
 }

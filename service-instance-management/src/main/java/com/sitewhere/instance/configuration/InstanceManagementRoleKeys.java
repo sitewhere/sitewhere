@@ -38,6 +38,12 @@ public enum InstanceManagementRoleKeys implements IRoleKey {
     /** Apache Cassandra configuration element */
     CassandraConfiguration("cassandra_conf"),
 
+    /** RDB persistence configurations */
+    RDBConfigurations("rdb_confs"),
+
+    /** RDB configuration element */
+    RDBConfiguration("rdb_conf"),
+
     /** Connector configurations */
     ConnectorConfigurations("connector_confs"),
 

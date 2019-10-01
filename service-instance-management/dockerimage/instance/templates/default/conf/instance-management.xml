@@ -23,8 +23,7 @@
 				<!-- Configuration used for global services -->
 				<im:mongodb-configuration id="global"
 					hostname="${mongodb.host:mongodb}" port="${mongodb.port:27017}"
-					databaseName="${mongodb.database:sitewhere}"
-					replicaSetName="${mongodb.replicaset:}" />
+					databaseName="${mongodb.database:sitewhere}" replicaSetName="${mongodb.replicaset:}" />
 
 				<!-- Configuration used for tenant microservices -->
 				<im:mongodb-configuration id="tenant"
@@ -48,35 +47,22 @@
 			<im:cassandra-configurations>
 
 				<im:cassandra-configuration id="tenant"
-					contactPoints="${cassandra.contact.points:cassandra}"
-					keyspace="${cassandra.keyspace:tenant_[[tenant.id]]}" />
+					contactPoints="${cassandra.contact.points:cassandra}" keyspace="${cassandra.keyspace:tenant_[[tenant.id]]}" />
 
 			</im:cassandra-configurations>
 
-
-			<im:mongodb-configurations>
-
-				<!-- Configuration used for global services -->
-				<im:mongodb-configuration id="global"
-					hostname="${mongodb.host:mongodb}" port="${mongodb.port:27017}"
-					databaseName="${mongodb.database:sitewhere}"
-					replicaSetName="${mongodb.replicaset:}" />
-
-				<!-- Configuration used for tenant microservices -->
-				<im:mongodb-configuration id="tenant"
-					hostname="${mongodb.host:mongodb}" port="${mongodb.port:27017}"
-					databaseName="${mongodb.tenant.prefix:tenant-[[tenant.id]]}"
-					replicaSetName="${mongodb.replicaset:}" />
-
-			</im:mongodb-configurations>
-
 			<im:rdb-configurations>
-
 				<!-- Configuration used for global services -->
 				<im:rdb-configuration id="global"
-					hostname="${mongodb.host:mongodb}" password="syncope"
-					username="syncope" databaseName="${mongodb.database:sitewhere}"
-					replicaSetName="${mongodb.replicaset:}" />
+					hostname="sitewhere-postgresql-headless.default.svc.cluster.local" password="syncope"
+					username="syncope" databaseName="syncope"
+					replicaSetName="${rdb.replicaset:}" />
+
+				<im:rdb-configuration id="tenant"
+									  hostname="sitewhere-postgresql-headless.default.svc.cluster.local" password="syncope"
+									  username="syncope" databaseName="syncope"
+
+									  replicaSetName="${rdb.replicaset:}" />
 			</im:rdb-configurations>
 
 		</im:persistence-configurations>

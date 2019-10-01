@@ -132,37 +132,37 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
      * tenantBootstrap(com.sitewhere.spi.microservice.multitenant.IDatasetTemplate,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
-    @Override
-    public void tenantBootstrap(IDatasetTemplate template, ILifecycleProgressMonitor monitor)
-	    throws SiteWhereException {
-	List<String> scripts = Collections.emptyList();
-	if (template.getInitializers() != null) {
-	    scripts = template.getInitializers().getDeviceManagement();
-	    for (String script : scripts) {
-		getTenantScriptSynchronizer().add(script);
-	    }
-	}
+	@Override
+	public void tenantBootstrap(IDatasetTemplate template, ILifecycleProgressMonitor monitor)
+			throws SiteWhereException {
+		List<String> scripts = Collections.emptyList();
+		if (template.getInitializers() != null) {
+			scripts = template.getInitializers().getDeviceManagement();
+			for (String script : scripts) {
+				getTenantScriptSynchronizer().add(script);
+			}
+		}
 
-	// Execute remote calls as superuser.
-	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
-	try {
-	    SecurityContextHolder.getContext()
-		    .setAuthentication(getMicroservice().getSystemUser().getAuthenticationForTenant(getTenant()));
-	    GroovyConfiguration groovy = new GroovyConfiguration(getTenantScriptSynchronizer());
-	    groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize device model."),
-		    getMicroservice()));
-	    for (String script : scripts) {
-		getLogger().info(String.format("Applying bootstrap script '%s'.", script));
-		GroovyDeviceModelInitializer initializer = new GroovyDeviceModelInitializer(groovy, script);
-		initializer.initialize(getDeviceManagement(), getAssetManagement());
-	    }
-	} catch (Throwable e) {
-	    getLogger().error("Unhandled exception in bootstrap script.", e);
-	    throw new SiteWhereException(e);
-	} finally {
-	    SecurityContextHolder.getContext().setAuthentication(previous);
+		// Execute remote calls as superuser.
+		Authentication previous = SecurityContextHolder.getContext().getAuthentication();
+		try {
+			SecurityContextHolder.getContext()
+					.setAuthentication(getMicroservice().getSystemUser().getAuthenticationForTenant(getTenant()));
+			GroovyConfiguration groovy = new GroovyConfiguration(getTenantScriptSynchronizer());
+			groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize device model."),
+					getMicroservice()));
+			for (String script : scripts) {
+				getLogger().info(String.format("Applying bootstrap script '%s'.", script));
+				GroovyDeviceModelInitializer initializer = new GroovyDeviceModelInitializer(groovy, script);
+				initializer.initialize(getDeviceManagement(), getAssetManagement());
+			}
+		} catch (Throwable e) {
+			getLogger().error("Unhandled exception in bootstrap script.", e);
+			throw new SiteWhereException(e);
+		} finally {
+			SecurityContextHolder.getContext().setAuthentication(previous);
+		}
 	}
-    }
 
     /*
      * (non-Javadoc)

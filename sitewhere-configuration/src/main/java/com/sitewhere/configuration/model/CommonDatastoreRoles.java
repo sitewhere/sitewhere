@@ -33,7 +33,8 @@ public enum CommonDatastoreRoles implements IConfigurationRoleProvider {
     /** Elements that can be added to a device management datastore */
     DeviceManagementDatastoreElement(ConfigurationRole.build(CommonDatastoreRoleKeys.DeviceManagementDatastoreElement,
 	    "Datastore", false, false, false, new IRoleKey[0],
-	    new IRoleKey[] { CommonDatastoreRoleKeys.MongoDBDatastore, CommonDatastoreRoleKeys.MongoDBReference })),
+	    new IRoleKey[] { CommonDatastoreRoleKeys.MongoDBDatastore, CommonDatastoreRoleKeys.MongoDBReference,
+                CommonDatastoreRoleKeys.RDBDatastore, CommonDatastoreRoleKeys.RDBReference })),
 
     /** Event management datastore */
     EventManagementDatastore(
@@ -65,6 +66,18 @@ public enum CommonDatastoreRoles implements IConfigurationRoleProvider {
     /** MongoDB global reference */
     MongoDBReference(ConfigurationRole.build(CommonDatastoreRoleKeys.MongoDBReference, "MongoDB Global Reference",
 	    false, false, false)),
+
+
+    //-------------------
+    /** RDB datastore */
+    RDBDatastore(ConfigurationRole.build(CommonDatastoreRoleKeys.RDBDatastore, "RDB Datastore", false,
+            false, false)),
+
+    /** MongoDB global reference */
+    RDBReference(ConfigurationRole.build(CommonDatastoreRoleKeys.RDBReference, "RDB Global Reference",
+            false, false, false)),
+    //-------------------
+
 
     /** InfluxDB datastore */
     InfluxDBDatastore(ConfigurationRole.build(CommonDatastoreRoleKeys.InfluxDBDatastore, "InfluxDB Datastore", false,
