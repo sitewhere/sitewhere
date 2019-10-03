@@ -80,6 +80,10 @@ public class InstanceManagementParser extends AbstractBeanDefinitionParser {
 				}
 				case CassandraConfigurations: {
 					(new CassandraConfigurationsParser()).parse(child, context);
+					break;
+				}
+				case RDBConfigurations: {
+					(new RDBConfigurationsParser()).parse(child, context);
 				}
 			}
 		}

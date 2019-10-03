@@ -16,6 +16,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponentParameter;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Client used for connecting to and interacting with an Relational database server.
@@ -41,6 +42,7 @@ public abstract class DbClient extends TenantEngineLifecycleComponent implements
      * @param configuration
      */
     public DbClient(RDBConfiguration configuration) {
+        super(LifecycleComponentType.DataStore);
         this.configuration = configuration;
     }
 

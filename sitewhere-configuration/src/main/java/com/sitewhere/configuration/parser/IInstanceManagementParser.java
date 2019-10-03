@@ -241,7 +241,7 @@ public interface IInstanceManagementParser {
 
 	public static enum RDBElements {
 
-		/** MongoDB configuration */
+		/** RDB configuration */
 		RDBConfiguration("rdb-configuration");
 
 		/** Event code */
