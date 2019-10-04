@@ -109,8 +109,18 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
      */
     protected void processDecodedEvent(GDecodedEventPayload event) throws SiteWhereException {
 	List<IDeviceAssignment> assignments = validateAssignment(event);
+	if (getLogger().isDebugEnabled()) {
+	    getLogger().debug(String.format("Found %s for '%s'.",
+		    assignments.size() > 1 ? "" + assignments.size() + " active assignments"
+			    : "" + assignments.size() + " active assignment",
+		    event.getDeviceToken()));
+	}
 	if (assignments != null) {
 	    byte[] marshaled = EventModelMarshaler.buildDecodedEventPayloadMessage(event);
+	    if (getLogger().isDebugEnabled()) {
+		getLogger().debug(String.format("Forwarding payload for '%s' to Kafka for further processing.",
+			event.getDeviceToken()));
+	    }
 	    getInboundEventsProducer().send(event.getDeviceToken(), marshaled);
 	}
     }
@@ -124,6 +134,10 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
      * @throws SiteWhereException
      */
     protected List<IDeviceAssignment> validateAssignment(GDecodedEventPayload payload) throws SiteWhereException {
+	if (getLogger().isDebugEnabled()) {
+	    getLogger().debug(String.format("Validating device assignment for '%s'.", payload.getDeviceToken()));
+	}
+
 	// Verify that device is registered.
 	final Histogram.Timer deviceLookupTime = DEVICE_LOOKUP_TIMER.labels(buildLabels()).startTimer();
 	IDevice device = null;
@@ -133,12 +147,18 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	    deviceLookupTime.close();
 	}
 	if (device == null) {
+	    if (getLogger().isDebugEnabled()) {
+		getLogger().debug(String.format("Device not found for token '%s'.", payload.getDeviceToken()));
+	    }
 	    handleUnregisteredDevice(payload);
 	    return null;
 	}
 
 	// Verify that device is assigned.
 	if (device.getActiveDeviceAssignmentIds().size() == 0) {
+	    if (getLogger().isDebugEnabled()) {
+		getLogger().debug(String.format("No active assignments found for '%s'.", payload.getDeviceToken()));
+	    }
 	    handleUnassignedDevice(payload);
 	    return null;
 	}

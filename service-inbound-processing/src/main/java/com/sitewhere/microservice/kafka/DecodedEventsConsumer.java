@@ -154,6 +154,9 @@ public class DecodedEventsConsumer extends MicroserviceKafkaConsumer implements 
      */
     @Override
     public void process(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records) {
+	if (getLogger().isDebugEnabled()) {
+	    getLogger().debug(String.format("Received %d records from decoded events consumer.", records.size()));
+	}
 	try {
 	    List<GDecodedEventPayload> decoded = new ArrayList<>();
 	    for (ConsumerRecord<String, byte[]> record : records) {

@@ -8,7 +8,6 @@
 package com.sitewhere.mongodb;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.util.StringUtils;
@@ -121,9 +120,9 @@ public abstract class MongoDbClient extends TenantEngineLifecycleComponent
 		    MongoCredential credential = MongoCredential.createCredential(getConfiguration().getUsername(),
 			    getConfiguration().getAuthDatabaseName(), getConfiguration().getPassword().toCharArray());
 		    if (isUsingReplicaSet) {
-			this.client = new MongoClient(addresses, Arrays.asList(credential), builder.build());
+			this.client = new MongoClient(addresses, credential, builder.build());
 		    } else {
-			this.client = new MongoClient(addresses.get(0), Arrays.asList(credential), builder.build());
+			this.client = new MongoClient(addresses.get(0), credential, builder.build());
 		    }
 		}
 
