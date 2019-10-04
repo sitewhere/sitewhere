@@ -37,7 +37,7 @@ public class HealthServiceImpl extends HealthGrpc.HealthImplBase {
      */
     @Override
     public void check(HealthCheckRequest request, StreamObserver<HealthCheckResponse> responseObserver) {
-	LOGGER.debug("Health check called");
+	LOGGER.trace("Health check called");
 
 	HealthCheckResponse response = HealthCheckResponse.newBuilder().setStatus(servingStatus).build();
 	responseObserver.onNext(response);
@@ -50,7 +50,7 @@ public class HealthServiceImpl extends HealthGrpc.HealthImplBase {
      */
     @Override
     public void watch(HealthCheckRequest request, StreamObserver<HealthCheckResponse> responseObserver) {
-	LOGGER.debug("Health watch called");
+	LOGGER.trace("Health watch called");
 
 	HealthCheckResponse response = HealthCheckResponse.newBuilder().setStatus(servingStatus).build();
 	responseObserver.onNext(response);

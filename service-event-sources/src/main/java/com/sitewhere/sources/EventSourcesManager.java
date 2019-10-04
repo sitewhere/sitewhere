@@ -153,7 +153,13 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
     @Override
     public void handleDecodedEvent(String sourceId, byte[] encoded, Map<String, Object> metadata,
 	    IDecodedDeviceRequest<?> decoded) throws SiteWhereException {
+	if (getLogger().isDebugEnabled()) {
+	    getLogger().debug("Processing decoded event...");
+	}
 	if (decoded.getRequest() instanceof IDeviceEventCreateRequest) {
+	    if (getLogger().isDebugEnabled()) {
+		getLogger().debug("Forwarding decoded event create request to Kafka outbound topic.");
+	    }
 	    if (getDecodedEventsProducer().getLifecycleStatus() == LifecycleStatus.Started) {
 		// Build and forward inbound event payload message.
 		DecodedEventPayload payload = new DecodedEventPayload();
@@ -167,6 +173,9 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 		getLogger().warn("Producer not started. Unable to add decoded event to topic.");
 	    }
 	} else if (decoded.getRequest() instanceof IDeviceRegistrationRequest) {
+	    if (getLogger().isDebugEnabled()) {
+		getLogger().debug("Forwarding decoded regsitration request to Kafka outbound topic.");
+	    }
 	    if (getDeviceRegistrationEventsProducer().getLifecycleStatus() == LifecycleStatus.Started) {
 		// Build and forward device registration payload message.
 		DeviceRegistrationPayload payload = new DeviceRegistrationPayload();

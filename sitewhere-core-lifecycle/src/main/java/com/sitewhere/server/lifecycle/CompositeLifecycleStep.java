@@ -71,7 +71,7 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
 	monitor.pushContext(new LifecycleProgressContext(steps.size(), getName()));
 	try {
 	    for (ILifecycleStep step : steps) {
-		LOGGER.debug(String.format("About to start step '%s'...", step.getName()));
+		LOGGER.trace(String.format("About to start step '%s'...", step.getName()));
 		try {
 		    monitor.startProgress(step.getName());
 		    step.execute(monitor);
@@ -94,7 +94,7 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
      * sitewhere.spi.server.lifecycle.ILifecycleStep)
      */
     public void addStep(ILifecycleStep step) {
-	LOGGER.debug("In addStep() for " + step.getName());
+	LOGGER.trace("In addStep() for " + step.getName());
 	getSteps().add(step);
     }
 
@@ -105,7 +105,7 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
      */
     @Override
     public void addInitializeStep(ILifecycleComponent owner, ILifecycleComponent component, boolean require) {
-	LOGGER.debug("In addInitializeStep() for " + component);
+	LOGGER.trace("In addInitializeStep() for " + component);
 	if (component != null) {
 	    addStep(new InitializeComponentLifecycleStep(owner, component, require));
 	} else {
@@ -120,7 +120,7 @@ public class CompositeLifecycleStep implements ICompositeLifecycleStep {
      */
     @Override
     public void addStartStep(ILifecycleComponent owner, ILifecycleComponent component, boolean require) {
-	LOGGER.debug("In addStartStep() for " + component);
+	LOGGER.trace("In addStartStep() for " + component);
 	if (component != null) {
 	    addStep(new StartComponentLifecycleStep(owner, component, require));
 	} else {
