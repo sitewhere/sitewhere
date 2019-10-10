@@ -29,6 +29,7 @@ public class DeviceType implements IDeviceType {
     private String name;
 
     /** Decription */
+    @Column(length = 1000)
     private String description;
 
     /** Device container policy */

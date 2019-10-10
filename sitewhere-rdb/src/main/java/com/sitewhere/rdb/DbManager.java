@@ -9,6 +9,7 @@ package com.sitewhere.rdb;
 
 import com.sitewhere.configuration.instance.rdb.RDBConfiguration;
 import com.sitewhere.rdb.entities.Device;
+import com.sitewhere.rdb.entities.Location;
 import com.sitewhere.rdb.multitenancy.DvdRentalTenantContext;
 import com.sitewhere.rdb.multitenancy.MultiTenantDvdRentalProperties;
 import com.sitewhere.rdb.repositories.*;
@@ -126,23 +127,25 @@ public class DbManager {
     public static void main(String[] args) {
         // Define two datasources
         RDBConfiguration config1 = new RDBConfiguration();
-        config1.setUrl("jdbc:postgresql://114.116.1.182:5432/tenancy_1");
-        config1.setUsername("MultiTenancy");
-        config1.setPassword("123456");
+        config1.setUrl("jdbc:postgresql://localhost:5432/tenant1");
+        config1.setUsername("syncope");
+        config1.setPassword("syncope");
         config1.setDriver("org.postgresql.Driver");
 
-        RDBConfiguration config2 = new RDBConfiguration();
+        Location a = new Location();
+        a.getId();
+       /* RDBConfiguration config2 = new RDBConfiguration();
         config2.setUrl("jdbc:postgresql://114.116.1.182:5432/tenancy_2");
         config2.setUsername("MultiTenancy");
         config2.setPassword("123456");
-        config2.setDriver("org.postgresql.Driver");
+        config2.setDriver("org.postgresql.Driver");*/
 
         // Register these two datasources to rdb
-        MultiTenantDvdRentalProperties.ADD_NEW_DATASOURCE(config1, "tenancy_1");
-        MultiTenantDvdRentalProperties.ADD_NEW_DATASOURCE(config2, "tenancy_2");
+        MultiTenantDvdRentalProperties.ADD_NEW_DATASOURCE(config1, "tenant1");
+        //MultiTenantDvdRentalProperties.ADD_NEW_DATASOURCE(config2, "tenancy_2");
 
         // Set current tenantId
-        DvdRentalTenantContext.setTenantId("tenancy_2");
+        DvdRentalTenantContext.setTenantId("tenant1");
         DbManager manager = new DbManager();
         manager.start();
         // Operate database

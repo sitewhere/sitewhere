@@ -17,6 +17,7 @@ import com.sitewhere.rdb.RDBTenantComponent;
 import com.sitewhere.rest.model.area.Area;
 import com.sitewhere.rest.model.area.AreaType;
 import com.sitewhere.rest.model.area.Zone;
+import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.customer.Customer;
 import com.sitewhere.rest.model.customer.CustomerType;
 import com.sitewhere.rest.model.device.*;
@@ -250,7 +251,7 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
             public Predicate toPredicate(Root<com.sitewhere.rdb.entities.DeviceCommand> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 List<Predicate> predicates = new ArrayList<>();
                 if (criteria.getDeviceTypeToken() != null) {
-                    Path path = root.get("deviceTypeId");
+                    Path path = root.get("deviceTypeToken");
                     predicates.add(cb.equal(path, criteria.getDeviceTypeToken()));
                 }
                 return query.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
@@ -358,7 +359,7 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
             public Predicate toPredicate(Root<com.sitewhere.rdb.entities.DeviceStatus> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 List<Predicate> predicates = new ArrayList<>();
                 if (criteria.getDeviceTypeToken() != null) {
-                    Path path = root.get("deviceTypeId");
+                    Path path = root.get("deviceTypeToken");
                     predicates.add(cb.equal(path, criteria.getDeviceTypeToken()));
                 }
                 if (criteria.getCode() != null) {
@@ -475,7 +476,7 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
                     predicates.add(cb.lessThanOrEqualTo(path, criteria.getEndDate()));
                 }
                 if (!StringUtils.isEmpty(criteria.getDeviceTypeToken())) {
-                    Path path = root.get("deviceTypeId");
+                    Path path = root.get("deviceTypeToken");
                     predicates.add(cb.equal(path, deviceType.getId()));
                 }
                 return query.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
@@ -1062,6 +1063,7 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         AreaType type = DeviceManagementPersistence.areaTypeCreateLogic(request, catids);
         com.sitewhere.rdb.entities.AreaType created = new com.sitewhere.rdb.entities.AreaType();
         BeanUtils.copyProperties(type, created);
+        created = getRDBClient().getDbManager().getAreaTypeRepository().save(created);
         return created;
     }
 
@@ -1148,7 +1150,18 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         // Use common logic so all backend implementations work the same.
         Area area = DeviceManagementPersistence.areaCreateLogic(request, areaType, parentArea);
         com.sitewhere.rdb.entities.Area created = new com.sitewhere.rdb.entities.Area();
+
+        List<com.sitewhere.rdb.entities.Location> locations = new ArrayList<>();
+
         BeanUtils.copyProperties(area, created);
+        //BeanUtils.copyProperties(area.getBounds(), locations);
+
+        for (Location locationCommon: area.getBounds()) {
+            com.sitewhere.rdb.entities.Location l = new com.sitewhere.rdb.entities.Location();
+            BeanUtils.copyProperties(locationCommon, l);
+            locations.add(l);
+        }
+        created.setBounds(locations);
         created = getRDBClient().getDbManager().getAreaRepository().save(created);
         return created;
     }
@@ -1288,6 +1301,15 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         Zone zone = DeviceManagementPersistence.zoneCreateLogic(request, area, UUID.randomUUID().toString());
         com.sitewhere.rdb.entities.Zone created = new com.sitewhere.rdb.entities.Zone();
         BeanUtils.copyProperties(zone, created);
+
+        List<com.sitewhere.rdb.entities.Location> locations = new ArrayList<>();
+        BeanUtils.copyProperties(area, created);
+        for (Location locationCommon: zone.getBounds()) {
+            com.sitewhere.rdb.entities.Location l = new com.sitewhere.rdb.entities.Location();
+            BeanUtils.copyProperties(locationCommon, l);
+            locations.add(l);
+        }
+        created.setBounds(locations);
         created = getRDBClient().getDbManager().getZoneRepository().save(created);
         return created;
     }

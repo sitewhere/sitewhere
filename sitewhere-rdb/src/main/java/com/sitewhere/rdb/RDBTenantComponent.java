@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rdb;
 
+import com.sitewhere.rdb.multitenancy.DvdRentalTenantContext;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -56,6 +57,10 @@ public abstract class RDBTenantComponent <T extends DbClient> extends TenantEngi
         if (getIndexer() != null) {
             getIndexer().shutdownNow();
         }
+
+        //TODO: NO estoy seguro de que venga aca
+        String tenantId = this.getTenantEngine().getTenant().getId().toString();
+        DvdRentalTenantContext.setTenantId(tenantId);
         this.indexer = Executors.newSingleThreadExecutor(new IndexerThreadFactory());
 
         // Run index validate/create in background.

@@ -25,6 +25,9 @@ public class DeviceStatus implements IDeviceStatus {
     @Column(name="id")
     private UUID id;
 
+    /** DeviceType token */
+    private String deviceTypeToken;
+
     /** Status code */
     private String code;
 
@@ -193,4 +196,11 @@ public class DeviceStatus implements IDeviceStatus {
         this.metadata = metadata;
     }
 
+    public String getDeviceTypeToken() {
+        return deviceTypeToken;
+    }
+
+    public void setDeviceTypeToken(String deviceTypeToken) {
+        this.deviceTypeToken = deviceTypeToken;
+    }
 }

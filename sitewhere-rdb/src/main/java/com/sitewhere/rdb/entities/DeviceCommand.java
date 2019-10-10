@@ -25,6 +25,8 @@ public class DeviceCommand implements IDeviceCommand {
     /** Unique id for parent specification */
     private UUID deviceTypeId;
 
+    private String deviceTypeToken;
+
     /** Command namespace */
     private String namespace;
 
@@ -175,5 +177,11 @@ public class DeviceCommand implements IDeviceCommand {
         this.parameterList = parameterList;
     }
 
+    public String getDeviceTypeToken() {
+        return deviceTypeToken;
+    }
 
+    public void setDeviceTypeToken(String deviceTypeToken) {
+        this.deviceTypeToken = deviceTypeToken;
+    }
 }

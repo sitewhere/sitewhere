@@ -15,10 +15,10 @@ public class RDBConfiguration {
     private static final String DEFAULT_URL = "jdbc:postgresql://sitewhere-postgresql-headless.default.svc.cluster.local/tenant1";
 
     /** Default database name */
-    private static final String DEFAULT_DATABASE_NAME = "sitewhere";
+    private static final String DEFAULT_DATABASE_NAME = "syncope";
 
     /** Default authentication database name */
-    private static final String DEFAULT_AUTH_DATABASE_NAME = "admin";
+    private static final String DEFAULT_AUTH_DATABASE_NAME = "syncope";
 
     /** Default parameter for formatting Hibernate SQL */
     private static final String DEFAULT_FORMATSQL = "true";

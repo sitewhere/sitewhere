@@ -31,6 +31,7 @@ public class Area implements IArea {
     private String name;
 
     /** Area description */
+    @Column(length = 1000)
     private String description;
 
     /** Background color */
@@ -69,7 +70,7 @@ public class Area implements IArea {
     @Column(name="propValue")
     private Map<String, String> metadata = new HashMap<>();
 
-    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.LAZY)
+    @OneToMany(targetEntity = Location.class ,cascade= {CascadeType.ALL},fetch=FetchType.LAZY)
     private List<Location> bounds = new ArrayList<>();
 
     @Override
@@ -78,7 +79,7 @@ public class Area implements IArea {
     }
 
     @Override
-    public List<? extends ILocation> getBounds() {
+    public List<Location> getBounds() {
         return bounds;
     }
 

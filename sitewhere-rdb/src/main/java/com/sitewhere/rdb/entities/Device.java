@@ -31,6 +31,9 @@ public class Device implements IDevice {
     /** Device type id */
     private UUID deviceTypeId;
 
+    /** DeviceType token */
+    private String deviceTypeToken;
+
     /** Id for current assignment if assigned */
     private UUID deviceAssignmentId;
 
@@ -198,5 +201,13 @@ public class Device implements IDevice {
 
     public void setActiveDeviceAssignmentIds(List<UUID> activeDeviceAssignmentIds) {
         this.activeDeviceAssignmentIds = activeDeviceAssignmentIds;
+    }
+
+    public String getDeviceTypeToken() {
+        return deviceTypeToken;
+    }
+
+    public void setDeviceTypeToken(String deviceTypeToken) {
+        this.deviceTypeToken = deviceTypeToken;
     }
 }

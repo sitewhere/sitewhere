@@ -270,51 +270,10 @@
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="url" type="xsd:string">
-			<xsd:annotation>
-				<xsd:documentation>Server url for Relation Database instance.
-				</xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="formatSql" type="xsd:string">
-			<xsd:annotation>
-				<xsd:documentation>Hibernate formatSql for Relation Database instance.
-				</xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="showSql" type="xsd:string">
-			<xsd:annotation>
-				<xsd:documentation>Hibernate showSql for Relation Database instance.
-				</xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="dialect" type="xsd:string">
-			<xsd:annotation>
-				<xsd:documentation>Hibernate dialect for Relation Database instance.
-				</xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="hbm2ddlAuto" type="xsd:string">
-			<xsd:annotation>
-				<xsd:documentation>Hibernate hbm2ddlAuto for Relation Database instance.
-				</xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="driver" type="xsd:string">
-			<xsd:annotation>
-				<xsd:documentation>driver class for Relation Database instance.
-				</xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
 		<xsd:attribute name="databaseName" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation>Relation Database database name for SiteWhere storage.
 				</xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="authDatabaseName" type="xsd:string">
-			<xsd:annotation>
-				<xsd:documentation>Authentication database name.</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 		<xsd:attribute name="username" type="xsd:string">
@@ -332,14 +291,6 @@
 		<xsd:attribute name="replicaSetName" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation>Name of replica set if using replication.
-				</xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="autoConfigureReplication"
-					   type="xsd:boolean">
-			<xsd:annotation>
-				<xsd:documentation>Indicates whether replication should be
-					configured automatically when multiple hosts/ports are specified.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
