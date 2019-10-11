@@ -8,7 +8,8 @@
 package com.sitewhere.rdb.entities;
 
 import com.sitewhere.spi.area.IArea;
-import com.sitewhere.spi.common.ILocation;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.*;
@@ -64,13 +65,14 @@ public class Area implements IArea {
     /** Username that updated entity */
     private String updatedBy;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     @CollectionTable(name="area_metadata")
     @MapKeyColumn(name="propKey")
     @Column(name="propValue")
     private Map<String, String> metadata = new HashMap<>();
 
-    @OneToMany(targetEntity = Location.class ,cascade= {CascadeType.ALL},fetch=FetchType.LAZY)
+    @OneToMany(targetEntity = Location.class ,cascade= {CascadeType.ALL},fetch=FetchType.EAGER)
     private List<Location> bounds = new ArrayList<>();
 
     @Override

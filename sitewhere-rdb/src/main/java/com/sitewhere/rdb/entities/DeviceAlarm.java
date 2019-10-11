@@ -9,6 +9,8 @@ package com.sitewhere.rdb.entities;
 
 import com.sitewhere.spi.device.DeviceAlarmState;
 import com.sitewhere.spi.device.IDeviceAlarm;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -59,7 +61,8 @@ public class DeviceAlarm implements IDeviceAlarm {
     /** Date alarm was resolved */
     private Date resolvedDate;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     @CollectionTable(name="device_alarm_metadata")
     @MapKeyColumn(name="propKey")
     @Column(name="propValue")

@@ -10,6 +10,8 @@ package com.sitewhere.rdb.entities;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 import com.sitewhere.spi.device.element.IDeviceSlot;
 import com.sitewhere.spi.device.element.IDeviceUnit;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -30,11 +32,13 @@ public class DeviceElementSchema implements IDeviceElementSchema, Serializable {
     private String path;
 
     /** List of device slots */
-    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.LAZY)
+    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<DeviceSlot> deviceSlots = new ArrayList<DeviceSlot>();
 
     /** List of device units */
-    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.LAZY)
+    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<DeviceUnit> deviceUnits = new ArrayList<DeviceUnit>();
 
     @Override

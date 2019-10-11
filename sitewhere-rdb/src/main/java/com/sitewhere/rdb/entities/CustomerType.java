@@ -8,6 +8,8 @@
 package com.sitewhere.rdb.entities;
 
 import com.sitewhere.spi.customer.ICustomerType;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -28,7 +30,8 @@ public class CustomerType implements ICustomerType {
     private String description;
 
     /** List of contained area type ids */
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<UUID> containedCustomerTypeIds = new ArrayList<>();
 
     /** Background color */
@@ -61,7 +64,8 @@ public class CustomerType implements ICustomerType {
     /** Username that updated entity */
     private String updatedBy;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     @CollectionTable(name="customer_type_metadata")
     @MapKeyColumn(name="propKey")
     @Column(name="propValue")

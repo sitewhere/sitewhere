@@ -17,7 +17,7 @@
 	<!-- Device Management Configuration -->
 	<dm:device-management>
 
-		<!-- Use global MongoDB tenant configuration -->
+		<!-- Use global RDB tenant configuration -->
 		<ds:device-management-datastore>
 			<ds:rdb-datastore-reference
 				id="tenant" />

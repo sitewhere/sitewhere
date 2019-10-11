@@ -10,6 +10,8 @@ package com.sitewhere.rdb.entities;
 
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -66,7 +68,8 @@ public class DeviceAssignment implements IDeviceAssignment {
     /** Username that updated entity */
     private String updatedBy;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     @CollectionTable(name="device_assignment_metadata")
     @MapKeyColumn(name="propKey")
     @Column(name="propValue")

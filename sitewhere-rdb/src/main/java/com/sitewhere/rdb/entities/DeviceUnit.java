@@ -9,6 +9,8 @@ package com.sitewhere.rdb.entities;
 
 import com.sitewhere.spi.device.element.IDeviceSlot;
 import com.sitewhere.spi.device.element.IDeviceUnit;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -30,10 +32,12 @@ public class DeviceUnit implements IDeviceUnit, Serializable {
     /** Util path */
     private String path;
 
-    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.LAZY)
+    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<DeviceSlot> deviceSlots = new ArrayList<>();
 
-    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.LAZY)
+    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<DeviceUnit> deviceUnits = new ArrayList<>();
 
     @Override

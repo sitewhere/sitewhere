@@ -8,6 +8,8 @@
 package com.sitewhere.rdb.entities;
 
 import com.sitewhere.spi.customer.ICustomer;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -65,7 +67,8 @@ public class Customer implements ICustomer {
     /** Username that updated entity */
     private String updatedBy;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     @CollectionTable(name="customer_metadata")
     @MapKeyColumn(name="propKey")
     @Column(name="propValue")

@@ -10,6 +10,8 @@ package com.sitewhere.rdb.entities;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.*;
@@ -41,7 +43,7 @@ public class Device implements IDevice {
     private UUID parentDeviceId;
 
     /** Mappings of {@link IDeviceElementSchema} paths to hardware ids */
-    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.LAZY)
+    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.EAGER)
     private List<DeviceElementMapping> deviceElementMappings = new ArrayList<>();
 
     /** Comments */
@@ -65,10 +67,12 @@ public class Device implements IDevice {
     /** Username that updated entity */
     private String updatedBy;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<UUID> activeDeviceAssignmentIds = new ArrayList<>();
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     @CollectionTable(name="device_metadata")
     @MapKeyColumn(name="propKey")
     @Column(name="propValue")

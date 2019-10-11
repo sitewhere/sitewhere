@@ -9,6 +9,8 @@ package com.sitewhere.rdb.entities;
 
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -37,7 +39,8 @@ public class DeviceCommand implements IDeviceCommand {
     private String description;
 
     /** Parameter list */
-    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.LAZY)
+    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<CommandParameter> parameterList = new ArrayList<>();
 
     /** Unique token */
@@ -55,7 +58,8 @@ public class DeviceCommand implements IDeviceCommand {
     /** Username that updated entity */
     private String updatedBy;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     @CollectionTable(name="device_command_metadata")
     @MapKeyColumn(name="propKey")
     @Column(name="propValue")

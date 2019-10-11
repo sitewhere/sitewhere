@@ -8,6 +8,8 @@
 package com.sitewhere.rdb.entities;
 
 import com.sitewhere.spi.area.IAreaType;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.*;
@@ -27,7 +29,8 @@ public class AreaType implements IAreaType {
     private String description;
 
     /** List of contained area type ids */
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<UUID> containedAreaTypeIds = new ArrayList<>();
 
     /** Background color */
@@ -60,7 +63,8 @@ public class AreaType implements IAreaType {
     /** Username that updated entity */
     private String updatedBy;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     @CollectionTable(name="area_type_metadata")
     @MapKeyColumn(name="propKey")
     @Column(name="propValue")

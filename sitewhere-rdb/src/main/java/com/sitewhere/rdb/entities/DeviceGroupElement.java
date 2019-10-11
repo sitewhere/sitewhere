@@ -8,6 +8,8 @@
 package com.sitewhere.rdb.entities;
 
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -34,7 +36,8 @@ public class DeviceGroupElement implements IDeviceGroupElement {
     private UUID nestedGroupId;
 
     /** List of roles for the element */
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<String> roles = new ArrayList<String>();
 
     @Override

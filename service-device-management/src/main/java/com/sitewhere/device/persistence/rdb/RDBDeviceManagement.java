@@ -14,6 +14,7 @@ import com.sitewhere.device.persistence.DeviceManagementPersistence;
 import com.sitewhere.device.persistence.TreeBuilder;
 import com.sitewhere.rdb.DbClient;
 import com.sitewhere.rdb.RDBTenantComponent;
+import com.sitewhere.rdb.multitenancy.DvdRentalTenantContext;
 import com.sitewhere.rest.model.area.Area;
 import com.sitewhere.rest.model.area.AreaType;
 import com.sitewhere.rest.model.area.Zone;
@@ -1622,6 +1623,8 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
 
     @Override
     public DeviceManagementRDBClient getRDBClient() throws SiteWhereException {
+        String tenantId = this.getTenantEngine().getTenant().getId().toString();
+        DvdRentalTenantContext.setTenantId(tenantId);
         return dbClient;
     }
 }

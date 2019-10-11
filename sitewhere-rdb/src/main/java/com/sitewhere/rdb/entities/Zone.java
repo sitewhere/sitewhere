@@ -9,6 +9,8 @@ package com.sitewhere.rdb.entities;
 
 import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.common.ILocation;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.*;
@@ -28,7 +30,8 @@ public class Zone implements IZone {
     private String name;
 
     /** Zone bounds */
-    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.LAZY)
+    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<Location> bounds = new ArrayList<Location>();
 
     /** Border color */
@@ -55,7 +58,8 @@ public class Zone implements IZone {
     /** Username that updated entity */
     private String updatedBy;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     @CollectionTable(name="zone_metadata")
     @MapKeyColumn(name="propKey")
     @Column(name="propValue")
