@@ -24,6 +24,9 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.syncope.client.lib.SyncopeClient;
 import org.apache.syncope.client.lib.SyncopeClientFactoryBean;
 import org.apache.syncope.common.lib.SyncopeClientException;
+import org.apache.syncope.common.lib.patch.AttrPatch;
+import org.apache.syncope.common.lib.patch.PasswordPatch;
+import org.apache.syncope.common.lib.patch.UserPatch;
 import org.apache.syncope.common.lib.to.AnyTypeClassTO;
 import org.apache.syncope.common.lib.to.ApplicationTO;
 import org.apache.syncope.common.lib.to.AttrTO;
@@ -309,7 +312,37 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
     @Override
     public IUser updateUser(String username, IUserCreateRequest request, boolean encodePassword)
 	    throws SiteWhereException {
-	throw new RuntimeException("Not implemented.");
+	UserTO user = getUserService().read(username);
+	if (user == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR);
+	}
+	User swuser = User.copy(convertUser(user));
+	UserManagementPersistenceLogic.userUpdateLogic(request, swuser, encodePassword);
+	UserPatch userPatch = new UserPatch();
+	userPatch.setKey(user.getKey());
+	if(request.getPassword()!=null){
+		userPatch.setPassword(new PasswordPatch.Builder().value(request.getPassword()).build());
+	}
+	if(request.getFirstName()!=null){
+		userPatch.getPlainAttrs().add(new AttrPatch.Builder().attrTO(createAttribute(ATTR_FIRST_NAME, request.getFirstName())).build());
+	}
+	if(request.getLastName()!=null){
+		userPatch.getPlainAttrs().add(new AttrPatch.Builder().attrTO(createAttribute(ATTR_LAST_NAME, request.getLastName())).build());
+
+	}
+	userPatch.getPlainAttrs().add(new AttrPatch.Builder().attrTO(createAttribute(ATTR_JSON,
+			Base64.encodeBase64String(MarshalUtils.marshalJsonAsString(swuser).getBytes()))).build());
+
+	swuser.getAuthorities().forEach(auth -> {
+		user.getPrivileges().add(auth);
+	});
+
+	try {
+		getUserService().update(userPatch);
+	} catch (Throwable t) {
+		throw new SiteWhereException("Unable to update user.", t);
+	}
+	return swuser;
     }
 
     /*
