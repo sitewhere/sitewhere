@@ -14,8 +14,6 @@ import com.sitewhere.microservice.kafka.KafkaTopicNaming;
 import com.sitewhere.microservice.metrics.MetricsServer;
 import com.sitewhere.microservice.security.SystemUser;
 import com.sitewhere.microservice.security.TokenManagement;
-import com.sitewhere.microservice.zookeeper.ZookeeperManager;
-import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.microservice.metrics.IMetricsServer;
 import com.sitewhere.spi.microservice.security.ISystemUser;
@@ -23,11 +21,6 @@ import com.sitewhere.spi.microservice.security.ITokenManagement;
 
 @Configuration
 public class MicroserviceConfiguration {
-
-    @Bean
-    public IZookeeperManager zookeeperManager() {
-	return new ZookeeperManager();
-    }
 
     @Bean
     public IMetricsServer metricsServer() {

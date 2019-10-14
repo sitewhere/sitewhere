@@ -8,22 +8,15 @@
 package com.sitewhere.microservice.scripting;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.zookeeper.KeeperException.NoNodeException;
-
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.core.Base58;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
-import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
 import com.sitewhere.spi.microservice.scripting.IScriptCreateRequest;
 import com.sitewhere.spi.microservice.scripting.IScriptManagement;
 import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
@@ -86,29 +79,30 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
     @Override
     public List<IScriptMetadata> getScriptMetadataList(IFunctionIdentifier identifier, UUID tenantId)
 	    throws SiteWhereException {
-	try {
-	    List<String> children = getZookeeperManager().getCurator().getChildren()
-		    .forPath(getScriptMetadataZkPath(identifier, tenantId));
-	    List<IScriptMetadata> result = new ArrayList<>();
-	    for (String child : children) {
-		if (child.endsWith(METADATA_SUFFIX)) {
-		    result.add(getScriptMetadata(identifier, tenantId,
-			    child.substring(0, child.indexOf(METADATA_SUFFIX))));
-		}
-	    }
-	    result.sort(new Comparator<IScriptMetadata>() {
-
-		@Override
-		public int compare(IScriptMetadata o1, IScriptMetadata o2) {
-		    return o1.getName().compareTo(o2.getName());
-		}
-	    });
-	    return result;
-	} catch (NoNodeException e) {
-	    return new ArrayList<>();
-	} catch (Exception e) {
-	    throw new SiteWhereException("Unable to retrieve script metadata list.", e);
-	}
+	// try {
+	// List<String> children = getZookeeperManager().getCurator().getChildren()
+	// .forPath(getScriptMetadataZkPath(identifier, tenantId));
+	// List<IScriptMetadata> result = new ArrayList<>();
+	// for (String child : children) {
+	// if (child.endsWith(METADATA_SUFFIX)) {
+	// result.add(getScriptMetadata(identifier, tenantId,
+	// child.substring(0, child.indexOf(METADATA_SUFFIX))));
+	// }
+	// }
+	// result.sort(new Comparator<IScriptMetadata>() {
+	//
+	// @Override
+	// public int compare(IScriptMetadata o1, IScriptMetadata o2) {
+	// return o1.getName().compareTo(o2.getName());
+	// }
+	// });
+	// return result;
+	// } catch (NoNodeException e) {
+	// return new ArrayList<>();
+	// } catch (Exception e) {
+	// throw new SiteWhereException("Unable to retrieve script metadata list.", e);
+	// }
+	return null;
     }
 
     /*
@@ -120,15 +114,17 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
     @Override
     public IScriptMetadata getScriptMetadata(IFunctionIdentifier identifier, UUID tenantId, String scriptId)
 	    throws SiteWhereException {
-	try {
-	    String path = getScriptMetadataZkPath(identifier, tenantId) + "/" + scriptId + METADATA_SUFFIX;
-	    byte[] content = getZookeeperManager().getCurator().getData().forPath(path);
-	    return MarshalUtils.unmarshalJson(content, ScriptMetadata.class);
-	} catch (NoNodeException e) {
-	    return null;
-	} catch (Exception e) {
-	    throw new SiteWhereException("Unable to retrieve script metadata.", e);
-	}
+	// try {
+	// String path = getScriptMetadataZkPath(identifier, tenantId) + "/" + scriptId
+	// + METADATA_SUFFIX;
+	// byte[] content = getZookeeperManager().getCurator().getData().forPath(path);
+	// return MarshalUtils.unmarshalJson(content, ScriptMetadata.class);
+	// } catch (NoNodeException e) {
+	// return null;
+	// } catch (Exception e) {
+	// throw new SiteWhereException("Unable to retrieve script metadata.", e);
+	// }
+	return null;
     }
 
     /*
@@ -164,14 +160,17 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
     @Override
     public byte[] getScriptContent(IFunctionIdentifier identifier, UUID tenantId, String scriptId, String versionId)
 	    throws SiteWhereException {
-	IScriptMetadata meta = assureScriptMetadata(identifier, tenantId, scriptId);
-	IScriptVersion version = assureScriptVersion(meta, versionId);
-	String contentPath = getScriptMetadataZkPath(identifier, tenantId) + "/" + getVersionContentPath(meta, version);
-	try {
-	    return getZookeeperManager().getCurator().getData().forPath(contentPath);
-	} catch (Exception e) {
-	    throw new SiteWhereException("Unable to read script content for '" + versionId + "'.");
-	}
+	// IScriptMetadata meta = assureScriptMetadata(identifier, tenantId, scriptId);
+	// IScriptVersion version = assureScriptVersion(meta, versionId);
+	// String contentPath = getScriptMetadataZkPath(identifier, tenantId) + "/" +
+	// getVersionContentPath(meta, version);
+	// try {
+	// return getZookeeperManager().getCurator().getData().forPath(contentPath);
+	// } catch (Exception e) {
+	// throw new SiteWhereException("Unable to read script content for '" +
+	// versionId + "'.");
+	// }
+	return null;
     }
 
     /*
@@ -203,37 +202,43 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
     @Override
     public IScriptVersion cloneScript(IFunctionIdentifier identifier, UUID tenantId, String scriptId, String versionId,
 	    String comment) throws SiteWhereException {
-	IScriptMetadata meta = assureScriptMetadata(identifier, tenantId, scriptId);
-	assureScriptVersion(meta, versionId);
-	ScriptVersion created = new ScriptVersion();
-	created.setVersionId(generateUniqueId());
-	created.setComment(comment);
-	created.setCreatedDate(new Date());
-	meta.getVersions().add(created);
-
-	try {
-	    // Save updated metadata.
-	    String metaPath = getScriptMetadataZkPath(identifier, tenantId) + "/" + getMetadataFilePath(meta);
-	    byte[] metaContent = MarshalUtils.marshalJson(meta);
-	    if (getZookeeperManager().getCurator().checkExists().forPath(metaPath) == null) {
-		getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(metaPath, metaContent);
-	    } else {
-		getZookeeperManager().getCurator().setData().forPath(metaPath, metaContent);
-	    }
-
-	    // Save new version.
-	    String contentPath = getScriptMetadataZkPath(identifier, tenantId) + "/"
-		    + getVersionContentPath(meta, created);
-	    byte[] content = getScriptContent(identifier, tenantId, scriptId, versionId);
-	    if (getZookeeperManager().getCurator().checkExists().forPath(contentPath) == null) {
-		getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(contentPath, content);
-	    } else {
-		getZookeeperManager().getCurator().setData().forPath(contentPath, content);
-	    }
-	    return created;
-	} catch (Exception e) {
-	    throw new SiteWhereException("Unable to clone script.", e);
-	}
+	// IScriptMetadata meta = assureScriptMetadata(identifier, tenantId, scriptId);
+	// assureScriptVersion(meta, versionId);
+	// ScriptVersion created = new ScriptVersion();
+	// created.setVersionId(generateUniqueId());
+	// created.setComment(comment);
+	// created.setCreatedDate(new Date());
+	// meta.getVersions().add(created);
+	//
+	// try {
+	// // Save updated metadata.
+	// String metaPath = getScriptMetadataZkPath(identifier, tenantId) + "/" +
+	// getMetadataFilePath(meta);
+	// byte[] metaContent = MarshalUtils.marshalJson(meta);
+	// if (getZookeeperManager().getCurator().checkExists().forPath(metaPath) ==
+	// null) {
+	// getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(metaPath,
+	// metaContent);
+	// } else {
+	// getZookeeperManager().getCurator().setData().forPath(metaPath, metaContent);
+	// }
+	//
+	// // Save new version.
+	// String contentPath = getScriptMetadataZkPath(identifier, tenantId) + "/"
+	// + getVersionContentPath(meta, created);
+	// byte[] content = getScriptContent(identifier, tenantId, scriptId, versionId);
+	// if (getZookeeperManager().getCurator().checkExists().forPath(contentPath) ==
+	// null) {
+	// getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(contentPath,
+	// content);
+	// } else {
+	// getZookeeperManager().getCurator().setData().forPath(contentPath, content);
+	// }
+	// return created;
+	// } catch (Exception e) {
+	// throw new SiteWhereException("Unable to clone script.", e);
+	// }
+	return null;
     }
 
     /*
@@ -245,36 +250,42 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
     @Override
     public IScriptMetadata activateScript(IFunctionIdentifier identifier, UUID tenantId, String scriptId,
 	    String versionId) throws SiteWhereException {
-	IScriptMetadata meta = assureScriptMetadata(identifier, tenantId, scriptId);
-	assureScriptVersion(meta, versionId);
-
-	try {
-	    // Update active version id if changed.
-	    if (!meta.getActiveVersion().equals(versionId)) {
-		((ScriptMetadata) meta).setActiveVersion(versionId);
-		String metaPath = getScriptMetadataZkPath(identifier, tenantId) + "/" + getMetadataFilePath(meta);
-		byte[] metaContent = MarshalUtils.marshalJson(meta);
-		if (getZookeeperManager().getCurator().checkExists().forPath(metaPath) == null) {
-		    getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(metaPath,
-			    metaContent);
-		} else {
-		    getZookeeperManager().getCurator().setData().forPath(metaPath, metaContent);
-		}
-	    }
-
-	    // Create content file.
-	    String contentPath = getScriptContentZkPath(identifier, tenantId) + "/" + meta.getId() + "."
-		    + meta.getType();
-	    byte[] content = getScriptContent(identifier, tenantId, scriptId, versionId);
-	    if (getZookeeperManager().getCurator().checkExists().forPath(contentPath) == null) {
-		getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(contentPath, content);
-	    } else {
-		getZookeeperManager().getCurator().setData().forPath(contentPath, content);
-	    }
-	    return meta;
-	} catch (Exception e) {
-	    throw new SiteWhereException("Unable to activate script version.", e);
-	}
+	// IScriptMetadata meta = assureScriptMetadata(identifier, tenantId, scriptId);
+	// assureScriptVersion(meta, versionId);
+	//
+	// try {
+	// // Update active version id if changed.
+	// if (!meta.getActiveVersion().equals(versionId)) {
+	// ((ScriptMetadata) meta).setActiveVersion(versionId);
+	// String metaPath = getScriptMetadataZkPath(identifier, tenantId) + "/" +
+	// getMetadataFilePath(meta);
+	// byte[] metaContent = MarshalUtils.marshalJson(meta);
+	// if (getZookeeperManager().getCurator().checkExists().forPath(metaPath) ==
+	// null) {
+	// getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(metaPath,
+	// metaContent);
+	// } else {
+	// getZookeeperManager().getCurator().setData().forPath(metaPath, metaContent);
+	// }
+	// }
+	//
+	// // Create content file.
+	// String contentPath = getScriptContentZkPath(identifier, tenantId) + "/" +
+	// meta.getId() + "."
+	// + meta.getType();
+	// byte[] content = getScriptContent(identifier, tenantId, scriptId, versionId);
+	// if (getZookeeperManager().getCurator().checkExists().forPath(contentPath) ==
+	// null) {
+	// getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(contentPath,
+	// content);
+	// } else {
+	// getZookeeperManager().getCurator().setData().forPath(contentPath, content);
+	// }
+	// return meta;
+	// } catch (Exception e) {
+	// throw new SiteWhereException("Unable to activate script version.", e);
+	// }
+	return null;
     }
 
     /*
@@ -286,31 +297,39 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
     @Override
     public IScriptMetadata deleteScript(IFunctionIdentifier identifier, UUID tenantId, String scriptId)
 	    throws SiteWhereException {
-	IScriptMetadata meta = assureScriptMetadata(identifier, tenantId, scriptId);
-
-	try {
-	    // Delete metadata.
-	    String metaPath = getScriptMetadataZkPath(identifier, tenantId) + "/" + getMetadataFilePath(meta);
-	    if (getZookeeperManager().getCurator().checkExists().forPath(metaPath) != null) {
-		getZookeeperManager().getCurator().delete().forPath(metaPath);
-	    }
-
-	    // Delete all versions.
-	    String versionsPath = getScriptMetadataZkPath(identifier, tenantId) + "/" + meta.getId();
-	    if (getZookeeperManager().getCurator().checkExists().forPath(versionsPath) != null) {
-		getZookeeperManager().getCurator().delete().deletingChildrenIfNeeded().forPath(versionsPath);
-	    }
-
-	    // Delete content.
-	    String contentPath = getScriptContentZkPath(identifier, tenantId) + "/" + meta.getId() + "."
-		    + meta.getType();
-	    if (getZookeeperManager().getCurator().checkExists().forPath(contentPath) != null) {
-		getZookeeperManager().getCurator().delete().forPath(contentPath);
-	    }
-	    return meta;
-	} catch (Exception e) {
-	    throw new SiteWhereException("Unable to delete script.", e);
-	}
+	// IScriptMetadata meta = assureScriptMetadata(identifier, tenantId, scriptId);
+	//
+	// try {
+	// // Delete metadata.
+	// String metaPath = getScriptMetadataZkPath(identifier, tenantId) + "/" +
+	// getMetadataFilePath(meta);
+	// if (getZookeeperManager().getCurator().checkExists().forPath(metaPath) !=
+	// null) {
+	// getZookeeperManager().getCurator().delete().forPath(metaPath);
+	// }
+	//
+	// // Delete all versions.
+	// String versionsPath = getScriptMetadataZkPath(identifier, tenantId) + "/" +
+	// meta.getId();
+	// if (getZookeeperManager().getCurator().checkExists().forPath(versionsPath) !=
+	// null) {
+	// getZookeeperManager().getCurator().delete().deletingChildrenIfNeeded().forPath(versionsPath);
+	// }
+	//
+	// // Delete content.
+	// String contentPath = getScriptContentZkPath(identifier, tenantId) + "/" +
+	// meta.getId() + "."
+	// + meta.getType();
+	// if (getZookeeperManager().getCurator().checkExists().forPath(contentPath) !=
+	// null) {
+	// getZookeeperManager().getCurator().delete().forPath(contentPath);
+	// }
+	// return meta;
+	// } catch (Exception e) {
+	// throw new SiteWhereException("Unable to delete script.", e);
+	// }
+	//
+	return null;
     }
 
     /**
@@ -359,28 +378,33 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
      */
     protected void store(IFunctionIdentifier identifier, UUID tenantId, IScriptMetadata meta, IScriptVersion version,
 	    String contentStr) throws SiteWhereException {
-	try {
-	    // Store metadata.
-	    String metaPath = getScriptMetadataZkPath(identifier, tenantId) + "/" + getMetadataFilePath(meta);
-	    byte[] metaContent = MarshalUtils.marshalJson(meta);
-	    if (getZookeeperManager().getCurator().checkExists().forPath(metaPath) == null) {
-		getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(metaPath, metaContent);
-	    } else {
-		getZookeeperManager().getCurator().setData().forPath(metaPath, metaContent);
-	    }
-
-	    // Store version content.
-	    String contentPath = getScriptMetadataZkPath(identifier, tenantId) + "/"
-		    + getVersionContentPath(meta, version);
-	    byte[] content = Base64.getDecoder().decode(contentStr);
-	    if (getZookeeperManager().getCurator().checkExists().forPath(contentPath) == null) {
-		getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(contentPath, content);
-	    } else {
-		getZookeeperManager().getCurator().setData().forPath(contentPath, content);
-	    }
-	} catch (Exception e) {
-	    throw new SiteWhereException("Unable to store script metadata.", e);
-	}
+	// try {
+	// // Store metadata.
+	// String metaPath = getScriptMetadataZkPath(identifier, tenantId) + "/" +
+	// getMetadataFilePath(meta);
+	// byte[] metaContent = MarshalUtils.marshalJson(meta);
+	// if (getZookeeperManager().getCurator().checkExists().forPath(metaPath) ==
+	// null) {
+	// getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(metaPath,
+	// metaContent);
+	// } else {
+	// getZookeeperManager().getCurator().setData().forPath(metaPath, metaContent);
+	// }
+	//
+	// // Store version content.
+	// String contentPath = getScriptMetadataZkPath(identifier, tenantId) + "/"
+	// + getVersionContentPath(meta, version);
+	// byte[] content = Base64.getDecoder().decode(contentStr);
+	// if (getZookeeperManager().getCurator().checkExists().forPath(contentPath) ==
+	// null) {
+	// getZookeeperManager().getCurator().create().creatingParentsIfNeeded().forPath(contentPath,
+	// content);
+	// } else {
+	// getZookeeperManager().getCurator().setData().forPath(contentPath, content);
+	// }
+	// } catch (Exception e) {
+	// throw new SiteWhereException("Unable to store script metadata.", e);
+	// }
     }
 
     /**
@@ -455,9 +479,5 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
 	    }
 	}
 	return version;
-    }
-
-    protected IZookeeperManager getZookeeperManager() {
-	return getMicroservice().getZookeeperManager();
     }
 }

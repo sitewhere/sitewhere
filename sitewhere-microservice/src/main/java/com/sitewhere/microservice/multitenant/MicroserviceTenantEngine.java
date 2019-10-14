@@ -7,26 +7,15 @@
  */
 package com.sitewhere.microservice.multitenant;
 
-import java.time.Duration;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
-import org.apache.curator.framework.CuratorFramework;
 import org.springframework.context.ApplicationContext;
 
-import com.evanlennick.retry4j.CallExecutorBuilder;
-import com.evanlennick.retry4j.Status;
-import com.evanlennick.retry4j.config.RetryConfig;
-import com.evanlennick.retry4j.config.RetryConfigBuilder;
-import com.evanlennick.retry4j.listener.RetryListener;
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.scripting.TenantEngineScriptManager;
 import com.sitewhere.microservice.scripting.TenantEngineScriptSynchronizer;
 import com.sitewhere.rest.model.microservice.state.TenantEngineState;
-import com.sitewhere.rest.model.tenant.DatasetTemplate;
-import com.sitewhere.rest.model.tenant.TenantTemplate;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
@@ -142,17 +131,20 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
      */
     @Override
     public byte[] getModuleConfiguration() throws SiteWhereException {
-	try {
-	    CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
-	    if (curator.checkExists().forPath(getModuleConfigurationPath()) == null) {
-		throw new SiteWhereException("Module configuration '" + getModuleConfigurationPath()
-			+ "' does not exist for '" + getTenant().getName() + "'.");
-	    }
-	    byte[] data = curator.getData().forPath(getModuleConfigurationPath());
-	    return data;
-	} catch (Exception e) {
-	    throw new SiteWhereException("Unable to load module configuration.", e);
-	}
+	// try {
+	// CuratorFramework curator =
+	// getMicroservice().getZookeeperManager().getCurator();
+	// if (curator.checkExists().forPath(getModuleConfigurationPath()) == null) {
+	// throw new SiteWhereException("Module configuration '" +
+	// getModuleConfigurationPath()
+	// + "' does not exist for '" + getTenant().getName() + "'.");
+	// }
+	// byte[] data = curator.getData().forPath(getModuleConfigurationPath());
+	// return data;
+	// } catch (Exception e) {
+	// throw new SiteWhereException("Unable to load module configuration.", e);
+	// }
+	return null;
     }
 
     /*
@@ -161,16 +153,17 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
      */
     @Override
     public void updateModuleConfiguration(byte[] content) throws SiteWhereException {
-	try {
-	    CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
-	    if (curator.checkExists().forPath(getModuleConfigurationPath()) == null) {
-		curator.create().forPath(getModuleConfigurationPath(), content);
-	    } else {
-		curator.setData().forPath(getModuleConfigurationPath(), content);
-	    }
-	} catch (Exception e) {
-	    throw new SiteWhereException("Unable to update module configuration.", e);
-	}
+	// try {
+	// CuratorFramework curator =
+	// getMicroservice().getZookeeperManager().getCurator();
+	// if (curator.checkExists().forPath(getModuleConfigurationPath()) == null) {
+	// curator.create().forPath(getModuleConfigurationPath(), content);
+	// } else {
+	// curator.setData().forPath(getModuleConfigurationPath(), content);
+	// }
+	// } catch (Exception e) {
+	// throw new SiteWhereException("Unable to update module configuration.", e);
+	// }
     }
 
     /**
@@ -478,14 +471,17 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
      */
     @Override
     public ITenantTemplate getTenantTemplate() throws SiteWhereException {
-	String templatePath = getTenantConfigurationPath() + "/" + TENANT_TEMPLATE_PATH;
-	CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
-	try {
-	    byte[] data = curator.getData().forPath(templatePath);
-	    return MarshalUtils.unmarshalJson(data, TenantTemplate.class);
-	} catch (Exception e) {
-	    throw new SiteWhereException("Unable to load tenant template from Zk.", e);
-	}
+	// String templatePath = getTenantConfigurationPath() + "/" +
+	// TENANT_TEMPLATE_PATH;
+	// CuratorFramework curator =
+	// getMicroservice().getZookeeperManager().getCurator();
+	// try {
+	// byte[] data = curator.getData().forPath(templatePath);
+	// return MarshalUtils.unmarshalJson(data, TenantTemplate.class);
+	// } catch (Exception e) {
+	// throw new SiteWhereException("Unable to load tenant template from Zk.", e);
+	// }
+	return null;
     }
 
     /*
@@ -494,14 +490,17 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
      */
     @Override
     public IDatasetTemplate getDatasetTemplate() throws SiteWhereException {
-	String templatePath = getTenantConfigurationPath() + "/" + DATASET_TEMPLATE_PATH;
-	CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
-	try {
-	    byte[] data = curator.getData().forPath(templatePath);
-	    return MarshalUtils.unmarshalJson(data, DatasetTemplate.class);
-	} catch (Exception e) {
-	    throw new SiteWhereException("Unable to load tenant template from Zk.", e);
-	}
+	// String templatePath = getTenantConfigurationPath() + "/" +
+	// DATASET_TEMPLATE_PATH;
+	// CuratorFramework curator =
+	// getMicroservice().getZookeeperManager().getCurator();
+	// try {
+	// byte[] data = curator.getData().forPath(templatePath);
+	// return MarshalUtils.unmarshalJson(data, DatasetTemplate.class);
+	// } catch (Exception e) {
+	// throw new SiteWhereException("Unable to load tenant template from Zk.", e);
+	// }
+	return null;
     }
 
     /*
@@ -519,37 +518,45 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
      * IFunctionIdentifier)
      */
     @Override
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void waitForTenantDatasetBootstrapped(IFunctionIdentifier identifier) throws SiteWhereException {
-	getLogger().info(String.format("Verifying that module '%s' has been bootstrapped.", identifier.getShortName()));
-	String path = ((IConfigurableMicroservice<?>) getMicroservice()).getInstanceTenantStatePath(getTenant().getId())
-		+ "/" + identifier.getPath() + "/" + MicroserviceTenantEngine.DATASET_BOOTSTRAPPED_NAME;
-	Callable<Boolean> bootstrapCheck = () -> {
-	    return getMicroservice().getZookeeperManager().getCurator().checkExists().forPath(path) == null ? false
-		    : true;
-	};
-	RetryConfig config = new RetryConfigBuilder().retryOnReturnValue(Boolean.FALSE).retryIndefinitely()
-		.withDelayBetweenTries(Duration.ofSeconds(2)).withRandomBackoff().build();
-	RetryListener perFail = new RetryListener<Boolean>() {
-
-	    @Override
-	    public void onEvent(Status<Boolean> status) {
-		getLogger().info(String.format(
-			"Unable to locate bootstrap marker for '%s' on attempt %d (total wait so far %dms). Retrying after fallback...",
-			identifier.getShortName(), status.getTotalTries(),
-			status.getTotalElapsedDuration().toMillis()));
-	    }
-	};
-	RetryListener success = new RetryListener<Boolean>() {
-
-	    @Override
-	    public void onEvent(Status<Boolean> status) {
-		getLogger().info(String.format("Located bootstrap marker for '%s' in %dms.", identifier.getShortName(),
-			status.getTotalElapsedDuration().toMillis()));
-	    }
-	};
-	new CallExecutorBuilder().config(config).afterFailedTryListener(perFail).onSuccessListener(success).build()
-		.execute(bootstrapCheck);
+	// getLogger().info(String.format("Verifying that module '%s' has been
+	// bootstrapped.", identifier.getShortName()));
+	// String path = ((IConfigurableMicroservice<?>)
+	// getMicroservice()).getInstanceTenantStatePath(getTenant().getId())
+	// + "/" + identifier.getPath() + "/" +
+	// MicroserviceTenantEngine.DATASET_BOOTSTRAPPED_NAME;
+	// Callable<Boolean> bootstrapCheck = () -> {
+	// return
+	// getMicroservice().getZookeeperManager().getCurator().checkExists().forPath(path)
+	// == null ? false
+	// : true;
+	// };
+	// RetryConfig config = new
+	// RetryConfigBuilder().retryOnReturnValue(Boolean.FALSE).retryIndefinitely()
+	// .withDelayBetweenTries(Duration.ofSeconds(2)).withRandomBackoff().build();
+	// RetryListener perFail = new RetryListener<Boolean>() {
+	//
+	// @Override
+	// public void onEvent(Status<Boolean> status) {
+	// getLogger().info(String.format(
+	// "Unable to locate bootstrap marker for '%s' on attempt %d (total wait so far
+	// %dms). Retrying after fallback...",
+	// identifier.getShortName(), status.getTotalTries(),
+	// status.getTotalElapsedDuration().toMillis()));
+	// }
+	// };
+	// RetryListener success = new RetryListener<Boolean>() {
+	//
+	// @Override
+	// public void onEvent(Status<Boolean> status) {
+	// getLogger().info(String.format("Located bootstrap marker for '%s' in %dms.",
+	// identifier.getShortName(),
+	// status.getTotalElapsedDuration().toMillis()));
+	// }
+	// };
+	// new
+	// CallExecutorBuilder().config(config).afterFailedTryListener(perFail).onSuccessListener(success).build()
+	// .execute(bootstrapCheck);
     }
 
     /*

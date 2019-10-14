@@ -9,8 +9,6 @@ package com.sitewhere.instance.spi.tenant.templates;
 
 import java.util.List;
 
-import org.apache.curator.framework.CuratorFramework;
-
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
@@ -18,8 +16,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 /**
  * Manages the list of available dataset templates that can be used when
  * creating a new tenant.
- * 
- * @author Derek
  */
 public interface IDatasetTemplateManager extends ILifecycleComponent {
 
@@ -30,15 +26,4 @@ public interface IDatasetTemplateManager extends ILifecycleComponent {
      * @throws SiteWhereException
      */
     public List<IDatasetTemplate> getDatasetTemplates() throws SiteWhereException;
-
-    /**
-     * Copy template contents to the given Zk path (to bootstrap a tenant).
-     * 
-     * @param templateId
-     * @param curator
-     * @param tenantPath
-     * @throws SiteWhereException
-     */
-    public void copyTemplateContentsToZk(String templateId, CuratorFramework curator, String tenantPath)
-	    throws SiteWhereException;
 }

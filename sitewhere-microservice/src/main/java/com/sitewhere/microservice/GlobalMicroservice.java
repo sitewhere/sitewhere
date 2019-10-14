@@ -7,8 +7,6 @@
  */
 package com.sitewhere.microservice;
 
-import org.apache.curator.framework.CuratorFramework;
-
 import com.sitewhere.microservice.configuration.ConfigurableMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
@@ -157,16 +155,17 @@ public abstract class GlobalMicroservice<T extends IFunctionIdentifier> extends 
      */
     @Override
     public void updateConfiguration(byte[] content) throws SiteWhereException {
-	try {
-	    String configPath = getInstanceConfigurationPath() + "/" + getConfigurationPath();
-	    CuratorFramework curator = getZookeeperManager().getCurator();
-	    if (curator.checkExists().forPath(configPath) == null) {
-		curator.create().forPath(configPath, content);
-	    } else {
-		curator.setData().forPath(configPath, content);
-	    }
-	} catch (Exception e) {
-	    throw new SiteWhereException("Unable to update module configuration.", e);
-	}
+	// try {
+	// String configPath = getInstanceConfigurationPath() + "/" +
+	// getConfigurationPath();
+	// CuratorFramework curator = getZookeeperManager().getCurator();
+	// if (curator.checkExists().forPath(configPath) == null) {
+	// curator.create().forPath(configPath, content);
+	// } else {
+	// curator.setData().forPath(configPath, content);
+	// }
+	// } catch (Exception e) {
+	// throw new SiteWhereException("Unable to update module configuration.", e);
+	// }
     }
 }

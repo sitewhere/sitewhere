@@ -14,12 +14,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.curator.framework.CuratorFramework;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.instance.spi.templates.IInstanceTemplate;
 import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
-import com.sitewhere.microservice.zookeeper.ZkUtils;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -61,28 +59,6 @@ public class InstanceTemplateManager extends LifecycleComponent implements IInst
     @Override
     public Map<String, IInstanceTemplate> getInstanceTemplates() throws SiteWhereException {
 	return templates;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.instance.spi.templates.IInstanceTemplateManager#
-     * copyTemplateContentsToZk(java.lang.String,
-     * org.apache.curator.framework.CuratorFramework, java.lang.String)
-     */
-    @Override
-    public void copyTemplateContentsToZk(String templateId, CuratorFramework curator, String instancePath)
-	    throws SiteWhereException {
-	IInstanceTemplate template = getInstanceTemplates().get(templateId);
-	if (template == null) {
-	    throw new SiteWhereException("Instance template not found: " + templateId);
-	}
-	File root = getTemplatesRoot();
-	File templateFolder = new File(root, templateId);
-	if (!templateFolder.exists()) {
-	    throw new SiteWhereException("Template folder not found at '" + templateFolder.getAbsolutePath() + "'.");
-	}
-	ZkUtils.copyFolderRecursivelytoZk(curator, instancePath, templateFolder, templateFolder);
     }
 
     /**

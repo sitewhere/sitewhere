@@ -10,10 +10,8 @@ package com.sitewhere.microservice;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -21,11 +19,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.evanlennick.retry4j.CallExecutorBuilder;
-import com.evanlennick.retry4j.Status;
-import com.evanlennick.retry4j.config.RetryConfig;
-import com.evanlennick.retry4j.config.RetryConfigBuilder;
-import com.evanlennick.retry4j.listener.RetryListener;
 import com.sitewhere.Version;
 import com.sitewhere.grpc.client.tenant.CachedTenantManagement;
 import com.sitewhere.microservice.kafka.tenant.TenantManagementKafkaTriggers;
@@ -43,7 +36,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.IMicroserviceAnalytics;
-import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.configuration.model.IElementNode;
 import com.sitewhere.spi.microservice.configuration.model.IElementRole;
@@ -95,10 +87,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     /** Instance settings */
     @Autowired
     private IInstanceSettings instanceSettings;
-
-    /** Zookeeper manager */
-    @Autowired
-    private IZookeeperManager zookeeperManager;
 
     /** Metrics server */
     @Autowired
@@ -214,12 +202,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	// Start script template manager.
 	initialize.addStartStep(this, getScriptTemplateManager(), true);
 
-	// Initialize Zookeeper configuration management.
-	initialize.addInitializeStep(this, getZookeeperManager(), true);
-
-	// Start Zookeeper configuration management.
-	initialize.addStartStep(this, getZookeeperManager(), true);
-
 	// Initialize tenant management API.
 	initialize.addInitializeStep(this, getCachedTenantManagement(), true);
 
@@ -327,9 +309,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	// Tenant management API.
 	stop.addStopStep(this, getCachedTenantManagement());
 
-	// Terminate Zk manager.
-	stop.addStopStep(this, getZookeeperManager());
-
 	// Terminate script template manager.
 	stop.addStopStep(this, getScriptTemplateManager());
 
@@ -347,26 +326,28 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
      * waitForInstanceInitialization()
      */
     @Override
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void waitForInstanceInitialization() throws SiteWhereException {
-	getLogger().info("Verifying that instance has been bootstrapped...");
-	Callable<Boolean> bootstrapCheck = () -> {
-	    return getZookeeperManager().getCurator().checkExists()
-		    .forPath(getInstanceConfigBootstrappedMarker()) == null ? false : true;
-	};
-	RetryConfig config = new RetryConfigBuilder().retryOnReturnValue(Boolean.FALSE).retryIndefinitely()
-		.withDelayBetweenTries(Duration.ofSeconds(2)).withRandomBackoff().build();
-	RetryListener listener = new RetryListener<Boolean>() {
-
-	    @Override
-	    public void onEvent(Status<Boolean> status) {
-		getLogger().info(String.format(
-			"Unable to locate bootstrap marker on attempt %d (total wait so far %dms). Retrying after fallback...",
-			status.getTotalTries(), status.getTotalElapsedDuration().toMillis()));
-	    }
-	};
-	new CallExecutorBuilder().config(config).afterFailedTryListener(listener).build().execute(bootstrapCheck);
-	getLogger().info("Confirmed that instance was bootstrapped.");
+	// getLogger().info("Verifying that instance has been bootstrapped...");
+	// Callable<Boolean> bootstrapCheck = () -> {
+	// return getZookeeperManager().getCurator().checkExists()
+	// .forPath(getInstanceConfigBootstrappedMarker()) == null ? false : true;
+	// };
+	// RetryConfig config = new
+	// RetryConfigBuilder().retryOnReturnValue(Boolean.FALSE).retryIndefinitely()
+	// .withDelayBetweenTries(Duration.ofSeconds(2)).withRandomBackoff().build();
+	// RetryListener listener = new RetryListener<Boolean>() {
+	//
+	// @Override
+	// public void onEvent(Status<Boolean> status) {
+	// getLogger().info(String.format(
+	// "Unable to locate bootstrap marker on attempt %d (total wait so far %dms).
+	// Retrying after fallback...",
+	// status.getTotalTries(), status.getTotalElapsedDuration().toMillis()));
+	// }
+	// };
+	// new
+	// CallExecutorBuilder().config(config).afterFailedTryListener(listener).build().execute(bootstrapCheck);
+	// getLogger().info("Confirmed that instance was bootstrapped.");
     }
 
     /*
@@ -558,18 +539,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     public void setConfigurationModel(IConfigurationModel configurationModel) {
 	this.configurationModel = configurationModel;
-    }
-
-    /*
-     * @see com.sitewhere.microservice.spi.IMicroservice#getZookeeperManager()
-     */
-    @Override
-    public IZookeeperManager getZookeeperManager() {
-	return zookeeperManager;
-    }
-
-    public void setZookeeperManager(IZookeeperManager zookeeperManager) {
-	this.zookeeperManager = zookeeperManager;
     }
 
     /*

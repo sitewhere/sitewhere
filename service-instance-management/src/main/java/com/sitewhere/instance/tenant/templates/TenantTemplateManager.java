@@ -13,21 +13,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.curator.framework.CuratorFramework;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.instance.spi.tenant.templates.ITenantTemplateManager;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.microservice.scripting.ScriptCreateRequest;
-import com.sitewhere.microservice.zookeeper.ZkUtils;
 import com.sitewhere.rest.model.microservice.scripting.ScriptTemplate;
 import com.sitewhere.rest.model.tenant.TenantTemplate;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
@@ -48,9 +45,6 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
 
     /** Root folder for tenant templates */
     private static final String TENANT_TEMPLATES_ROOT = "/tenant/templates";
-
-    /** Folder that contains default content shared by all tenants */
-    private static final String DEFAULT_TENANT_CONTENT_FOLDER = "default";
 
     /** Folder that contains scripts that should be registered */
     private static final String TEMPLATE_SCRIPTS_FOLDER = "scripts";
@@ -117,72 +111,6 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
 	    }
 	});
 	return list;
-    }
-
-    /*
-     * @see com.sitewhere.tenant.spi.templates.ITenantTemplateManager#
-     * initializeTenantZkFromTemplateContents(org.apache.curator.framework.
-     * CuratorFramework, com.sitewhere.spi.tenant.ITenant)
-     */
-    @Override
-    public void initializeTenantZkFromTemplateContents(CuratorFramework curator, ITenant tenant)
-	    throws SiteWhereException {
-	// Resolve tenant template based on template id.
-	ITenantTemplate template = getTemplatesById().get(tenant.getTenantTemplateId());
-	if (template == null) {
-	    throw new SiteWhereException("Tenant template not found: " + tenant.getTenantTemplateId());
-	}
-
-	File root = new File(TENANT_TEMPLATES_ROOT);
-
-	// Copy default content and register default scripts.
-	addDefaultContent(curator, tenant, root);
-
-	// Copy tenant template configuration files and register scripts.
-	copyTemplateContent(curator, tenant, template, root);
-	addTemplateScripts(tenant, template, root);
-    }
-
-    /**
-     * Copy content from 'default' folder as baseline (also register any default
-     * scripts).
-     * 
-     * @param curator
-     * @param tenantPath
-     * @param root
-     * @throws SiteWhereException
-     */
-    protected void addDefaultContent(CuratorFramework curator, ITenant tenant, File root) throws SiteWhereException {
-	String tenantPath = getInstanceManagementMicroservice().getInstanceTenantConfigurationPath(tenant.getId());
-
-	// Copy default content shared by all tenants.
-	File defaultFolder = new File(root, DEFAULT_TENANT_CONTENT_FOLDER);
-	if (!defaultFolder.exists()) {
-	    throw new SiteWhereException("Default folder not found at '" + defaultFolder.getAbsolutePath() + "'.");
-	}
-	ZkUtils.copyFolderRecursivelytoZk(curator, tenantPath, defaultFolder, defaultFolder,
-		Collections.singletonList("scripts"));
-
-	// Add any default scripts.
-	addScriptsForFolder(tenant, defaultFolder);
-    }
-
-    /**
-     * Copy template content on top of baseline structure added from 'default'
-     * folder.
-     * 
-     * @param curator
-     * @param template
-     * @param tenantPath
-     * @param root
-     * @throws SiteWhereException
-     */
-    protected void copyTemplateContent(CuratorFramework curator, ITenant tenant, ITenantTemplate template, File root)
-	    throws SiteWhereException {
-	String tenantPath = getInstanceManagementMicroservice().getInstanceTenantConfigurationPath(tenant.getId());
-	File templateFolder = getTenantTemplateFolder(template, root);
-	ZkUtils.copyFolderRecursivelytoZk(curator, tenantPath, templateFolder, templateFolder,
-		Collections.singletonList("scripts"));
     }
 
     /**

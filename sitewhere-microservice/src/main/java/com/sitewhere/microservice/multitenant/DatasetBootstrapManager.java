@@ -12,17 +12,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.recipes.locks.InterProcessMutex;
-
-import com.sitewhere.server.lifecycle.LifecycleProgressContext;
-import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IDatasetBootstrapManager;
-import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
-import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
@@ -58,36 +50,42 @@ public class DatasetBootstrapManager extends TenantEngineLifecycleComponent impl
 
 	@Override
 	public void run() {
-	    try {
-		// Wait for any required datasets to bootstrap before starting.
-		IFunctionIdentifier[] required = getTenantEngine().getTenantBootstrapPrerequisites();
-		for (IFunctionIdentifier function : required) {
-		    getTenantEngine().waitForTenantDatasetBootstrapped(function);
-		}
-
-		// Lock the module and check whether tenant needs bootstrap.
-		getLogger().info("Getting lock for testing tenant engine bootstrap state for '"
-			+ getTenantEngine().getTenant().getName() + "'.");
-		CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
-		InterProcessMutex lock = new InterProcessMutex(curator, getTenantEngine().getModuleLockPath());
-		try {
-		    lock.acquire();
-		    tenantEngineBootsrapped.set(false);
-		    if (curator.checkExists().forPath(getTenantEngine().getTenantDatasetBootstrappedPath()) == null) {
-			getLogger().info("Tenant engine '" + getTenantEngine().getTenant().getName()
-				+ "' not bootstrapped. Bootstrapping...");
-			bootstrapTenantEngineDataset(getTenantEngine(), curator);
-		    } else {
-			getLogger().info("Tenant engine '" + getTenantEngine().getTenant().getName()
-				+ "' already bootstrapped.");
-		    }
-		    tenantEngineBootsrapped.set(true);
-		} finally {
-		    lock.release();
-		}
-	    } catch (Throwable e) {
-		getLogger().error("Exception bootstrapping tenant engine.", e);
-	    }
+	    // try {
+	    // // Wait for any required datasets to bootstrap before starting.
+	    // IFunctionIdentifier[] required =
+	    // getTenantEngine().getTenantBootstrapPrerequisites();
+	    // for (IFunctionIdentifier function : required) {
+	    // getTenantEngine().waitForTenantDatasetBootstrapped(function);
+	    // }
+	    //
+	    // // Lock the module and check whether tenant needs bootstrap.
+	    // getLogger().info("Getting lock for testing tenant engine bootstrap state for
+	    // '"
+	    // + getTenantEngine().getTenant().getName() + "'.");
+	    // CuratorFramework curator =
+	    // getMicroservice().getZookeeperManager().getCurator();
+	    // InterProcessMutex lock = new InterProcessMutex(curator,
+	    // getTenantEngine().getModuleLockPath());
+	    // try {
+	    // lock.acquire();
+	    // tenantEngineBootsrapped.set(false);
+	    // if
+	    // (curator.checkExists().forPath(getTenantEngine().getTenantDatasetBootstrappedPath())
+	    // == null) {
+	    // getLogger().info("Tenant engine '" + getTenantEngine().getTenant().getName()
+	    // + "' not bootstrapped. Bootstrapping...");
+	    // bootstrapTenantEngineDataset(getTenantEngine(), curator);
+	    // } else {
+	    // getLogger().info("Tenant engine '" + getTenantEngine().getTenant().getName()
+	    // + "' already bootstrapped.");
+	    // }
+	    // tenantEngineBootsrapped.set(true);
+	    // } finally {
+	    // lock.release();
+	    // }
+	    // } catch (Throwable e) {
+	    // getLogger().error("Exception bootstrapping tenant engine.", e);
+	    // }
 	}
 
 	/**
@@ -97,28 +95,31 @@ public class DatasetBootstrapManager extends TenantEngineLifecycleComponent impl
 	 * @param curator
 	 * @throws SiteWhereException
 	 */
-	protected void bootstrapTenantEngineDataset(IMicroserviceTenantEngine engine, CuratorFramework curator)
-		throws SiteWhereException {
-	    ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
-		    new LifecycleProgressContext(1, "Bootstrap tenant engine."), engine.getMicroservice());
-	    String tenantName = engine.getTenant().getName();
-	    long start = System.currentTimeMillis();
-
-	    // Run provisioning logic.
-	    getTenantEngine().lifecycleProvision(monitor);
-
-	    // Execute tenant bootstrap.
-	    IDatasetTemplate template = engine.getDatasetTemplate();
-	    engine.tenantBootstrap(template, monitor);
-
-	    try {
-		curator.create().forPath(engine.getTenantDatasetBootstrappedPath());
-		getLogger().info("Tenant engine for '" + tenantName + "' bootstrapped in "
-			+ (System.currentTimeMillis() - start) + "ms.");
-	    } catch (Exception e) {
-		getLogger().info("Error marking tenant engine '" + tenantName + "' as bootstrapped.");
-	    }
-	}
+	// protected void bootstrapTenantEngineDataset(IMicroserviceTenantEngine engine,
+	// CuratorFramework curator)
+	// throws SiteWhereException {
+	// ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
+	// new LifecycleProgressContext(1, "Bootstrap tenant engine."),
+	// engine.getMicroservice());
+	// String tenantName = engine.getTenant().getName();
+	// long start = System.currentTimeMillis();
+	//
+	// // Run provisioning logic.
+	// getTenantEngine().lifecycleProvision(monitor);
+	//
+	// // Execute tenant bootstrap.
+	// IDatasetTemplate template = engine.getDatasetTemplate();
+	// engine.tenantBootstrap(template, monitor);
+	//
+	// try {
+	// curator.create().forPath(engine.getTenantDatasetBootstrappedPath());
+	// getLogger().info("Tenant engine for '" + tenantName + "' bootstrapped in "
+	// + (System.currentTimeMillis() - start) + "ms.");
+	// } catch (Exception e) {
+	// getLogger().info("Error marking tenant engine '" + tenantName + "' as
+	// bootstrapped.");
+	// }
+	// }
     }
 
     /*

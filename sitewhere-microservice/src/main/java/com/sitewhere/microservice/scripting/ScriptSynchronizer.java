@@ -17,7 +17,6 @@ import java.nio.file.Paths;
 
 import org.apache.commons.io.IOUtils;
 
-import com.sitewhere.microservice.zookeeper.ZkUtils;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
@@ -50,17 +49,17 @@ public abstract class ScriptSynchronizer extends LifecycleComponent implements I
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.start(monitor);
-
-	// Copy all scipts from Zk to local.
-	try {
-	    if (getMicroservice().getZookeeperManager().getCurator().checkExists()
-		    .forPath(getZkScriptRootPath()) != null) {
-		ZkUtils.copyFolderRecursivelyFromZk(getMicroservice().getZookeeperManager().getCurator(),
-			getZkScriptRootPath(), getFileSystemRoot(), getZkScriptRootPath());
-	    }
-	} catch (Exception e) {
-	    throw new SiteWhereException("Unable to copy scripts from Zookeeper.", e);
-	}
+	//
+	// // Copy all scipts from Zk to local.
+	// try {
+	// if (getMicroservice().getZookeeperManager().getCurator().checkExists()
+	// .forPath(getZkScriptRootPath()) != null) {
+	// ZkUtils.copyFolderRecursivelyFromZk(getMicroservice().getZookeeperManager().getCurator(),
+	// getZkScriptRootPath(), getFileSystemRoot(), getZkScriptRootPath());
+	// }
+	// } catch (Exception e) {
+	// throw new SiteWhereException("Unable to copy scripts from Zookeeper.", e);
+	// }
     }
 
     /*
@@ -262,11 +261,14 @@ public abstract class ScriptSynchronizer extends LifecycleComponent implements I
      * @throws SiteWhereException
      */
     protected byte[] getZkContent(String zkPath) throws SiteWhereException {
-	try {
-	    return getMicroservice().getZookeeperManager().getCurator().getData().forPath(zkPath);
-	} catch (Exception e) {
-	    throw new SiteWhereException("Unable to get Zookeeper content for path '" + zkPath + "'.");
-	}
+	// try {
+	// return
+	// getMicroservice().getZookeeperManager().getCurator().getData().forPath(zkPath);
+	// } catch (Exception e) {
+	// throw new SiteWhereException("Unable to get Zookeeper content for path '" +
+	// zkPath + "'.");
+	// }
+	return null;
     }
 
     /**

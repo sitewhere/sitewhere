@@ -15,10 +15,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.curator.framework.CuratorFramework;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
-import org.apache.zookeeper.data.Stat;
 
 import com.sitewhere.grpc.client.tenant.TenantModelConverter;
 import com.sitewhere.grpc.client.tenant.TenantModelMarshaler;
@@ -138,13 +136,11 @@ public class TenantBootstrapModelConsumer extends DirectKafkaConsumer implements
 
     /**
      * Thread that takes care of bootstrapping a tenant based on its template.
-     * 
-     * @author Derek
-     *
      */
     private class TenantBootstrapper implements Runnable {
 
 	/** Tenant to bootstrap */
+	@SuppressWarnings("unused")
 	private ITenant tenant;
 
 	public TenantBootstrapper(ITenant tenant) {
@@ -153,51 +149,16 @@ public class TenantBootstrapModelConsumer extends DirectKafkaConsumer implements
 
 	@Override
 	public void run() {
-	    try {
-		getLogger().info("About to bootstrap new tenant.");
-		CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
-		createTenantConfigurationIfNotFound(curator);
-	    } catch (SiteWhereException e) {
-		getLogger().error("Unable to bootstrap tenant.", e);
-	    } catch (Throwable e) {
-		getLogger().error("Unhandled exception while bootstrapping tenant.", e);
-	    }
-	}
-
-	/**
-	 * Verify that tenant configuration node has been created.
-	 * 
-	 * @param curator
-	 * @throws Exception
-	 */
-	protected void createTenantConfigurationIfNotFound(CuratorFramework curator) throws Exception {
-	    String tenantPath = getInstanceManagementMicroservice()
-		    .getInstanceTenantConfigurationPath(getTenant().getId());
-	    Stat bootstrapped = curator.checkExists().forPath(
-		    getInstanceManagementMicroservice().getInstanceTenantConfiguredIndicatorPath(getTenant().getId()));
-	    if (bootstrapped == null) {
-		Stat config = curator.checkExists().forPath(tenantPath);
-		if (config == null) {
-		    getLogger().info(
-			    "Zk node for tenant '" + getTenant().getName() + "' configuration not found. Creating...");
-		    curator.create().forPath(tenantPath);
-		}
-		getLogger().info("Copying tenant template contents into Zk node...");
-		getInstanceManagementMicroservice().getTenantConfigurationTemplateManager()
-			.initializeTenantZkFromTemplateContents(curator, getTenant());
-		getLogger().info("Copying dataset template contents into Zk node...");
-		getInstanceManagementMicroservice().getTenantDatasetTemplateManager()
-			.copyTemplateContentsToZk(getTenant().getDatasetTemplateId(), curator, tenantPath);
-		curator.create().forPath(getInstanceManagementMicroservice()
-			.getInstanceTenantConfiguredIndicatorPath(getTenant().getId()));
-		getLogger().info("Tenant '" + getTenant().getName() + "' bootstrapped with template data.");
-	    } else {
-		getLogger().info("Found Zk node for tenant '" + getTenant().getName() + "'.");
-	    }
-	}
-
-	public ITenant getTenant() {
-	    return tenant;
+	    // try {
+	    // getLogger().info("About to bootstrap new tenant.");
+	    // CuratorFramework curator =
+	    // getMicroservice().getZookeeperManager().getCurator();
+	    // createTenantConfigurationIfNotFound(curator);
+	    // } catch (SiteWhereException e) {
+	    // getLogger().error("Unable to bootstrap tenant.", e);
+	    // } catch (Throwable e) {
+	    // getLogger().error("Unhandled exception while bootstrapping tenant.", e);
+	    // }
 	}
     }
 

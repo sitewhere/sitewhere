@@ -7,10 +7,8 @@
  */
 package com.sitewhere.microservice.multitenant;
 
-import java.time.Duration;
 import java.util.UUID;
 import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,17 +16,8 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.zookeeper.data.Stat;
-
-import com.evanlennick.retry4j.CallExecutorBuilder;
-import com.evanlennick.retry4j.Status;
-import com.evanlennick.retry4j.config.RetryConfig;
-import com.evanlennick.retry4j.config.RetryConfigBuilder;
-import com.evanlennick.retry4j.listener.RetryListener;
 import com.google.common.collect.MapMaker;
 import com.sitewhere.microservice.security.SystemUserRunnable;
-import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
@@ -43,7 +32,6 @@ import com.sitewhere.spi.microservice.configuration.ITenantPathInfo;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineManager;
 import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
-import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.tenant.ITenant;
@@ -59,12 +47,14 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 	extends LifecycleComponent implements ITenantEngineManager<T> {
 
     /** Number of seconds between fallback attempts for checking tenant bootstrap */
+    @SuppressWarnings("unused")
     private static final int BOOTSTRAP_CHECK_MAX_SECS_BETWEEN_RETRIES = 15;
 
     /** Max number of tenants being added/removed concurrently */
     private static final int MAX_CONCURRENT_TENANT_OPERATIONS = 5;
 
     /** Max time to wait for tenant to be bootstrapped from template */
+    @SuppressWarnings("unused")
     private static final long MAX_WAIT_FOR_TENANT_BOOTSTRAPPED = 60 * 1000;
 
     /** Map of tenant engines that have been initialized */
@@ -186,28 +176,32 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
     /**
      * Wait for tenants to be bootstrapped by instance management microservice.
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected void waitForTenantsBootstrapped() {
-	Callable<Boolean> connectCheck = () -> {
-	    Stat existing = getMicroservice().getZookeeperManager().getCurator().checkExists()
-		    .forPath(getMultitenantMicroservice().getInstanceTenantsBootstrappedMarker());
-	    if (existing == null) {
-		throw new SiteWhereException("Tenants not bootstrapped within waiting period.");
-	    }
-	    return true;
-	};
-	RetryConfig config = new RetryConfigBuilder().retryOnAnyException().retryIndefinitely().withRandomBackoff()
-		.withDelayBetweenTries(Duration.ofSeconds(BOOTSTRAP_CHECK_MAX_SECS_BETWEEN_RETRIES)).build();
-	RetryListener<Boolean> listener = new RetryListener<Boolean>() {
-
-	    @Override
-	    public void onEvent(Status<Boolean> status) {
-		getLogger().info(String.format(
-			"Waiting for tenants to be bootstrapped. Attempt %d (total wait so far %dms). Retrying after fallback...",
-			status.getTotalTries(), status.getTotalElapsedDuration().toMillis()));
-	    }
-	};
-	new CallExecutorBuilder().config(config).afterFailedTryListener(listener).build().execute(connectCheck);
+	// Callable<Boolean> connectCheck = () -> {
+	// Stat existing =
+	// getMicroservice().getZookeeperManager().getCurator().checkExists()
+	// .forPath(getMultitenantMicroservice().getInstanceTenantsBootstrappedMarker());
+	// if (existing == null) {
+	// throw new SiteWhereException("Tenants not bootstrapped within waiting
+	// period.");
+	// }
+	// return true;
+	// };
+	// RetryConfig config = new
+	// RetryConfigBuilder().retryOnAnyException().retryIndefinitely().withRandomBackoff()
+	// .withDelayBetweenTries(Duration.ofSeconds(BOOTSTRAP_CHECK_MAX_SECS_BETWEEN_RETRIES)).build();
+	// RetryListener<Boolean> listener = new RetryListener<Boolean>() {
+	//
+	// @Override
+	// public void onEvent(Status<Boolean> status) {
+	// getLogger().info(String.format(
+	// "Waiting for tenants to be bootstrapped. Attempt %d (total wait so far %dms).
+	// Retrying after fallback...",
+	// status.getTotalTries(), status.getTotalElapsedDuration().toMillis()));
+	// }
+	// };
+	// new
+	// CallExecutorBuilder().config(config).afterFailedTryListener(listener).build().execute(connectCheck);
     }
 
     /**
@@ -217,25 +211,28 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
      * @throws SiteWhereException
      */
     protected void initializeTenantEngines() throws SiteWhereException {
-	CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
-	try {
-	    ISearchResults<ITenant> tenants = getTenantManagement().listTenants(new TenantSearchCriteria(1, 0));
-	    for (ITenant tenant : tenants.getResults()) {
-		if (getTenantEngineByTenantId(tenant.getId()) == null) {
-		    String configured = getMultitenantMicroservice()
-			    .getInstanceTenantConfiguredIndicatorPath(tenant.getId());
-
-		    // Only initialize tenants which have been bootstrapped.
-		    if (curator.checkExists().forPath(configured) != null) {
-			if (!getTenantInitializationQueue().contains(tenant.getId())) {
-			    getTenantInitializationQueue().offer(tenant.getId());
-			}
-		    }
-		}
-	    }
-	} catch (Throwable e) {
-	    throw new SiteWhereException("Unhandled exception while processing tenant engines for initialization.", e);
-	}
+	// CuratorFramework curator =
+	// getMicroservice().getZookeeperManager().getCurator();
+	// try {
+	// ISearchResults<ITenant> tenants = getTenantManagement().listTenants(new
+	// TenantSearchCriteria(1, 0));
+	// for (ITenant tenant : tenants.getResults()) {
+	// if (getTenantEngineByTenantId(tenant.getId()) == null) {
+	// String configured = getMultitenantMicroservice()
+	// .getInstanceTenantConfiguredIndicatorPath(tenant.getId());
+	//
+	// // Only initialize tenants which have been bootstrapped.
+	// if (curator.checkExists().forPath(configured) != null) {
+	// if (!getTenantInitializationQueue().contains(tenant.getId())) {
+	// getTenantInitializationQueue().offer(tenant.getId());
+	// }
+	// }
+	// }
+	// }
+	// } catch (Throwable e) {
+	// throw new SiteWhereException("Unhandled exception while processing tenant
+	// engines for initialization.", e);
+	// }
     }
 
     /*
@@ -597,20 +594,24 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 	 * @throws SiteWhereException
 	 */
 	protected void waitForTenantConfigured(ITenant tenant) throws SiteWhereException {
-	    CuratorFramework curator = getMicroservice().getZookeeperManager().getCurator();
-	    try {
-		long deadline = System.currentTimeMillis() + MAX_WAIT_FOR_TENANT_BOOTSTRAPPED;
-		while ((deadline - System.currentTimeMillis()) > 0) {
-		    if (curator.checkExists().forPath(getMultitenantMicroservice()
-			    .getInstanceTenantConfiguredIndicatorPath(tenant.getId())) != null) {
-			return;
-		    }
-		    Thread.sleep(3000);
-		}
-		throw new SiteWhereException("Tenant not bootstrapped within time limit. Aborting");
-	    } catch (Throwable t) {
-		throw new SiteWhereException("Unable to wait for tenant configuration bootstrap.", t);
-	    }
+	    // CuratorFramework curator =
+	    // getMicroservice().getZookeeperManager().getCurator();
+	    // try {
+	    // long deadline = System.currentTimeMillis() +
+	    // MAX_WAIT_FOR_TENANT_BOOTSTRAPPED;
+	    // while ((deadline - System.currentTimeMillis()) > 0) {
+	    // if (curator.checkExists().forPath(getMultitenantMicroservice()
+	    // .getInstanceTenantConfiguredIndicatorPath(tenant.getId())) != null) {
+	    // return;
+	    // }
+	    // Thread.sleep(3000);
+	    // }
+	    // throw new SiteWhereException("Tenant not bootstrapped within time limit.
+	    // Aborting");
+	    // } catch (Throwable t) {
+	    // throw new SiteWhereException("Unable to wait for tenant configuration
+	    // bootstrap.", t);
+	    // }
 	}
     }
 

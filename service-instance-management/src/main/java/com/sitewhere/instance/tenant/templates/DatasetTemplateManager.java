@@ -18,12 +18,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.curator.framework.CuratorFramework;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.instance.spi.tenant.templates.IDatasetTemplateManager;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
-import com.sitewhere.microservice.zookeeper.ZkUtils;
 import com.sitewhere.rest.model.tenant.DatasetTemplate;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -105,30 +103,6 @@ public class DatasetTemplateManager extends LifecycleComponent implements IDatas
 	    }
 	});
 	return list;
-    }
-
-    /*
-     * @see com.sitewhere.tenant.spi.templates.IDatasetTemplateManager#
-     * copyTemplateContentsToZk(java.lang.String,
-     * org.apache.curator.framework.CuratorFramework, java.lang.String)
-     */
-    @Override
-    public void copyTemplateContentsToZk(String templateId, CuratorFramework curator, String tenantPath)
-	    throws SiteWhereException {
-	IDatasetTemplate template = getTemplatesById().get(templateId);
-	if (template == null) {
-	    throw new SiteWhereException("Dataset template not found: " + templateId);
-	}
-
-	File root = new File(TENANT_DATASETS_ROOT);
-
-	// Copy template contents on top of default.
-	File templateFolder = new File(root, templateId);
-	if (!templateFolder.exists()) {
-	    throw new SiteWhereException(
-		    "Dataset template folder not found at '" + templateFolder.getAbsolutePath() + "'.");
-	}
-	ZkUtils.copyFolderRecursivelytoZk(curator, tenantPath, templateFolder, templateFolder);
     }
 
     protected Map<String, IDatasetTemplate> getTemplatesById() {

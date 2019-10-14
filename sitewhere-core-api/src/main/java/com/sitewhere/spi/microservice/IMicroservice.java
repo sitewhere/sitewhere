@@ -13,7 +13,6 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.configuration.IZookeeperManager;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
@@ -260,13 +259,6 @@ public interface IMicroservice<T extends IFunctionIdentifier>
      * @return
      */
     public File getScriptTemplatesRoot();
-
-    /**
-     * Get Zookeeper manager.
-     * 
-     * @return
-     */
-    public IZookeeperManager getZookeeperManager();
 
     /**
      * Get metrics server.

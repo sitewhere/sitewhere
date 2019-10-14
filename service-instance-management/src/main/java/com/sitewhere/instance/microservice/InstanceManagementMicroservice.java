@@ -9,11 +9,6 @@ package com.sitewhere.instance.microservice;
 
 import java.util.List;
 
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.zookeeper.data.Stat;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
 import com.sitewhere.instance.configuration.InstanceManagementModelProvider;
 import com.sitewhere.instance.initializer.GroovyTenantModelInitializer;
 import com.sitewhere.instance.initializer.GroovyUserModelInitializer;
@@ -344,19 +339,20 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-		try {
-		    Stat existing = getZookeeperManager().getCurator().checkExists().forPath(getInstanceZkPath());
-		    if (existing == null) {
-			getLogger().info("Zk node for instance not found. Creating...");
-			getZookeeperManager().getCurator().create().forPath(getInstanceZkPath());
-			getLogger().info("Created instance Zk node.");
-		    } else {
-			getLogger().info("Found Zk node for instance.");
-		    }
-		    verifyOrBootstrapInstanceConfiguration();
-		} catch (Exception e) {
-		    throw new SiteWhereException(e);
-		}
+		// try {
+		// Stat existing =
+		// getZookeeperManager().getCurator().checkExists().forPath(getInstanceZkPath());
+		// if (existing == null) {
+		// getLogger().info("Zk node for instance not found. Creating...");
+		// getZookeeperManager().getCurator().create().forPath(getInstanceZkPath());
+		// getLogger().info("Created instance Zk node.");
+		// } else {
+		// getLogger().info("Found Zk node for instance.");
+		// }
+		// verifyOrBootstrapInstanceConfiguration();
+		// } catch (Exception e) {
+		// throw new SiteWhereException(e);
+		// }
 	    }
 	};
     }
@@ -369,27 +365,32 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
      * @return
      */
     public void verifyOrBootstrapInstanceConfiguration() throws SiteWhereException {
-	try {
-	    // Verify that instance state path exists.
-	    Stat existing = getZookeeperManager().getCurator().checkExists().forPath(getInstanceStatePath());
-	    if (existing == null) {
-		getLogger().info("Instance state path '" + getInstanceStatePath() + "' not found. Creating...");
-		getZookeeperManager().getCurator().create().forPath(getInstanceStatePath());
-	    }
-
-	    // Check for existing configuration bootstrap marker.
-	    existing = getZookeeperManager().getCurator().checkExists().forPath(getInstanceConfigBootstrappedMarker());
-	    if (existing == null) {
-		getLogger().info("Configuration bootstrap marker node '" + getInstanceConfigBootstrappedMarker()
-			+ "' not found. Bootstrapping configuration...");
-		bootstrapInstanceConfiguration();
-		getLogger().info("Bootstrapped instance configuration from template.");
-	    } else {
-		getLogger().info("Found configuration bootstrap marker node. Skipping configuration bootstrap.");
-	    }
-	} catch (Exception e) {
-	    throw new SiteWhereException(e);
-	}
+	// try {
+	// // Verify that instance state path exists.
+	// Stat existing =
+	// getZookeeperManager().getCurator().checkExists().forPath(getInstanceStatePath());
+	// if (existing == null) {
+	// getLogger().info("Instance state path '" + getInstanceStatePath() + "' not
+	// found. Creating...");
+	// getZookeeperManager().getCurator().create().forPath(getInstanceStatePath());
+	// }
+	//
+	// // Check for existing configuration bootstrap marker.
+	// existing =
+	// getZookeeperManager().getCurator().checkExists().forPath(getInstanceConfigBootstrappedMarker());
+	// if (existing == null) {
+	// getLogger().info("Configuration bootstrap marker node '" +
+	// getInstanceConfigBootstrappedMarker()
+	// + "' not found. Bootstrapping configuration...");
+	// bootstrapInstanceConfiguration();
+	// getLogger().info("Bootstrapped instance configuration from template.");
+	// } else {
+	// getLogger().info("Found configuration bootstrap marker node. Skipping
+	// configuration bootstrap.");
+	// }
+	// } catch (Exception e) {
+	// throw new SiteWhereException(e);
+	// }
     }
 
     /**
@@ -399,56 +400,22 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
      * @throws SiteWhereException
      */
     protected void bootstrapInstanceConfiguration() throws SiteWhereException {
-	try {
-	    getLogger().info("Copying instance template contents to Zookeeper...");
-	    getInstanceTemplateManager().copyTemplateContentsToZk(getInstanceSettings().getInstanceTemplateId(),
-		    getZookeeperManager().getCurator(), getInstanceZkPath());
-
-	    // Create root path for configuring users.
-	    createUsersConfigurationRootIfNotFound(getZookeeperManager().getCurator());
-
-	    // Create root path for configuring tenants.
-	    createTenantsConfigurationRootIfNotFound(getZookeeperManager().getCurator());
-
-	    getLogger().info("Marking instance configuration as bootstrapped.");
-	    getZookeeperManager().getCurator().create().forPath(getInstanceConfigBootstrappedMarker());
-	} catch (Exception e) {
-	    throw new SiteWhereException(e);
-	}
-    }
-
-    /**
-     * Verify that instance users configuration node has been created.
-     * 
-     * @param curator
-     * @throws Exception
-     */
-    protected void createUsersConfigurationRootIfNotFound(CuratorFramework curator) throws Exception {
-	Stat existing = curator.checkExists().forPath(getInstanceUsersConfigurationPath());
-	if (existing == null) {
-	    getLogger().info("Zk node for user configurations not found. Creating...");
-	    curator.create().forPath(getInstanceUsersConfigurationPath());
-	    getLogger().info("Created user configurations Zk node.");
-	} else {
-	    getLogger().info("Found Zk node for user configurations.");
-	}
-    }
-
-    /**
-     * Verify that instance tenants configuration node has been created.
-     * 
-     * @param curator
-     * @throws Exception
-     */
-    protected void createTenantsConfigurationRootIfNotFound(CuratorFramework curator) throws Exception {
-	Stat existing = curator.checkExists().forPath(getInstanceTenantsConfigurationPath());
-	if (existing == null) {
-	    getLogger().info("Zk node for tenant configurations not found. Creating...");
-	    curator.create().forPath(getInstanceTenantsConfigurationPath());
-	    getLogger().info("Created tenant configurations Zk node.");
-	} else {
-	    getLogger().info("Found Zk node for tenant configurations.");
-	}
+	// try {
+	// getLogger().info("Copying instance template contents to Zookeeper...");
+	// getInstanceTemplateManager().copyTemplateContentsToZk(getInstanceSettings().getInstanceTemplateId(),
+	// getZookeeperManager().getCurator(), getInstanceZkPath());
+	//
+	// // Create root path for configuring users.
+	// createUsersConfigurationRootIfNotFound(getZookeeperManager().getCurator());
+	//
+	// // Create root path for configuring tenants.
+	// createTenantsConfigurationRootIfNotFound(getZookeeperManager().getCurator());
+	//
+	// getLogger().info("Marking instance configuration as bootstrapped.");
+	// getZookeeperManager().getCurator().create().forPath(getInstanceConfigBootstrappedMarker());
+	// } catch (Exception e) {
+	// throw new SiteWhereException(e);
+	// }
     }
 
     /**
@@ -462,31 +429,35 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-		Authentication previous = SecurityContextHolder.getContext().getAuthentication();
-		try {
-		    Stat existing = getZookeeperManager().getCurator().checkExists()
-			    .forPath(getInstanceUsersBootstrappedMarker());
-		    if (existing != null) {
-			getLogger().info("Found users bootstrap marker node. Skipping users bootstrap.");
-			return;
-		    }
-		    getLogger().info("Users bootstrap marker node '" + getInstanceConfigBootstrappedMarker()
-			    + "' not found. Bootstrapping user data...");
-
-		    SecurityContextHolder.getContext().setAuthentication(getSystemUser().getAuthentication());
-		    IInstanceTemplate template = getChosenInstanceTemplate();
-		    getLogger().info("Initializing instance users from template '" + template.getName() + "'.");
-		    String templatePath = getInstanceZkPath() + "/" + template.getId();
-		    if (template.getInitializers() != null) {
-			List<String> userScripts = template.getInitializers().getUserManagement();
-			initializeUserModelFromInstanceTemplateScripts(templatePath, userScripts);
-		    }
-		    getZookeeperManager().getCurator().create().forPath(getInstanceUsersBootstrappedMarker());
-		} catch (Exception e) {
-		    throw new SiteWhereException(e);
-		} finally {
-		    SecurityContextHolder.getContext().setAuthentication(previous);
-		}
+		// Authentication previous =
+		// SecurityContextHolder.getContext().getAuthentication();
+		// try {
+		// Stat existing = getZookeeperManager().getCurator().checkExists()
+		// .forPath(getInstanceUsersBootstrappedMarker());
+		// if (existing != null) {
+		// getLogger().info("Found users bootstrap marker node. Skipping users
+		// bootstrap.");
+		// return;
+		// }
+		// getLogger().info("Users bootstrap marker node '" +
+		// getInstanceConfigBootstrappedMarker()
+		// + "' not found. Bootstrapping user data...");
+		//
+		// SecurityContextHolder.getContext().setAuthentication(getSystemUser().getAuthentication());
+		// IInstanceTemplate template = getChosenInstanceTemplate();
+		// getLogger().info("Initializing instance users from template '" +
+		// template.getName() + "'.");
+		// String templatePath = getInstanceZkPath() + "/" + template.getId();
+		// if (template.getInitializers() != null) {
+		// List<String> userScripts = template.getInitializers().getUserManagement();
+		// initializeUserModelFromInstanceTemplateScripts(templatePath, userScripts);
+		// }
+		// getZookeeperManager().getCurator().create().forPath(getInstanceUsersBootstrappedMarker());
+		// } catch (Exception e) {
+		// throw new SiteWhereException(e);
+		// } finally {
+		// SecurityContextHolder.getContext().setAuthentication(previous);
+		// }
 	    }
 	};
     }
@@ -523,31 +494,37 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-		Authentication previous = SecurityContextHolder.getContext().getAuthentication();
-		try {
-		    Stat existing = getZookeeperManager().getCurator().checkExists()
-			    .forPath(getInstanceTenantsBootstrappedMarker());
-		    if (existing != null) {
-			getLogger().info("Found tenants bootstrap marker node. Skipping tenants bootstrap.");
-			return;
-		    }
-		    getLogger().info("Tenants bootstrap marker node '" + getInstanceConfigBootstrappedMarker()
-			    + "' not found. Bootstrapping tenant data...");
-
-		    SecurityContextHolder.getContext().setAuthentication(getSystemUser().getAuthentication());
-		    IInstanceTemplate template = getChosenInstanceTemplate();
-		    getLogger().info("Initializing instance tenants from template '" + template.getName() + "'.");
-		    String templatePath = getInstanceZkPath() + "/" + template.getId();
-		    if (template.getInitializers() != null) {
-			List<String> tenantScripts = template.getInitializers().getTenantManagement();
-			initializeTenantModelFromInstanceTemplateScripts(templatePath, tenantScripts);
-		    }
-		    getZookeeperManager().getCurator().create().forPath(getInstanceTenantsBootstrappedMarker());
-		} catch (Exception e) {
-		    throw new SiteWhereException(e);
-		} finally {
-		    SecurityContextHolder.getContext().setAuthentication(previous);
-		}
+		// Authentication previous =
+		// SecurityContextHolder.getContext().getAuthentication();
+		// try {
+		// Stat existing = getZookeeperManager().getCurator().checkExists()
+		// .forPath(getInstanceTenantsBootstrappedMarker());
+		// if (existing != null) {
+		// getLogger().info("Found tenants bootstrap marker node. Skipping tenants
+		// bootstrap.");
+		// return;
+		// }
+		// getLogger().info("Tenants bootstrap marker node '" +
+		// getInstanceConfigBootstrappedMarker()
+		// + "' not found. Bootstrapping tenant data...");
+		//
+		// SecurityContextHolder.getContext().setAuthentication(getSystemUser().getAuthentication());
+		// IInstanceTemplate template = getChosenInstanceTemplate();
+		// getLogger().info("Initializing instance tenants from template '" +
+		// template.getName() + "'.");
+		// String templatePath = getInstanceZkPath() + "/" + template.getId();
+		// if (template.getInitializers() != null) {
+		// List<String> tenantScripts =
+		// template.getInitializers().getTenantManagement();
+		// initializeTenantModelFromInstanceTemplateScripts(templatePath,
+		// tenantScripts);
+		// }
+		// getZookeeperManager().getCurator().create().forPath(getInstanceTenantsBootstrappedMarker());
+		// } catch (Exception e) {
+		// throw new SiteWhereException(e);
+		// } finally {
+		// SecurityContextHolder.getContext().setAuthentication(previous);
+		// }
 	    }
 	};
     }
