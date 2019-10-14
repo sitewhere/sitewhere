@@ -92,6 +92,9 @@ public class UserManagementPersistenceLogic extends Persistence {
 	if (request.getAuthorities() != null) {
 	    target.setAuthorities(request.getAuthorities());
 	}
+	if (request.getStatus() != null) {
+		target.setStatus(request.getStatus());
+	}
     }
 
     /**
