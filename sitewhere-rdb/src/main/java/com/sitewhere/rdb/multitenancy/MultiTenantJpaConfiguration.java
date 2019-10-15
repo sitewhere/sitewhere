@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import com.sitewhere.rdb.FlywayConfig;
 import com.sitewhere.rdb.entities.Area;
 import org.hibernate.MultiTenancyStrategy;
 import org.hibernate.cfg.Environment;
@@ -56,7 +57,12 @@ public class MultiTenantJpaConfiguration {
                     .username(dsProperties.getUsername())
                     .password(dsProperties.getPassword())
                     .driverClassName(dsProperties.getDriverClassName());
-            result.put(dsProperties.getTenantId(), factory.build());
+
+            DataSource build = factory.build();
+            result.put(dsProperties.getTenantId(), build);
+
+            FlywayConfig a = new FlywayConfig();
+            a.tenantsFlyway(dsProperties.getTenantId(), build);
         }
         return result;
     }
@@ -81,7 +87,6 @@ public class MultiTenantJpaConfiguration {
         hibernateProps.put(Environment.MULTI_TENANT_CONNECTION_PROVIDER, multiTenantConnectionProvider);
         hibernateProps.put(Environment.MULTI_TENANT_IDENTIFIER_RESOLVER, currentTenantIdentifierResolver);
         hibernateProps.put(Environment.DIALECT, "org.hibernate.dialect.PostgreSQL94Dialect");
-        hibernateProps.put(Environment.HBM2DDL_AUTO,"update");
         hibernateProps.put(Environment.SHOW_SQL,"true");
         hibernateProps.put(Environment.FORMAT_SQL, "true");
         // No dataSource is set to resulting entityManagerFactoryBean

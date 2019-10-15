@@ -2,16 +2,28 @@ description = 'SiteWhere relational database Implementation'
 
 dependencies {
     compile project(':sitewhere-configuration')
-
     testCompile group: 'junit', name: 'junit', version: '4.12'
-
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.1.6.RELEASE'
-
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.1.6.RELEASE'
-
+    compile group: 'org.flywaydb', name: 'flyway-core', version: '5.0.3'
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
-    compile("com.h2database:h2")
 }
+
+apply plugin: 'org.springframework.boot'
+springBoot {
+    mainClassName = 'com.sitewhere.rdb.Application'
+}
+
+// Keep original jar.
+jar {
+    enabled = true
+}
+
+// Reclassify Spring Boot jar.
+bootJar {
+    classifier = 'boot'
+}
+
 
 // Publish jar.
 apply plugin: 'maven-publish'

@@ -11,6 +11,8 @@ import org.hibernate.engine.jdbc.connections.spi.AbstractDataSourceBasedMultiTen
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -28,11 +30,29 @@ public class DvdRentalDataSourceMultiTenantConnectionProviderImpl extends Abstra
 	@Override
 	protected DataSource selectAnyDataSource() {
 		DataSource selected = dataSourcesDvdRental.get(DvdRentalTenantContext.getTenantId());
+		try {
+			selected.getConnection().setSchema(DvdRentalTenantContext.getTenantId());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return selected;
 	}
 
 	@Override
 	protected DataSource selectDataSource(String tenantIdentifier) {
-		return this.dataSourcesDvdRental.get(tenantIdentifier);
+		DataSource dataSource = this.dataSourcesDvdRental.get(tenantIdentifier);
+		try {
+			dataSource.getConnection().setSchema(tenantIdentifier);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return dataSource;
+	}
+
+	@Override
+	public Connection getConnection(String tenantIdentifier) throws SQLException {
+		Connection connection = super.getConnection(tenantIdentifier);
+		connection.setSchema(tenantIdentifier);
+		return connection;
 	}
 }
