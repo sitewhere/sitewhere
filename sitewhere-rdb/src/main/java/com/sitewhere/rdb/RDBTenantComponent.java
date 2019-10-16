@@ -12,7 +12,10 @@ import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.sql.DataSource;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -22,7 +25,6 @@ import java.util.concurrent.ThreadFactory;
  * connectivity.
  */
 public abstract class RDBTenantComponent <T extends DbClient> extends TenantEngineLifecycleComponent {
-
 
     /** Threads used for indexing */
     private ExecutorService indexer;
@@ -54,17 +56,10 @@ public abstract class RDBTenantComponent <T extends DbClient> extends TenantEngi
      */
     @Override
     public void provision(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-        if (getIndexer() != null) {
-            getIndexer().shutdownNow();
-        }
-
-        //TODO: NO estoy seguro de que venga aca
         String tenantId = this.getTenantEngine().getTenant().getId().toString();
-        DvdRentalTenantContext.setTenantId(tenantId);
-        this.indexer = Executors.newSingleThreadExecutor(new IndexerThreadFactory());
-
-        // Run index validate/create in background.
-        getIndexer().submit(new Indexer());
+        Map<String, DataSource> dataSourcesDvdRental = (Map<String, DataSource>) ApplicationContextUtils.getBean("dataSourcesDvdRental");
+        FlywayConfig flywayConfig = new FlywayConfig();
+        flywayConfig.tenantsFlyway(tenantId, dataSourcesDvdRental.get(tenantId));
     }
 
     /*
@@ -85,7 +80,14 @@ public abstract class RDBTenantComponent <T extends DbClient> extends TenantEngi
     protected class Indexer implements Runnable {
         @Override
         public void run() {
-            getLogger().info("Rerifying if the database exists...");
+            // Ensure that collection indexes exist.
+            getLogger().info("Verifying indexes for RDB...");
+            try {
+                ensureIndexes();
+                getLogger().info("Index verification complete.");
+            } catch (SiteWhereException e) {
+                getLogger().error("Unable to create/update MongoDB indexes.", e);
+            }
         }
     }
 
@@ -96,4 +98,11 @@ public abstract class RDBTenantComponent <T extends DbClient> extends TenantEngi
             return new Thread(r, "RDB Indexer");
         }
     }
+
+    /**
+     * Ensure that required collection indexes exist.
+     *
+     * @throws SiteWhereException
+     */
+    public abstract void ensureIndexes() throws SiteWhereException;
 }

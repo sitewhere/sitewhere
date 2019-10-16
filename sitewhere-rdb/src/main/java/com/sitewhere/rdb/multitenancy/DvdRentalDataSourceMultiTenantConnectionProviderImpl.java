@@ -30,22 +30,12 @@ public class DvdRentalDataSourceMultiTenantConnectionProviderImpl extends Abstra
 	@Override
 	protected DataSource selectAnyDataSource() {
 		DataSource selected = dataSourcesDvdRental.get(DvdRentalTenantContext.getTenantId());
-		try {
-			selected.getConnection().setSchema(DvdRentalTenantContext.getTenantId());
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 		return selected;
 	}
 
 	@Override
 	protected DataSource selectDataSource(String tenantIdentifier) {
 		DataSource dataSource = this.dataSourcesDvdRental.get(tenantIdentifier);
-		try {
-			dataSource.getConnection().setSchema(tenantIdentifier);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 		return dataSource;
 	}
 

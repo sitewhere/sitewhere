@@ -57,12 +57,8 @@ public class MultiTenantJpaConfiguration {
                     .username(dsProperties.getUsername())
                     .password(dsProperties.getPassword())
                     .driverClassName(dsProperties.getDriverClassName());
-
             DataSource build = factory.build();
             result.put(dsProperties.getTenantId(), build);
-
-            FlywayConfig a = new FlywayConfig();
-            a.tenantsFlyway(dsProperties.getTenantId(), build);
         }
         return result;
     }
