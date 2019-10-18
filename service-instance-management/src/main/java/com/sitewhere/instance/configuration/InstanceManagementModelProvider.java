@@ -172,7 +172,7 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
     }
 
 	/**
-	 * Create element configuration for MongoDB settings.
+	 * Create element configuration for RDB settings.
 	 *
 	 * @return
 	 */

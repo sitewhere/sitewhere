@@ -373,6 +373,40 @@ public class DatastoreConfigurationParser {
     }
 
 	public static void parseRDBAttributes(Element element, ParserContext context, BeanDefinitionBuilder client) {
+		Attr hostname = element.getAttributeNode("hostname");
+		if (hostname != null) {
+			client.addPropertyValue("hostname", hostname.getValue());
+		}
 
+		Attr databaseName = element.getAttributeNode("databaseName");
+
+		if (databaseName != null) {
+			client.addPropertyValue("databaseName", databaseName.getValue());
+		}
+
+		Attr url = element.getAttributeNode("url");
+		if (url != null) {
+			client.addPropertyValue("url", url.getValue());
+		}
+
+		// Determine if username and password are supplied.
+		Attr username = element.getAttributeNode("username");
+		Attr password = element.getAttributeNode("password");
+		if ((username != null) && ((password == null))) {
+			throw new RuntimeException("If username is specified for RDB, password must be specified as well.");
+		}
+		if ((username == null) && ((password != null))) {
+			throw new RuntimeException("If password is specified for RDB, username must be specified as well.");
+		}
+		if ((username != null) && (password != null)) {
+			client.addPropertyValue("username", username.getValue());
+			client.addPropertyValue("password", password.getValue());
+		}
+
+		// Set replica set name if specified.
+		Attr replicaSetName = element.getAttributeNode("replicaSetName");
+		if (replicaSetName != null) {
+			client.addPropertyValue("replicaSetName", replicaSetName.getValue());
+		}
 	}
 }
