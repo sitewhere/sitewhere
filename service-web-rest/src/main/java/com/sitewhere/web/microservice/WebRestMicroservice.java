@@ -29,14 +29,12 @@ import com.sitewhere.grpc.client.spi.client.IUserManagementApiChannel;
 import com.sitewhere.grpc.client.user.CachedUserManagementApiChannel;
 import com.sitewhere.grpc.client.user.UserManagementApiChannel;
 import com.sitewhere.microservice.GlobalMicroservice;
-import com.sitewhere.microservice.state.TopologyStateAggregator;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
-import com.sitewhere.spi.microservice.state.ITopologyStateAggregator;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.user.IUserManagement;
@@ -92,9 +90,6 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 
     /** Device state API channel */
     private IDeviceStateApiChannel<?> deviceStateApiChannel;
-
-    /** Aggregates microservice state info into a topology */
-    private ITopologyStateAggregator topologyStateAggregator = new TopologyStateAggregator();
 
     /*
      * (non-Javadoc)
@@ -153,9 +148,6 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 
 	// Composite step for initializing microservice.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
-
-	// Initialize topology state aggregator.
-	init.addInitializeStep(this, getTopologyStateAggregator(), true);
 
 	// Initialize instance management API channel.
 	init.addInitializeStep(this, getInstanceManagementApiChannel(), true);
@@ -240,9 +232,6 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
-	// Start topology state aggregator.
-	start.addStartStep(this, getTopologyStateAggregator(), true);
-
 	// Start instance mangement API channel.
 	start.addStartStep(this, getInstanceManagementApiChannel(), true);
 
@@ -311,9 +300,6 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 
 	// Stop device state API channel.
 	stop.addStopStep(this, getDeviceStateApiChannel());
-
-	// Stop topology state aggregator.
-	stop.addStopStep(this, getTopologyStateAggregator());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -474,18 +460,5 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
 
     public void setDeviceStateApiChannel(IDeviceStateApiChannel<?> deviceStateApiChannel) {
 	this.deviceStateApiChannel = deviceStateApiChannel;
-    }
-
-    /*
-     * @see com.sitewhere.web.spi.microservice.IWebRestMicroservice#
-     * getTopologyStateAggregator()
-     */
-    @Override
-    public ITopologyStateAggregator getTopologyStateAggregator() {
-	return topologyStateAggregator;
-    }
-
-    public void setTopologyStateAggregator(ITopologyStateAggregator topologyStateAggregator) {
-	this.topologyStateAggregator = topologyStateAggregator;
     }
 }

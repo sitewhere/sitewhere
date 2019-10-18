@@ -10,7 +10,6 @@ package com.sitewhere.microservice.multitenant;
 import java.util.UUID;
 
 import com.sitewhere.microservice.configuration.ConfigurableMicroservice;
-import com.sitewhere.microservice.configuration.TenantPathInfo;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
@@ -139,14 +138,6 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
      */
     @Override
     public void onConfigurationAdded(String path, byte[] data) {
-	if (isConfigurationCacheReady()) {
-	    try {
-		TenantPathInfo pathInfo = TenantPathInfo.compute(path, this);
-		getTenantEngineManager().onConfigurationAdded(pathInfo, data);
-	    } catch (SiteWhereException e) {
-		getLogger().error("Error processing configuration addition.", e);
-	    }
-	}
     }
 
     /*
@@ -157,23 +148,6 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
      */
     @Override
     public void onConfigurationUpdated(String path, byte[] data) {
-	if (isConfigurationCacheReady()) {
-	    try {
-		// Detect global configuration update and inform all engines.
-		if (getInstanceManagementConfigurationPath().equals(path)) {
-		    ((IMultitenantMicroservice<?, ?>) getMicroservice()).restartConfiguration();
-		    getTenantEngineManager().restartAllTenantEngines();
-		}
-
-		// Otherwise, only report updates to tenant-specific paths.
-		else {
-		    TenantPathInfo pathInfo = TenantPathInfo.compute(path, this);
-		    getTenantEngineManager().onConfigurationUpdated(pathInfo, data);
-		}
-	    } catch (SiteWhereException e) {
-		getLogger().error("Error processing configuration update.", e);
-	    }
-	}
     }
 
     /*
@@ -184,14 +158,6 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
      */
     @Override
     public void onConfigurationDeleted(String path) {
-	if (isConfigurationCacheReady()) {
-	    try {
-		TenantPathInfo pathInfo = TenantPathInfo.compute(path, this);
-		getTenantEngineManager().onConfigurationDeleted(pathInfo);
-	    } catch (SiteWhereException e) {
-		getLogger().error("Error processing configuration delete.", e);
-	    }
-	}
     }
 
     /*

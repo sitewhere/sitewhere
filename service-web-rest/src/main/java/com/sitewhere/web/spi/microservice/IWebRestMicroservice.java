@@ -20,7 +20,6 @@ import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
-import com.sitewhere.spi.microservice.state.ITopologyStateAggregator;
 import com.sitewhere.spi.user.IUserManagement;
 
 /**
@@ -113,11 +112,4 @@ public interface IWebRestMicroservice<T extends IFunctionIdentifier> extends IGl
      * @return
      */
     public IDeviceStateApiChannel<?> getDeviceStateApiChannel();
-
-    /**
-     * Get topology state aggregator.
-     * 
-     * @return
-     */
-    public ITopologyStateAggregator getTopologyStateAggregator();
 }

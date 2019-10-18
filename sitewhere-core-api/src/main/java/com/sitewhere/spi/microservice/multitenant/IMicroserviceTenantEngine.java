@@ -90,35 +90,11 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
     public IGroovyConfiguration getGroovyConfiguration() throws SiteWhereException;
 
     /**
-     * Get Zk configuration path for tenant.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getTenantConfigurationPath() throws SiteWhereException;
-
-    /**
-     * Get Zk path for tenant runtime state.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getTenantStatePath() throws SiteWhereException;
-
-    /**
      * Get Spring context that provides beans for module.
      * 
      * @return
      */
     public ApplicationContext getModuleContext();
-
-    /**
-     * Get path used for locking operations at the module level.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getModuleLockPath() throws SiteWhereException;
 
     /**
      * Get name of for module configuration file (without path).
@@ -127,14 +103,6 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
      * @throws SiteWhereException
      */
     public String getModuleConfigurationName() throws SiteWhereException;
-
-    /**
-     * Get Zk configuration path for module configuration.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getModuleConfigurationPath() throws SiteWhereException;
 
     /**
      * Get module configuration data.
@@ -158,14 +126,6 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
      * @throws SiteWhereException
      */
     public void onGlobalConfigurationUpdated() throws SiteWhereException;
-
-    /**
-     * Get Zk configuration path for tenant dataset bootstrapped indicator.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getTenantDatasetBootstrappedPath() throws SiteWhereException;
 
     /**
      * Wait for dataset in another tenant engine to be bootstrapped using a backoff

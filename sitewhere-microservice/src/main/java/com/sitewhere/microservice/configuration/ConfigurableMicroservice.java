@@ -9,13 +9,12 @@ package com.sitewhere.microservice.configuration;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.microservice.Microservice;
-import com.sitewhere.microservice.scripting.ZookeeperScriptManagement;
+import com.sitewhere.microservice.scripting.KubernetesScriptManagement;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
@@ -41,24 +40,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  */
 public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> extends Microservice<T>
 	implements IConfigurableMicroservice<T>, IConfigurationListener {
-
-    /** Relative path to instance management configuration file */
-    private static final String INSTANCE_MANAGEMENT_CONFIGURATION_PATH = "/instance-management.xml";
-
-    /** Relative path for authority configuration data */
-    private static final String INSTANCE_AUTHORITIES_SUBPATH = "/authoritities";
-
-    /** Relative path for user configuration data */
-    private static final String INSTANCE_USERS_SUBPATH = "/users";
-
-    /** Relative path for tenant configuration data */
-    private static final String INSTANCE_TENANTS_SUBPATH = "/tenants";
-
-    /** Relative path for script data */
-    private static final String SCRIPTS_SUBPATH = "/scripts";
-
-    /** Relative path to tenant configured indicator data */
-    private static final String INSTANCE_TENANT_CONFIGURED_INDICATOR = "configured";
 
     /** Configuration monitor */
     private IConfigurationMonitor configurationMonitor;
@@ -121,121 +102,11 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * getInstanceGlobalScriptsPath()
-     */
-    @Override
-    public String getInstanceGlobalScriptsPath() throws SiteWhereException {
-	return getInstanceConfigurationPath() + SCRIPTS_SUBPATH;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * getInstanceManagementConfigurationPath()
-     */
-    @Override
-    public String getInstanceManagementConfigurationPath() {
-	return getInstanceConfigurationPath() + INSTANCE_MANAGEMENT_CONFIGURATION_PATH;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
      * getInstanceManagementConfigurationData()
      */
     @Override
     public byte[] getInstanceManagementConfigurationData() throws SiteWhereException {
-	return getConfigurationMonitor().getConfigurationDataFor(getInstanceManagementConfigurationPath());
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * getInstanceAuthoritiesConfigurationPath()
-     */
-    @Override
-    public String getInstanceAuthoritiesConfigurationPath() throws SiteWhereException {
-	return getInstanceConfigurationPath() + INSTANCE_AUTHORITIES_SUBPATH;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * getInstanceAuthorityConfigurationPath(java.lang.String)
-     */
-    @Override
-    public String getInstanceAuthorityConfigurationPath(String authority) throws SiteWhereException {
-	return getInstanceAuthoritiesConfigurationPath() + "/" + authority;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * getInstanceUsersConfigurationPath()
-     */
-    @Override
-    public String getInstanceUsersConfigurationPath() throws SiteWhereException {
-	return getInstanceConfigurationPath() + INSTANCE_USERS_SUBPATH;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * getInstanceUserConfigurationPath(java.lang.String)
-     */
-    @Override
-    public String getInstanceUserConfigurationPath(String username) throws SiteWhereException {
-	return getInstanceUsersConfigurationPath() + "/" + username;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
-     * getInstanceTenantsConfigurationPath()
-     */
-    @Override
-    public String getInstanceTenantsConfigurationPath() throws SiteWhereException {
-	return getInstanceConfigurationPath() + INSTANCE_TENANTS_SUBPATH;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * getInstanceTenantConfigurationPath(java.util.UUID)
-     */
-    @Override
-    public String getInstanceTenantConfigurationPath(UUID tenantId) throws SiteWhereException {
-	return getInstanceTenantsConfigurationPath() + "/" + tenantId;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * getInstanceTenantScriptsPath(java.util.UUID)
-     */
-    @Override
-    public String getInstanceTenantScriptsPath(UUID tenantId) throws SiteWhereException {
-	return getInstanceTenantConfigurationPath(tenantId) + SCRIPTS_SUBPATH;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * getInstanceTenantsStatePath()
-     */
-    @Override
-    public String getInstanceTenantsStatePath() throws SiteWhereException {
-	return getInstanceStatePath() + INSTANCE_TENANTS_SUBPATH;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * getInstanceTenantStatePath(java.util.UUID)
-     */
-    @Override
-    public String getInstanceTenantStatePath(UUID tenantId) throws SiteWhereException {
-	return getInstanceTenantsStatePath() + "/" + tenantId;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * getInstanceTenantConfiguredIndicatorPath(java.util.UUID)
-     */
-    @Override
-    public String getInstanceTenantConfiguredIndicatorPath(UUID tenantId) throws SiteWhereException {
-	return getInstanceTenantConfigurationPath(tenantId) + "/" + INSTANCE_TENANT_CONFIGURED_INDICATOR;
+	return new byte[0];
     }
 
     /*
@@ -254,7 +125,7 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 	getConfigurationMonitor().getListeners().add(this);
 
 	// Create script management support.
-	this.scriptManagement = new ZookeeperScriptManagement();
+	this.scriptManagement = new KubernetesScriptManagement();
 
 	// Make sure that instance is bootstrapped before configuring.
 	waitForInstanceInitialization();
@@ -472,7 +343,7 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 	    String path = getConfigurationPath();
 	    ApplicationContext localContext = null;
 	    if (path != null) {
-		String fullPath = getInstanceConfigurationPath() + "/" + path;
+		String fullPath = path;
 		getLogger().info(String.format("Loading configuration from Zookeeper at path '%s'", fullPath));
 		byte[] data = getConfigurationMonitor().getConfigurationDataFor(fullPath);
 		if (data != null) {

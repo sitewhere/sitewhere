@@ -7,8 +7,6 @@
  */
 package com.sitewhere.spi.microservice.configuration;
 
-import java.util.UUID;
-
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.spi.SiteWhereException;
@@ -87,115 +85,12 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
     public String getConfigurationPath() throws SiteWhereException;
 
     /**
-     * Subpath of instance configuration that contains global script data.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getInstanceGlobalScriptsPath() throws SiteWhereException;
-
-    /**
-     * Get path for instance management configuration.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getInstanceManagementConfigurationPath() throws SiteWhereException;
-
-    /**
      * Get data for instance management configuration file.
      * 
      * @return
      * @throws SiteWhereException
      */
     public byte[] getInstanceManagementConfigurationData() throws SiteWhereException;
-
-    /**
-     * Subpath of instance configuration that contains authority configuration data.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getInstanceAuthoritiesConfigurationPath() throws SiteWhereException;
-
-    /**
-     * Get path for authority configuration.
-     * 
-     * @param username
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getInstanceAuthorityConfigurationPath(String authority) throws SiteWhereException;
-
-    /**
-     * Subpath of instance configuration that contains user configuration data.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getInstanceUsersConfigurationPath() throws SiteWhereException;
-
-    /**
-     * Get path for user configuration.
-     * 
-     * @param username
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getInstanceUserConfigurationPath(String username) throws SiteWhereException;
-
-    /**
-     * Subpath of instance configuration that contains tenant configuration data.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getInstanceTenantsConfigurationPath() throws SiteWhereException;
-
-    /**
-     * Subpath of instance configuration that contains tenant script data.
-     * 
-     * @param tenantId
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getInstanceTenantScriptsPath(UUID tenantId) throws SiteWhereException;
-
-    /**
-     * Get path for tenant configuration.
-     * 
-     * @param tenantId
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getInstanceTenantConfigurationPath(UUID tenantId) throws SiteWhereException;
-
-    /**
-     * Subpath of instance state that contains tenant state data.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getInstanceTenantsStatePath() throws SiteWhereException;
-
-    /**
-     * Get path for tenant state.
-     * 
-     * @param tenantId
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getInstanceTenantStatePath(UUID tenantId) throws SiteWhereException;
-
-    /**
-     * Get path to Zk node that indicates a tenant has been configured with template
-     * data.
-     * 
-     * @param tenantId
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getInstanceTenantConfiguredIndicatorPath(UUID tenantId) throws SiteWhereException;
 
     /**
      * Initialize configurable components.

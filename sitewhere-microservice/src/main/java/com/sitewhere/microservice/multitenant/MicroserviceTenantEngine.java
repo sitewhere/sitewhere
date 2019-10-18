@@ -131,19 +131,6 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
      */
     @Override
     public byte[] getModuleConfiguration() throws SiteWhereException {
-	// try {
-	// CuratorFramework curator =
-	// getMicroservice().getZookeeperManager().getCurator();
-	// if (curator.checkExists().forPath(getModuleConfigurationPath()) == null) {
-	// throw new SiteWhereException("Module configuration '" +
-	// getModuleConfigurationPath()
-	// + "' does not exist for '" + getTenant().getName() + "'.");
-	// }
-	// byte[] data = curator.getData().forPath(getModuleConfigurationPath());
-	// return data;
-	// } catch (Exception e) {
-	// throw new SiteWhereException("Unable to load module configuration.", e);
-	// }
 	return null;
     }
 
@@ -153,17 +140,6 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
      */
     @Override
     public void updateModuleConfiguration(byte[] content) throws SiteWhereException {
-	// try {
-	// CuratorFramework curator =
-	// getMicroservice().getZookeeperManager().getCurator();
-	// if (curator.checkExists().forPath(getModuleConfigurationPath()) == null) {
-	// curator.create().forPath(getModuleConfigurationPath(), content);
-	// } else {
-	// curator.setData().forPath(getModuleConfigurationPath(), content);
-	// }
-	// } catch (Exception e) {
-	// throw new SiteWhereException("Unable to update module configuration.", e);
-	// }
     }
 
     /**
@@ -179,7 +155,6 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	    properties.put("tenant.token", getTenant().getToken());
 	    this.moduleContext = ConfigurationUtils.buildSubcontext(data, properties,
 		    ((IConfigurableMicroservice<?>) getMicroservice()).getGlobalApplicationContext());
-	    getLogger().info("Successfully loaded module configuration from '" + getModuleConfigurationPath() + "'.");
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to load module configuration.", e);
 	}
@@ -560,65 +535,12 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
-     * getTenantConfigurationPath()
-     */
-    @Override
-    public String getTenantConfigurationPath() throws SiteWhereException {
-	return ((IConfigurableMicroservice<?>) getMicroservice())
-		.getInstanceTenantConfigurationPath(getTenant().getId());
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * getTenantStatePath()
-     */
-    @Override
-    public String getTenantStatePath() throws SiteWhereException {
-	return ((IConfigurableMicroservice<?>) getMicroservice()).getInstanceTenantStatePath(getTenant().getId()) + "/"
-		+ getMicroservice().getIdentifier().getPath();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
-     * getModuleLockPath()
-     */
-    @Override
-    public String getModuleLockPath() throws SiteWhereException {
-	return getTenantStatePath() + "/" + MicroserviceTenantEngine.MODULE_LOCK_NAME;
-    }
-
-    /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
      * getModuleConfigurationName()
      */
     @Override
     public String getModuleConfigurationName() throws SiteWhereException {
 	return getMicroservice().getIdentifier().getPath() + MicroserviceTenantEngine.MODULE_CONFIGURATION_SUFFIX;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
-     * getModuleConfigurationPath()
-     */
-    @Override
-    public String getModuleConfigurationPath() throws SiteWhereException {
-	return getTenantConfigurationPath() + "/" + getModuleConfigurationName();
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * getTenantDatasetBootstrappedPath()
-     */
-    @Override
-    public String getTenantDatasetBootstrappedPath() throws SiteWhereException {
-	return getTenantStatePath() + "/" + MicroserviceTenantEngine.DATASET_BOOTSTRAPPED_NAME;
     }
 
     /*

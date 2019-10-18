@@ -7,7 +7,6 @@
  */
 package com.sitewhere.spi.microservice;
 
-import java.io.File;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -17,14 +16,12 @@ import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
-import com.sitewhere.spi.microservice.kafka.tenant.ITenantModelProducer;
 import com.sitewhere.spi.microservice.metrics.IMetricsServer;
 import com.sitewhere.spi.microservice.scripting.IScriptTemplateManager;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 import com.sitewhere.spi.microservice.state.IMicroserviceState;
-import com.sitewhere.spi.microservice.state.IMicroserviceStateUpdatesKafkaProducer;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.system.IVersion;
@@ -174,21 +171,6 @@ public interface IMicroservice<T extends IFunctionIdentifier>
     public IMicroserviceManagementGrpcServer getMicroserviceManagementGrpcServer();
 
     /**
-     * Get Kafka producer for reporting state updates in microservice and managed
-     * tenant engines.
-     * 
-     * @return
-     */
-    public IMicroserviceStateUpdatesKafkaProducer getStateUpdatesKafkaProducer();
-
-    /**
-     * Get tenant model producer.
-     * 
-     * @return
-     */
-    public ITenantModelProducer getTenantModelProducer();
-
-    /**
      * Get manager for script templates which provide examples of
      * microservice-specific scripting funcionality.
      * 
@@ -216,51 +198,6 @@ public interface IMicroservice<T extends IFunctionIdentifier>
     public String getInstanceZkPath();
 
     /**
-     * Get Zookeeper path for instance configuration.
-     * 
-     * @return
-     */
-    public String getInstanceConfigurationPath();
-
-    /**
-     * Get Zookeeper path for instance state.
-     * 
-     * @return
-     */
-    public String getInstanceStatePath();
-
-    /**
-     * Get path for marker used to indicate instance configuration is bootstrapped.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getInstanceConfigBootstrappedMarker() throws SiteWhereException;
-
-    /**
-     * Get path for marker used to indicate instance users are bootstrapped.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getInstanceUsersBootstrappedMarker() throws SiteWhereException;
-
-    /**
-     * Get path for marker used to indicate instance tenants are bootstrapped.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getInstanceTenantsBootstrappedMarker() throws SiteWhereException;
-
-    /**
-     * Get root folder on local filesystem where script templates may be found.
-     * 
-     * @return
-     */
-    public File getScriptTemplatesRoot();
-
-    /**
      * Get metrics server.
      * 
      * @return
@@ -281,11 +218,4 @@ public interface IMicroservice<T extends IFunctionIdentifier>
      * @return
      */
     public ExecutorService getMicroserviceOperationsService();
-
-    /**
-     * Get executor service that handle heartbeat messages.
-     * 
-     * @return
-     */
-    public ExecutorService getMicroserviceHeartbeatService();
 }

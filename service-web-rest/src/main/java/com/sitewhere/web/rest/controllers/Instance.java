@@ -7,7 +7,6 @@
  */
 package com.sitewhere.web.rest.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -45,7 +44,6 @@ import com.sitewhere.spi.microservice.scripting.IScriptManagement;
 import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
 import com.sitewhere.spi.microservice.scripting.IScriptTemplate;
 import com.sitewhere.spi.microservice.scripting.IScriptVersion;
-import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
@@ -53,7 +51,6 @@ import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
 import com.sitewhere.web.rest.RestControllerBase;
 import com.sitewhere.web.rest.model.InstanceTopologySummary;
-import com.sitewhere.web.rest.model.TopologySummaryBuilder;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -85,9 +82,7 @@ public class Instance extends RestControllerBase {
     @ApiOperation(value = "Get current instance topology")
     @Secured({ SiteWhereRoles.REST })
     public List<InstanceTopologySummary> getInstanceTopology() throws SiteWhereException {
-	IInstanceTopologySnapshot snapshot = getMicroservice().getTopologyStateAggregator()
-		.getInstanceTopologySnapshot();
-	return TopologySummaryBuilder.build(snapshot);
+	return null;
     }
 
     /**
@@ -100,16 +95,7 @@ public class Instance extends RestControllerBase {
     @ApiOperation(value = "Get global microservices in current instance topology")
     @Secured({ SiteWhereRoles.REST })
     public List<InstanceTopologySummary> getGlobalInstanceTopology() throws SiteWhereException {
-	IInstanceTopologySnapshot snapshot = getMicroservice().getTopologyStateAggregator()
-		.getInstanceTopologySnapshot();
-	List<InstanceTopologySummary> summary = TopologySummaryBuilder.build(snapshot);
-	List<InstanceTopologySummary> filtered = new ArrayList<>();
-	for (InstanceTopologySummary current : summary) {
-	    if (current.isGlobal()) {
-		filtered.add(current);
-	    }
-	}
-	return filtered;
+	return null;
     }
 
     /**
@@ -122,16 +108,7 @@ public class Instance extends RestControllerBase {
     @ApiOperation(value = "Get tenant microservices in current instance topology")
     @Secured({ SiteWhereRoles.REST })
     public List<InstanceTopologySummary> getTenantInstanceTopology() throws SiteWhereException {
-	IInstanceTopologySnapshot snapshot = getMicroservice().getTopologyStateAggregator()
-		.getInstanceTopologySnapshot();
-	List<InstanceTopologySummary> summary = TopologySummaryBuilder.build(snapshot);
-	List<InstanceTopologySummary> filtered = new ArrayList<>();
-	for (InstanceTopologySummary current : summary) {
-	    if (!current.isGlobal()) {
-		filtered.add(current);
-	    }
-	}
-	return filtered;
+	return null;
     }
 
     /**
@@ -150,12 +127,7 @@ public class Instance extends RestControllerBase {
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
 	    @ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken)
 	    throws SiteWhereException {
-	ITenant tenant = assureTenant(tenantToken);
-	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	if (msid == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidMicroserviceIdentifier, ErrorLevel.ERROR);
-	}
-	return getMicroservice().getTopologyStateAggregator().getTenantEngineState(msid.getPath(), tenant.getId());
+	return null;
     }
 
     /**

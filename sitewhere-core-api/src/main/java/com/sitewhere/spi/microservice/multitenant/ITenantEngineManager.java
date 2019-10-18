@@ -10,7 +10,6 @@ package com.sitewhere.spi.microservice.multitenant;
 import java.util.UUID;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.configuration.ITenantPathInfo;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
@@ -53,32 +52,6 @@ public interface ITenantEngineManager<T extends IMicroserviceTenantEngine> exten
      * @throws SiteWhereException
      */
     public void updateTenantConfiguration(UUID tenantId, byte[] content) throws SiteWhereException;
-
-    /**
-     * Handle configuration added.
-     * 
-     * @param pathInfo
-     * @param data
-     * @throws SiteWhereException
-     */
-    public void onConfigurationAdded(ITenantPathInfo pathInfo, byte[] data) throws SiteWhereException;
-
-    /**
-     * Handle configuration updated.
-     * 
-     * @param pathInfo
-     * @param data
-     * @throws SiteWhereException
-     */
-    public void onConfigurationUpdated(ITenantPathInfo pathInfo, byte[] data) throws SiteWhereException;
-
-    /**
-     * Handle configuration deleted.
-     * 
-     * @param pathInfo
-     * @throws SiteWhereException
-     */
-    public void onConfigurationDeleted(ITenantPathInfo pathInfo) throws SiteWhereException;
 
     /**
      * Shuts down and restarts the given tenant engine.

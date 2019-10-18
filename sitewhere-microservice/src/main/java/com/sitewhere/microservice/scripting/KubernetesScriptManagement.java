@@ -16,7 +16,6 @@ import com.sitewhere.core.Base58;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
-import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.microservice.scripting.IScriptCreateRequest;
 import com.sitewhere.spi.microservice.scripting.IScriptManagement;
 import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
@@ -28,16 +27,7 @@ import com.sitewhere.spi.microservice.scripting.IScriptVersion;
  * 
  * @author Derek
  */
-public class ZookeeperScriptManagement extends LifecycleComponent implements IScriptManagement {
-
-    /** Folder path for script metadata */
-    public static final String METADATA_FOLDER = "metadata";
-
-    /** Folder path for script content */
-    public static final String CONTENT_FOLDER = "content";
-
-    /** Suffix added to indicate a metadata file */
-    public static final String METADATA_SUFFIX = ".meta";
+public class KubernetesScriptManagement extends LifecycleComponent implements IScriptManagement {
 
     /*
      * @see com.sitewhere.spi.microservice.scripting.IScriptManagement#
@@ -46,13 +36,7 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
      */
     @Override
     public String getScriptMetadataZkPath(IFunctionIdentifier identifier, UUID tenantId) throws SiteWhereException {
-	if (tenantId == null) {
-	    return ((IConfigurableMicroservice<?>) getMicroservice()).getInstanceGlobalScriptsPath() + "/"
-		    + identifier.getPath() + "/" + METADATA_FOLDER;
-	} else {
-	    return ((IConfigurableMicroservice<?>) getMicroservice()).getInstanceTenantScriptsPath(tenantId) + "/"
-		    + identifier.getPath() + "/" + METADATA_FOLDER;
-	}
+	return null;
     }
 
     /*
@@ -62,13 +46,7 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
      */
     @Override
     public String getScriptContentZkPath(IFunctionIdentifier identifier, UUID tenantId) throws SiteWhereException {
-	if (tenantId == null) {
-	    return ((IConfigurableMicroservice<?>) getMicroservice()).getInstanceGlobalScriptsPath() + "/"
-		    + identifier.getPath() + "/" + CONTENT_FOLDER;
-	} else {
-	    return ((IConfigurableMicroservice<?>) getMicroservice()).getInstanceTenantScriptsPath(tenantId) + "/"
-		    + identifier.getPath() + "/" + CONTENT_FOLDER;
-	}
+	return null;
     }
 
     /*
@@ -79,29 +57,6 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
     @Override
     public List<IScriptMetadata> getScriptMetadataList(IFunctionIdentifier identifier, UUID tenantId)
 	    throws SiteWhereException {
-	// try {
-	// List<String> children = getZookeeperManager().getCurator().getChildren()
-	// .forPath(getScriptMetadataZkPath(identifier, tenantId));
-	// List<IScriptMetadata> result = new ArrayList<>();
-	// for (String child : children) {
-	// if (child.endsWith(METADATA_SUFFIX)) {
-	// result.add(getScriptMetadata(identifier, tenantId,
-	// child.substring(0, child.indexOf(METADATA_SUFFIX))));
-	// }
-	// }
-	// result.sort(new Comparator<IScriptMetadata>() {
-	//
-	// @Override
-	// public int compare(IScriptMetadata o1, IScriptMetadata o2) {
-	// return o1.getName().compareTo(o2.getName());
-	// }
-	// });
-	// return result;
-	// } catch (NoNodeException e) {
-	// return new ArrayList<>();
-	// } catch (Exception e) {
-	// throw new SiteWhereException("Unable to retrieve script metadata list.", e);
-	// }
 	return null;
     }
 
@@ -114,16 +69,6 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
     @Override
     public IScriptMetadata getScriptMetadata(IFunctionIdentifier identifier, UUID tenantId, String scriptId)
 	    throws SiteWhereException {
-	// try {
-	// String path = getScriptMetadataZkPath(identifier, tenantId) + "/" + scriptId
-	// + METADATA_SUFFIX;
-	// byte[] content = getZookeeperManager().getCurator().getData().forPath(path);
-	// return MarshalUtils.unmarshalJson(content, ScriptMetadata.class);
-	// } catch (NoNodeException e) {
-	// return null;
-	// } catch (Exception e) {
-	// throw new SiteWhereException("Unable to retrieve script metadata.", e);
-	// }
 	return null;
     }
 
@@ -160,16 +105,6 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
     @Override
     public byte[] getScriptContent(IFunctionIdentifier identifier, UUID tenantId, String scriptId, String versionId)
 	    throws SiteWhereException {
-	// IScriptMetadata meta = assureScriptMetadata(identifier, tenantId, scriptId);
-	// IScriptVersion version = assureScriptVersion(meta, versionId);
-	// String contentPath = getScriptMetadataZkPath(identifier, tenantId) + "/" +
-	// getVersionContentPath(meta, version);
-	// try {
-	// return getZookeeperManager().getCurator().getData().forPath(contentPath);
-	// } catch (Exception e) {
-	// throw new SiteWhereException("Unable to read script content for '" +
-	// versionId + "'.");
-	// }
 	return null;
     }
 
@@ -440,16 +375,6 @@ public class ZookeeperScriptManagement extends LifecycleComponent implements ISc
 	bb.putLong(uuid.getMostSignificantBits());
 	bb.putLong(uuid.getLeastSignificantBits());
 	return Base58.encode(bb.array());
-    }
-
-    /**
-     * Get relative path for script metadata.
-     * 
-     * @param metadata
-     * @return
-     */
-    protected String getMetadataFilePath(IScriptMetadata metadata) {
-	return metadata.getId() + METADATA_SUFFIX;
     }
 
     /**

@@ -13,6 +13,9 @@ dependencies {
 	compile project(':sitewhere-core')
 	compile project(':sitewhere-configuration')
 	
+	// SiteWhere Kubernetes Model (includes fabric8 client).
+	compile group: 'com.sitewhere', name: 'sitewhere-k8s-model', version: "0.0.3"
+	
 	// GRPC dependencies.
 	compile project(':sitewhere-grpc-client')
 	

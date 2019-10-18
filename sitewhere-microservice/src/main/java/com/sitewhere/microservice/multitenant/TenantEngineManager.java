@@ -28,7 +28,6 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.ServiceNotAvailableException;
-import com.sitewhere.spi.microservice.configuration.ITenantPathInfo;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineManager;
 import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
@@ -259,76 +258,6 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR);
 	}
 	engine.updateModuleConfiguration(content);
-    }
-
-    /**
-     * Get tenant engine based on configuration path information.
-     * 
-     * @param pathInfo
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IMicroserviceTenantEngine getTenantEngineForPathInfo(ITenantPathInfo pathInfo) throws SiteWhereException {
-	if (pathInfo != null) {
-	    IMicroserviceTenantEngine engine = getTenantEngineByTenantId(pathInfo.getTenantId());
-	    if (engine != null) {
-		return engine;
-	    } else if (!getTenantInitializationQueue().contains(pathInfo.getTenantId())) {
-		getTenantInitializationQueue().offer(pathInfo.getTenantId());
-	    }
-	}
-	return null;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.multitenant.ITenantEngineManager#
-     * onConfigurationAdded(com.sitewhere.spi.microservice.configuration.
-     * ITenantPathInfo, byte[])
-     */
-    @Override
-    public void onConfigurationAdded(ITenantPathInfo pathInfo, byte[] data) throws SiteWhereException {
-	try {
-	    IMicroserviceTenantEngine engine = getTenantEngineForPathInfo(pathInfo);
-	    if (engine != null) {
-		engine.onConfigurationAdded(pathInfo.getPath(), data);
-	    }
-	} catch (SiteWhereException e) {
-	    getLogger().error("Error processing configuration addition.", e);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.multitenant.ITenantEngineManager#
-     * onConfigurationUpdated(com.sitewhere.spi.microservice.configuration.
-     * ITenantPathInfo, byte[])
-     */
-    @Override
-    public void onConfigurationUpdated(ITenantPathInfo pathInfo, byte[] data) throws SiteWhereException {
-	try {
-	    IMicroserviceTenantEngine engine = getTenantEngineForPathInfo(pathInfo);
-	    if (engine != null) {
-		engine.onConfigurationUpdated(pathInfo.getPath(), data);
-	    }
-	} catch (SiteWhereException e) {
-	    getLogger().error("Error processing configuration update.", e);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.multitenant.ITenantEngineManager#
-     * onConfigurationDeleted(com.sitewhere.spi.microservice.configuration.
-     * ITenantPathInfo)
-     */
-    @Override
-    public void onConfigurationDeleted(ITenantPathInfo pathInfo) throws SiteWhereException {
-	try {
-	    IMicroserviceTenantEngine engine = getTenantEngineForPathInfo(pathInfo);
-	    if (engine != null) {
-		engine.onConfigurationDeleted(pathInfo.getPath());
-	    }
-	} catch (SiteWhereException e) {
-	    getLogger().error("Error processing configuration update.", e);
-	}
     }
 
     /*

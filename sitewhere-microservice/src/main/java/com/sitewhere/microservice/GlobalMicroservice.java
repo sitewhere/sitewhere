@@ -71,7 +71,9 @@ public abstract class GlobalMicroservice<T extends IFunctionIdentifier> extends 
      */
     @Override
     public byte[] getConfiguration() throws SiteWhereException {
-	return getConfigurationDataFor(getInstanceConfigurationPath() + "/" + getConfigurationPath());
+	// return getConfigurationDataFor(getInstanceConfigurationPath() + "/" +
+	// getConfigurationPath());
+	return new byte[0];
     }
 
     /*
@@ -82,15 +84,6 @@ public abstract class GlobalMicroservice<T extends IFunctionIdentifier> extends 
      */
     @Override
     public void onConfigurationAdded(String path, byte[] data) {
-	if (isConfigurationCacheReady()) {
-	    try {
-		if (isConfigurationPath(path)) {
-		    getLogger().info("Microservice configuration added.");
-		}
-	    } catch (SiteWhereException e) {
-		getLogger().error("Unable to processing added configuration.", e);
-	    }
-	}
     }
 
     /*
@@ -101,16 +94,6 @@ public abstract class GlobalMicroservice<T extends IFunctionIdentifier> extends 
      */
     @Override
     public void onConfigurationUpdated(String path, byte[] data) {
-	if (isConfigurationCacheReady()) {
-	    try {
-		if (isConfigurationPath(path)) {
-		    getLogger().info("Microservice configuration updated.");
-		    restartConfiguration();
-		}
-	    } catch (SiteWhereException e) {
-		getLogger().error("Unable to processing updated configuration.", e);
-	    }
-	}
     }
 
     /*
@@ -121,31 +104,6 @@ public abstract class GlobalMicroservice<T extends IFunctionIdentifier> extends 
      */
     @Override
     public void onConfigurationDeleted(String path) {
-	if (isConfigurationCacheReady()) {
-	    try {
-		if (isConfigurationPath(path)) {
-		    getLogger().info("Microservice configuration deleted.");
-		}
-	    } catch (SiteWhereException e) {
-		getLogger().error("Unable to processing deleted configuration.", e);
-	    }
-	}
-    }
-
-    /**
-     * Indicates whether the given path points to a configuration file.
-     * 
-     * @param path
-     * @return
-     * @throws SiteWhereException
-     */
-    protected boolean isConfigurationPath(String path) throws SiteWhereException {
-	String localConfig = getInstanceConfigurationPath() + "/" + getConfigurationPath();
-	String instanceConfig = getInstanceManagementConfigurationPath();
-	if ((localConfig.equals(path)) || (instanceConfig.equals(path))) {
-	    return true;
-	}
-	return false;
     }
 
     /*
@@ -155,17 +113,5 @@ public abstract class GlobalMicroservice<T extends IFunctionIdentifier> extends 
      */
     @Override
     public void updateConfiguration(byte[] content) throws SiteWhereException {
-	// try {
-	// String configPath = getInstanceConfigurationPath() + "/" +
-	// getConfigurationPath();
-	// CuratorFramework curator = getZookeeperManager().getCurator();
-	// if (curator.checkExists().forPath(configPath) == null) {
-	// curator.create().forPath(configPath, content);
-	// } else {
-	// curator.setData().forPath(configPath, content);
-	// }
-	// } catch (Exception e) {
-	// throw new SiteWhereException("Unable to update module configuration.", e);
-	// }
     }
 }

@@ -7,7 +7,6 @@
  */
 package com.sitewhere.microservice;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -21,12 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sitewhere.Version;
 import com.sitewhere.grpc.client.tenant.CachedTenantManagement;
-import com.sitewhere.microservice.kafka.tenant.TenantManagementKafkaTriggers;
-import com.sitewhere.microservice.kafka.tenant.TenantModelProducer;
 import com.sitewhere.microservice.management.MicroserviceManagementGrpcServer;
 import com.sitewhere.microservice.scripting.ScriptTemplateManager;
-import com.sitewhere.microservice.state.MicroserviceStateUpdatesKafkaProducer;
-import com.sitewhere.microservice.tenant.persistence.ZookeeperTenantManagement;
+import com.sitewhere.microservice.tenant.persistence.KubernetesTenantManagement;
 import com.sitewhere.rest.model.configuration.ConfigurationModel;
 import com.sitewhere.rest.model.microservice.state.MicroserviceDetails;
 import com.sitewhere.rest.model.microservice.state.MicroserviceState;
@@ -42,18 +38,15 @@ import com.sitewhere.spi.microservice.configuration.model.IElementRole;
 import com.sitewhere.spi.microservice.grpc.IMicroserviceManagementGrpcServer;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
-import com.sitewhere.spi.microservice.kafka.tenant.ITenantModelProducer;
 import com.sitewhere.spi.microservice.metrics.IMetricsServer;
 import com.sitewhere.spi.microservice.scripting.IScriptTemplateManager;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 import com.sitewhere.spi.microservice.state.IMicroserviceState;
-import com.sitewhere.spi.microservice.state.IMicroserviceStateUpdatesKafkaProducer;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.tenant.ITenantManagement;
 
@@ -62,27 +55,6 @@ import com.sitewhere.spi.tenant.ITenantManagement;
  */
 public abstract class Microservice<T extends IFunctionIdentifier> extends LifecycleComponent
 	implements IMicroservice<T> {
-
-    /** Instance configuration folder name */
-    private static final String INSTANCE_CONFIGURATION_FOLDER = "/conf";
-
-    /** Instance state folder name */
-    private static final String INSTANCE_STATE_FOLDER = "/state";
-
-    /** Relative path to instance configuration bootstrap marker */
-    private static final String INSTANCE_CONFIG_BOOTSTRAP_MARKER = "/config-bootstrapped";
-
-    /** Relative path to instance users bootstrap marker */
-    private static final String INSTANCE_USERS_BOOTSTRAP_MARKER = "/users-bootstrapped";
-
-    /** Relative path to instance tenants bootstrap marker */
-    private static final String INSTANCE_TENANTS_BOOTSTRAP_MARKER = "/tenants-bootstrapped";
-
-    /** Heartbeat interval in seconds */
-    private static final int HEARTBEAT_INTERVAL_SECS = 10;
-
-    /** Relative path on local filesystem to script templates folder */
-    private static final String SCRIPT_TEMPLATES_FOLDER_PATH = "/script-templates";
 
     /** Instance settings */
     @Autowired
@@ -119,12 +91,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     /** Microservice management GRPC server */
     private IMicroserviceManagementGrpcServer microserviceManagementGrpcServer;
 
-    /** Kafka producer for microservice state updates */
-    private IMicroserviceStateUpdatesKafkaProducer stateUpdatesKafkaProducer;
-
-    /** Reflects tenant model updates to Kafka topic */
-    private ITenantModelProducer tenantModelProducer = new TenantModelProducer();
-
     /** Script template manager instance */
     private IScriptTemplateManager scriptTemplateManager;
 
@@ -133,9 +99,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     /** Lifecycle operations thread pool */
     private ExecutorService microserviceOperationsService;
-
-    /** Executor for heartbeat */
-    private ExecutorService microserviceHeartbeatService;
 
     /** Unique id for microservice */
     private UUID id = UUID.randomUUID();
@@ -184,9 +147,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	// Initialize management APIs.
 	initializeManagementApis();
 
-	// Initialize state management components.
-	initializeStateManagement();
-
 	// Organizes steps for initializing microservice.
 	ICompositeLifecycleStep initialize = new CompositeLifecycleStep("Initialize " + getName());
 
@@ -214,27 +174,12 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	// Start HTTP metrics server.
 	initialize.addStartStep(this, getMetricsServer(), true);
 
-	// Initialize Kafka producer for reporting state.
-	initialize.addInitializeStep(this, getStateUpdatesKafkaProducer(), true);
-
-	// Start Kafka producer for reporting state.
-	initialize.addStartStep(this, getStateUpdatesKafkaProducer(), true);
-
-	// Initialize Kafka producer for reporting tenant updates.
-	initialize.addInitializeStep(this, getTenantModelProducer(), true);
-
-	// Start Kafka producer for reporting tenant updates.
-	initialize.addStartStep(this, getTenantModelProducer(), true);
-
 	// Execute initialization steps.
 	initialize.execute(monitor);
 
 	// Record start time.
 	this.startTime = System.currentTimeMillis();
 	getMicroserviceAnalytics().sendMicroserviceStarted(this);
-
-	// Start sending heartbeats.
-	getMicroserviceHeartbeatService().execute(new Heartbeat());
     }
 
     /**
@@ -256,17 +201,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
      * Initialize management APIs.
      */
     protected void initializeManagementApis() {
-	this.tenantManagement = new TenantManagementKafkaTriggers(new ZookeeperTenantManagement());
+	this.tenantManagement = new KubernetesTenantManagement();
 	this.cachedTenantManagement = new CachedTenantManagement(this.tenantManagement,
 		new CachedTenantManagement.CacheSettings());
-    }
-
-    /**
-     * Initialize components related to state management.
-     */
-    protected void initializeStateManagement() {
-	this.stateUpdatesKafkaProducer = new MicroserviceStateUpdatesKafkaProducer();
-	this.microserviceHeartbeatService = Executors.newSingleThreadExecutor(new MicroserviceHeartbeatThreadFactory());
     }
 
     /*
@@ -289,19 +226,8 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getMicroserviceAnalytics().sendMicroserviceStopped(this);
 
-	// Stop sending heartbeats.
-	if (getMicroserviceHeartbeatService() != null) {
-	    getMicroserviceHeartbeatService().shutdownNow();
-	}
-
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
-
-	// Stop Kafka producer for reporting tenant updates.
-	stop.addStopStep(this, getTenantModelProducer());
-
-	// Stop Kafka producer for reporting state.
-	stop.addStopStep(this, getStateUpdatesKafkaProducer());
 
 	// HTTP metrics server.
 	stop.addStopStep(this, getMetricsServer());
@@ -418,51 +344,11 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     /*
      * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#setLifecycleStatus(com.
-     * sitewhere.spi.server.lifecycle.LifecycleStatus)
-     */
-    @Override
-    public void setLifecycleStatus(LifecycleStatus lifecycleStatus) {
-	super.setLifecycleStatus(lifecycleStatus);
-	if (sendChangedState()) {
-	    getLogger().info(
-		    String.format("Sent state update for lifecycle status change '%s'", getLifecycleStatus().name()));
-	}
-    }
-
-    /**
-     * Send current state for microservice to Kafka topic.
-     * 
-     * @return
-     */
-    protected boolean sendChangedState() {
-	if ((getStateUpdatesKafkaProducer() != null)
-		&& (getStateUpdatesKafkaProducer().getLifecycleStatus() == LifecycleStatus.Started)) {
-	    try {
-		IMicroserviceState state = getCurrentState();
-		getStateUpdatesKafkaProducer().send(state);
-		return true;
-	    } catch (SiteWhereException e) {
-		getLogger().error("Unable to send lifecycle status.", e);
-	    }
-	} else {
-	    getLogger().debug("Unable to report state. Waiting on Kafka producer to become available.");
-	}
-	return false;
-    }
-
-    /*
-     * @see
      * com.sitewhere.spi.microservice.IMicroservice#onTenantEngineStateChanged(com.
      * sitewhere.spi.microservice.state.ITenantEngineState)
      */
     @Override
     public void onTenantEngineStateChanged(ITenantEngineState state) {
-	try {
-	    getStateUpdatesKafkaProducer().send(state);
-	} catch (SiteWhereException e) {
-	    getLogger().error("Unable to report tenant engine state.", e);
-	}
     }
 
     /*
@@ -473,60 +359,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     @Override
     public String getInstanceZkPath() {
 	return "/" + getInstanceSettings().getInstanceId();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.microservice.spi.IMicroservice#getInstanceConfigurationPath ()
-     */
-    @Override
-    public String getInstanceConfigurationPath() {
-	return getInstanceZkPath() + INSTANCE_CONFIGURATION_FOLDER;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getInstanceStatePath()
-     */
-    @Override
-    public String getInstanceStatePath() {
-	return getInstanceZkPath() + INSTANCE_STATE_FOLDER;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#
-     * getInstanceConfigBootstrappedMarker()
-     */
-    @Override
-    public String getInstanceConfigBootstrappedMarker() throws SiteWhereException {
-	return getInstanceStatePath() + INSTANCE_CONFIG_BOOTSTRAP_MARKER;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#
-     * getInstanceUsersBootstrappedMarker()
-     */
-    @Override
-    public String getInstanceUsersBootstrappedMarker() throws SiteWhereException {
-	return getInstanceStatePath() + INSTANCE_USERS_BOOTSTRAP_MARKER;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#
-     * getInstanceTenantsBootstrappedMarker()
-     */
-    @Override
-    public String getInstanceTenantsBootstrappedMarker() throws SiteWhereException {
-	return getInstanceStatePath() + INSTANCE_TENANTS_BOOTSTRAP_MARKER;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getScriptTemplatesRoot()
-     */
-    @Override
-    public File getScriptTemplatesRoot() {
-	return new File(SCRIPT_TEMPLATES_FOLDER_PATH);
     }
 
     /*
@@ -628,31 +460,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.microservice.IMicroservice#getStateUpdatesKafkaProducer()
-     */
-    @Override
-    public IMicroserviceStateUpdatesKafkaProducer getStateUpdatesKafkaProducer() {
-	return stateUpdatesKafkaProducer;
-    }
-
-    public void setStateUpdatesKafkaProducer(IMicroserviceStateUpdatesKafkaProducer stateUpdatesKafkaProducer) {
-	this.stateUpdatesKafkaProducer = stateUpdatesKafkaProducer;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getTenantModelProducer()
-     */
-    @Override
-    public ITenantModelProducer getTenantModelProducer() {
-	return tenantModelProducer;
-    }
-
-    public void setTenantModelProducer(ITenantModelProducer tenantModelProducer) {
-	this.tenantModelProducer = tenantModelProducer;
-    }
-
-    /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getScriptTemplateManager()
      */
     @Override
@@ -714,47 +521,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	this.microserviceOperationsService = microserviceOperationsService;
     }
 
-    /*
-     * @see
-     * com.sitewhere.spi.microservice.IMicroservice#getMicroserviceHeartbeatService(
-     * )
-     */
-    @Override
-    public ExecutorService getMicroserviceHeartbeatService() {
-	return microserviceHeartbeatService;
-    }
-
-    public void setMicroserviceHeartbeatService(ExecutorService microserviceHeartbeatService) {
-	this.microserviceHeartbeatService = microserviceHeartbeatService;
-    }
-
-    /**
-     * Delivers microservice state as a heartbeat indication to other microservices.
-     * 
-     * @author Derek
-     */
-    private class Heartbeat implements Runnable {
-
-	@Override
-	public void run() {
-	    while (true) {
-		try {
-		    getLogger().trace("Sending heartbeat.");
-		    sendChangedState();
-		} catch (Throwable t) {
-		    getLogger().error("Unable to send state for heartbeat.", t);
-		}
-
-		try {
-		    Thread.sleep(HEARTBEAT_INTERVAL_SECS * 1000);
-		} catch (InterruptedException e) {
-		    getLogger().warn("Heartbeat service shutting down.");
-		    return;
-		}
-	    }
-	}
-    }
-
     /** Used for naming microservice operation threads */
     private class MicroserviceOperationsThreadFactory implements ThreadFactory {
 
@@ -763,17 +529,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
 	public Thread newThread(Runnable r) {
 	    return new Thread(r, "Service Ops " + counter.incrementAndGet());
-	}
-    }
-
-    /** Used for naming microservice heartbeat thread */
-    private class MicroserviceHeartbeatThreadFactory implements ThreadFactory {
-
-	/** Counts threads */
-	private AtomicInteger counter = new AtomicInteger();
-
-	public Thread newThread(Runnable r) {
-	    return new Thread(r, "Service Heartbeat " + counter.incrementAndGet());
 	}
     }
 }
