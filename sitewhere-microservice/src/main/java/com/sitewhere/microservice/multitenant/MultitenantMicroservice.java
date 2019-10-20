@@ -7,8 +7,6 @@
  */
 package com.sitewhere.microservice.multitenant;
 
-import java.util.UUID;
-
 import com.sitewhere.microservice.configuration.ConfigurableMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
@@ -105,20 +103,20 @@ public abstract class MultitenantMicroservice<I extends IFunctionIdentifier, T e
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * getTenantEngineByTenantId(java.util.UUID)
+     * getTenantEngineByToken(java.lang.String)
      */
     @Override
-    public T getTenantEngineByTenantId(UUID tenantId) throws SiteWhereException {
-	return getTenantEngineManager().getTenantEngineByTenantId(tenantId);
+    public T getTenantEngineByToken(String token) throws SiteWhereException {
+	return getTenantEngineManager().getTenantEngineByToken(token);
     }
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * assureTenantEngineAvailable(java.util.UUID)
+     * assureTenantEngineAvailable(java.lang.String)
      */
     @Override
-    public T assureTenantEngineAvailable(UUID tenantId) throws TenantEngineNotAvailableException {
-	return getTenantEngineManager().assureTenantEngineAvailable(tenantId);
+    public T assureTenantEngineAvailable(String token) throws TenantEngineNotAvailableException {
+	return getTenantEngineManager().assureTenantEngineAvailable(token);
     }
 
     /*

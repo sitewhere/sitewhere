@@ -17,7 +17,6 @@ import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.security.SystemUserCallable;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.microservice.groovy.IGroovyComponent;
 import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
@@ -65,9 +64,11 @@ public class GroovyComponent extends TenantEngineLifecycleComponent implements I
 	if (getScriptId() == null) {
 	    throw new SiteWhereException("Script id was not initialized properly.");
 	}
-	this.scriptMetadata = ((IConfigurableMicroservice<?>) getMicroservice()).getScriptManagement()
-		.getScriptMetadata(getMicroservice().getIdentifier(), getTenantEngine().getTenant().getId(),
-			getScriptId());
+	// this.scriptMetadata = ((IConfigurableMicroservice<?>)
+	// getMicroservice()).getScriptManagement()
+	// .getScriptMetadata(getMicroservice().getIdentifier(),
+	// getTenantEngine().getTenant().getToken(),
+	// getScriptId());
 	if (getScriptMetadata() == null) {
 	    throw new SiteWhereException("Script '" + getScriptId() + "' was not found.");
 	}

@@ -10,7 +10,6 @@ package com.sitewhere.grpc.client;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -100,10 +99,10 @@ public class GrpcUtils {
 	ITenant tenant = null;
 	try {
 	    if (api.getMicroservice() instanceof IMultitenantMicroservice) {
-		String tenantId = GrpcContextKeys.TENANT_ID_KEY.get();
+		String tenantId = GrpcContextKeys.TENANT_TOKEN_KEY.get();
 		if (tenantId != null) {
 		    IMicroserviceTenantEngine engine = ((IMultitenantMicroservice<?, ?>) api.getMicroservice())
-			    .assureTenantEngineAvailable(UUID.fromString(tenantId));
+			    .assureTenantEngineAvailable(tenantId);
 		    tenant = engine.getTenant();
 		}
 	    }

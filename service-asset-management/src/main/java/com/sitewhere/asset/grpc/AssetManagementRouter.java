@@ -7,8 +7,6 @@
  */
 package com.sitewhere.asset.grpc;
 
-import java.util.UUID;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -70,13 +68,12 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
      */
     @Override
     public AssetManagementGrpc.AssetManagementImplBase getTenantImplementation(StreamObserver<?> observer) {
-	String tenantId = GrpcContextKeys.TENANT_ID_KEY.get();
-	if (tenantId == null) {
-	    throw new RuntimeException("Tenant id not found in asset management request.");
+	String token = GrpcContextKeys.TENANT_TOKEN_KEY.get();
+	if (token == null) {
+	    throw new RuntimeException("Tenant token not found in request.");
 	}
 	try {
-	    IAssetManagementTenantEngine engine = getMicroservice()
-		    .assureTenantEngineAvailable(UUID.fromString(tenantId));
+	    IAssetManagementTenantEngine engine = getMicroservice().assureTenantEngineAvailable(token);
 	    return engine.getAssetManagementImpl();
 	} catch (TenantEngineNotAvailableException e) {
 	    observer.onError(GrpcUtils.convertServerException(e));

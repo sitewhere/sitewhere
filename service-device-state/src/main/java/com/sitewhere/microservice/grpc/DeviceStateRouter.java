@@ -7,8 +7,6 @@
  */
 package com.sitewhere.microservice.grpc;
 
-import java.util.UUID;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -58,12 +56,12 @@ public class DeviceStateRouter extends DeviceStateGrpc.DeviceStateImplBase
      */
     @Override
     public DeviceStateGrpc.DeviceStateImplBase getTenantImplementation(StreamObserver<?> observer) {
-	String tenantId = GrpcContextKeys.TENANT_ID_KEY.get();
-	if (tenantId == null) {
-	    throw new RuntimeException("Tenant id not found in device state request.");
+	String token = GrpcContextKeys.TENANT_TOKEN_KEY.get();
+	if (token == null) {
+	    throw new RuntimeException("Tenant token not found in request.");
 	}
 	try {
-	    IDeviceStateTenantEngine engine = getMicroservice().assureTenantEngineAvailable(UUID.fromString(tenantId));
+	    IDeviceStateTenantEngine engine = getMicroservice().assureTenantEngineAvailable(token);
 	    return engine.getDeviceStateImpl();
 	} catch (TenantEngineNotAvailableException e) {
 	    observer.onError(GrpcUtils.convertServerException(e));

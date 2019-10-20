@@ -98,7 +98,7 @@ public class RabbitMqOutboundConnector extends SerialOutboundConnector
 	    factory.setUri(getConnectionUri());
 	    this.connection = factory.newConnection();
 	    this.channel = connection.createChannel();
-	    this.exchange = getTenantEngine().getTenant().getId() + DEFAULT_EXCHANGE_SUFFIX;
+	    this.exchange = getTenantEngine().getTenant().getToken() + DEFAULT_EXCHANGE_SUFFIX;
 	    channel.exchangeDeclare(exchange, "topic");
 	    getLogger().info("RabbitMQ outbound processor connected to: " + getConnectionUri());
 	} catch (Exception e) {

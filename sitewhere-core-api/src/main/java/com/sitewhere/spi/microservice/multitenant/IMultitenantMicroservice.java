@@ -7,8 +7,6 @@
  */
 package com.sitewhere.spi.microservice.multitenant;
 
-import java.util.UUID;
-
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
@@ -37,20 +35,20 @@ public interface IMultitenantMicroservice<I extends IFunctionIdentifier, T exten
     public T createTenantEngine(ITenant tenant) throws SiteWhereException;
 
     /**
-     * Get tenant engine corresponding to the given id.
+     * Get tenant engine corresponding to the given token.
      * 
-     * @param tenantId
+     * @param token
      * @return
      * @throws SiteWhereException
      */
-    public T getTenantEngineByTenantId(UUID tenantId) throws SiteWhereException;
+    public T getTenantEngineByToken(String token) throws SiteWhereException;
 
     /**
      * Make sure the given tenant engine exists and is started.
      * 
-     * @param tenantId
+     * @param token
      * @return
      * @throws SiteWhereException
      */
-    public T assureTenantEngineAvailable(UUID tenantId) throws TenantEngineNotAvailableException;
+    public T assureTenantEngineAvailable(String token) throws TenantEngineNotAvailableException;
 }

@@ -7,8 +7,6 @@
  */
 package com.sitewhere.microservice.grpc;
 
-import java.util.UUID;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -67,13 +65,12 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
      */
     @Override
     public LabelGenerationImplBase getTenantImplementation(StreamObserver<?> observer) {
-	String tenantId = GrpcContextKeys.TENANT_ID_KEY.get();
-	if (tenantId == null) {
-	    throw new RuntimeException("Tenant id not found in label generation request.");
+	String token = GrpcContextKeys.TENANT_TOKEN_KEY.get();
+	if (token == null) {
+	    throw new RuntimeException("Tenant token not found in request.");
 	}
 	try {
-	    ILabelGenerationTenantEngine engine = getMicroservice()
-		    .assureTenantEngineAvailable(UUID.fromString(tenantId));
+	    ILabelGenerationTenantEngine engine = getMicroservice().assureTenantEngineAvailable(token);
 	    return engine.getLabelGenerationImpl();
 	} catch (TenantEngineNotAvailableException e) {
 	    observer.onError(GrpcUtils.convertServerException(e));

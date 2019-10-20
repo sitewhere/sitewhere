@@ -151,7 +151,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	try {
 	    byte[] data = getModuleConfiguration();
 	    Map<String, Object> properties = ((IConfigurableMicroservice<?>) getMicroservice()).getSpringProperties();
-	    properties.put("tenant.id", getTenant().getId());
+	    properties.put("tenant.id", getTenant().getToken());
 	    properties.put("tenant.token", getTenant().getToken());
 	    this.moduleContext = ConfigurationUtils.buildSubcontext(data, properties,
 		    ((IConfigurableMicroservice<?>) getMicroservice()).getGlobalApplicationContext());
@@ -353,7 +353,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     public ITenantEngineState getCurrentState() throws SiteWhereException {
 	TenantEngineState state = new TenantEngineState();
 	state.setMicroservice(getMicroservice().getMicroserviceDetails());
-	state.setTenantId(getTenant().getId());
+	state.setTenantId(null);
 	state.setComponentState(getComponentState());
 	return state;
     }
@@ -400,8 +400,8 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	    // Handle updated configuration file.
 	    if (getModuleConfigurationName().equals(path)) {
 		getLogger().info("Tenant engine configuration updated.");
-		((IMultitenantMicroservice<?, ?>) getMicroservice()).getTenantEngineManager()
-			.restartTenantEngine(getTenant().getId());
+		// ((IMultitenantMicroservice<?, ?>) getMicroservice()).getTenantEngineManager()
+		// .restartTenantEngine(getTenant().getId());
 	    }
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to process updated configuration file.", e);
@@ -421,8 +421,8 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	    // Handle updated configuration file.
 	    if (getModuleConfigurationName().equals(path)) {
 		getLogger().info("Tenant engine configuration deleted.");
-		((IMultitenantMicroservice<?, ?>) getMicroservice()).getTenantEngineManager()
-			.removeTenantEngine(getTenant().getId());
+		// ((IMultitenantMicroservice<?, ?>) getMicroservice()).getTenantEngineManager()
+		// .removeTenantEngine(getTenant().getId());
 	    }
 	} catch (SiteWhereException e) {
 	    getLogger().error("Unable to process deleted configuration file.", e);

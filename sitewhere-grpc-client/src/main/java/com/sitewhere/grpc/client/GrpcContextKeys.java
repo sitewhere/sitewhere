@@ -20,6 +20,6 @@ public class GrpcContextKeys {
     /** Key for accessing JWT */
     public static final Context.Key<String> JWT_KEY = Context.key("jwt");
 
-    /** Key for accessing requested tenant id */
-    public static final Context.Key<String> TENANT_ID_KEY = Context.key("tenant");
+    /** Key for accessing requested tenant token */
+    public static final Context.Key<String> TENANT_TOKEN_KEY = Context.key("tenant");
 }

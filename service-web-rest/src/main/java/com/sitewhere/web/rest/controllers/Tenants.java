@@ -85,7 +85,7 @@ public class Tenants extends RestControllerBase {
 	    @RequestBody TenantCreateRequest request) throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantToken);
 	checkForAdminOrEditSelf(tenant);
-	return getTenantManagement().updateTenant(tenant.getId(), request);
+	return getTenantManagement().updateTenant(null, request);
     }
 
     /**
@@ -160,7 +160,7 @@ public class Tenants extends RestControllerBase {
 	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
 	ITenant tenant = assureTenant(tenantToken);
 	checkForAdminOrEditSelf(tenant);
-	return getTenantManagement().deleteTenant(tenant.getId());
+	return getTenantManagement().deleteTenant(null);
     }
 
     /**

@@ -93,7 +93,7 @@ public class UserManagementPersistenceLogic extends Persistence {
 	    target.setAuthorities(request.getAuthorities());
 	}
 	if (request.getStatus() != null) {
-		target.setStatus(request.getStatus());
+	    target.setStatus(request.getStatus());
 	}
     }
 
@@ -113,7 +113,7 @@ public class UserManagementPersistenceLogic extends Persistence {
 		List<String> ids = tenant.getAuthorizedUserIds();
 		ids.remove(username);
 		request.setAuthorizedUserIds(ids);
-		tenantManagement.updateTenant(tenant.getId(), request);
+		tenantManagement.updateTenant(null, request);
 	    }
 	}
     }

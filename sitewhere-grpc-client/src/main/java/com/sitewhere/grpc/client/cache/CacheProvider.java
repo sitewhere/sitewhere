@@ -144,10 +144,10 @@ public abstract class CacheProvider<K, V> extends LifecycleComponent implements 
 	    }
 	} else {
 	    synchronized (tenantCaches) {
-		Cache<K, V> cache = tenantCaches.get(tenant.getId());
+		Cache<K, V> cache = tenantCaches.get(null);
 		if (cache == null) {
 		    cache = createCache(tenant);
-		    tenantCaches.put(tenant.getId(), cache);
+		    tenantCaches.put(null, cache);
 		}
 		return cache;
 	    }
@@ -161,7 +161,7 @@ public abstract class CacheProvider<K, V> extends LifecycleComponent implements 
      * @return
      */
     protected Cache<K, V> createCache(ITenant tenant) {
-	String alias = (tenant != null) ? getCacheIdentifier().getCacheKey() + "-" + tenant.getId().toString()
+	String alias = (tenant != null) ? getCacheIdentifier().getCacheKey() + "-" + tenant.getToken().toString()
 		: getCacheIdentifier().getCacheKey();
 	return getCacheManager().createCache(alias, buildCacheConfiguration());
     }

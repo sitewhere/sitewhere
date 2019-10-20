@@ -121,7 +121,7 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 	getLogger().info("Shutting down configurable microservice components...");
 
 	// Create configuration monitor.
-	this.configurationMonitor = null;
+	this.configurationMonitor = new KubernetesConfigurationMonitor();
 	getConfigurationMonitor().getListeners().add(this);
 
 	// Create script management support.

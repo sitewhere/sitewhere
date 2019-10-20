@@ -30,7 +30,6 @@ import com.sitewhere.rest.model.tenant.TenantTemplate;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -185,8 +184,9 @@ public class TenantTemplateManager extends LifecycleComponent implements ITenant
 		request.setDescription(template.getDescription());
 		request.setType(template.getType());
 		request.setContent(Base64.getEncoder().encodeToString(content));
-		((IConfigurableMicroservice<?>) getMicroservice()).getScriptManagement().createScript(identifier,
-			tenant.getId(), request);
+		// ((IConfigurableMicroservice<?>)
+		// getMicroservice()).getScriptManagement().createScript(identifier,
+		// tenant.getId(), request);
 	    }
 	}
     }

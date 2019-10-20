@@ -116,7 +116,7 @@ public abstract class TenantEngineLifecycleComponent extends LifecycleComponent
     public String[] buildLabels(String... labels) {
 	List<String> all = new ArrayList<>();
 	all.addAll(Arrays.asList(labels));
-	all.add(0, getTenantEngine().getTenant().getId().toString());
+	all.add(0, getTenantEngine().getTenant().getToken());
 	all.add(0, getMicroservice().getInstanceSettings().getKubernetesPodAddress());
 	all.add(0, getMicroservice().getIdentifier().getPath());
 	return all.toArray(new String[all.size()]);

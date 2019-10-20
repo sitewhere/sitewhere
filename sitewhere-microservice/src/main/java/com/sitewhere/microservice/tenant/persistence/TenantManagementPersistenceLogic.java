@@ -33,7 +33,6 @@ public class TenantManagementPersistenceLogic extends Persistence {
      */
     public static Tenant tenantCreateLogic(ITenantCreateRequest request) throws SiteWhereException {
 	Tenant tenant = new Tenant();
-	Persistence.brandedEntityCreateLogic(request, tenant);
 
 	// Validate tenant token.
 	requireFormat("Token", tenant.getToken(), "^[\\w-]+$", ErrorCode.TenantIdFormat);
@@ -47,8 +46,8 @@ public class TenantManagementPersistenceLogic extends Persistence {
 	tenant.setAuthenticationToken(request.getAuthenticationToken());
 
 	// Tenant template is required.
-	require("Tenant template Id", request.getTenantTemplateId());
-	tenant.setTenantTemplateId(request.getTenantTemplateId());
+	require("Configuration template Id", request.getConfigurationTemplateId());
+	tenant.setConfigurationTemplateId(request.getConfigurationTemplateId());
 
 	// Tenant template is required.
 	require("Dataset template Id", request.getDatasetTemplateId());
@@ -68,10 +67,8 @@ public class TenantManagementPersistenceLogic extends Persistence {
      * @throws SiteWhereException
      */
     public static Tenant tenantUpdateLogic(ITenantCreateRequest request, Tenant existing) throws SiteWhereException {
-	Persistence.brandedEntityUpdateLogic(request, existing);
-
-	if (request.getTenantTemplateId() != null) {
-	    if (!request.getTenantTemplateId().equals(existing.getTenantTemplateId())) {
+	if (request.getConfigurationTemplateId() != null) {
+	    if (!request.getConfigurationTemplateId().equals(existing.getConfigurationTemplateId())) {
 		throw new SiteWhereException("Can not change the tenant template of an existing tenant.");
 	    }
 	}

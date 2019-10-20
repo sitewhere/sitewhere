@@ -7,8 +7,6 @@
  */
 package com.sitewhere.microservice.grpc;
 
-import java.util.UUID;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -66,13 +64,12 @@ public class BatchManagementRouter extends BatchManagementGrpc.BatchManagementIm
      */
     @Override
     public BatchManagementGrpc.BatchManagementImplBase getTenantImplementation(StreamObserver<?> observer) {
-	String tenantId = GrpcContextKeys.TENANT_ID_KEY.get();
-	if (tenantId == null) {
-	    throw new RuntimeException("Tenant id not found in schedule management request.");
+	String token = GrpcContextKeys.TENANT_TOKEN_KEY.get();
+	if (token == null) {
+	    throw new RuntimeException("Tenant token not found in request.");
 	}
 	try {
-	    IBatchOperationsTenantEngine engine = getMicroservice()
-		    .assureTenantEngineAvailable(UUID.fromString(tenantId));
+	    IBatchOperationsTenantEngine engine = getMicroservice().assureTenantEngineAvailable(token);
 	    return engine.getBatchManagementImpl();
 	} catch (TenantEngineNotAvailableException e) {
 	    observer.onError(GrpcUtils.convertServerException(e));

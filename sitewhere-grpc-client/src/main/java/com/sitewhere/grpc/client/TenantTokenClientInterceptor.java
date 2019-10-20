@@ -29,7 +29,7 @@ import io.grpc.MethodDescriptor;
 public class TenantTokenClientInterceptor implements ClientInterceptor {
 
     /** Tenant token metadata key */
-    public static final Metadata.Key<String> TENANT_ID_KEY = Metadata.Key.of("tenant",
+    public static final Metadata.Key<String> TENANT_TOKEN_KEY = Metadata.Key.of("tenant",
 	    Metadata.ASCII_STRING_MARSHALLER);
 
     /*
@@ -55,7 +55,7 @@ public class TenantTokenClientInterceptor implements ClientInterceptor {
 		if ((authentication != null) && (authentication instanceof ITenantAwareAuthentication)) {
 		    ITenant tenant = ((ITenantAwareAuthentication) authentication).getTenant();
 		    if (tenant != null) {
-			headers.put(TENANT_ID_KEY, tenant.getId().toString());
+			headers.put(TENANT_TOKEN_KEY, tenant.getToken().toString());
 		    }
 		}
 		super.start(responseListener, headers);

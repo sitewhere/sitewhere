@@ -105,7 +105,7 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
      */
     @Override
     public String getTenantPrefix(ITenant tenant) {
-	return getInstancePrefix() + SEPARATOR + TENANT_INDICATOR + SEPARATOR + tenant.getId() + SEPARATOR;
+	return getInstancePrefix() + SEPARATOR + TENANT_INDICATOR + SEPARATOR + tenant.getToken() + SEPARATOR;
     }
 
     /*

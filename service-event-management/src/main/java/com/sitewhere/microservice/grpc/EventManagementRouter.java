@@ -7,8 +7,6 @@
  */
 package com.sitewhere.microservice.grpc;
 
-import java.util.UUID;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -78,13 +76,12 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
      */
     @Override
     public DeviceEventManagementGrpc.DeviceEventManagementImplBase getTenantImplementation(StreamObserver<?> observer) {
-	String tenantId = GrpcContextKeys.TENANT_ID_KEY.get();
-	if (tenantId == null) {
-	    throw new RuntimeException("Tenant id not found in event management request.");
+	String token = GrpcContextKeys.TENANT_TOKEN_KEY.get();
+	if (token == null) {
+	    throw new RuntimeException("Tenant token not found in request.");
 	}
 	try {
-	    IEventManagementTenantEngine engine = getMicroservice()
-		    .assureTenantEngineAvailable(UUID.fromString(tenantId));
+	    IEventManagementTenantEngine engine = getMicroservice().assureTenantEngineAvailable(token);
 	    return engine.getEventManagementImpl();
 	} catch (TenantEngineNotAvailableException e) {
 	    observer.onError(GrpcUtils.convertServerException(e));

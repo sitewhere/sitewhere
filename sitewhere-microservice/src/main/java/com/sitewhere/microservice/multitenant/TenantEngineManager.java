@@ -7,7 +7,6 @@
  */
 package com.sitewhere.microservice.multitenant;
 
-import java.util.UUID;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
@@ -57,22 +56,22 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
     private static final long MAX_WAIT_FOR_TENANT_BOOTSTRAPPED = 60 * 1000;
 
     /** Map of tenant engines that have been initialized */
-    private ConcurrentMap<UUID, T> initializedTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
+    private ConcurrentMap<String, T> initializedTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
 
     /** Map of tenant engines that failed to initialize */
-    private ConcurrentMap<UUID, T> failedTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
+    private ConcurrentMap<String, T> failedTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
 
     /** Map of tenant engines in the process of initializing */
-    private ConcurrentMap<UUID, ITenant> initializingTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
+    private ConcurrentMap<String, ITenant> initializingTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
 
     /** Map of tenant engines in the process of shutting down */
-    private ConcurrentMap<UUID, UUID> stoppingTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
+    private ConcurrentMap<String, String> stoppingTenantEngines = new MapMaker().concurrencyLevel(4).makeMap();
 
     /** List of tenant ids waiting for an engine to be created */
-    private BlockingDeque<UUID> tenantInitializationQueue = new LinkedBlockingDeque<>();
+    private BlockingDeque<String> tenantInitializationQueue = new LinkedBlockingDeque<>();
 
     /** List of tenant ids waiting for an engine to be shut down */
-    private BlockingDeque<UUID> tenantShutdownQueue = new LinkedBlockingDeque<>();
+    private BlockingDeque<String> tenantShutdownQueue = new LinkedBlockingDeque<>();
 
     /** Executor for tenant operations */
     private ExecutorService tenantOperations;
@@ -138,25 +137,25 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.ITenantEngineManager#
-     * getTenantEngineByTenantId(java.util.UUID)
+     * getTenantEngineByToken(java.lang.String)
      */
     @Override
-    public T getTenantEngineByTenantId(UUID id) throws SiteWhereException {
-	T engine = getInitializedTenantEngines().get(id);
+    public T getTenantEngineByToken(String token) throws SiteWhereException {
+	T engine = getInitializedTenantEngines().get(token);
 	if (engine == null) {
-	    engine = getFailedTenantEngines().get(id);
+	    engine = getFailedTenantEngines().get(token);
 	}
 	return engine;
     }
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.ITenantEngineManager#
-     * assureTenantEngineAvailable(java.util.UUID)
+     * assureTenantEngineAvailable(java.lang.String)
      */
     @Override
-    public T assureTenantEngineAvailable(UUID tenantId) throws TenantEngineNotAvailableException {
+    public T assureTenantEngineAvailable(String token) throws TenantEngineNotAvailableException {
 	try {
-	    T engine = getTenantEngineByTenantId(tenantId);
+	    T engine = getTenantEngineByToken(token);
 	    if (engine == null) {
 		throw new TenantEngineNotAvailableException("No tenant engine found for tenant id.");
 	    } else if (engine.getLifecycleStatus() == LifecycleStatus.InitializationError) {
@@ -236,11 +235,11 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.ITenantEngineManager#
-     * getTenantConfiguration(java.util.UUID)
+     * getTenantConfiguration(java.lang.String)
      */
     @Override
-    public byte[] getTenantConfiguration(UUID tenantId) throws SiteWhereException {
-	T engine = getTenantEngineByTenantId(tenantId);
+    public byte[] getTenantConfiguration(String token) throws SiteWhereException {
+	T engine = getTenantEngineByToken(token);
 	if (engine == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR);
 	}
@@ -249,11 +248,11 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.ITenantEngineManager#
-     * updateTenantConfiguration(java.util.UUID, byte[])
+     * updateTenantConfiguration(java.lang.String, byte[])
      */
     @Override
-    public void updateTenantConfiguration(UUID tenantId, byte[] content) throws SiteWhereException {
-	T engine = getTenantEngineByTenantId(tenantId);
+    public void updateTenantConfiguration(String token, byte[] content) throws SiteWhereException {
+	T engine = getTenantEngineByToken(token);
 	if (engine == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR);
 	}
@@ -261,17 +260,17 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * restartTenantEngine(java.util.UUID)
+     * @see com.sitewhere.spi.microservice.multitenant.ITenantEngineManager#
+     * restartTenantEngine(java.lang.String)
      */
     @Override
-    public void restartTenantEngine(UUID tenantId) throws SiteWhereException {
+    public void restartTenantEngine(String token) throws SiteWhereException {
 	// Shut down and remove existing tenant engine.
-	removeTenantEngine(tenantId);
+	removeTenantEngine(token);
 	getLogger().info("Tenant engine shut down successfully. Queueing for restart...");
 
 	// Add to queue for restart.
-	getTenantInitializationQueue().offer(tenantId);
+	getTenantInitializationQueue().offer(null);
     }
 
     /*
@@ -294,20 +293,20 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * removeTenantEngine(java.util.UUID)
+     * @see com.sitewhere.spi.microservice.multitenant.ITenantEngineManager#
+     * removeTenantEngine(java.lang.String)
      */
     @Override
-    public void removeTenantEngine(UUID tenantId) throws SiteWhereException {
-	IMicroserviceTenantEngine engine = getInitializedTenantEngines().get(tenantId);
+    public void removeTenantEngine(String token) throws SiteWhereException {
+	IMicroserviceTenantEngine engine = getInitializedTenantEngines().get(token);
 	if (engine != null) {
 	    // Remove initialized engine if one exists.
-	    getTenantShutdownQueue().add(tenantId);
+	    getTenantShutdownQueue().add(token);
 	} else {
 	    // Remove failed engine if one exists.
-	    engine = getFailedTenantEngines().get(tenantId);
+	    engine = getFailedTenantEngines().get(token);
 	    if (engine != null) {
-		getFailedTenantEngines().remove(tenantId);
+		getFailedTenantEngines().remove(token);
 	    }
 	}
     }
@@ -331,51 +330,51 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 	}
     }
 
-    public ConcurrentMap<UUID, T> getInitializedTenantEngines() {
+    public ConcurrentMap<String, T> getInitializedTenantEngines() {
 	return initializedTenantEngines;
     }
 
-    public ConcurrentMap<UUID, T> getFailedTenantEngines() {
+    public ConcurrentMap<String, T> getFailedTenantEngines() {
 	return failedTenantEngines;
     }
 
-    public void setFailedTenantEngines(ConcurrentMap<UUID, T> failedTenantEngines) {
+    public void setFailedTenantEngines(ConcurrentMap<String, T> failedTenantEngines) {
 	this.failedTenantEngines = failedTenantEngines;
     }
 
-    public ConcurrentMap<UUID, ITenant> getInitializingTenantEngines() {
+    public ConcurrentMap<String, ITenant> getInitializingTenantEngines() {
 	return initializingTenantEngines;
     }
 
-    public void setInitializingTenantEngines(ConcurrentMap<UUID, ITenant> initializingTenantEngines) {
+    public void setInitializingTenantEngines(ConcurrentMap<String, ITenant> initializingTenantEngines) {
 	this.initializingTenantEngines = initializingTenantEngines;
     }
 
-    public void setInitializedTenantEngines(ConcurrentMap<UUID, T> initializedTenantEngines) {
+    public void setInitializedTenantEngines(ConcurrentMap<String, T> initializedTenantEngines) {
 	this.initializedTenantEngines = initializedTenantEngines;
     }
 
-    public ConcurrentMap<UUID, UUID> getStoppingTenantEngines() {
+    public ConcurrentMap<String, String> getStoppingTenantEngines() {
 	return stoppingTenantEngines;
     }
 
-    public void setStoppingTenantEngines(ConcurrentMap<UUID, UUID> stoppingTenantEngines) {
+    public void setStoppingTenantEngines(ConcurrentMap<String, String> stoppingTenantEngines) {
 	this.stoppingTenantEngines = stoppingTenantEngines;
     }
 
-    public BlockingDeque<UUID> getTenantInitializationQueue() {
+    public BlockingDeque<String> getTenantInitializationQueue() {
 	return tenantInitializationQueue;
     }
 
-    public void setTenantInitializationQueue(BlockingDeque<UUID> tenantInitializationQueue) {
+    public void setTenantInitializationQueue(BlockingDeque<String> tenantInitializationQueue) {
 	this.tenantInitializationQueue = tenantInitializationQueue;
     }
 
-    public BlockingDeque<UUID> getTenantShutdownQueue() {
+    public BlockingDeque<String> getTenantShutdownQueue() {
 	return tenantShutdownQueue;
     }
 
-    public void setTenantShutdownQueue(BlockingDeque<UUID> tenantShutdownQueue) {
+    public void setTenantShutdownQueue(BlockingDeque<String> tenantShutdownQueue) {
 	this.tenantShutdownQueue = tenantShutdownQueue;
     }
 
@@ -405,48 +404,48 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 	public void runAsSystemUser() {
 	    getLogger().info("Starting to process tenant startup queue.");
 	    while (true) {
-		UUID tenantId = null;
+		String tenantToken = null;
 		ITenant tenant = null;
 		try {
-		    tenantId = getTenantInitializationQueue().take();
-		    getLogger().info(String.format("Starting processing for tenant id '%s'.", tenantId.toString()));
-		    tenant = getTenantManagement().getTenant(tenantId);
+		    tenantToken = getTenantInitializationQueue().take();
+		    getLogger().info(String.format("Starting processing for tenant '%s'.", tenantToken));
+		    tenant = getTenantManagement().getTenant(null);
 		} catch (InterruptedException e) {
 		    getLogger().info("Tenant startup queue shutting down.");
 		    return;
 		} catch (ServiceNotAvailableException e) {
 		    getLogger().info(String.format("Tenant API not available yet (%s). Tenant will be queued again.",
 			    e.getMessage()));
-		    getTenantInitializationQueue().add(tenantId);
+		    getTenantInitializationQueue().add(null);
 		    continue;
 		} catch (SiteWhereException e) {
 		    getLogger().error("Exception in tenant lookup. Tenant will be queued again.", e);
-		    getTenantInitializationQueue().add(tenantId);
+		    getTenantInitializationQueue().add(null);
 		    continue;
 		} catch (Throwable e) {
 		    getLogger().error("Unhandled exception in tenant lookup. Tenant will be queued again.", e);
-		    getTenantInitializationQueue().add(tenantId);
+		    getTenantInitializationQueue().add(null);
 		    continue;
 		}
 
 		// Verify that multiple threads don't start duplicate engines.
-		if (getInitializingTenantEngines().get(tenantId) != null) {
-		    getLogger().debug("Skipping initialization for existing tenant engine '" + tenantId + "'.");
+		if (getInitializingTenantEngines().get(null) != null) {
+		    getLogger().debug("Skipping initialization for existing tenant engine '" + null + "'.");
 		    continue;
 		}
 
 		// If tenant doesn't exist, skip startup.
 		if (tenant == null) {
-		    getLogger().error(String.format("Unable to locate tenant'%s'. Skipping engine startup.", tenantId));
+		    getLogger().error(String.format("Unable to locate tenant'%s'. Skipping engine startup."));
 		    continue;
 		}
 
 		try {
 		    // Start tenant initialization.
-		    if (getTenantEngineByTenantId(tenantId) == null) {
+		    if (getTenantEngineByToken(tenantToken) == null) {
 			startTenantEngine(tenant);
 		    } else {
-			getLogger().debug("Tenant engine already exists for '" + tenantId + "'.");
+			getLogger().debug("Tenant engine already exists for '" + tenantToken + "'.");
 		    }
 		} catch (SiteWhereException e) {
 		    getLogger().warn("Exception starting tenant engine.", e);
@@ -466,7 +465,7 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 	    T created = null;
 	    try {
 		// Mark that an engine is being initialized.
-		getInitializingTenantEngines().put(tenant.getId(), tenant);
+		getInitializingTenantEngines().put(tenant.getToken(), tenant);
 		getLogger().info("Creating tenant engine for '" + tenant.getName() + "'...");
 
 		created = getMultitenantMicroservice().createTenantEngine(tenant);
@@ -484,8 +483,8 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 		getMicroservice().initializeNestedComponent(created, monitor, true);
 
 		// Mark tenant engine as initialized and remove failed engine if present.
-		getInitializedTenantEngines().put(tenant.getId(), created);
-		getFailedTenantEngines().remove(tenant.getId());
+		getInitializedTenantEngines().put(tenant.getToken(), created);
+		getFailedTenantEngines().remove(tenant.getToken());
 
 		getLogger().info("Tenant engine for '" + tenant.getName() + "' initialized in "
 			+ (System.currentTimeMillis() - start) + "ms.");
@@ -504,14 +503,14 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 	    } catch (Throwable t) {
 		// Keep map of failed tenant engines.
 		if (created != null) {
-		    getFailedTenantEngines().put(tenant.getId(), created);
+		    getFailedTenantEngines().put(tenant.getToken(), created);
 		}
 
 		getLogger().error("Unable to initialize tenant engine for '" + tenant.getName() + "'.", t);
 		throw new SiteWhereException(t);
 	    } finally {
 		// Make sure that tenant is cleared from the pending map.
-		getInitializingTenantEngines().remove(tenant.getId());
+		getInitializingTenantEngines().remove(tenant.getToken());
 	    }
 	}
 
@@ -564,22 +563,22 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 	    while (true) {
 		try {
 		    // Get next tenant id from the queue and look up the tenant.
-		    UUID tenantId = getTenantShutdownQueue().take();
+		    String token = getTenantShutdownQueue().take();
 
 		    // Verify that multiple threads don't start duplicate engines.
-		    if (getStoppingTenantEngines().get(tenantId) != null) {
-			getLogger().debug("Skipping shutdown for engine already stopping '" + tenantId + "'.");
+		    if (getStoppingTenantEngines().get(token) != null) {
+			getLogger().debug("Skipping shutdown for engine already stopping '" + token + "'.");
 			continue;
 		    }
 
 		    // Look up tenant and add it to initializing tenants map.
-		    getStoppingTenantEngines().put(tenantId, tenantId);
+		    getStoppingTenantEngines().put(token, token);
 
 		    // Start tenant shutdown.
-		    T engine = getTenantEngineByTenantId(tenantId);
+		    T engine = getTenantEngineByToken(token);
 		    if (engine != null) {
 			// Remove from list of initialized engines.
-			getInitializedTenantEngines().remove(tenantId);
+			getInitializedTenantEngines().remove(token);
 
 			// Stop tenant engine.
 			getLogger().info("Stopping tenant engine for '" + engine.getTenant().getName() + "'.");
@@ -604,7 +603,7 @@ public class TenantEngineManager<I extends IFunctionIdentifier, T extends IMicro
 			getLogger().info("Tenant engine for '" + engine.getTenant().getName() + "' terminated in "
 				+ (System.currentTimeMillis() - start) + "ms.");
 		    } else {
-			getLogger().info("Tenant engine does not exist for '" + tenantId + "'.");
+			getLogger().info("Tenant engine does not exist for '" + token + "'.");
 		    }
 		} catch (SiteWhereException e) {
 		    getLogger().warn("Exception stopping tenant engine.", e);

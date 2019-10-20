@@ -149,7 +149,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 		    throw new InvalidTenantException("Tenant authentication token is invalid.");
 		}
 		((ITenantAwareAuthentication) authenticated).setTenant(tenant);
-		LOGGER.debug("Added tenant to authentication: " + tenant.getId());
+		LOGGER.debug("Added tenant to authentication: " + tenant.getToken());
 	    } finally {
 		SecurityContextHolder.getContext().setAuthentication(previous);
 	    }

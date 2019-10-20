@@ -16,7 +16,6 @@ import org.apache.commons.logging.LogFactory;
 import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.sources.PollingInboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
@@ -62,9 +61,11 @@ public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver
 	if (getScriptId() == null) {
 	    throw new SiteWhereException("Script id was not initialized properly.");
 	}
-	this.scriptMetadata = ((IConfigurableMicroservice<?>) getMicroservice()).getScriptManagement()
-		.getScriptMetadata(getMicroservice().getIdentifier(), getTenantEngine().getTenant().getId(),
-			getScriptId());
+	// this.scriptMetadata = ((IConfigurableMicroservice<?>)
+	// getMicroservice()).getScriptManagement()
+	// .getScriptMetadata(getMicroservice().getIdentifier(),
+	// getTenantEngine().getTenant().getId(),
+	// getScriptId());
 	if (getScriptMetadata() == null) {
 	    throw new SiteWhereException("Script '" + getScriptId() + "' was not found.");
 	}

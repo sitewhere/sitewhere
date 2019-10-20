@@ -10,7 +10,6 @@ package com.sitewhere.grpc.client.tenant;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
 import com.sitewhere.grpc.model.CommonModel.GOptionalString;
 import com.sitewhere.grpc.model.CommonModel.GPaging;
 import com.sitewhere.grpc.model.CommonModel.GSearchText;
@@ -48,10 +47,15 @@ public class TenantModelConverter {
 	api.setName(grpc.hasName() ? grpc.getName().getValue() : null);
 	api.setAuthenticationToken(grpc.hasAuthenticationToken() ? grpc.getAuthenticationToken().getValue() : null);
 	api.setAuthorizedUserIds(grpc.getAuthorizedUserIdsList());
-	api.setTenantTemplateId(grpc.hasTenantTemplateId() ? grpc.getTenantTemplateId().getValue() : null);
+	api.setConfigurationTemplateId(
+		grpc.hasConfigurationTemplateId() ? grpc.getConfigurationTemplateId().getValue() : null);
 	api.setDatasetTemplateId(grpc.hasDatasetTemplateId() ? grpc.getDatasetTemplateId().getValue() : null);
+	api.setBackgroundColor(grpc.hasBackgroundColor() ? grpc.getBackgroundColor().getValue() : null);
+	api.setForegroundColor(grpc.hasForegroundColor() ? grpc.getForegroundColor().getValue() : null);
+	api.setBorderColor(grpc.hasBorderColor() ? grpc.getBorderColor().getValue() : null);
+	api.setIcon(grpc.hasIcon() ? grpc.getIcon().getValue() : null);
+	api.setImageUrl(grpc.hasImageUrl() ? grpc.getImageUrl().getValue() : null);
 	api.setMetadata(grpc.getMetadataMap());
-	CommonModelConverter.setBrandingInformation(api, grpc.getBranding());
 	return api;
     }
 
@@ -74,14 +78,28 @@ public class TenantModelConverter {
 	    grpc.setAuthenticationToken(GOptionalString.newBuilder().setValue(api.getAuthenticationToken()));
 	}
 	grpc.addAllAuthorizedUserIds(api.getAuthorizedUserIds());
-	if (api.getTenantTemplateId() != null) {
-	    grpc.setTenantTemplateId(GOptionalString.newBuilder().setValue(api.getTenantTemplateId()));
+	if (api.getConfigurationTemplateId() != null) {
+	    grpc.setConfigurationTemplateId(GOptionalString.newBuilder().setValue(api.getConfigurationTemplateId()));
 	}
 	if (api.getDatasetTemplateId() != null) {
 	    grpc.setDatasetTemplateId(GOptionalString.newBuilder().setValue(api.getDatasetTemplateId()));
 	}
+	if (api.getBackgroundColor() != null) {
+	    grpc.setBackgroundColor(GOptionalString.newBuilder().setValue(api.getBackgroundColor()));
+	}
+	if (api.getForegroundColor() != null) {
+	    grpc.setForegroundColor(GOptionalString.newBuilder().setValue(api.getForegroundColor()));
+	}
+	if (api.getBorderColor() != null) {
+	    grpc.setBorderColor(GOptionalString.newBuilder().setValue(api.getBorderColor()));
+	}
+	if (api.getIcon() != null) {
+	    grpc.setIcon(GOptionalString.newBuilder().setValue(api.getIcon()));
+	}
+	if (api.getImageUrl() != null) {
+	    grpc.setImageUrl(GOptionalString.newBuilder().setValue(api.getImageUrl()));
+	}
 	grpc.putAllMetadata(api.getMetadata());
-	grpc.setBranding(CommonModelConverter.asGrpcBrandingInformation(api));
 	return grpc.build();
     }
 
@@ -94,13 +112,28 @@ public class TenantModelConverter {
      */
     public static ITenant asApiTenant(GTenant grpc) throws SiteWhereException {
 	Tenant api = new Tenant();
+	api.setToken(grpc.getToken());
 	api.setName(grpc.getName());
 	api.setAuthenticationToken(grpc.getAuthenticationToken());
 	api.setAuthorizedUserIds(grpc.getAuthorizedUserIdsList());
-	api.setTenantTemplateId(grpc.getTenantTemplateId());
+	api.setConfigurationTemplateId(grpc.getConfigurationTemplateId());
 	api.setDatasetTemplateId(grpc.getDatasetTemplateId());
-	CommonModelConverter.setEntityInformation(api, grpc.getEntityInformation());
-	CommonModelConverter.setBrandingInformation(api, grpc.getBranding());
+	if (grpc.hasBackgroundColor()) {
+	    api.setBackgroundColor(grpc.getBackgroundColor().getValue());
+	}
+	if (grpc.hasForegroundColor()) {
+	    api.setForegroundColor(grpc.getForegroundColor().getValue());
+	}
+	if (grpc.hasBorderColor()) {
+	    api.setBorderColor(grpc.getBorderColor().getValue());
+	}
+	if (grpc.hasIcon()) {
+	    api.setIcon(grpc.getIcon().getValue());
+	}
+	if (grpc.hasImageUrl()) {
+	    api.setImageUrl(grpc.getImageUrl().getValue());
+	}
+	api.setMetadata(grpc.getMetadataMap());
 	return api;
     }
 
@@ -143,13 +176,27 @@ public class TenantModelConverter {
      */
     public static GTenant asGrpcTenant(ITenant api) throws SiteWhereException {
 	GTenant.Builder builder = TenantModel.GTenant.newBuilder();
+	builder.setToken(api.getToken());
 	builder.setName(api.getName());
 	builder.setAuthenticationToken(api.getAuthenticationToken());
 	builder.addAllAuthorizedUserIds(api.getAuthorizedUserIds());
-	builder.setTenantTemplateId(api.getTenantTemplateId());
+	builder.setConfigurationTemplateId(api.getConfigurationTemplateId());
 	builder.setDatasetTemplateId(api.getDatasetTemplateId());
-	builder.setEntityInformation(CommonModelConverter.asGrpcEntityInformation(api));
-	builder.setBranding(CommonModelConverter.asGrpcBrandingInformation(api));
+	if (api.getBackgroundColor() != null) {
+	    builder.setBackgroundColor(GOptionalString.newBuilder().setValue(api.getBackgroundColor()));
+	}
+	if (api.getForegroundColor() != null) {
+	    builder.setForegroundColor(GOptionalString.newBuilder().setValue(api.getForegroundColor()));
+	}
+	if (api.getBorderColor() != null) {
+	    builder.setBorderColor(GOptionalString.newBuilder().setValue(api.getBorderColor()));
+	}
+	if (api.getIcon() != null) {
+	    builder.setIcon(GOptionalString.newBuilder().setValue(api.getIcon()));
+	}
+	if (api.getImageUrl() != null) {
+	    builder.setImageUrl(GOptionalString.newBuilder().setValue(api.getImageUrl()));
+	}
 	return builder.build();
     }
 

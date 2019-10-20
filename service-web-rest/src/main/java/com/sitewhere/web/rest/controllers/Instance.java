@@ -207,6 +207,7 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
+    @SuppressWarnings("unused")
     @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/configuration", method = RequestMethod.GET)
     @ApiOperation(value = "Get tenant configuration based on service identifier")
     @Secured({ SiteWhereRoles.REST })
@@ -218,8 +219,10 @@ public class Instance extends RestControllerBase {
 	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
 	ITenant tenant = assureTenant(tenantToken);
 	try {
-	    return ConfigurationContentParser.parse(management.getTenantConfiguration(tenant.getId()),
-		    management.getConfigurationModel());
+	    // return
+	    // ConfigurationContentParser.parse(management.getTenantConfiguration(tenant.getId()),
+	    // management.getConfigurationModel());
+	    return null;
 	} finally {
 	    releaseChannel(management);
 	}
@@ -233,6 +236,7 @@ public class Instance extends RestControllerBase {
      * @param content
      * @throws SiteWhereException
      */
+    @SuppressWarnings("unused")
     @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/configuration", method = RequestMethod.POST)
     @ApiOperation(value = "Update global configuration based on service identifier.")
     @Secured({ SiteWhereRoles.REST })
@@ -246,7 +250,7 @@ public class Instance extends RestControllerBase {
 	String config = ConfigurationContentParser.format(xml);
 	ITenant tenant = assureTenant(tenantToken);
 	try {
-	    management.updateTenantConfiguration(tenant.getId(), config.getBytes());
+	    // management.updateTenantConfiguration(tenant.getId(), config.getBytes());
 	} finally {
 	    releaseChannel(management);
 	}
@@ -466,6 +470,7 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
+    @SuppressWarnings("unused")
     @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts", method = RequestMethod.GET)
     @ApiOperation(value = "Get list of script metadata for the given tenant")
     @Secured({ SiteWhereRoles.REST })
@@ -475,7 +480,7 @@ public class Instance extends RestControllerBase {
 	    throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantToken);
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return getScriptManagement().getScriptMetadataList(msid, tenant.getId());
+	return getScriptManagement().getScriptMetadataList(msid, null);
     }
 
     /**
@@ -487,6 +492,7 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
+    @SuppressWarnings("unused")
     @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}", method = RequestMethod.GET)
     @ApiOperation(value = "Get metadata for a tenant script based on unique script id")
     @Secured({ SiteWhereRoles.REST })
@@ -496,7 +502,7 @@ public class Instance extends RestControllerBase {
 	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId) throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantToken);
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return getScriptManagement().getScriptMetadata(msid, tenant.getId(), scriptId);
+	return getScriptManagement().getScriptMetadata(msid, null, scriptId);
     }
 
     /**
@@ -508,6 +514,7 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
+    @SuppressWarnings("unused")
     @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts", method = RequestMethod.POST)
     @ApiOperation(value = "Create a new tenant script")
     @Secured({ SiteWhereRoles.REST })
@@ -517,7 +524,7 @@ public class Instance extends RestControllerBase {
 	    @RequestBody ScriptCreateRequest request) throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantToken);
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return getScriptManagement().createScript(msid, tenant.getId(), request);
+	return getScriptManagement().createScript(msid, null, request);
     }
 
     /**
@@ -530,6 +537,7 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
+    @SuppressWarnings("unused")
     @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}/content", method = RequestMethod.GET)
     @ApiOperation(value = "Get content for a tenant script based on unique script id and version id")
     @Secured({ SiteWhereRoles.REST })
@@ -540,7 +548,7 @@ public class Instance extends RestControllerBase {
 	    @ApiParam(value = "Version id", required = true) @PathVariable String versionId) throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantToken);
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return new String(getScriptManagement().getScriptContent(msid, tenant.getId(), scriptId, versionId));
+	return new String(getScriptManagement().getScriptContent(msid, null, scriptId, versionId));
     }
 
     /**
@@ -554,6 +562,7 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
+    @SuppressWarnings("unused")
     @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}", method = RequestMethod.POST)
     @ApiOperation(value = "Update an existing tenant script")
     @Secured({ SiteWhereRoles.REST })
@@ -565,7 +574,7 @@ public class Instance extends RestControllerBase {
 	    @RequestBody ScriptCreateRequest request) throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantToken);
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return getScriptManagement().updateScript(msid, tenant.getId(), scriptId, versionId, request);
+	return getScriptManagement().updateScript(msid, null, scriptId, versionId, request);
     }
 
     /**
@@ -579,6 +588,7 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
+    @SuppressWarnings("unused")
     @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}/clone", method = RequestMethod.POST)
     @ApiOperation(value = "Clone an existing tenant script version to create a new version")
     @Secured({ SiteWhereRoles.REST })
@@ -590,7 +600,7 @@ public class Instance extends RestControllerBase {
 	    @RequestBody ScriptCloneRequest request) throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantToken);
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return getScriptManagement().cloneScript(msid, tenant.getId(), scriptId, versionId, request.getComment());
+	return getScriptManagement().cloneScript(msid, null, scriptId, versionId, request.getComment());
     }
 
     /**
@@ -604,6 +614,7 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
+    @SuppressWarnings("unused")
     @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}/activate", method = RequestMethod.POST)
     @ApiOperation(value = "Activate a tenant script version")
     @Secured({ SiteWhereRoles.REST })
@@ -614,7 +625,7 @@ public class Instance extends RestControllerBase {
 	    @ApiParam(value = "Version id", required = true) @PathVariable String versionId) throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantToken);
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return getScriptManagement().activateScript(msid, tenant.getId(), scriptId, versionId);
+	return getScriptManagement().activateScript(msid, null, scriptId, versionId);
     }
 
     /**
@@ -627,6 +638,7 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
+    @SuppressWarnings("unused")
     @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}", method = RequestMethod.DELETE)
     @ApiOperation(value = "Delete a tenant script and version history")
     @Secured({ SiteWhereRoles.REST })
@@ -636,7 +648,7 @@ public class Instance extends RestControllerBase {
 	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId) throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantToken);
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return getScriptManagement().deleteScript(msid, tenant.getId(), scriptId);
+	return getScriptManagement().deleteScript(msid, null, scriptId);
     }
 
     /**
