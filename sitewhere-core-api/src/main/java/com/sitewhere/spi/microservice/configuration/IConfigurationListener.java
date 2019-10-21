@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.microservice.configuration;
 
+import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
+
 /**
  * Listener for {@link IConfigurationMonitor} events.
  * 
@@ -15,30 +17,23 @@ package com.sitewhere.spi.microservice.configuration;
 public interface IConfigurationListener {
 
     /**
-     * Called when configuration cache is initialized.
+     * Called when instance configuration is added.
+     * 
+     * @param instance
      */
-    public void onConfigurationCacheInitialized();
+    public void onConfigurationAdded(SiteWhereInstance instance);
 
     /**
-     * Called when a configuration file is added.
+     * Called when instance configuration is updated.
      * 
-     * @param path
-     * @param data
+     * @param instance
      */
-    public void onConfigurationAdded(String path, byte[] data);
+    public void onConfigurationUpdated(SiteWhereInstance instance);
 
     /**
-     * Called when a configuration file is updated.
+     * Called when instance configuration is deleted.
      * 
-     * @param path
-     * @param data
+     * @param instance
      */
-    public void onConfigurationUpdated(String path, byte[] data);
-
-    /**
-     * Called when a configuration file is deleted.
-     * 
-     * @param path
-     */
-    public void onConfigurationDeleted(String path);
+    public void onConfigurationDeleted(SiteWhereInstance instance);
 }

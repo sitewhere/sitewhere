@@ -13,6 +13,8 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
+import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
+
 /**
  * Implementation of {@link IScriptSynchronizer} that copies instance-level
  * scripts from Zookeeper to the local filesystem of a microservice.
@@ -36,7 +38,31 @@ public class InstanceScriptSynchronizer extends ScriptSynchronizer {
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
 	setFileSystemRoot(new File(getMicroservice().getInstanceSettings().getFileSystemStorageRoot()));
-	setZkScriptRootPath(getMicroservice().getInstanceZkPath());
+	// setZkScriptRootPath(getMicroservice().getInstanceZkPath());
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurationListener#
+     * onConfigurationAdded(io.sitewhere.k8s.crd.instance.SiteWhereInstance)
+     */
+    @Override
+    public void onConfigurationAdded(SiteWhereInstance instance) {
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurationListener#
+     * onConfigurationUpdated(io.sitewhere.k8s.crd.instance.SiteWhereInstance)
+     */
+    @Override
+    public void onConfigurationUpdated(SiteWhereInstance instance) {
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurationListener#
+     * onConfigurationDeleted(io.sitewhere.k8s.crd.instance.SiteWhereInstance)
+     */
+    @Override
+    public void onConfigurationDeleted(SiteWhereInstance instance) {
     }
 
     /*

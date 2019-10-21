@@ -27,6 +27,9 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.tenant.ITenantManagement;
 
+import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
+
 /**
  * Functionality common to all SiteWhere microservices.
  * 
@@ -191,11 +194,11 @@ public interface IMicroservice<T extends IFunctionIdentifier>
     public void afterMicroserviceStarted();
 
     /**
-     * Get Zookeeper node path for instance.
+     * Kubernetes for local connection.
      * 
      * @return
      */
-    public String getInstanceZkPath();
+    public DefaultKubernetesClient getKubernetesClient();
 
     /**
      * Get metrics server.
@@ -203,6 +206,14 @@ public interface IMicroservice<T extends IFunctionIdentifier>
      * @return
      */
     public IMetricsServer getMetricsServer();
+
+    /**
+     * Get local microservice configuration.
+     * 
+     * @param instance
+     * @return
+     */
+    public byte[] getLocalConfiguration(SiteWhereInstance instance);
 
     /**
      * Wait for SiteWhere instance configuration metadata to become initialized

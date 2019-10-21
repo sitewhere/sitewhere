@@ -16,6 +16,8 @@ import com.sitewhere.spi.microservice.configuration.IConfigurationListener;
 import com.sitewhere.spi.microservice.configuration.IConfigurationMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
+import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
+
 /**
  * Monitors Kubernetes resources for changes in microservice configuration.
  */
@@ -30,10 +32,10 @@ public class KubernetesConfigurationMonitor extends LifecycleComponent implement
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.IConfigurationMonitor#
-     * getConfigurationDataFor(java.lang.String)
+     * getInstanceConfiguration()
      */
     @Override
-    public byte[] getConfigurationDataFor(String path) throws SiteWhereException {
+    public SiteWhereInstance getInstanceConfiguration() throws SiteWhereException {
 	return null;
     }
 

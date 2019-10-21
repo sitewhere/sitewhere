@@ -17,6 +17,8 @@ import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 
+import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
+
 /**
  * Microservice that supports dynamic monitoring of configuration.
  * 
@@ -60,37 +62,11 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
     public void waitForConfigurationReady() throws SiteWhereException;
 
     /**
-     * Indicates if configuration has been cached from Zk.
+     * Get instance-wide configuration information.
      * 
      * @return
      */
-    public boolean isConfigurationCacheReady();
-
-    /**
-     * Get configuration data for the given path.
-     * 
-     * @param path
-     * @return
-     * @throws SiteWhereException
-     */
-    public byte[] getConfigurationDataFor(String path) throws SiteWhereException;
-
-    /**
-     * Get path for configuration file needed by microservice (excluding global
-     * instance configuration).
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getConfigurationPath() throws SiteWhereException;
-
-    /**
-     * Get data for instance management configuration file.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public byte[] getInstanceManagementConfigurationData() throws SiteWhereException;
+    public SiteWhereInstance getGlobalConfiguration();
 
     /**
      * Initialize configurable components.

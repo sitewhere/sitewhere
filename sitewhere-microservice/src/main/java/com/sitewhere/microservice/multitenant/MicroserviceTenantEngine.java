@@ -23,10 +23,8 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
-import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
-import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
@@ -34,6 +32,10 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.tenant.ITenant;
+
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
+import io.sitewhere.k8s.crd.tenant.engine.configuration.TenantEngineConfigurationTemplate;
+import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 
 /**
  * Specialized tenant engine that runs within an
@@ -359,74 +361,30 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
-     * onConfigurationCacheInitialized()
+     * @see com.sitewhere.spi.microservice.configuration.
+     * ITenantEngineConfigurationListener#onConfigurationAdded(io.sitewhere.k8s.crd.
+     * tenant.engine.SiteWhereTenantEngine)
      */
     @Override
-    public void onConfigurationCacheInitialized() {
+    public void onConfigurationAdded(SiteWhereTenantEngine engine) {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
-     * onConfigurationAdded(java.lang.String, byte[])
+     * @see com.sitewhere.spi.microservice.configuration.
+     * ITenantEngineConfigurationListener#onConfigurationUpdated(io.sitewhere.k8s.
+     * crd.tenant.engine.SiteWhereTenantEngine)
      */
     @Override
-    public void onConfigurationAdded(String path, byte[] data) {
-	getLogger().debug("Tenant engine configuration path added: " + path);
-	try {
-	    // Handle updated configuration file.
-	    if (getModuleConfigurationName().equals(path)) {
-		getLogger().info("Tenant engine configuration added.");
-	    }
-	} catch (SiteWhereException e) {
-	    getLogger().error("Unable to process added configuration file.", e);
-	}
+    public void onConfigurationUpdated(SiteWhereTenantEngine engine) {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
-     * onConfigurationUpdated(java.lang.String, byte[])
+     * @see com.sitewhere.spi.microservice.configuration.
+     * ITenantEngineConfigurationListener#onConfigurationDeleted(io.sitewhere.k8s.
+     * crd.tenant.engine.SiteWhereTenantEngine)
      */
     @Override
-    public void onConfigurationUpdated(String path, byte[] data) {
-	getLogger().debug("Tenant engine configuration path updated: " + path);
-	try {
-	    // Handle updated configuration file.
-	    if (getModuleConfigurationName().equals(path)) {
-		getLogger().info("Tenant engine configuration updated.");
-		// ((IMultitenantMicroservice<?, ?>) getMicroservice()).getTenantEngineManager()
-		// .restartTenantEngine(getTenant().getId());
-	    }
-	} catch (SiteWhereException e) {
-	    getLogger().error("Unable to process updated configuration file.", e);
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
-     * onConfigurationDeleted(java.lang.String)
-     */
-    @Override
-    public void onConfigurationDeleted(String path) {
-	getLogger().debug("Tenant engine configuration path deleted: " + path);
-	try {
-	    // Handle updated configuration file.
-	    if (getModuleConfigurationName().equals(path)) {
-		getLogger().info("Tenant engine configuration deleted.");
-		// ((IMultitenantMicroservice<?, ?>) getMicroservice()).getTenantEngineManager()
-		// .removeTenantEngine(getTenant().getId());
-	    }
-	} catch (SiteWhereException e) {
-	    getLogger().error("Unable to process deleted configuration file.", e);
-	}
+    public void onConfigurationDeleted(SiteWhereTenantEngine engine) {
     }
 
     /*
@@ -439,23 +397,11 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
-     * getTenantTemplate()
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationTemplate()
      */
     @Override
-    public ITenantTemplate getTenantTemplate() throws SiteWhereException {
-	// String templatePath = getTenantConfigurationPath() + "/" +
-	// TENANT_TEMPLATE_PATH;
-	// CuratorFramework curator =
-	// getMicroservice().getZookeeperManager().getCurator();
-	// try {
-	// byte[] data = curator.getData().forPath(templatePath);
-	// return MarshalUtils.unmarshalJson(data, TenantTemplate.class);
-	// } catch (Exception e) {
-	// throw new SiteWhereException("Unable to load tenant template from Zk.", e);
-	// }
+    public TenantEngineConfigurationTemplate getConfigurationTemplate() throws SiteWhereException {
 	return null;
     }
 
@@ -464,17 +410,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
      * getDatasetTemplate()
      */
     @Override
-    public IDatasetTemplate getDatasetTemplate() throws SiteWhereException {
-	// String templatePath = getTenantConfigurationPath() + "/" +
-	// DATASET_TEMPLATE_PATH;
-	// CuratorFramework curator =
-	// getMicroservice().getZookeeperManager().getCurator();
-	// try {
-	// byte[] data = curator.getData().forPath(templatePath);
-	// return MarshalUtils.unmarshalJson(data, DatasetTemplate.class);
-	// } catch (Exception e) {
-	// throw new SiteWhereException("Unable to load tenant template from Zk.", e);
-	// }
+    public TenantEngineDatasetTemplate getDatasetTemplate() throws SiteWhereException {
 	return null;
     }
 

@@ -32,6 +32,8 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
+import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
+
 /**
  * Base class for microservices that monitor the configuration folder for
  * updates.
@@ -50,44 +52,64 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
     /** Configuration state */
     private ConfigurationState configurationState = ConfigurationState.Unloaded;
 
-    /** Indicates if configuration cache is ready to use */
-    private boolean configurationCacheReady = false;
-
     /** Global instance application context */
     private ApplicationContext globalApplicationContext;
 
     /** Local microservice application context */
     private ApplicationContext localApplicationContext;
 
+    /** Global configuration */
+    private SiteWhereInstance globalConfiguration;
+
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
-     * onConfigurationCacheInitialized()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurationListener#
+     * onConfigurationAdded(io.sitewhere.k8s.crd.instance.SiteWhereInstance)
      */
     @Override
-    public void onConfigurationCacheInitialized() {
-	getLogger().info("Configuration cache initialized.");
-	setConfigurationCacheReady(true);
+    public void onConfigurationAdded(SiteWhereInstance instance) {
+	this.globalConfiguration = instance;
 	try {
-	    restartConfiguration();
+	    initializeAndStart();
 	} catch (SiteWhereException e) {
-	    getLogger().error("Unable to restart microservice configuration.", e);
+	    getLogger().error("Unable to start microservice.", e);
 	}
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
-     * getConfigurationDataFor(java.lang.String)
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurationListener#
+     * onConfigurationUpdated(io.sitewhere.k8s.crd.instance.SiteWhereInstance)
      */
     @Override
-    public byte[] getConfigurationDataFor(String path) throws SiteWhereException {
-	if (!isConfigurationCacheReady()) {
-	    throw new SiteWhereException("Configuration cache not initialized.");
+    public void onConfigurationUpdated(SiteWhereInstance instance) {
+	this.globalConfiguration = instance;
+	try {
+	    restartConfiguration();
+	} catch (SiteWhereException e) {
+	    getLogger().error("Unable to restart microservice.", e);
 	}
-	return getConfigurationMonitor().getConfigurationDataFor(path);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurationListener#
+     * onConfigurationDeleted(io.sitewhere.k8s.crd.instance.SiteWhereInstance)
+     */
+    @Override
+    public void onConfigurationDeleted(SiteWhereInstance instance) {
+	try {
+	    stopAndTerminate();
+	} catch (SiteWhereException e) {
+	    getLogger().error("Unable to stop microservice.", e);
+	}
+	this.globalConfiguration = null;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getGlobalConfiguration()
+     */
+    @Override
+    public SiteWhereInstance getGlobalConfiguration() {
+	return globalConfiguration;
     }
 
     /*
@@ -98,15 +120,6 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 	Map<String, Object> properties = new HashMap<>();
 	properties.put("sitewhere.edition", getVersion().getEditionIdentifier().toLowerCase());
 	return properties;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * getInstanceManagementConfigurationData()
-     */
-    @Override
-    public byte[] getInstanceManagementConfigurationData() throws SiteWhereException {
-	return new byte[0];
     }
 
     /*
@@ -333,25 +346,19 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 	try {
 	    // Load microservice configuration.
 	    setConfigurationState(ConfigurationState.Loading);
-	    byte[] global = getInstanceManagementConfigurationData();
-	    if (global == null) {
-		throw new SiteWhereException("Global instance management file not found.");
+	    SiteWhereInstance global = getGlobalConfiguration();
+	    if (global.getSpec() == null || global.getSpec().getInstanceConfiguration() == null) {
+		throw new SiteWhereException("Global instance configuration not set. Unable to start microservice.");
 	    }
-	    ApplicationContext globalContext = ConfigurationUtils.buildGlobalContext(this, global,
+	    byte[] globalConfig = global.getSpec().getInstanceConfiguration().getBytes();
+	    ApplicationContext globalContext = ConfigurationUtils.buildGlobalContext(this, globalConfig,
 		    getMicroservice().getSpringProperties());
 
-	    String path = getConfigurationPath();
 	    ApplicationContext localContext = null;
-	    if (path != null) {
-		String fullPath = path;
-		getLogger().info(String.format("Loading configuration from Zookeeper at path '%s'", fullPath));
-		byte[] data = getConfigurationMonitor().getConfigurationDataFor(fullPath);
-		if (data != null) {
-		    localContext = ConfigurationUtils.buildSubcontext(data, getMicroservice().getSpringProperties(),
-			    globalContext);
-		} else {
-		    throw new SiteWhereException("Required microservice configuration not found: " + fullPath);
-		}
+	    byte[] localConfig = getLocalConfiguration(global);
+	    if (localConfig != null) {
+		localContext = ConfigurationUtils.buildSubcontext(localConfig, getMicroservice().getSpringProperties(),
+			globalContext);
 	    }
 
 	    // Store contexts for later use.
@@ -457,16 +464,34 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 	}
     }
 
+    /**
+     * Initialize and start the microservice components.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void initializeAndStart() throws SiteWhereException {
+	initializeConfiguration();
+	startConfiguration();
+    }
+
+    /**
+     * Stop and terminate the microservice components.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void stopAndTerminate() throws SiteWhereException {
+	stopConfiguration();
+	terminateConfiguration();
+    }
+
     /*
      * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
      * restartConfiguration()
      */
     @Override
     public void restartConfiguration() throws SiteWhereException {
-	stopConfiguration();
-	terminateConfiguration();
-	initializeConfiguration();
-	startConfiguration();
+	stopAndTerminate();
+	initializeAndStart();
     }
 
     /*
@@ -567,21 +592,6 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
     @Override
     public void setConfigurationState(ConfigurationState configurationState) {
 	this.configurationState = configurationState;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
-     * isConfigurationCacheReady()
-     */
-    @Override
-    public boolean isConfigurationCacheReady() {
-	return configurationCacheReady;
-    }
-
-    protected void setConfigurationCacheReady(boolean configurationCacheReady) {
-	this.configurationCacheReady = configurationCacheReady;
     }
 
     /*

@@ -114,59 +114,6 @@ public abstract class ScriptSynchronizer extends LifecycleComponent implements I
 	}
     }
 
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurationListener#
-     * onConfigurationCacheInitialized()
-     */
-    @Override
-    public void onConfigurationCacheInitialized() {
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurationListener#
-     * onConfigurationAdded(java.lang.String, byte[])
-     */
-    @Override
-    public void onConfigurationAdded(String path, byte[] data) {
-	try {
-	    if (isScriptContent(path)) {
-		add(getRelativePath(path));
-	    }
-	} catch (SiteWhereException e) {
-	    getLogger().error("Error processing added script.", e);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurationListener#
-     * onConfigurationUpdated(java.lang.String, byte[])
-     */
-    @Override
-    public void onConfigurationUpdated(String path, byte[] data) {
-	try {
-	    if (isScriptContent(path)) {
-		update(getRelativePath(path));
-	    }
-	} catch (SiteWhereException e) {
-	    getLogger().error("Error processing updated script.", e);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurationListener#
-     * onConfigurationDeleted(java.lang.String)
-     */
-    @Override
-    public void onConfigurationDeleted(String path) {
-	try {
-	    if (isScriptContent(path)) {
-		delete(getRelativePath(path));
-	    }
-	} catch (SiteWhereException e) {
-	    getLogger().error("Error processing deleted script.", e);
-	}
-    }
-
     /**
      * Checks whether path is script content.
      * 

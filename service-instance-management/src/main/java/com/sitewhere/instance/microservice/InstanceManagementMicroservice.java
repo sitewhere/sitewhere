@@ -58,9 +58,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     /** Microservice name */
     private static final String NAME = "Instance Management";
 
-    /** User management configuration file name */
-    private static final String CONFIGURATION_PATH = MicroserviceIdentifier.InstanceManagement.getPath() + ".xml";
-
     /** Instance template manager */
     private IInstanceTemplateManager instanceTemplateManager = new InstanceTemplateManager();
 
@@ -120,45 +117,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     @Override
     public IConfigurationModel buildConfigurationModel() {
 	return new InstanceManagementModelProvider().buildModel();
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * getConfigurationPath()
-     */
-    @Override
-    public String getConfigurationPath() throws SiteWhereException {
-	return CONFIGURATION_PATH;
-    }
-
-    /*
-     * @see com.sitewhere.microservice.Microservice#waitForInstanceInitialization()
-     */
-    @Override
-    public void waitForInstanceInitialization() throws SiteWhereException {
-	// Prevent deadlock waiting for self.
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
-     * onConfigurationCacheInitialized()
-     */
-    @Override
-    public void onConfigurationCacheInitialized() {
-	// Override default configuration loading behavior because instance bootstrap
-	// must be done first.
-	setConfigurationCacheReady(true);
-    }
-
-    /*
-     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
-     * waitForConfigurationReady()
-     */
-    @Override
-    public void waitForConfigurationReady() throws SiteWhereException {
-	// Configuration will be loaded manually after instance bootstrap.
     }
 
     /*

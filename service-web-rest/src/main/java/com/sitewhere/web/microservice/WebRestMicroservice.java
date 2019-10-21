@@ -52,9 +52,6 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
     /** Microservice name */
     private static final String NAME = "Web/REST";
 
-    /** Web/REST configuration file name */
-    private static final String CONFIGURATION_PATH = MicroserviceIdentifier.WebRest.getPath() + ".xml";
-
     /** Instance management API channel */
     private IInstanceManagementApiChannel<?> instanceManagementApiChannel;
 
@@ -123,15 +120,6 @@ public class WebRestMicroservice extends GlobalMicroservice<MicroserviceIdentifi
     @Override
     public IConfigurationModel buildConfigurationModel() {
 	return new WebRestModelProvider().buildModel();
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * getConfigurationPath()
-     */
-    @Override
-    public String getConfigurationPath() throws SiteWhereException {
-	return CONFIGURATION_PATH;
     }
 
     /*

@@ -28,6 +28,7 @@ import com.sitewhere.rest.model.microservice.state.MicroserviceDetails;
 import com.sitewhere.rest.model.microservice.state.MicroserviceState;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IMicroservice;
@@ -50,6 +51,9 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.tenant.ITenantManagement;
 
+import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
+
 /**
  * Common base class for all SiteWhere microservices.
  */
@@ -59,6 +63,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     /** Instance settings */
     @Autowired
     private IInstanceSettings instanceSettings;
+
+    /** Kubernetes client */
+    private DefaultKubernetesClient kubernetesClient;
 
     /** Metrics server */
     @Autowired
@@ -141,6 +148,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	// Initialize configuration model.
 	initializeConfigurationModel();
 
+	// Initialize Kubernetes client.
+	initializeK8sClient();
+
 	// Initialize GRPC components.
 	initializeGrpcComponents();
 
@@ -180,6 +190,13 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	// Record start time.
 	this.startTime = System.currentTimeMillis();
 	getMicroserviceAnalytics().sendMicroserviceStarted(this);
+    }
+
+    /**
+     * Initialize Kubernetes client.
+     */
+    protected void initializeK8sClient() {
+	this.kubernetesClient = new DefaultKubernetesClient();
     }
 
     /**
@@ -241,6 +258,15 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	// Stop microservice management GRPC server.
 	stop.addStopStep(this, getMicroserviceManagementGrpcServer());
 
+	// Add step for stopping k8s client.
+	stop.addStep(new SimpleLifecycleStep("Stop Kubernetes client") {
+
+	    @Override
+	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		getKubernetesClient().close();
+	    }
+	});
+
 	// Execute shutdown steps.
 	stop.execute(monitor);
     }
@@ -290,6 +316,23 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	} catch (UnknownHostException e) {
 	    throw new RuntimeException("Unable to find hostname.", e);
 	}
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getKubernetesClient()
+     */
+    @Override
+    public DefaultKubernetesClient getKubernetesClient() {
+	return this.kubernetesClient;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getLocalConfiguration(io.
+     * sitewhere.k8s.crd.instance.SiteWhereInstance)
+     */
+    @Override
+    public byte[] getLocalConfiguration(SiteWhereInstance instance) {
+	return null;
     }
 
     /*
@@ -349,16 +392,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
      */
     @Override
     public void onTenantEngineStateChanged(ITenantEngineState state) {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.IMicroservice#getInstanceZkPath()
-     */
-    @Override
-    public String getInstanceZkPath() {
-	return "/" + getInstanceSettings().getInstanceId();
     }
 
     /*

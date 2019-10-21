@@ -11,19 +11,11 @@ import java.io.File;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
-/**
- * Implementation of {@link IScriptSynchronizer} that copies tenant-level
- * scripts from Zookeeper to the local filesystem of a microservice.
- * 
- * @author Derek
- */
-public class TenantEngineScriptSynchronizer extends ScriptSynchronizer {
+import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
 
-    /** Subpath that holds tenant scripts */
-    private static final String TENANTS_SUBPATH = "tenants";
+public class TenantEngineScriptSynchronizer extends ScriptSynchronizer {
 
     /** Tenant engine */
     private IMicroserviceTenantEngine tenantEngine;
@@ -46,26 +38,30 @@ public class TenantEngineScriptSynchronizer extends ScriptSynchronizer {
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
-	setFileSystemRoot(computeFilesystemPathForTenant());
-	// setZkScriptRootPath(((IMultitenantMicroservice<?, ?>)
-	// getMicroservice()).getScriptManagement()
-	// .getScriptContentZkPath(getMicroservice().getIdentifier(),
-	// getTenantEngine().getTenant().getId()));
     }
 
-    /**
-     * Compute relative path for storing tenant scripts.
-     * 
-     * @return
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurationListener#
+     * onConfigurationAdded(io.sitewhere.k8s.crd.instance.SiteWhereInstance)
      */
-    protected File computeFilesystemPathForTenant() {
-	File root = new File(getMicroservice().getInstanceSettings().getFileSystemStorageRoot());
-	File tenants = new File(root, TENANTS_SUBPATH);
-	File tenant = new File(tenants, getTenantEngine().getTenant().getToken());
-	if (!tenant.getParentFile().exists()) {
-	    tenant.getParentFile().mkdirs();
-	}
-	return tenant;
+    @Override
+    public void onConfigurationAdded(SiteWhereInstance instance) {
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurationListener#
+     * onConfigurationUpdated(io.sitewhere.k8s.crd.instance.SiteWhereInstance)
+     */
+    @Override
+    public void onConfigurationUpdated(SiteWhereInstance instance) {
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurationListener#
+     * onConfigurationDeleted(io.sitewhere.k8s.crd.instance.SiteWhereInstance)
+     */
+    @Override
+    public void onConfigurationDeleted(SiteWhereInstance instance) {
     }
 
     /*

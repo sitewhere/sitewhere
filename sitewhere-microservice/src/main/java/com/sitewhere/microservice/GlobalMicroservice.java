@@ -77,36 +77,6 @@ public abstract class GlobalMicroservice<T extends IFunctionIdentifier> extends 
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
-     * onConfigurationAdded(java.lang.String, byte[])
-     */
-    @Override
-    public void onConfigurationAdded(String path, byte[] data) {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
-     * onConfigurationUpdated(java.lang.String, byte[])
-     */
-    @Override
-    public void onConfigurationUpdated(String path, byte[] data) {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
-     * onConfigurationDeleted(java.lang.String)
-     */
-    @Override
-    public void onConfigurationDeleted(String path) {
-    }
-
-    /*
      * @see
      * com.sitewhere.spi.microservice.IGlobalMicroservice#updateConfiguration(byte[]
      * )

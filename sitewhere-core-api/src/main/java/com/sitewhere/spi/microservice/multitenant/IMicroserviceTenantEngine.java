@@ -11,7 +11,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
-import com.sitewhere.spi.microservice.configuration.IConfigurationListener;
+import com.sitewhere.spi.microservice.configuration.ITenantEngineConfigurationListener;
 import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.microservice.scripting.IScriptManager;
 import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
@@ -22,11 +22,14 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 import com.sitewhere.spi.tenant.ITenant;
 
+import io.sitewhere.k8s.crd.tenant.engine.configuration.TenantEngineConfigurationTemplate;
+import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
+
 /**
  * Engine that manages operations for a single tenant within an
  * {@link IMultitenantMicroservice}.
  */
-public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleComponent, IConfigurationListener {
+public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleComponent, ITenantEngineConfigurationListener {
 
     /**
      * Get tenant hosted by engine.
@@ -43,19 +46,20 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
     public ITenantEngineState getCurrentState() throws SiteWhereException;
 
     /**
-     * Get tenant template.
-     * 
-     * @return
-     */
-    public ITenantTemplate getTenantTemplate() throws SiteWhereException;
-
-    /**
-     * Get dataset template.
+     * Get tenant engine configuration template.
      * 
      * @return
      * @throws SiteWhereException
      */
-    public IDatasetTemplate getDatasetTemplate() throws SiteWhereException;
+    public TenantEngineConfigurationTemplate getConfigurationTemplate() throws SiteWhereException;
+
+    /**
+     * Get tenant engine dataset template.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public TenantEngineDatasetTemplate getDatasetTemplate() throws SiteWhereException;
 
     /**
      * Get script synchronizer for copying/locating scripts.
