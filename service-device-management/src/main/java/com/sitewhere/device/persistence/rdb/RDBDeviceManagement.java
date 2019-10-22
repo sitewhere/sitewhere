@@ -12,8 +12,6 @@ import com.sitewhere.device.DeviceManagementUtils;
 import com.sitewhere.device.microservice.DeviceManagementMicroservice;
 import com.sitewhere.device.persistence.DeviceManagementPersistence;
 import com.sitewhere.device.persistence.TreeBuilder;
-import com.sitewhere.rdb.ApplicationContextUtils;
-import com.sitewhere.rdb.FlywayConfig;
 import com.sitewhere.rdb.RDBTenantComponent;
 import com.sitewhere.rdb.multitenancy.DvdRentalTenantContext;
 import com.sitewhere.rest.model.area.Area;
@@ -1631,11 +1629,5 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
     }
 
     @Override
-    public void ensureIndexes() throws SiteWhereException {
-        String tenantId = this.getTenantEngine().getTenant().getId().toString();
-        //DvdRentalTenantContext.setTenantId(tenantId);
-        Map<String, DataSource> dataSourcesDvdRental = (Map<String, DataSource>) ApplicationContextUtils.getBean("dataSourcesDvdRental");
-        FlywayConfig a = new FlywayConfig();
-        a.tenantsFlyway(tenantId, dataSourcesDvdRental.get(tenantId));
-    }
+    public void ensureIndexes() throws SiteWhereException { }
 }

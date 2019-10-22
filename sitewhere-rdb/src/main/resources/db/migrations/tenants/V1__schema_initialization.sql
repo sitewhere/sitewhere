@@ -694,3 +694,72 @@ create table zone_metadata
 alter table zone_metadata
     owner to syncope;
 
+
+create table asset
+(
+    id              uuid not null
+        constraint asset_pkey
+            primary key,
+    assettypeid      uuid,
+    backgroundcolor varchar(255),
+    bordercolor     varchar(255),
+    createdby       varchar(255),
+    createddate     timestamp,
+    description     varchar(1000),
+    foregroundcolor varchar(255),
+    icon            varchar(255),
+    imageurl        varchar(255),
+    name            varchar(255),
+    parentid        uuid,
+    token           varchar(255),
+    updatedby       varchar(255),
+    updateddate     timestamp
+);
+
+alter table asset
+    owner to syncope;
+
+create table asett_metadata
+(
+    asset_id   uuid         not null
+        constraint fkhmfvnp287p256qi7bkg5dew6u
+            references asset,
+    propvalue varchar(255),
+    propkey   varchar(255) not null,
+    constraint asset_metadata_pkey
+        primary key (asset_id, propkey)
+);
+
+create table asset_type
+(
+    id              uuid not null
+        constraint asset_type_pkey
+            primary key,
+    backgroundcolor varchar(255),
+    bordercolor     varchar(255),
+    createdby       varchar(255),
+    createddate     timestamp,
+    description     varchar(1000),
+    foregroundcolor varchar(255),
+    icon            varchar(255),
+    imageurl        varchar(255),
+    name            varchar(255),
+    token           varchar(255),
+    updatedby       varchar(255),
+    updateddate     timestamp,
+    assetcategory   varchar(255)
+    );
+
+alter table asset_type
+    owner to syncope;
+
+create table asett_type_metadata
+(
+    assettype_id uuid         not null
+        constraint fk13869vnjm3fh73tfou4sr7onb
+            references asset_type,
+    propvalue   varchar(255),
+    propkey     varchar(255) not null,
+    constraint asset_type_metadata_pkey
+        primary key (assettype_id, propkey)
+);

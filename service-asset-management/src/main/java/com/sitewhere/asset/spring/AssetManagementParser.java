@@ -9,6 +9,9 @@ package com.sitewhere.asset.spring;
 
 import java.util.List;
 
+import com.sitewhere.asset.persistence.rdb.AssetManagementRDBClient;
+import com.sitewhere.asset.persistence.rdb.RDBAssetManagement;
+import com.sitewhere.spi.microservice.spring.DeviceManagementBeans;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -61,34 +64,66 @@ public class AssetManagementParser extends AbstractBeanDefinitionParser {
      * @param element
      * @param context
      */
-    protected void parseDeviceManagementDatastore(Element element, ParserContext context) {
-	DatastoreConfigurationChoice config = DatastoreConfigurationParser.parseDeviceManagementDatastoreChoice(element,
-		context);
-	switch (config.getType()) {
-	case MongoDB: {
-	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(AssetManagementMongoClient.class);
-	    client.addConstructorArgValue(config.getConfiguration());
-	    context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
-		    client.getBeanDefinition());
-	    break;
-	}
-	case MongoDBReference: {
-	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(AssetManagementMongoClient.class);
-	    client.addConstructorArgReference((String) config.getConfiguration());
-	    context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
-		    client.getBeanDefinition());
-	    break;
-	}
-	default: {
-	    throw new RuntimeException("Invalid datastore configured: " + config.getType());
-	}
-	}
+	protected void parseDeviceManagementDatastore(Element element, ParserContext context) {
+		DatastoreConfigurationChoice config = DatastoreConfigurationParser.parseDeviceManagementDatastoreChoice(element,
+				context);
 
-	// Build asset management implementation.
-	BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(MongoAssetManagement.class);
-	management.addPropertyReference("mongoClient", AssetManagementBeans.BEAN_MONGODB_CLIENT);
+		BeanDefinitionBuilder management;
 
-	context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_ASSET_MANAGEMENT,
-		management.getBeanDefinition());
+		switch (config.getType()) {
+			case MongoDB: {
+				BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(AssetManagementMongoClient.class);
+				client.addConstructorArgValue(config.getConfiguration());
+				context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
+						client.getBeanDefinition());
+
+				management = buildMongoDeviceManagament();
+				break;
+			}
+			case MongoDBReference: {
+				BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(AssetManagementMongoClient.class);
+				client.addConstructorArgReference((String) config.getConfiguration());
+				context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_MONGODB_CLIENT,
+						client.getBeanDefinition());
+				management = buildMongoDeviceManagament();
+				break;
+			}
+			case RDB: {
+				BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(AssetManagementRDBClient.class);
+				client.addConstructorArgValue(config.getConfiguration());
+				context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_RDB_CLIENT,
+						client.getBeanDefinition());
+				management = buildRDBDeviceManagament();
+				break;
+			}
+			case RDBReference: {
+				BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(AssetManagementRDBClient.class);
+				client.addConstructorArgReference((String) config.getConfiguration());
+				context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_RDB_CLIENT,
+						client.getBeanDefinition());
+				management = buildRDBDeviceManagament();
+				break;
+			}
+			default: {
+				throw new RuntimeException("Invalid datastore configured: " + config.getType());
+			}
+		}
+
+		context.getRegistry().registerBeanDefinition(AssetManagementBeans.BEAN_ASSET_MANAGEMENT,
+				management.getBeanDefinition());
     }
+
+	private BeanDefinitionBuilder buildMongoDeviceManagament() {
+		// Build asset management implementation.
+		BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(MongoAssetManagement.class);
+		management.addPropertyReference("mongoClient", AssetManagementBeans.BEAN_MONGODB_CLIENT);
+		return management;
+	}
+
+	private BeanDefinitionBuilder buildRDBDeviceManagament() {
+		// Build asset management implementation.
+		BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(RDBAssetManagement.class);
+		management.addPropertyReference("dbClient", AssetManagementBeans.BEAN_RDB_CLIENT);
+		return management;
+	}
 }

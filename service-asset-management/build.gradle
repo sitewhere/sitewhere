@@ -5,7 +5,8 @@ dependencies {
 	compile project(':sitewhere-mongodb')
 	compile project(':sitewhere-microservice')
 	compile project(':sitewhere-grpc-client')
-	
+	compile project(':sitewhere-rdb')
+
 	// REST template for SCIM access.
     compile group: 'org.springframework', name: 'spring-web'
     compile group: 'org.apache.httpcomponents', name: 'httpclient'

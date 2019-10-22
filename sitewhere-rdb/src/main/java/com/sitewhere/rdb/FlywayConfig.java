@@ -20,8 +20,8 @@ public class FlywayConfig {
         flyway.setLocations("db/migrations/tenants");
         flyway.setDataSource(dataSource);
         flyway.setSchemas(schema);
-        flyway.migrate();
-        return true;
+        int migrate = flyway.migrate();
+        return (migrate > 0);
     }
 
 }

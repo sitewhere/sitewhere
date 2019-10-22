@@ -124,6 +124,16 @@ public class DbManager {
         return bean;
     }
 
+    public AssetRepository getAssetRepository() {
+        AssetRepository bean = ApplicationContextUtils.getBean(AssetRepository.class);
+        return bean;
+    }
+
+    public AssetTypeRepository getAssetTypeRepository() {
+        AssetTypeRepository bean = ApplicationContextUtils.getBean(AssetTypeRepository.class);
+        return bean;
+    }
+
     public static void main(String[] args) {
         // Define two datasources
         RDBConfiguration config1 = new RDBConfiguration();
