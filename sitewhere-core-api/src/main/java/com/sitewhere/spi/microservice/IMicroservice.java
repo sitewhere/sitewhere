@@ -28,7 +28,11 @@ import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.tenant.ITenantManagement;
 
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import io.sitewhere.k8s.crd.ISiteWhereKubernetesClient;
 import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
+import io.sitewhere.k8s.crd.microservice.SiteWhereMicroservice;
+import io.sitewhere.k8s.crd.tenant.SiteWhereTenant;
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Functionality common to all SiteWhere microservices.
@@ -201,6 +205,13 @@ public interface IMicroservice<T extends IFunctionIdentifier>
     public DefaultKubernetesClient getKubernetesClient();
 
     /**
+     * Get SiteWhere k8s client wrapper.
+     * 
+     * @return
+     */
+    public ISiteWhereKubernetesClient getSiteWhereKubernetesClient();
+
+    /**
      * Get metrics server.
      * 
      * @return
@@ -229,4 +240,42 @@ public interface IMicroservice<T extends IFunctionIdentifier>
      * @return
      */
     public ExecutorService getMicroserviceOperationsService();
+
+    /**
+     * Get global configuration.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    public SiteWhereInstance getGlobalConfiguration() throws SiteWhereException;
+
+    /**
+     * Update global configuration.
+     * 
+     * @param instance
+     * @throws SiteWhereException
+     */
+    public SiteWhereInstance updateGlobalConfiguration(SiteWhereInstance instance) throws SiteWhereException;
+
+    /**
+     * Get tenant engine configuration.
+     * 
+     * @param tenant
+     * @param microservice
+     * @return
+     * @throws SiteWhereException
+     */
+    public SiteWhereTenantEngine getTenantEngineConfiguration(SiteWhereTenant tenant,
+	    SiteWhereMicroservice microservice) throws SiteWhereException;
+
+    /**
+     * Set configuration for a tenant engine.
+     * 
+     * @param tenant
+     * @param microservice
+     * @param configuration
+     * @throws SiteWhereException
+     */
+    public SiteWhereTenantEngine setTenantEngineConfiguration(SiteWhereTenant tenant,
+	    SiteWhereMicroservice microservice, String configuration) throws SiteWhereException;
 }

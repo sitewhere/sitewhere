@@ -9,11 +9,10 @@ package com.sitewhere.web.rest.controllers;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,6 +51,12 @@ import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
 import com.sitewhere.web.rest.RestControllerBase;
 import com.sitewhere.web.rest.model.InstanceTopologySummary;
 
+import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
+import io.sitewhere.k8s.crd.microservice.SiteWhereMicroservice;
+import io.sitewhere.k8s.crd.microservice.SiteWhereMicroserviceList;
+import io.sitewhere.k8s.crd.tenant.SiteWhereTenant;
+import io.sitewhere.k8s.crd.tenant.SiteWhereTenantList;
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -162,17 +167,12 @@ public class Instance extends RestControllerBase {
     @RequestMapping(value = "/microservice/{identifier}/configuration", method = RequestMethod.GET)
     @ApiOperation(value = "Get global configuration based on service identifier")
     @Secured({ SiteWhereRoles.REST })
-    public ElementContent getMicroserviceGlobalConfiguration(
+    public ElementContent getGlobalConfiguration(
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier)
 	    throws SiteWhereException {
-	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
-	try {
-	    return ConfigurationContentParser.parse(management.getGlobalConfiguration(),
-		    management.getConfigurationModel());
-	} finally {
-	    releaseChannel(management);
-	}
+	IConfigurationModel configModel = getMicroserviceConfigurationModel(identifier);
+	SiteWhereInstance instance = getMicroservice().getGlobalConfiguration();
+	return ConfigurationContentParser.parse(instance.getSpec().getInstanceConfiguration().getBytes(), configModel);
     }
 
     /**
@@ -185,18 +185,15 @@ public class Instance extends RestControllerBase {
     @RequestMapping(value = "/microservice/{identifier}/configuration", method = RequestMethod.POST)
     @ApiOperation(value = "Update global configuration based on service identifier.")
     @Secured({ SiteWhereRoles.REST })
-    public void updateMicroserviceGlobalConfiguration(
+    public void updateGlobalConfiguration(
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
 	    @RequestBody ElementContent content) throws SiteWhereException {
-	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
-	Document xml = ConfigurationContentParser.buildXml(content, management.getConfigurationModel());
+	IConfigurationModel configModel = getMicroserviceConfigurationModel(identifier);
+	Document xml = ConfigurationContentParser.buildXml(content, configModel);
 	String config = ConfigurationContentParser.format(xml);
-	try {
-	    management.updateGlobalConfiguration(config.getBytes());
-	} finally {
-	    releaseChannel(management);
-	}
+	SiteWhereInstance instance = getMicroservice().getGlobalConfiguration();
+	instance.getSpec().setInstanceConfiguration(config);
+	getMicroservice().updateGlobalConfiguration(instance);
     }
 
     /**
@@ -207,25 +204,22 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @SuppressWarnings("unused")
     @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/configuration", method = RequestMethod.GET)
     @ApiOperation(value = "Get tenant configuration based on service identifier")
     @Secured({ SiteWhereRoles.REST })
-    public ElementContent getMicroserviceTenantConfiguration(
+    public ElementContent getTenantEngineConfiguration(
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
 	    @ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken)
 	    throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
-	ITenant tenant = assureTenant(tenantToken);
-	try {
-	    // return
-	    // ConfigurationContentParser.parse(management.getTenantConfiguration(tenant.getId()),
-	    // management.getConfigurationModel());
-	    return null;
-	} finally {
-	    releaseChannel(management);
+	IConfigurationModel configModel = getMicroserviceConfigurationModel(identifier);
+	SiteWhereMicroservice microservice = getMicroserviceForIdentifier(msid);
+	SiteWhereTenant tenant = getTenantForToken(tenantToken);
+	SiteWhereTenantEngine engine = getMicroservice().getTenantEngineConfiguration(tenant, microservice);
+	if (engine == null) {
+	    throw new SiteWhereException("No tenant engine found for tenant/microservice combination.");
 	}
+	return ConfigurationContentParser.parse(engine.getSpec().getConfiguration().getBytes(), configModel);
     }
 
     /**
@@ -236,24 +230,24 @@ public class Instance extends RestControllerBase {
      * @param content
      * @throws SiteWhereException
      */
-    @SuppressWarnings("unused")
     @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/configuration", method = RequestMethod.POST)
     @ApiOperation(value = "Update global configuration based on service identifier.")
     @Secured({ SiteWhereRoles.REST })
-    public void updateMicroserviceTenantConfiguration(
+    public void updateTenantEngineConfiguration(
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
 	    @ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken,
 	    @RequestBody ElementContent content) throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
-	Document xml = ConfigurationContentParser.buildXml(content, management.getConfigurationModel());
+	IConfigurationModel configModel = getMicroserviceConfigurationModel(identifier);
+	SiteWhereMicroservice microservice = getMicroserviceForIdentifier(msid);
+	SiteWhereTenant tenant = getTenantForToken(tenantToken);
+	SiteWhereTenantEngine engine = getMicroservice().getTenantEngineConfiguration(tenant, microservice);
+	Document xml = ConfigurationContentParser.buildXml(content, configModel);
 	String config = ConfigurationContentParser.format(xml);
-	ITenant tenant = assureTenant(tenantToken);
-	try {
-	    // management.updateTenantConfiguration(tenant.getId(), config.getBytes());
-	} finally {
-	    releaseChannel(management);
+	if (engine == null) {
+	    throw new SiteWhereException("No tenant engine found for tenant/microservice combination.");
 	}
+	getMicroservice().setTenantEngineConfiguration(tenant, microservice, config);
     }
 
     /**
@@ -266,16 +260,10 @@ public class Instance extends RestControllerBase {
     @RequestMapping(value = "/microservice/{identifier}/scripting/templates", method = RequestMethod.GET)
     @ApiOperation(value = "Get list of script templates for a given microservice")
     @Secured({ SiteWhereRoles.REST })
-    public List<IScriptTemplate> getMicroserviceScriptTemplates(
+    public List<IScriptTemplate> getScriptTemplates(
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier)
 	    throws SiteWhereException {
-	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
-	try {
-	    return management.getScriptTemplates();
-	} finally {
-	    releaseChannel(management);
-	}
+	return null;
     }
 
     /**
@@ -289,20 +277,11 @@ public class Instance extends RestControllerBase {
     @RequestMapping(value = "/microservice/{identifier}/scripting/templates/{templateId}", method = RequestMethod.GET)
     @ApiOperation(value = "Get list of script templates for a given microservice")
     @Secured({ SiteWhereRoles.REST })
-    public ResponseEntity<byte[]> getMicroserviceScriptTemplateContent(
+    public ResponseEntity<byte[]> getScriptTemplateContent(
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
 	    @ApiParam(value = "Template id", required = true) @PathVariable String templateId)
 	    throws SiteWhereException {
-	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
-	byte[] content = management.getScriptTemplateContent(templateId);
-	final HttpHeaders headers = new HttpHeaders();
-	headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-	try {
-	    return new ResponseEntity<byte[]>(content, headers, HttpStatus.OK);
-	} finally {
-	    releaseChannel(management);
-	}
+	return null;
     }
 
     /**
@@ -685,6 +664,45 @@ public class Instance extends RestControllerBase {
 	} catch (Throwable t) {
 	    getLogger().error("Unable to shut down management channel.", t);
 	}
+    }
+
+    /**
+     * Attempt to look up microservice based on instance id and function identifier.
+     * 
+     * @param identifier
+     * @return
+     * @throws SiteWhereException
+     */
+    protected SiteWhereMicroservice getMicroserviceForIdentifier(IFunctionIdentifier identifier)
+	    throws SiteWhereException {
+	String instanceId = getMicroservice().getInstanceSettings().getInstanceId();
+	SiteWhereMicroserviceList list = getMicroservice().getSiteWhereKubernetesClient().getMicroservices().list();
+	for (SiteWhereMicroservice microservice : list.getItems()) {
+	    if (microservice.getSpec().getInstanceName().equals(instanceId)
+		    && microservice.getSpec().getFunctionalArea().equals(identifier.getPath())) {
+		return microservice;
+	    }
+	}
+	throw new SiteWhereSystemException(ErrorCode.InvalidMicroserviceIdentifier, ErrorLevel.ERROR,
+		HttpServletResponse.SC_NOT_FOUND);
+    }
+
+    /**
+     * Get tenant associated with token.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    protected SiteWhereTenant getTenantForToken(String token) throws SiteWhereException {
+	SiteWhereTenantList list = getMicroservice().getSiteWhereKubernetesClient().getTenants().list();
+	for (SiteWhereTenant tenant : list.getItems()) {
+	    if (tenant.getMetadata().getName().equals(token)) {
+		return tenant;
+	    }
+	}
+	throw new SiteWhereSystemException(ErrorCode.InvalidTenantToken, ErrorLevel.ERROR,
+		HttpServletResponse.SC_NOT_FOUND);
     }
 
     /**

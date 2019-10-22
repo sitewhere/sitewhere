@@ -52,7 +52,14 @@ import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.tenant.ITenantManagement;
 
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import io.sitewhere.k8s.crd.ISiteWhereKubernetesClient;
+import io.sitewhere.k8s.crd.ResourceLabels;
+import io.sitewhere.k8s.crd.SiteWhereKubernetesClient;
 import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
+import io.sitewhere.k8s.crd.microservice.SiteWhereMicroservice;
+import io.sitewhere.k8s.crd.tenant.SiteWhereTenant;
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngineList;
 
 /**
  * Common base class for all SiteWhere microservices.
@@ -66,6 +73,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     /** Kubernetes client */
     private DefaultKubernetesClient kubernetesClient;
+
+    /** SiteWhere Kubernetes client wrapper */
+    private ISiteWhereKubernetesClient sitewhereKubernetesClient;
 
     /** Metrics server */
     @Autowired
@@ -197,6 +207,7 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
      */
     protected void initializeK8sClient() {
 	this.kubernetesClient = new DefaultKubernetesClient();
+	this.sitewhereKubernetesClient = new SiteWhereKubernetesClient(getKubernetesClient());
     }
 
     /**
@@ -327,6 +338,15 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     }
 
     /*
+     * @see
+     * com.sitewhere.spi.microservice.IMicroservice#getSiteWhereKubernetesClient()
+     */
+    @Override
+    public ISiteWhereKubernetesClient getSiteWhereKubernetesClient() {
+	return this.sitewhereKubernetesClient;
+    }
+
+    /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getLocalConfiguration(io.
      * sitewhere.k8s.crd.instance.SiteWhereInstance)
      */
@@ -364,6 +384,85 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	return state;
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.IMicroservice#onTenantEngineStateChanged(com.
+     * sitewhere.spi.microservice.state.ITenantEngineState)
+     */
+    @Override
+    public void onTenantEngineStateChanged(ITenantEngineState state) {
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#getGlobalConfiguration()
+     */
+    @Override
+    public SiteWhereInstance getGlobalConfiguration() throws SiteWhereException {
+	String instanceId = getInstanceSettings().getInstanceId();
+	if (instanceId == null) {
+	    throw new SiteWhereException("Instance id not set on microservice.");
+	}
+	return getSiteWhereKubernetesClient().getInstances().withName(instanceId).get();
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.IMicroservice#updateGlobalConfiguration(io.
+     * sitewhere.k8s.crd.instance.SiteWhereInstance)
+     */
+    @Override
+    public SiteWhereInstance updateGlobalConfiguration(SiteWhereInstance instance) throws SiteWhereException {
+	String instanceId = getInstanceSettings().getInstanceId();
+	if (!instanceId.equals(instance.getMetadata().getName())) {
+	    throw new SiteWhereException(
+		    String.format("Attempting to edit wrong instance: '%s'", instance.getMetadata().getName()));
+	}
+	return getSiteWhereKubernetesClient().getInstances().withName(instanceId).replace(instance);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.IMicroservice#getTenantEngineConfiguration(io.
+     * sitewhere.k8s.crd.tenant.SiteWhereTenant,
+     * io.sitewhere.k8s.crd.microservice.SiteWhereMicroservice)
+     */
+    @Override
+    public SiteWhereTenantEngine getTenantEngineConfiguration(SiteWhereTenant tenant,
+	    SiteWhereMicroservice microservice) throws SiteWhereException {
+	SiteWhereTenantEngineList list = getSiteWhereKubernetesClient().getTenantEngines()
+		.inNamespace(tenant.getMetadata().getNamespace())
+		.withLabel(ResourceLabels.LABEL_SITEWHERE_TENANT, tenant.getMetadata().getName())
+		.withLabel(ResourceLabels.LABEL_SITEWHERE_MICROSERVICE, microservice.getMetadata().getName()).list();
+	if (list.getItems().size() == 0) {
+	    return null;
+	} else if (list.getItems().size() == 1) {
+	    return list.getItems().get(0);
+	} else {
+	    getLogger().warn(String.format("Found multiple tenant engines for tenant/microservice combination. %s %s",
+		    tenant.getMetadata().getName(), microservice.getMetadata().getName()));
+	    return list.getItems().get(0);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.IMicroservice#setTenantEngineConfiguration(io.
+     * sitewhere.k8s.crd.tenant.SiteWhereTenant,
+     * io.sitewhere.k8s.crd.microservice.SiteWhereMicroservice, java.lang.String)
+     */
+    @Override
+    public SiteWhereTenantEngine setTenantEngineConfiguration(SiteWhereTenant tenant,
+	    SiteWhereMicroservice microservice, String configuration) throws SiteWhereException {
+	SiteWhereTenantEngine tenantEngine = getTenantEngineConfiguration(tenant, microservice);
+	if (tenantEngine == null) {
+	    throw new SiteWhereException(
+		    String.format("Unable to find tenant engine for tenant/microservice combination. %s %s",
+			    tenant.getMetadata().getName(), microservice.getMetadata().getName()));
+	}
+	tenantEngine.getSpec().setConfiguration(configuration);
+	return getSiteWhereKubernetesClient().getTenantEngines().createOrReplace(tenantEngine);
+    }
+
     /**
      * Get element node for root configuration role.
      * 
@@ -383,15 +482,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	    throw new RuntimeException("Configuration model had " + matches.size() + " elements for root role.");
 	}
 	return matches.get(0);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.microservice.IMicroservice#onTenantEngineStateChanged(com.
-     * sitewhere.spi.microservice.state.ITenantEngineState)
-     */
-    @Override
-    public void onTenantEngineStateChanged(ITenantEngineState state) {
     }
 
     /*
