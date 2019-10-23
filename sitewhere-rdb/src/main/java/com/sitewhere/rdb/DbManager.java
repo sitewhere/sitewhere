@@ -134,6 +134,16 @@ public class DbManager {
         return bean;
     }
 
+    public BatchOperationRepository getBatchOperationRepository() {
+        BatchOperationRepository bean = ApplicationContextUtils.getBean(BatchOperationRepository.class);
+        return bean;
+    }
+
+    public BatchOperationElementRepository getBatchOperationElementRepository() {
+        BatchOperationElementRepository bean = ApplicationContextUtils.getBean(BatchOperationElementRepository.class);
+        return bean;
+    }
+
     public static void main(String[] args) {
         // Define two datasources
         RDBConfiguration config1 = new RDBConfiguration();

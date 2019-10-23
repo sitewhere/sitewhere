@@ -23,7 +23,7 @@ public class AssetType implements IAssetType {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    /** Asset cateogory */
+    /** Asset category */
     @Enumerated(EnumType.STRING)
     private AssetCategory assetCategory;
 

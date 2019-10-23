@@ -695,6 +695,7 @@ alter table zone_metadata
     owner to syncope;
 
 
+-- Asset Management
 create table asset
 (
     id              uuid not null
@@ -762,4 +763,70 @@ create table asett_type_metadata
     propkey     varchar(255) not null,
     constraint asset_type_metadata_pkey
         primary key (assettype_id, propkey)
+);
+
+
+-- Batch operations
+create table batch_element
+(
+    id  uuid not null
+        constraint batch_element_pkey
+            primary key,
+    batchoperationid uuid,
+    deviceid      uuid,
+    processingStatus varchar (255),
+    processedDate     timestamp
+);
+
+alter table batch_element
+    owner to syncope;
+
+create table batch_element_metadata
+(
+    batch_element_id uuid         not null
+        constraint fk13869vnjm3fh77tfou4sr7onb
+            references batch_element,
+    propvalue   varchar(255),
+    propkey     varchar(255) not null,
+    constraint batch_element_metadata_pkey
+        primary key (batch_element_id, propkey)
+);
+
+create table batch_operation
+(
+    id  uuid not null constraint batch_operation_pkey primary key,
+    token varchar (255),
+    operation_type varchar (255),
+    processing_status varchar (255),
+    processing_started_date     timestamp,
+    processing_ended_date     timestamp,
+    created_date     timestamp,
+    created_by     varchar (255),
+    updated_date     timestamp,
+    updated_by     varchar (255)
+);
+
+alter table batch_operation
+    owner to syncope;
+
+create table batch_operation_metadata
+(
+    batch_operation_id uuid         not null
+        constraint fk13869vnpp3fh77tfou4sr7onb
+            references batch_operation,
+    propvalue   varchar(255),
+    propkey     varchar(255) not null,
+    constraint batch_operation_metadata_pkey
+        primary key (batch_operation_id, propkey)
+);
+
+create table batch_operation_parameters
+(
+    batch_operation_parameters_id uuid         not null
+        constraint fk13869vnpp3fh77tfoop4sr7onb
+            references batch_operation,
+    propvalue   varchar(255),
+    propkey     varchar(255) not null,
+    constraint batch_operation_parameters_pkey
+        primary key (batch_operation_parameters_id, propkey)
 );

@@ -9,6 +9,8 @@ package com.sitewhere.batch.spring;
 
 import java.util.List;
 
+import com.sitewhere.batch.persistence.rdb.BatchManagementRDBClient;
+import com.sitewhere.spi.microservice.spring.DeviceManagementBeans;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -67,36 +69,55 @@ public class BatchOperationsParser extends AbstractBeanDefinitionParser {
      * @param element
      * @param context
      */
-    protected void parseBatchManagementDatastore(Element element, ParserContext context) {
-	DatastoreConfigurationChoice config = DatastoreConfigurationParser.parseDeviceManagementDatastoreChoice(element,
-		context);
-	switch (config.getType()) {
-	case MongoDB: {
-	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(BatchManagementMongoClient.class);
-	    client.addConstructorArgValue(config.getConfiguration());
-	    context.getRegistry().registerBeanDefinition(BatchManagementBeans.BEAN_MONGODB_CLIENT,
-		    client.getBeanDefinition());
-	    break;
-	}
-	case MongoDBReference: {
-	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(BatchManagementMongoClient.class);
-	    client.addConstructorArgReference((String) config.getConfiguration());
-	    context.getRegistry().registerBeanDefinition(BatchManagementBeans.BEAN_MONGODB_CLIENT,
-		    client.getBeanDefinition());
-	    break;
-	}
-	default: {
-	    throw new RuntimeException("Invalid datastore configured: " + config.getType());
-	}
-	}
+	protected void parseBatchManagementDatastore(Element element, ParserContext context) {
+		DatastoreConfigurationChoice config = DatastoreConfigurationParser.parseDeviceManagementDatastoreChoice(element,
+				context);
 
-	// Build batch management implementation.
-	BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(MongoBatchManagement.class);
-	management.addPropertyReference("mongoClient", BatchManagementBeans.BEAN_MONGODB_CLIENT);
+		BeanDefinitionBuilder management;
+		switch (config.getType()) {
+			case MongoDB: {
+				BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(BatchManagementMongoClient.class);
+				client.addConstructorArgValue(config.getConfiguration());
+				context.getRegistry().registerBeanDefinition(BatchManagementBeans.BEAN_MONGODB_CLIENT,
+						client.getBeanDefinition());
+				management = buildMongoDeviceManagament();
+				break;
+			}
+			case MongoDBReference: {
+				BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(BatchManagementMongoClient.class);
+				client.addConstructorArgReference((String) config.getConfiguration());
+				context.getRegistry().registerBeanDefinition(BatchManagementBeans.BEAN_MONGODB_CLIENT,
+						client.getBeanDefinition());
+				management = buildMongoDeviceManagament();
+				break;
+			}
+			case RDB: {
+				BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(BatchManagementRDBClient.class);
+				client.addConstructorArgValue(config.getConfiguration());
+				context.getRegistry().registerBeanDefinition(BatchManagementBeans.BEAN_RDB_CLIENT,
+						client.getBeanDefinition());
 
-	context.getRegistry().registerBeanDefinition(BatchManagementBeans.BEAN_BATCH_MANAGEMENT,
-		management.getBeanDefinition());
-    }
+				management = buildRDBDeviceManagament();
+				break;
+			}
+			case RDBReference: {
+				BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(BatchManagementRDBClient.class);
+				client.addConstructorArgReference((String) config.getConfiguration());
+				context.getRegistry().registerBeanDefinition(BatchManagementBeans.BEAN_RDB_CLIENT,
+						client.getBeanDefinition());
+
+				management = buildRDBDeviceManagament();
+				break;
+			}
+			default: {
+				throw new RuntimeException("Invalid datastore configured: " + config.getType());
+			}
+		}
+
+
+		context.getRegistry().registerBeanDefinition(BatchManagementBeans.BEAN_BATCH_MANAGEMENT,
+				management.getBeanDefinition());
+	}
 
     /**
      * Parse batch operation manager.
@@ -116,4 +137,18 @@ public class BatchOperationsParser extends AbstractBeanDefinitionParser {
 	context.getRegistry().registerBeanDefinition(BatchManagementBeans.BEAN_BATCH_OPERATION_MANAGER,
 		manager.getBeanDefinition());
     }
+
+	private BeanDefinitionBuilder buildMongoDeviceManagament() {
+		// Build device management implementation.
+		BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(BatchManagementMongoClient.class);
+		management.addPropertyReference("mongoClient", DeviceManagementBeans.BEAN_MONGODB_CLIENT);
+		return management;
+	}
+
+	private BeanDefinitionBuilder buildRDBDeviceManagament() {
+		// Build device management implementation.
+		BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(BatchManagementRDBClient.class);
+		management.addPropertyReference("dbClient", DeviceManagementBeans.BEAN_RDB_CLIENT);
+		return management;
+	}
 }
