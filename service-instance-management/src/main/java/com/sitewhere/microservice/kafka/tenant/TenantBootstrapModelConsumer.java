@@ -22,7 +22,6 @@ import com.sitewhere.grpc.client.tenant.TenantModelConverter;
 import com.sitewhere.grpc.client.tenant.TenantModelMarshaler;
 import com.sitewhere.grpc.model.TenantModel.GTenantModelUpdate;
 import com.sitewhere.grpc.model.TenantModel.GTenantModelUpdateType;
-import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.instance.spi.tenant.kafka.ITenantBootstrapModelConsumer;
 import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
 import com.sitewhere.spi.SiteWhereException;
@@ -32,8 +31,6 @@ import com.sitewhere.spi.tenant.ITenant;
 /**
  * Kafka consumer that listens to the tenant model updates topic and bootstraps
  * newly added tenants.
- * 
- * @author Derek
  */
 public class TenantBootstrapModelConsumer extends DirectKafkaConsumer implements ITenantBootstrapModelConsumer {
 
@@ -160,15 +157,6 @@ public class TenantBootstrapModelConsumer extends DirectKafkaConsumer implements
 	    // getLogger().error("Unhandled exception while bootstrapping tenant.", e);
 	    // }
 	}
-    }
-
-    /**
-     * Get instance management microservice.
-     * 
-     * @return
-     */
-    protected IInstanceManagementMicroservice<?> getInstanceManagementMicroservice() {
-	return (IInstanceManagementMicroservice<?>) getMicroservice();
     }
 
     /** Used for naming tenant bootstrapper threads */

@@ -18,8 +18,7 @@ import com.sitewhere.spi.tenant.ITenantManagement;
  */
 public class TenantManagementGrpcServer extends GrpcServer implements ITenantManagementGrpcServer {
 
-    public TenantManagementGrpcServer(IInstanceManagementMicroservice<?> microservice,
-	    ITenantManagement tenantManagement) {
+    public TenantManagementGrpcServer(IInstanceManagementMicroservice<?> microservice, ITenantManagement tenantManagement) {
 	super(new TenantManagementImpl(microservice, tenantManagement), IGrpcSettings.TENANT_MANAGEMENT_API_PORT,
 		IGrpcSettings.TENANT_MANAGEMENT_API_HEALTH_PORT);
     }

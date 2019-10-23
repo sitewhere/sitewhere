@@ -18,8 +18,6 @@ import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProv
 
 /**
  * Configuration model provider for instance management microservice.
- * 
- * @author Derek
  */
 public class InstanceManagementModelProvider extends ConfigurationModelProvider {
 

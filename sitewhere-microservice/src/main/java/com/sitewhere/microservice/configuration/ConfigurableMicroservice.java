@@ -347,10 +347,10 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 	    // Load microservice configuration.
 	    setConfigurationState(ConfigurationState.Loading);
 	    SiteWhereInstance global = getGlobalConfiguration();
-	    if (global.getSpec() == null || global.getSpec().getInstanceConfiguration() == null) {
+	    if (global.getSpec() == null || global.getSpec().getConfiguration() == null) {
 		throw new SiteWhereException("Global instance configuration not set. Unable to start microservice.");
 	    }
-	    byte[] globalConfig = global.getSpec().getInstanceConfiguration().getBytes();
+	    byte[] globalConfig = global.getSpec().getConfiguration().getBytes();
 	    ApplicationContext globalContext = ConfigurationUtils.buildGlobalContext(this, globalConfig,
 		    getMicroservice().getSpringProperties());
 

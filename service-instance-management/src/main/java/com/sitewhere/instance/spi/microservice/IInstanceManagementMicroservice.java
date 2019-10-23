@@ -7,29 +7,27 @@
  */
 package com.sitewhere.instance.spi.microservice;
 
-import com.sitewhere.instance.spi.instance.grpc.IInstanceManagementGrpcServer;
-import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
+import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IBatchManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceStateApiChannel;
+import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiChannel;
+import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
 import com.sitewhere.instance.spi.tenant.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.instance.spi.tenant.kafka.ITenantBootstrapModelConsumer;
-import com.sitewhere.instance.spi.tenant.templates.IDatasetTemplateManager;
-import com.sitewhere.instance.spi.tenant.templates.ITenantTemplateManager;
 import com.sitewhere.instance.spi.user.grpc.IUserManagementGrpcServer;
+import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
 import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
 import com.sitewhere.spi.user.IUserManagement;
 
 /**
- * API for instance management microservice.
+ * Microservice that provides web/REST functionality.
  */
 public interface IInstanceManagementMicroservice<T extends IFunctionIdentifier> extends IGlobalMicroservice<T> {
-
-    /**
-     * Get instance template manager instance.
-     * 
-     * @return
-     */
-    public IInstanceTemplateManager getInstanceTemplateManager();
 
     /**
      * Get instance script synchronizer.
@@ -37,13 +35,6 @@ public interface IInstanceManagementMicroservice<T extends IFunctionIdentifier> 
      * @return
      */
     public IScriptSynchronizer getInstanceScriptSynchronizer();
-
-    /**
-     * Get instance management gRPC server.
-     * 
-     * @return
-     */
-    public IInstanceManagementGrpcServer getInstanceManagementGrpcServer();
 
     /**
      * Get user management implementation.
@@ -67,23 +58,72 @@ public interface IInstanceManagementMicroservice<T extends IFunctionIdentifier> 
     public ITenantManagementGrpcServer getTenantManagementGrpcServer();
 
     /**
-     * Get tenant template manager.
-     * 
-     * @return
-     */
-    public ITenantTemplateManager getTenantConfigurationTemplateManager();
-
-    /**
-     * Get tenant dataset template manager.
-     * 
-     * @return
-     */
-    public IDatasetTemplateManager getTenantDatasetTemplateManager();
-
-    /**
      * Get tenant bootstrap model producer.
      * 
      * @return
      */
     public ITenantBootstrapModelConsumer getTenantBootstrapModelConsumer();
+
+    /**
+     * Device management API access via GRPC channel.
+     * 
+     * @return
+     */
+    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel();
+
+    /**
+     * Caching wrapper around device management API channel.
+     * 
+     * @return
+     */
+    public IDeviceManagement getCachedDeviceManagement();
+
+    /**
+     * Device event management API access via GRPC channel.
+     * 
+     * @return
+     */
+    public IDeviceEventManagementApiChannel<?> getDeviceEventManagementApiChannel();
+
+    /**
+     * Asset management API access via GRPC channel.
+     * 
+     * @return
+     */
+    public IAssetManagementApiChannel<?> getAssetManagementApiChannel();
+
+    /**
+     * Get wrapper for caching data from the asset management API channel.
+     * 
+     * @return
+     */
+    public IAssetManagement getCachedAssetManagement();
+
+    /**
+     * Batch management API access via GRPC channel.
+     * 
+     * @return
+     */
+    public IBatchManagementApiChannel<?> getBatchManagementApiChannel();
+
+    /**
+     * Schedule management API access via GRPC channel.
+     * 
+     * @return
+     */
+    public IScheduleManagementApiChannel<?> getScheduleManagementApiChannel();
+
+    /**
+     * Label generation API access via GRPC channel.
+     * 
+     * @return
+     */
+    public ILabelGenerationApiChannel<?> getLabelGenerationApiChannel();
+
+    /**
+     * Device state API access via GRPC channel.
+     * 
+     * @return
+     */
+    public IDeviceStateApiChannel<?> getDeviceStateApiChannel();
 }
