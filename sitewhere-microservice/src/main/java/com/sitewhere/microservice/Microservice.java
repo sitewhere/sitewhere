@@ -51,7 +51,10 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.tenant.ITenantManagement;
 
+import io.fabric8.kubernetes.client.Config;
+import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import io.fabric8.kubernetes.client.informers.SharedInformerFactory;
 import io.sitewhere.k8s.crd.ISiteWhereKubernetesClient;
 import io.sitewhere.k8s.crd.ResourceLabels;
 import io.sitewhere.k8s.crd.SiteWhereKubernetesClient;
@@ -76,6 +79,9 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     /** SiteWhere Kubernetes client wrapper */
     private ISiteWhereKubernetesClient sitewhereKubernetesClient;
+
+    /** Shared informer factory for k8s resources */
+    private SharedInformerFactory sharedInformerFactory;
 
     /** Metrics server */
     @Autowired
@@ -158,8 +164,8 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	// Initialize configuration model.
 	initializeConfigurationModel();
 
-	// Initialize Kubernetes client.
-	initializeK8sClient();
+	// Initialize Kubernetes connectivity.
+	initializeK8sConnectivity();
 
 	// Initialize GRPC components.
 	initializeGrpcComponents();
@@ -203,11 +209,19 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     }
 
     /**
-     * Initialize Kubernetes client.
+     * Initialize Kubernetes connectivity.
+     * 
+     * @throws SiteWhereException
      */
-    protected void initializeK8sClient() {
-	this.kubernetesClient = new DefaultKubernetesClient();
+    protected void initializeK8sConnectivity() throws SiteWhereException {
+	Config config = new ConfigBuilder().withNamespace(null).build();
+	this.kubernetesClient = new DefaultKubernetesClient(config);
 	this.sitewhereKubernetesClient = new SiteWhereKubernetesClient(getKubernetesClient());
+	this.sharedInformerFactory = getKubernetesClient().informers();
+
+	// Create controllers and start informers.
+	createKubernetesResourceControllers(getSharedInformerFactory());
+	getSharedInformerFactory().startAllRegisteredInformers();
     }
 
     /**
@@ -232,6 +246,15 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	this.tenantManagement = new KubernetesTenantManagement();
 	this.cachedTenantManagement = new CachedTenantManagement(this.tenantManagement,
 		new CachedTenantManagement.CacheSettings());
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#
+     * createKubernetesResourceControllers(io.fabric8.kubernetes.client.informers.
+     * SharedInformerFactory)
+     */
+    @Override
+    public void createKubernetesResourceControllers(SharedInformerFactory informers) throws SiteWhereException {
     }
 
     /*
@@ -394,10 +417,10 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getGlobalConfiguration()
+     * @see com.sitewhere.spi.microservice.IMicroservice#getInstanceConfiguration()
      */
     @Override
-    public SiteWhereInstance getGlobalConfiguration() throws SiteWhereException {
+    public SiteWhereInstance getInstanceConfiguration() throws SiteWhereException {
 	String instanceId = getInstanceSettings().getInstanceId();
 	if (instanceId == null) {
 	    throw new SiteWhereException("Instance id not set on microservice.");
@@ -407,11 +430,11 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     /*
      * @see
-     * com.sitewhere.spi.microservice.IMicroservice#updateGlobalConfiguration(io.
+     * com.sitewhere.spi.microservice.IMicroservice#updateInstanceConfiguration(io.
      * sitewhere.k8s.crd.instance.SiteWhereInstance)
      */
     @Override
-    public SiteWhereInstance updateGlobalConfiguration(SiteWhereInstance instance) throws SiteWhereException {
+    public SiteWhereInstance updateInstanceConfiguration(SiteWhereInstance instance) throws SiteWhereException {
 	String instanceId = getInstanceSettings().getInstanceId();
 	if (!instanceId.equals(instance.getMetadata().getName())) {
 	    throw new SiteWhereException(
@@ -642,6 +665,10 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 
     public void setMicroserviceOperationsService(ExecutorService microserviceOperationsService) {
 	this.microserviceOperationsService = microserviceOperationsService;
+    }
+
+    protected SharedInformerFactory getSharedInformerFactory() {
+	return sharedInformerFactory;
     }
 
     /** Used for naming microservice operation threads */

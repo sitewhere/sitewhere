@@ -15,7 +15,6 @@ import com.sitewhere.grpc.client.spi.client.IDeviceStateApiChannel;
 import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiChannel;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
 import com.sitewhere.instance.spi.tenant.grpc.ITenantManagementGrpcServer;
-import com.sitewhere.instance.spi.tenant.kafka.ITenantBootstrapModelConsumer;
 import com.sitewhere.instance.spi.user.grpc.IUserManagementGrpcServer;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -56,13 +55,6 @@ public interface IInstanceManagementMicroservice<T extends IFunctionIdentifier> 
      * @return
      */
     public ITenantManagementGrpcServer getTenantManagementGrpcServer();
-
-    /**
-     * Get tenant bootstrap model producer.
-     * 
-     * @return
-     */
-    public ITenantBootstrapModelConsumer getTenantBootstrapModelConsumer();
 
     /**
      * Device management API access via GRPC channel.

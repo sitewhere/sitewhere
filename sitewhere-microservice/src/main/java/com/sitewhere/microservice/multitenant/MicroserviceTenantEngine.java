@@ -44,21 +44,6 @@ import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComponent
 	implements IMicroserviceTenantEngine {
 
-    /** Name for lock path */
-    public static final String MODULE_LOCK_NAME = "lock";
-
-    /** Suffix appended to module identifier to locate module configuration */
-    public static final String MODULE_CONFIGURATION_SUFFIX = ".xml";
-
-    /** Name for tenant dataset bootstrapped indicator */
-    public static final String DATASET_BOOTSTRAPPED_NAME = "bootstrapped";
-
-    /** Tenant template path (relative to configuration root) */
-    public static final String TENANT_TEMPLATE_PATH = "tenant-template.json";
-
-    /** Dataset template path (relative to configuration root) */
-    public static final String DATASET_TEMPLATE_PATH = "dataset-template.json";
-
     /** Hosted tenant */
     private ITenant tenant;
 
@@ -468,15 +453,6 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	// new
 	// CallExecutorBuilder().config(config).afterFailedTryListener(perFail).onSuccessListener(success).build()
 	// .execute(bootstrapCheck);
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * getModuleConfigurationName()
-     */
-    @Override
-    public String getModuleConfigurationName() throws SiteWhereException {
-	return getMicroservice().getIdentifier().getPath() + MicroserviceTenantEngine.MODULE_CONFIGURATION_SUFFIX;
     }
 
     /*

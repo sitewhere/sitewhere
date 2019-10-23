@@ -31,7 +31,7 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
      * 
      * @return
      */
-    public IConfigurationMonitor getConfigurationMonitor();
+    public IInstanceConfigurationMonitor getConfigurationMonitor();
 
     /**
      * Get scripting management interface.
@@ -41,20 +41,6 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
     public IScriptManagement getScriptManagement();
 
     /**
-     * Get current configuration state.
-     * 
-     * @return
-     */
-    public ConfigurationState getConfigurationState();
-
-    /**
-     * Set configuration state.
-     * 
-     * @param state
-     */
-    public void setConfigurationState(ConfigurationState state);
-
-    /**
      * Wait for configuration to be loaded.
      * 
      * @throws SiteWhereException
@@ -62,11 +48,11 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
     public void waitForConfigurationReady() throws SiteWhereException;
 
     /**
-     * Get instance-wide configuration information.
+     * Get most recent instance configuration update.
      * 
      * @return
      */
-    public SiteWhereInstance getGlobalConfiguration();
+    public SiteWhereInstance getLastInstanceConfiguration();
 
     /**
      * Initialize configurable components.

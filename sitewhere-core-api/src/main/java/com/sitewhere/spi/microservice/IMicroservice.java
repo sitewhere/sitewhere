@@ -28,6 +28,7 @@ import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.tenant.ITenantManagement;
 
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import io.fabric8.kubernetes.client.informers.SharedInformerFactory;
 import io.sitewhere.k8s.crd.ISiteWhereKubernetesClient;
 import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
 import io.sitewhere.k8s.crd.microservice.SiteWhereMicroservice;
@@ -212,6 +213,15 @@ public interface IMicroservice<T extends IFunctionIdentifier>
     public ISiteWhereKubernetesClient getSiteWhereKubernetesClient();
 
     /**
+     * Create Kubernetes resource controllers which pull from shared informer
+     * factory.
+     * 
+     * @param informers
+     * @throws SiteWhereException
+     */
+    public void createKubernetesResourceControllers(SharedInformerFactory informers) throws SiteWhereException;
+
+    /**
      * Get metrics server.
      * 
      * @return
@@ -242,20 +252,20 @@ public interface IMicroservice<T extends IFunctionIdentifier>
     public ExecutorService getMicroserviceOperationsService();
 
     /**
-     * Get global configuration.
+     * Get instance configuration.
      * 
      * @return
      * @throws SiteWhereException
      */
-    public SiteWhereInstance getGlobalConfiguration() throws SiteWhereException;
+    public SiteWhereInstance getInstanceConfiguration() throws SiteWhereException;
 
     /**
-     * Update global configuration.
+     * Update instance configuration.
      * 
      * @param instance
      * @throws SiteWhereException
      */
-    public SiteWhereInstance updateGlobalConfiguration(SiteWhereInstance instance) throws SiteWhereException;
+    public SiteWhereInstance updateInstanceConfiguration(SiteWhereInstance instance) throws SiteWhereException;
 
     /**
      * Get tenant engine configuration.

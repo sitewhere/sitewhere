@@ -9,31 +9,24 @@ package com.sitewhere.spi.microservice.configuration;
 
 import java.util.List;
 
-import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
-
 import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
 
 /**
- * Monitors configuration nodes in Zk and allows microservices to respond to
- * configuration changes.
- * 
- * @author Derek
+ * Monitors instance configuration and notifies listeners of changes.
  */
-public interface IConfigurationMonitor extends ILifecycleComponent {
+public interface IInstanceConfigurationMonitor {
 
     /**
      * Get instance-wide configuration.
      * 
      * @return
-     * @throws SiteWhereException
      */
-    public SiteWhereInstance getInstanceConfiguration() throws SiteWhereException;
+    public SiteWhereInstance getInstanceConfiguration();
 
     /**
      * Get list of listeners.
      * 
      * @return
      */
-    public List<IConfigurationListener> getListeners();
+    public List<IInstanceConfigurationListener> getListeners();
 }

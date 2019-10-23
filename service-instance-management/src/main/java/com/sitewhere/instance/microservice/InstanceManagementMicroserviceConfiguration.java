@@ -18,7 +18,7 @@ import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 public class InstanceManagementMicroserviceConfiguration {
 
     @Bean
-    public IInstanceManagementMicroservice<?> webRestMicroservice() {
+    public IInstanceManagementMicroservice<?> instanceManagementMicroservice() {
 	return new InstanceManagementMicroservice();
     }
 

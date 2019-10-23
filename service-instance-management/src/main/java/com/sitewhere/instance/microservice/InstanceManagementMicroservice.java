@@ -26,13 +26,11 @@ import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
 import com.sitewhere.instance.configuration.InstanceManagementModelProvider;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.instance.spi.tenant.grpc.ITenantManagementGrpcServer;
-import com.sitewhere.instance.spi.tenant.kafka.ITenantBootstrapModelConsumer;
 import com.sitewhere.instance.spi.user.grpc.IUserManagementGrpcServer;
 import com.sitewhere.instance.user.persistence.SyncopeUserManagement;
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.grpc.tenant.TenantManagementGrpcServer;
 import com.sitewhere.microservice.grpc.user.UserManagementGrpcServer;
-import com.sitewhere.microservice.kafka.tenant.TenantBootstrapModelConsumer;
 import com.sitewhere.microservice.scripting.InstanceScriptSynchronizer;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
@@ -65,9 +63,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
     /** Responds to tenant management GRPC requests */
     private ITenantManagementGrpcServer tenantManagementGrpcServer;
-
-    /** Watches tenant model updates and bootstraps new tenants */
-    private ITenantBootstrapModelConsumer tenantBootstrapModelConsumer;
 
     /** Device management API channel */
     private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
@@ -142,9 +137,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Create script synchronizer.
 	this.instanceScriptSynchronizer = new InstanceScriptSynchronizer();
 
-	// Create Kafka components.
-	createKafkaComponents();
-
 	// Create management implementations.
 	createManagementImplementations();
 
@@ -156,9 +148,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
 	// Initialize tenant management GRPC server.
 	init.addInitializeStep(this, getTenantManagementGrpcServer(), true);
-
-	// Initialize tenant bootstrap model consumer.
-	init.addInitializeStep(this, getTenantBootstrapModelConsumer(), true);
 
 	// Initialize user management implementation.
 	init.addInitializeStep(this, getUserManagement(), true);
@@ -236,15 +225,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	this.userManagement = new SyncopeUserManagement();
     }
 
-    /**
-     * Create Apache Kafka components.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void createKafkaComponents() throws SiteWhereException {
-	this.tenantBootstrapModelConsumer = new TenantBootstrapModelConsumer();
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -262,9 +242,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
 	// Start tenant management GRPC server.
 	start.addStartStep(this, getTenantManagementGrpcServer(), true);
-
-	// Start tenant bootstrap model consumer.
-	start.addStartStep(this, getTenantBootstrapModelConsumer(), true);
 
 	// Start user management implementation.
 	start.addStartStep(this, getUserManagement(), true);
@@ -328,9 +305,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
 	// Stop device state API channel.
 	stop.addStopStep(this, getDeviceStateApiChannel());
-
-	// Stop tenant bootstrap model consumer.
-	stop.addStopStep(this, getTenantBootstrapModelConsumer());
 
 	// Stop user management GRPC server.
 	stop.addStopStep(this, getUserManagementGrpcServer());
@@ -398,19 +372,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
     public void setTenantManagementGrpcServer(ITenantManagementGrpcServer tenantManagementGrpcServer) {
 	this.tenantManagementGrpcServer = tenantManagementGrpcServer;
-    }
-
-    /*
-     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
-     * getTenantBootstrapModelConsumer()
-     */
-    @Override
-    public ITenantBootstrapModelConsumer getTenantBootstrapModelConsumer() {
-	return tenantBootstrapModelConsumer;
-    }
-
-    public void setTenantBootstrapModelConsumer(ITenantBootstrapModelConsumer tenantBootstrapModelConsumer) {
-	this.tenantBootstrapModelConsumer = tenantBootstrapModelConsumer;
     }
 
     /*

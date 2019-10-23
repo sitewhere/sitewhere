@@ -9,6 +9,7 @@ package com.sitewhere.microservice.configuration;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import org.springframework.context.ApplicationContext;
 
@@ -21,10 +22,9 @@ import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
-import com.sitewhere.spi.microservice.configuration.ConfigurationState;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
-import com.sitewhere.spi.microservice.configuration.IConfigurationListener;
-import com.sitewhere.spi.microservice.configuration.IConfigurationMonitor;
+import com.sitewhere.spi.microservice.configuration.IInstanceConfigurationListener;
+import com.sitewhere.spi.microservice.configuration.IInstanceConfigurationMonitor;
 import com.sitewhere.spi.microservice.scripting.IScriptManagement;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
@@ -32,6 +32,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
+import io.fabric8.kubernetes.client.informers.SharedInformerFactory;
 import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
 
 /**
@@ -41,16 +42,13 @@ import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
  * @author Derek
  */
 public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> extends Microservice<T>
-	implements IConfigurableMicroservice<T>, IConfigurationListener {
+	implements IConfigurableMicroservice<T>, IInstanceConfigurationListener {
 
     /** Configuration monitor */
-    private IConfigurationMonitor configurationMonitor;
+    private IInstanceConfigurationMonitor configurationMonitor;
 
     /** Script management implementation */
     private IScriptManagement scriptManagement;
-
-    /** Configuration state */
-    private ConfigurationState configurationState = ConfigurationState.Unloaded;
 
     /** Global instance application context */
     private ApplicationContext globalApplicationContext;
@@ -58,8 +56,11 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
     /** Local microservice application context */
     private ApplicationContext localApplicationContext;
 
-    /** Global configuration */
-    private SiteWhereInstance globalConfiguration;
+    /** Latest instance configuration */
+    private SiteWhereInstance lastInstanceConfiguration;
+
+    /** Latch for instance config availability */
+    private CountDownLatch instanceConfigAvailable = new CountDownLatch(1);
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.IConfigurationListener#
@@ -67,12 +68,7 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
      */
     @Override
     public void onConfigurationAdded(SiteWhereInstance instance) {
-	this.globalConfiguration = instance;
-	try {
-	    initializeAndStart();
-	} catch (SiteWhereException e) {
-	    getLogger().error("Unable to start microservice.", e);
-	}
+	onConfigurationUpdated(instance);
     }
 
     /*
@@ -81,12 +77,31 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
      */
     @Override
     public void onConfigurationUpdated(SiteWhereInstance instance) {
-	this.globalConfiguration = instance;
-	try {
-	    restartConfiguration();
-	} catch (SiteWhereException e) {
-	    getLogger().error("Unable to restart microservice.", e);
+	// Skip partially configured instance.
+	if (instance.getSpec().getConfiguration() == null) {
+	    return;
 	}
+
+	boolean wasConfigured = getLastInstanceConfiguration() != null
+		&& getLastInstanceConfiguration().getSpec().getConfiguration() != null;
+	this.lastInstanceConfiguration = instance;
+
+	getMicroserviceOperationsService().execute(new Runnable() {
+
+	    @Override
+	    public void run() {
+		try {
+		    if (!wasConfigured) {
+			initializeAndStart();
+		    } else {
+			restartConfiguration();
+		    }
+		    getInstanceConfigAvailable().countDown();
+		} catch (SiteWhereException e) {
+		    getLogger().error("Unable to restart microservice.", e);
+		}
+	    }
+	});
     }
 
     /*
@@ -95,21 +110,28 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
      */
     @Override
     public void onConfigurationDeleted(SiteWhereInstance instance) {
-	try {
-	    stopAndTerminate();
-	} catch (SiteWhereException e) {
-	    getLogger().error("Unable to stop microservice.", e);
-	}
-	this.globalConfiguration = null;
+	getMicroserviceOperationsService().execute(new Runnable() {
+
+	    @Override
+	    public void run() {
+		try {
+		    stopAndTerminate();
+		} catch (SiteWhereException e) {
+		    getLogger().error("Unable to stop microservice.", e);
+		}
+	    }
+	});
+
+	this.lastInstanceConfiguration = null;
     }
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * getGlobalConfiguration()
+     * getLastInstanceConfiguration()
      */
     @Override
-    public SiteWhereInstance getGlobalConfiguration() {
-	return globalConfiguration;
+    public SiteWhereInstance getLastInstanceConfiguration() {
+	return lastInstanceConfiguration;
     }
 
     /*
@@ -133,10 +155,6 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 	super.initialize(monitor);
 	getLogger().info("Shutting down configurable microservice components...");
 
-	// Create configuration monitor.
-	this.configurationMonitor = new KubernetesConfigurationMonitor();
-	getConfigurationMonitor().getListeners().add(this);
-
 	// Create script management support.
 	this.scriptManagement = new KubernetesScriptManagement();
 
@@ -146,12 +164,6 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 	// Organizes steps for initializing microservice.
 	ICompositeLifecycleStep initialize = new CompositeLifecycleStep("Initialize " + getName());
 
-	// Initialize configuration monitor.
-	initialize.addInitializeStep(this, getConfigurationMonitor(), true);
-
-	// Start configuration monitor.
-	initialize.addStartStep(this, getConfigurationMonitor(), true);
-
 	// Initialize script management.
 	initialize.addInitializeStep(this, getScriptManagement(), true);
 
@@ -160,6 +172,20 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
 	// Execute initialization steps.
 	initialize.execute(monitor);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.microservice.Microservice#createKubernetesResourceControllers(
+     * io.fabric8.kubernetes.client.informers.SharedInformerFactory)
+     */
+    @Override
+    public void createKubernetesResourceControllers(SharedInformerFactory informers) throws SiteWhereException {
+	super.createKubernetesResourceControllers(informers);
+
+	// Add shared informer for instance configuration monitoring.
+	this.configurationMonitor = new InstanceConfigurationMonitor(getKubernetesClient(), informers);
+	getConfigurationMonitor().getListeners().add(this);
     }
 
     /*
@@ -324,14 +350,8 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 	// Stop script management.
 	stop.addStopStep(this, getScriptManagement());
 
-	// Stop configuration monitor.
-	stop.addStopStep(this, getConfigurationMonitor());
-
 	// Terminate script management.
 	stop.addTerminateStep(this, getScriptManagement());
-
-	// Terminate configuration monitor.
-	stop.addTerminateStep(this, getConfigurationMonitor());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -345,17 +365,16 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
     public void initializeConfiguration() throws SiteWhereException {
 	try {
 	    // Load microservice configuration.
-	    setConfigurationState(ConfigurationState.Loading);
-	    SiteWhereInstance global = getGlobalConfiguration();
-	    if (global.getSpec() == null || global.getSpec().getConfiguration() == null) {
+	    SiteWhereInstance instance = getLastInstanceConfiguration();
+	    if (instance == null || instance.getSpec() == null || instance.getSpec().getConfiguration() == null) {
 		throw new SiteWhereException("Global instance configuration not set. Unable to start microservice.");
 	    }
-	    byte[] globalConfig = global.getSpec().getConfiguration().getBytes();
+	    byte[] globalConfig = instance.getSpec().getConfiguration().getBytes();
 	    ApplicationContext globalContext = ConfigurationUtils.buildGlobalContext(this, globalConfig,
 		    getMicroservice().getSpringProperties());
 
 	    ApplicationContext localContext = null;
-	    byte[] localConfig = getLocalConfiguration(global);
+	    byte[] localConfig = getLocalConfiguration(instance);
 	    if (localConfig != null) {
 		localContext = ConfigurationUtils.buildSubcontext(localConfig, getMicroservice().getSpringProperties(),
 			globalContext);
@@ -364,7 +383,6 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 	    // Store contexts for later use.
 	    setGlobalApplicationContext(globalContext);
 	    setLocalApplicationContext(localContext);
-	    setConfigurationState(ConfigurationState.Stopped);
 
 	    ILifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
 		    new LifecycleProgressContext(1, "Initialize microservice configuration."), getMicroservice());
@@ -376,11 +394,9 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 	    }
 	    getLogger().info("Microservice configuration '" + getMicroservice().getName() + "' initialized in "
 		    + (System.currentTimeMillis() - start) + "ms.");
-	    setConfigurationState(ConfigurationState.Initialized);
 	} catch (Throwable t) {
 	    getLogger().error("Unable to initialize microservice configuration '" + getMicroservice().getName() + "'.",
 		    t);
-	    setConfigurationState(ConfigurationState.Failed);
 	    throw t;
 	}
     }
@@ -402,10 +418,8 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 	    }
 	    getLogger().info("Microservice configuration '" + getMicroservice().getName() + "' started in "
 		    + (System.currentTimeMillis() - start) + "ms.");
-	    setConfigurationState(ConfigurationState.Started);
 	} catch (Throwable t) {
 	    getLogger().error("Unable to start microservice configuration '" + getMicroservice().getName() + "'.", t);
-	    setConfigurationState(ConfigurationState.Failed);
 	    throw t;
 	}
     }
@@ -429,10 +443,8 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 		getMicroservice().getLogger().info("Microservice configuration '" + getMicroservice().getName()
 			+ "' stopped in " + (System.currentTimeMillis() - start) + "ms.");
 	    }
-	    setConfigurationState(ConfigurationState.Stopped);
 	} catch (Throwable t) {
 	    getLogger().error("Unable to stop microservice configuration '" + getMicroservice().getName() + "'.", t);
-	    setConfigurationState(ConfigurationState.Failed);
 	    throw t;
 	}
     }
@@ -456,10 +468,8 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 		getLogger().info("Microservice configuration '" + getName() + "' terminated in "
 			+ (System.currentTimeMillis() - start) + "ms.");
 	    }
-	    setConfigurationState(ConfigurationState.Unloaded);
 	} catch (Throwable t) {
 	    getLogger().error("Unable to terminate microservice configuration '" + getName() + "'.", t);
-	    setConfigurationState(ConfigurationState.Failed);
 	    throw t;
 	}
     }
@@ -502,20 +512,14 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
      */
     @Override
     public void waitForConfigurationReady() throws SiteWhereException {
-	getLogger().info("Waiting for configuration to be loaded...");
-	while (true) {
-	    if (getConfigurationState() == ConfigurationState.Failed) {
-		throw new SiteWhereException("Microservice configuration failed.");
-	    }
-	    if (getConfigurationState() == ConfigurationState.Started) {
-		getLogger().info("Configuration started successfully.");
-		return;
-	    }
-	    try {
-		Thread.sleep(1000);
-	    } catch (InterruptedException e) {
-		return;
-	    }
+	if (getInstanceConfigAvailable().getCount() == 0) {
+	    return;
+	}
+	try {
+	    getLogger().info("Waiting for configuration to be loaded...");
+	    getInstanceConfigAvailable().await();
+	} catch (InterruptedException e) {
+	    throw new SiteWhereException("Interrupted while waiting for instance configuration to become available.");
 	}
     }
 
@@ -552,11 +556,11 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
      * @see com.sitewhere.microservice.Microservice#getConfigurationMonitor()
      */
     @Override
-    public IConfigurationMonitor getConfigurationMonitor() {
+    public IInstanceConfigurationMonitor getConfigurationMonitor() {
 	return configurationMonitor;
     }
 
-    protected void setConfigurationMonitor(IConfigurationMonitor configurationMonitor) {
+    protected void setConfigurationMonitor(IInstanceConfigurationMonitor configurationMonitor) {
 	this.configurationMonitor = configurationMonitor;
     }
 
@@ -571,27 +575,6 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
     public void setScriptManagement(IScriptManagement scriptManagement) {
 	this.scriptManagement = scriptManagement;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.configuration.IConfigurableMicroservice#
-     * getConfigurationState()
-     */
-    @Override
-    public ConfigurationState getConfigurationState() {
-	return configurationState;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * setConfigurationState(com.sitewhere.spi.microservice.configuration.
-     * ConfigurationState)
-     */
-    @Override
-    public void setConfigurationState(ConfigurationState configurationState) {
-	this.configurationState = configurationState;
     }
 
     /*
@@ -628,5 +611,9 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
     @Override
     public void setLocalApplicationContext(ApplicationContext localApplicationContext) {
 	this.localApplicationContext = localApplicationContext;
+    }
+
+    protected CountDownLatch getInstanceConfigAvailable() {
+	return instanceConfigAvailable;
     }
 }

@@ -10,11 +10,9 @@ package com.sitewhere.spi.microservice.configuration;
 import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
 
 /**
- * Listener for {@link IConfigurationMonitor} events.
- * 
- * @author Derek
+ * Listens for changes in instance configuration.
  */
-public interface IConfigurationListener {
+public interface IInstanceConfigurationListener {
 
     /**
      * Called when instance configuration is added.

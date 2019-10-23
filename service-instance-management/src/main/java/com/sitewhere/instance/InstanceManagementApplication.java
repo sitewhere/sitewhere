@@ -14,11 +14,12 @@ import org.springframework.context.annotation.ComponentScan;
 import com.sitewhere.instance.microservice.InstanceManagementMicroservice;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
+import com.sitewhere.web.WebRestConfiguration;
 
 /**
  * Spring Boot application for web/REST microservice.
  */
-@ComponentScan(basePackageClasses = { InstanceManagementMicroservice.class })
+@ComponentScan(basePackageClasses = { InstanceManagementMicroservice.class, WebRestConfiguration.class })
 public class InstanceManagementApplication extends MicroserviceApplication<IInstanceManagementMicroservice<?>> {
 
     @Autowired

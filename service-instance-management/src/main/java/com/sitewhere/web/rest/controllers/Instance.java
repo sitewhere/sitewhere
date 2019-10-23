@@ -167,11 +167,11 @@ public class Instance extends RestControllerBase {
     @RequestMapping(value = "/microservice/{identifier}/configuration", method = RequestMethod.GET)
     @ApiOperation(value = "Get global configuration based on service identifier")
     @Secured({ SiteWhereRoles.REST })
-    public ElementContent getGlobalConfiguration(
+    public ElementContent getInstanceConfiguration(
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier)
 	    throws SiteWhereException {
 	IConfigurationModel configModel = getMicroserviceConfigurationModel(identifier);
-	SiteWhereInstance instance = getMicroservice().getGlobalConfiguration();
+	SiteWhereInstance instance = getMicroservice().getInstanceConfiguration();
 	return ConfigurationContentParser.parse(instance.getSpec().getConfiguration().getBytes(), configModel);
     }
 
@@ -185,15 +185,15 @@ public class Instance extends RestControllerBase {
     @RequestMapping(value = "/microservice/{identifier}/configuration", method = RequestMethod.POST)
     @ApiOperation(value = "Update global configuration based on service identifier.")
     @Secured({ SiteWhereRoles.REST })
-    public void updateGlobalConfiguration(
+    public void updateInstanceConfiguration(
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
 	    @RequestBody ElementContent content) throws SiteWhereException {
 	IConfigurationModel configModel = getMicroserviceConfigurationModel(identifier);
 	Document xml = ConfigurationContentParser.buildXml(content, configModel);
 	String config = ConfigurationContentParser.format(xml);
-	SiteWhereInstance instance = getMicroservice().getGlobalConfiguration();
+	SiteWhereInstance instance = getMicroservice().getInstanceConfiguration();
 	instance.getSpec().setConfiguration(config);
-	getMicroservice().updateGlobalConfiguration(instance);
+	getMicroservice().updateInstanceConfiguration(instance);
     }
 
     /**

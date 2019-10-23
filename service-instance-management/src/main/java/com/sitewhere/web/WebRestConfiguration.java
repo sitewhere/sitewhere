@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.web.microservice;
+package com.sitewhere.web;
 
 import java.util.Arrays;
 
@@ -26,7 +26,6 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.servlet.DispatcherServlet;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
-import com.sitewhere.web.RedirectServlet;
 import com.sitewhere.web.auth.RestAuthConfiguration;
 import com.sitewhere.web.auth.RestAuthSwaggerConfiguration;
 import com.sitewhere.web.filters.JsonpFilter;

@@ -36,20 +36,6 @@ public interface IInstanceSettings {
     public String getInstanceTemplateId();
 
     /**
-     * Get hostname used by microservices to connect to Zookeeper.
-     * 
-     * @return
-     */
-    public String getZookeeperHost();
-
-    /**
-     * Get port used by microservices to connect to Zookeeper.
-     * 
-     * @return
-     */
-    public int getZookeeperPort();
-
-    /**
      * Get Kafka bootstrap servers configuration string.
      * 
      * @return

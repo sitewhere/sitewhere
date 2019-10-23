@@ -101,14 +101,6 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
     public ApplicationContext getModuleContext();
 
     /**
-     * Get name of for module configuration file (without path).
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    public String getModuleConfigurationName() throws SiteWhereException;
-
-    /**
      * Get module configuration data.
      * 
      * @return

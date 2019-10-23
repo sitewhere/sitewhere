@@ -30,14 +30,6 @@ public class InstanceSettings implements IInstanceSettings {
     @Value("#{systemEnvironment['sitewhere.instance.template.id'] ?: 'default'}")
     private String instanceTemplateId;
 
-    /** Zookeeper hostname info for microservices */
-    @Value("#{systemEnvironment['sitewhere.zookeeper.host'] ?: 'cp-zookeeper'}")
-    private String zookeeperHost;
-
-    /** Zookeeper port info for microservices */
-    @Value("#{systemEnvironment['sitewhere.zookeeper.port'] ?: '2181'}")
-    private int zookeeperPort;
-
     /** Kafka bootstrap services configuration for microservices */
     @Value("#{systemEnvironment['sitewhere.kafka.bootstrap.servers'] ?: 'cp-kafka:9092'}")
     private String kafkaBootstrapServers;
@@ -138,32 +130,6 @@ public class InstanceSettings implements IInstanceSettings {
 
     public void setInstanceTemplateId(String instanceTemplateId) {
 	this.instanceTemplateId = instanceTemplateId;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.microservice.instance.IInstanceSettings#getZookeeperHost()
-     */
-    @Override
-    public String getZookeeperHost() {
-	return zookeeperHost;
-    }
-
-    public void setZookeeperHost(String zookeeperHost) {
-	this.zookeeperHost = zookeeperHost;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.microservice.instance.IInstanceSettings#getZookeeperPort()
-     */
-    @Override
-    public int getZookeeperPort() {
-	return zookeeperPort;
-    }
-
-    public void setZookeeperPort(int zookeeperPort) {
-	this.zookeeperPort = zookeeperPort;
     }
 
     /*
