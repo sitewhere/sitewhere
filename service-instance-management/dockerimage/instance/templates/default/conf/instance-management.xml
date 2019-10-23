@@ -54,19 +54,17 @@
 			<im:rdb-configurations>
 				<!-- Configuration used for global services -->
 				<im:rdb-configuration id="global"
-					hostname="sitewhere-postgresql-headless.default.svc.cluster.local" password="syncope"
+					hostname="sitewhere-postgresql-headless.default.svc.cluster.local"
+					password="syncope"
 					username="syncope"
 					databaseName="tenant2"
 					replicaSetName="${rdb.replicaset:}"
 					url="jdbc:postgresql://sitewhere-postgresql-headless.default.svc.cluster.local/tenant2"/>
 
 				<im:rdb-configuration id="tenant"
-					hostname="sitewhere-postgresql-headless.default.svc.cluster.local"
-					password="syncope"
-					username="syncope"
-					databaseName="tenant1"
-					url="jdbc:postgresql://sitewhere-postgresql-headless.default.svc.cluster.local/tenant1"
-					replicaSetName="${rdb.replicaset:}" />
+					password="${tenantsdb.password}"
+					username="${tenantsdb.username}"
+					url="${tenantsdb.url}"/>
 			</im:rdb-configurations>
 
 		</im:persistence-configurations>

@@ -20,7 +20,7 @@ create table area
 );
 
 alter table area
-    owner to syncope;
+    owner to sitwhere;
 
 create table area_metadata
 (
@@ -34,7 +34,7 @@ create table area_metadata
 );
 
 alter table area_metadata
-    owner to syncope;
+    owner to sitwhere;
 
 create table area_type
 (
@@ -56,7 +56,7 @@ create table area_type
 );
 
 alter table area_type
-    owner to syncope;
+    owner to sitwhere;
 
 create table area_type_metadata
 (
@@ -70,7 +70,7 @@ create table area_type_metadata
 );
 
 alter table area_type_metadata
-    owner to syncope;
+    owner to sitwhere;
 
 create table areatype_containedareatypeids
 (
@@ -81,7 +81,7 @@ create table areatype_containedareatypeids
 );
 
 alter table areatype_containedareatypeids
-    owner to syncope;
+    owner to sitwhere;
 
 create table command_parameter
 (
@@ -94,7 +94,7 @@ create table command_parameter
 );
 
 alter table command_parameter
-    owner to syncope;
+    owner to sitwhere;
 
 create table customer
 (
@@ -118,7 +118,7 @@ create table customer
 );
 
 alter table customer
-    owner to syncope;
+    owner to sitwhere;
 
 create table customer_metadata
 (
@@ -132,7 +132,7 @@ create table customer_metadata
 );
 
 alter table customer_metadata
-    owner to syncope;
+    owner to sitwhere;
 
 create table customer_type
 (
@@ -154,7 +154,7 @@ create table customer_type
 );
 
 alter table customer_type
-    owner to syncope;
+    owner to sitwhere;
 
 create table customer_type_metadata
 (
@@ -168,7 +168,7 @@ create table customer_type_metadata
 );
 
 alter table customer_type_metadata
-    owner to syncope;
+    owner to sitwhere;
 
 create table customertype_containedcustomertypeids
 (
@@ -179,7 +179,7 @@ create table customertype_containedcustomertypeids
 );
 
 alter table customertype_containedcustomertypeids
-    owner to syncope;
+    owner to sitwhere;
 
 create table device
 (
@@ -200,7 +200,7 @@ create table device
 );
 
 alter table device
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_activedeviceassignmentids
 (
@@ -211,7 +211,7 @@ create table device_activedeviceassignmentids
 );
 
 alter table device_activedeviceassignmentids
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_alarm
 (
@@ -232,7 +232,7 @@ create table device_alarm
 );
 
 alter table device_alarm
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_alarm_metadata
 (
@@ -246,7 +246,7 @@ create table device_alarm_metadata
 );
 
 alter table device_alarm_metadata
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_alot
 (
@@ -258,7 +258,7 @@ create table device_alot
 );
 
 alter table device_alot
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_assignment
 (
@@ -281,7 +281,7 @@ create table device_assignment
 );
 
 alter table device_assignment
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_assignment_metadata
 (
@@ -295,7 +295,7 @@ create table device_assignment_metadata
 );
 
 alter table device_assignment_metadata
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_command
 (
@@ -315,7 +315,7 @@ create table device_command
 );
 
 alter table device_command
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_command_command_parameter
 (
@@ -330,7 +330,7 @@ create table device_command_command_parameter
 );
 
 alter table device_command_command_parameter
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_command_metadata
 (
@@ -344,7 +344,7 @@ create table device_command_metadata
 );
 
 alter table device_command_metadata
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_element_mapping
 (
@@ -356,7 +356,7 @@ create table device_element_mapping
 );
 
 alter table device_element_mapping
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_device_element_mapping
 (
@@ -371,7 +371,7 @@ create table device_device_element_mapping
 );
 
 alter table device_device_element_mapping
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_element_schema
 (
@@ -383,7 +383,7 @@ create table device_element_schema
 );
 
 alter table device_element_schema
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_element_schema_device_alot
 (
@@ -398,7 +398,7 @@ create table device_element_schema_device_alot
 );
 
 alter table device_element_schema_device_alot
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_group
 (
@@ -420,7 +420,7 @@ create table device_group
 );
 
 alter table device_group
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_group_element
 (
@@ -433,7 +433,7 @@ create table device_group_element
 );
 
 alter table device_group_element
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_group_metadata
 (
@@ -447,7 +447,7 @@ create table device_group_metadata
 );
 
 alter table device_group_metadata
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_metadata
 (
@@ -461,7 +461,7 @@ create table device_metadata
 );
 
 alter table device_metadata
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_status
 (
@@ -484,7 +484,7 @@ create table device_status
 );
 
 alter table device_status
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_status_metadata
 (
@@ -498,7 +498,7 @@ create table device_status_metadata
 );
 
 alter table device_status_metadata
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_type
 (
@@ -522,7 +522,7 @@ create table device_type
 );
 
 alter table device_type
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_type_metadata
 (
@@ -536,7 +536,7 @@ create table device_type_metadata
 );
 
 alter table device_type_metadata
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_util
 (
@@ -548,7 +548,7 @@ create table device_util
 );
 
 alter table device_util
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_element_schema_device_util
 (
@@ -563,7 +563,7 @@ create table device_element_schema_device_util
 );
 
 alter table device_element_schema_device_util
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_util_device_alot
 (
@@ -578,7 +578,7 @@ create table device_util_device_alot
 );
 
 alter table device_util_device_alot
-    owner to syncope;
+    owner to sitwhere;
 
 create table device_util_device_util
 (
@@ -593,7 +593,7 @@ create table device_util_device_util
 );
 
 alter table device_util_device_util
-    owner to syncope;
+    owner to sitwhere;
 
 create table devicegroup_roles
 (
@@ -604,7 +604,7 @@ create table devicegroup_roles
 );
 
 alter table devicegroup_roles
-    owner to syncope;
+    owner to sitwhere;
 
 create table devicegroupelement_roles
 (
@@ -615,7 +615,7 @@ create table devicegroupelement_roles
 );
 
 alter table devicegroupelement_roles
-    owner to syncope;
+    owner to sitwhere;
 
 create table location
 (
@@ -628,7 +628,7 @@ create table location
 );
 
 alter table location
-    owner to syncope;
+    owner to sitwhere;
 
 create table area_location
 (
@@ -643,7 +643,7 @@ create table area_location
 );
 
 alter table area_location
-    owner to syncope;
+    owner to sitwhere;
 
 create table zone
 (
@@ -663,7 +663,7 @@ create table zone
 );
 
 alter table zone
-    owner to syncope;
+    owner to sitwhere;
 
 create table zone_location
 (
@@ -678,7 +678,7 @@ create table zone_location
 );
 
 alter table zone_location
-    owner to syncope;
+    owner to sitwhere;
 
 create table zone_metadata
 (
@@ -692,7 +692,7 @@ create table zone_metadata
 );
 
 alter table zone_metadata
-    owner to syncope;
+    owner to sitwhere;
 
 
 -- Asset Management
@@ -718,7 +718,7 @@ create table asset
 );
 
 alter table asset
-    owner to syncope;
+    owner to sitwhere;
 
 create table asett_metadata
 (
@@ -752,7 +752,7 @@ create table asset_type
     );
 
 alter table asset_type
-    owner to syncope;
+    owner to sitwhere;
 
 create table asett_type_metadata
 (
@@ -779,7 +779,7 @@ create table batch_element
 );
 
 alter table batch_element
-    owner to syncope;
+    owner to sitwhere;
 
 create table batch_element_metadata
 (
@@ -807,7 +807,7 @@ create table batch_operation
 );
 
 alter table batch_operation
-    owner to syncope;
+    owner to sitwhere;
 
 create table batch_operation_metadata
 (

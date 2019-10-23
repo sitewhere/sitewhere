@@ -57,10 +57,10 @@ public class RDBConfiguration {
     private String url = DEFAULT_URL;
 
     /** Username used for authentication */
-    private String username = "syncope";
+    private String username = "sitewhere";
 
     /** Password used for authentication */
-    private String password = "syncope";
+    private String password = "password";
 
     /** Replica set name (blank or null for none) */
     private String replicaSetName;
