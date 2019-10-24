@@ -14,7 +14,6 @@ import java.util.Map;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import com.sitewhere.rdb.FlywayConfig;
 import com.sitewhere.rdb.entities.Area;
 import org.hibernate.MultiTenancyStrategy;
 import org.hibernate.cfg.Environment;
@@ -50,7 +49,7 @@ public class MultiTenantJpaConfiguration {
     @Bean(name = "dataSourcesDvdRental" )
     public Map<String, DataSource> dataSourcesDvdRental() {
         Map<String, DataSource> result = new HashMap<>();
-        for (MultiTenantDvdRentalProperties.DataSourceProperties dsProperties : MultiTenantDvdRentalProperties.DATA_SOURCES_PROPS) {
+        for (MultiTenantProperties.DataSourceProperties dsProperties : MultiTenantProperties.DATA_SOURCES_PROPS) {
             DataSourceBuilder factory = DataSourceBuilder
                     .create()
                     .url(dsProperties.getUrl())
@@ -66,12 +65,12 @@ public class MultiTenantJpaConfiguration {
     @Bean
     public MultiTenantConnectionProvider multiTenantConnectionProvider() {
         // Autowires dataSourcesDvdRental
-        return new DvdRentalDataSourceMultiTenantConnectionProviderImpl();
+        return new DataSourceMultiTenantConnectionProviderImpl();
     }
 
     @Bean
     public CurrentTenantIdentifierResolver currentTenantIdentifierResolver() {
-        return new TenantDvdRentalIdentifierResolverImpl();
+        return new TenantIdentifierResolverImpl();
     }
 
     @Bean

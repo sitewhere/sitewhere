@@ -8,8 +8,8 @@
 package com.sitewhere.rdb;
 
 import com.sitewhere.configuration.instance.rdb.RDBConfiguration;
-import com.sitewhere.rdb.multitenancy.DvdRentalTenantContext;
-import com.sitewhere.rdb.multitenancy.MultiTenantDvdRentalProperties;
+import com.sitewhere.rdb.multitenancy.MultiTenantContext;
+import com.sitewhere.rdb.multitenancy.MultiTenantProperties;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.server.lifecycle.parameters.StringComponentParameter;
 import com.sitewhere.spi.SiteWhereException;
@@ -75,8 +75,8 @@ public abstract class DbClient extends TenantEngineLifecycleComponent implements
                 + configuration.getUrl() + " for database '" + databaseName.getValue() + "'");
 
         String tenantId = this.getTenantEngine().getTenant().getId().toString();
-        MultiTenantDvdRentalProperties.ADD_NEW_DATASOURCE(configuration, tenantId);
-        DvdRentalTenantContext.setTenantId(tenantId);
+        MultiTenantProperties.ADD_NEW_DATASOURCE(configuration, tenantId);
+        MultiTenantContext.setTenantId(tenantId);
         dbManager.start();
     }
 

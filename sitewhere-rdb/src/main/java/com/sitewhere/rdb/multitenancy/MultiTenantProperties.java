@@ -17,7 +17,7 @@ import com.sitewhere.configuration.instance.rdb.RDBConfiguration;
  *
  * Simeon Chen
  */
-public class MultiTenantDvdRentalProperties {
+public class MultiTenantProperties {
 
 	public static Vector<DataSourceProperties> DATA_SOURCES_PROPS = new Vector<>();
 

@@ -20,7 +20,7 @@ import java.util.Map;
  *
  * Simeon Chen
  */
-public class DvdRentalDataSourceMultiTenantConnectionProviderImpl extends AbstractDataSourceBasedMultiTenantConnectionProviderImpl {
+public class DataSourceMultiTenantConnectionProviderImpl extends AbstractDataSourceBasedMultiTenantConnectionProviderImpl {
 
 	private static final long serialVersionUID = 1L;
 
@@ -29,7 +29,7 @@ public class DvdRentalDataSourceMultiTenantConnectionProviderImpl extends Abstra
 
 	@Override
 	protected DataSource selectAnyDataSource() {
-		DataSource selected = dataSourcesDvdRental.get(DvdRentalTenantContext.getTenantId());
+		DataSource selected = dataSourcesDvdRental.get(MultiTenantContext.getTenantId());
 		return selected;
 	}
 

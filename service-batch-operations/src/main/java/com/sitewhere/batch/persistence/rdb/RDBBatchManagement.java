@@ -10,7 +10,7 @@ package com.sitewhere.batch.persistence.rdb;
 import com.sitewhere.batch.persistence.BatchManagementPersistence;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.rdb.RDBTenantComponent;
-import com.sitewhere.rdb.multitenancy.DvdRentalTenantContext;
+import com.sitewhere.rdb.multitenancy.MultiTenantContext;
 import com.sitewhere.rest.model.batch.BatchElement;
 import com.sitewhere.rest.model.batch.BatchOperation;
 import com.sitewhere.spi.SiteWhereException;
@@ -56,7 +56,7 @@ public class RDBBatchManagement extends RDBTenantComponent<BatchManagementRDBCli
     @Override
     public BatchManagementRDBClient getRDBClient() throws SiteWhereException {
         String tenantId = this.getTenantEngine().getTenant().getId().toString();
-        DvdRentalTenantContext.setTenantId(tenantId);
+        MultiTenantContext.setTenantId(tenantId);
         return dbClient;
     }
 

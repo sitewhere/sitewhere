@@ -20,7 +20,7 @@ create table area
 );
 
 alter table area
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table area_metadata
 (
@@ -34,7 +34,7 @@ create table area_metadata
 );
 
 alter table area_metadata
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table area_type
 (
@@ -56,7 +56,7 @@ create table area_type
 );
 
 alter table area_type
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table area_type_metadata
 (
@@ -70,7 +70,7 @@ create table area_type_metadata
 );
 
 alter table area_type_metadata
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table areatype_containedareatypeids
 (
@@ -81,7 +81,7 @@ create table areatype_containedareatypeids
 );
 
 alter table areatype_containedareatypeids
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table command_parameter
 (
@@ -94,7 +94,7 @@ create table command_parameter
 );
 
 alter table command_parameter
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table customer
 (
@@ -118,7 +118,7 @@ create table customer
 );
 
 alter table customer
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table customer_metadata
 (
@@ -132,7 +132,7 @@ create table customer_metadata
 );
 
 alter table customer_metadata
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table customer_type
 (
@@ -154,7 +154,7 @@ create table customer_type
 );
 
 alter table customer_type
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table customer_type_metadata
 (
@@ -168,7 +168,7 @@ create table customer_type_metadata
 );
 
 alter table customer_type_metadata
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table customertype_containedcustomertypeids
 (
@@ -179,7 +179,7 @@ create table customertype_containedcustomertypeids
 );
 
 alter table customertype_containedcustomertypeids
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device
 (
@@ -200,7 +200,7 @@ create table device
 );
 
 alter table device
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_activedeviceassignmentids
 (
@@ -211,7 +211,7 @@ create table device_activedeviceassignmentids
 );
 
 alter table device_activedeviceassignmentids
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_alarm
 (
@@ -232,7 +232,7 @@ create table device_alarm
 );
 
 alter table device_alarm
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_alarm_metadata
 (
@@ -246,7 +246,7 @@ create table device_alarm_metadata
 );
 
 alter table device_alarm_metadata
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_alot
 (
@@ -258,7 +258,7 @@ create table device_alot
 );
 
 alter table device_alot
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_assignment
 (
@@ -281,7 +281,7 @@ create table device_assignment
 );
 
 alter table device_assignment
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_assignment_metadata
 (
@@ -295,7 +295,7 @@ create table device_assignment_metadata
 );
 
 alter table device_assignment_metadata
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_command
 (
@@ -315,7 +315,7 @@ create table device_command
 );
 
 alter table device_command
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_command_command_parameter
 (
@@ -330,7 +330,7 @@ create table device_command_command_parameter
 );
 
 alter table device_command_command_parameter
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_command_metadata
 (
@@ -344,7 +344,7 @@ create table device_command_metadata
 );
 
 alter table device_command_metadata
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_element_mapping
 (
@@ -356,7 +356,7 @@ create table device_element_mapping
 );
 
 alter table device_element_mapping
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_device_element_mapping
 (
@@ -371,7 +371,7 @@ create table device_device_element_mapping
 );
 
 alter table device_device_element_mapping
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_element_schema
 (
@@ -383,7 +383,7 @@ create table device_element_schema
 );
 
 alter table device_element_schema
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_element_schema_device_alot
 (
@@ -398,7 +398,7 @@ create table device_element_schema_device_alot
 );
 
 alter table device_element_schema_device_alot
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_group
 (
@@ -420,7 +420,7 @@ create table device_group
 );
 
 alter table device_group
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_group_element
 (
@@ -433,7 +433,7 @@ create table device_group_element
 );
 
 alter table device_group_element
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_group_metadata
 (
@@ -447,7 +447,7 @@ create table device_group_metadata
 );
 
 alter table device_group_metadata
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_metadata
 (
@@ -461,7 +461,7 @@ create table device_metadata
 );
 
 alter table device_metadata
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_status
 (
@@ -484,7 +484,7 @@ create table device_status
 );
 
 alter table device_status
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_status_metadata
 (
@@ -498,7 +498,7 @@ create table device_status_metadata
 );
 
 alter table device_status_metadata
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_type
 (
@@ -522,7 +522,7 @@ create table device_type
 );
 
 alter table device_type
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_type_metadata
 (
@@ -536,7 +536,7 @@ create table device_type_metadata
 );
 
 alter table device_type_metadata
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_util
 (
@@ -548,7 +548,7 @@ create table device_util
 );
 
 alter table device_util
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_element_schema_device_util
 (
@@ -563,7 +563,7 @@ create table device_element_schema_device_util
 );
 
 alter table device_element_schema_device_util
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_util_device_alot
 (
@@ -578,7 +578,7 @@ create table device_util_device_alot
 );
 
 alter table device_util_device_alot
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table device_util_device_util
 (
@@ -593,7 +593,7 @@ create table device_util_device_util
 );
 
 alter table device_util_device_util
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table devicegroup_roles
 (
@@ -604,7 +604,7 @@ create table devicegroup_roles
 );
 
 alter table devicegroup_roles
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table devicegroupelement_roles
 (
@@ -615,7 +615,7 @@ create table devicegroupelement_roles
 );
 
 alter table devicegroupelement_roles
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table location
 (
@@ -628,7 +628,7 @@ create table location
 );
 
 alter table location
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table area_location
 (
@@ -643,7 +643,7 @@ create table area_location
 );
 
 alter table area_location
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table zone
 (
@@ -663,7 +663,7 @@ create table zone
 );
 
 alter table zone
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table zone_location
 (
@@ -678,7 +678,7 @@ create table zone_location
 );
 
 alter table zone_location
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table zone_metadata
 (
@@ -692,7 +692,7 @@ create table zone_metadata
 );
 
 alter table zone_metadata
-    owner to sitwhere;
+    owner to sitewhere;
 
 
 -- Asset Management
@@ -718,7 +718,7 @@ create table asset
 );
 
 alter table asset
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table asett_metadata
 (
@@ -749,10 +749,10 @@ create table asset_type
     updatedby       varchar(255),
     updateddate     timestamp,
     assetcategory   varchar(255)
-    );
+);
 
 alter table asset_type
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table asett_type_metadata
 (
@@ -779,7 +779,7 @@ create table batch_element
 );
 
 alter table batch_element
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table batch_element_metadata
 (
@@ -807,7 +807,7 @@ create table batch_operation
 );
 
 alter table batch_operation
-    owner to sitwhere;
+    owner to sitewhere;
 
 create table batch_operation_metadata
 (
@@ -830,3 +830,100 @@ create table batch_operation_parameters
     constraint batch_operation_parameters_pkey
         primary key (batch_operation_parameters_id, propkey)
 );
+
+-- Schedule Management
+create table schedule
+(
+    id  uuid not null constraint schedule_pkey primary key,
+    name varchar,
+    token varchar,
+    start_date timestamp,
+    end_date timestamp,
+    created_date timestamp,
+    created_by varchar,
+    updated_date timestamp,
+    updated_by varchar,
+    trigger_type varchar
+);
+
+alter table schedule
+    owner to sitewhere;
+
+create table schedule_metadata
+(
+    schedule_id uuid         not null
+        constraint fk13869vnpp3fh77t23fou4sr7o
+            references schedule,
+    propvalue   varchar,
+    propkey     varchar not null,
+    constraint schedule_metadata_pkey
+        primary key (schedule_id, propkey)
+);
+
+alter table schedule_metadata
+    owner to sitewhere;
+
+create table trigger_configuration
+(
+    schedule_id uuid         not null
+        constraint fk13869vnpp3few7t23fou4sr7o
+            references schedule,
+    propvalue   varchar,
+    propkey     varchar not null,
+    constraint trigger_configuration_pkey
+        primary key (schedule_id, propkey)
+);
+
+alter table trigger_configuration
+    owner to sitewhere;
+
+create table scheduled_job
+(
+    id  uuid not null constraint scheduled_job_pkey primary key,
+    name varchar,
+    token varchar,
+    schedule_token varchar,
+    start_date timestamp,
+    end_date timestamp,
+    created_date timestamp,
+    created_by varchar,
+    updated_date timestamp,
+    updated_by varchar,
+    job_type varchar,
+    job_state varchar
+);
+
+alter table scheduled_job
+    owner to sitewhere;
+
+
+alter table schedule
+    owner to sitewhere;
+
+create table scheduled_job_metadata
+(
+    schedule_job_id uuid         not null
+        constraint fk13169vnpp3fh77t23fou4sr7o
+            references scheduled_job,
+    propvalue   varchar,
+    propkey     varchar not null,
+    constraint schedule_job_metadata_pkey
+        primary key (schedule_job_id, propkey)
+);
+
+alter table scheduled_job_metadata
+    owner to sitewhere;
+
+create table scheduled_job_configuration
+(
+    schedule_job_id uuid         not null
+        constraint flu3169vnpp3fh77t23fou4sr7o
+            references scheduled_job,
+    propvalue   varchar,
+    propkey     varchar not null,
+    constraint schedule_job_configuration_pkey
+        primary key (schedule_job_id, propkey)
+);
+
+alter table scheduled_job_configuration
+    owner to sitewhere;

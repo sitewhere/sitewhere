@@ -13,7 +13,7 @@ import com.sitewhere.device.microservice.DeviceManagementMicroservice;
 import com.sitewhere.device.persistence.DeviceManagementPersistence;
 import com.sitewhere.device.persistence.TreeBuilder;
 import com.sitewhere.rdb.RDBTenantComponent;
-import com.sitewhere.rdb.multitenancy.DvdRentalTenantContext;
+import com.sitewhere.rdb.multitenancy.MultiTenantContext;
 import com.sitewhere.rest.model.area.Area;
 import com.sitewhere.rest.model.area.AreaType;
 import com.sitewhere.rest.model.area.Zone;
@@ -65,13 +65,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.*;
-import javax.sql.DataSource;
 import java.util.*;
 
 /**
  * Device management implementation that uses Relational database for persistence.
  *
- * Simeon Chen
+ * @author Luciano Baez
  */
 public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBClient> implements IDeviceManagement {
 
@@ -205,7 +204,6 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         return null;
     }
 
-    //@Override
     public IDeviceCommand getDeviceCommandByToken(String token) throws SiteWhereException {
         Optional<com.sitewhere.rdb.entities.DeviceCommand> opt = getRDBClient().getDbManager().getDeviceCommandRepository().findByToken(token);
         if(opt.isPresent()) {
@@ -1624,7 +1622,7 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
     @Override
     public DeviceManagementRDBClient getRDBClient() throws SiteWhereException {
         String tenantId = this.getTenantEngine().getTenant().getId().toString();
-        DvdRentalTenantContext.setTenantId(tenantId);
+        MultiTenantContext.setTenantId(tenantId);
         return dbClient;
     }
 

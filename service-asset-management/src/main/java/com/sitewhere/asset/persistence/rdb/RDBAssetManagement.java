@@ -9,7 +9,7 @@ package com.sitewhere.asset.persistence.rdb;
 
 import com.sitewhere.asset.persistence.AssetManagementPersistence;
 import com.sitewhere.rdb.RDBTenantComponent;
-import com.sitewhere.rdb.multitenancy.DvdRentalTenantContext;
+import com.sitewhere.rdb.multitenancy.MultiTenantContext;
 import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.rest.model.asset.AssetType;
 import com.sitewhere.spi.SiteWhereException;
@@ -63,7 +63,7 @@ public class RDBAssetManagement  extends RDBTenantComponent<AssetManagementRDBCl
     @Override
     public AssetManagementRDBClient getRDBClient() throws SiteWhereException {
         String tenantId = this.getTenantEngine().getTenant().getId().toString();
-        DvdRentalTenantContext.setTenantId(tenantId);
+        MultiTenantContext.setTenantId(tenantId);
         return dbClient;
     }
 

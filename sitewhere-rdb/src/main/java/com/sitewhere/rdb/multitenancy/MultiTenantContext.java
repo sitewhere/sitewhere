@@ -12,7 +12,7 @@ package com.sitewhere.rdb.multitenancy;
  *
  * Simeon Chen
  */
-public class DvdRentalTenantContext {
+public class MultiTenantContext {
 
     private static final ThreadLocal<String> CONTEXT = new ThreadLocal<>();
 
