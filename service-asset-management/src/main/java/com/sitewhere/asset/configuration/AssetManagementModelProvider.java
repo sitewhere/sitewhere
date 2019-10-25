@@ -15,8 +15,6 @@ import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProv
 
 /**
  * Configuration model provider for asset management microservice.
- * 
- * @author Derek
  */
 public class AssetManagementModelProvider extends ConfigurationModelProvider {
 

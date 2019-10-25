@@ -13,6 +13,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.configuration.ITenantEngineConfigurationListener;
 import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
+import com.sitewhere.spi.microservice.scripting.IScriptContext;
 import com.sitewhere.spi.microservice.scripting.IScriptManager;
 import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
@@ -67,7 +68,7 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
      * @return
      * @throws SiteWhereException
      */
-    public IScriptSynchronizer getTenantScriptSynchronizer() throws SiteWhereException;
+    public IScriptSynchronizer getScriptSynchronizer() throws SiteWhereException;
 
     /**
      * Get script manager.
@@ -76,6 +77,13 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
      * @throws SiteWhereException
      */
     public IScriptManager getScriptManager() throws SiteWhereException;
+
+    /**
+     * Gets a script context for this engine.
+     * 
+     * @return
+     */
+    public IScriptContext getScriptContext();
 
     /**
      * Get bootstrap manager.
@@ -164,7 +172,8 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
      * @param monitor
      * @throws SiteWhereException
      */
-    public void tenantBootstrap(IDatasetTemplate template, ILifecycleProgressMonitor monitor) throws SiteWhereException;
+    public void tenantBootstrap(TenantEngineDatasetTemplate template, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException;
 
     /**
      * Executes tenant shutdown code.

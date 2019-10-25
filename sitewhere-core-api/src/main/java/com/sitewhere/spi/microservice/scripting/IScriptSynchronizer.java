@@ -10,16 +10,13 @@ package com.sitewhere.spi.microservice.scripting;
 import java.io.File;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.configuration.IInstanceConfigurationListener;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
- * Common interface for synchronizing scripts from Zookeeper to the local
- * filesystem for a microservice.
- * 
- * @author Derek
+ * Common interface for synchronizing script files to the local filesystem on a
+ * container so that the Groovy script engine can properly detect changes.
  */
-public interface IScriptSynchronizer extends ILifecycleComponent, IInstanceConfigurationListener {
+public interface IScriptSynchronizer extends ILifecycleComponent {
 
     /**
      * Get root folder on filesystem where scripts will be stored.
@@ -30,34 +27,25 @@ public interface IScriptSynchronizer extends ILifecycleComponent, IInstanceConfi
     public File getFileSystemRoot() throws SiteWhereException;
 
     /**
-     * Get root path for matching Zookeeper updates.
+     * Add a script that should be synchronized to disk.
      * 
+     * @param context
+     * @param type
+     * @param name
+     * @param content
      * @return
      * @throws SiteWhereException
      */
-    public String getZkScriptRootPath() throws SiteWhereException;
+    public String add(IScriptContext context, ScriptType type, String name, byte[] content) throws SiteWhereException;
 
     /**
-     * Add script from the given relative path.
+     * Produce path to script that has been serialized to disk.
      * 
-     * @param zkPath
+     * @param context
+     * @param type
+     * @param name
+     * @return
      * @throws SiteWhereException
      */
-    public void add(String relativePath) throws SiteWhereException;
-
-    /**
-     * Update script from the given relative path.
-     * 
-     * @param zkPath
-     * @throws SiteWhereException
-     */
-    public void update(String relativePath) throws SiteWhereException;
-
-    /**
-     * Delete script corresponding to the given relative path.
-     * 
-     * @param zkPath
-     * @throws SiteWhereException
-     */
-    public void delete(String relativePath) throws SiteWhereException;
+    public String resolve(IScriptContext context, ScriptType type, String name) throws SiteWhereException;
 }

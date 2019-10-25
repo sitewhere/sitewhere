@@ -13,8 +13,6 @@ import com.sitewhere.configuration.parser.IAssetManagementParser;
 
 /**
  * Registers parsers for elements in the asset management configuration schema.
- * 
- * @author Derek
  */
 public class AssetManagementNamespaceHandler extends NamespaceHandlerSupport {
 

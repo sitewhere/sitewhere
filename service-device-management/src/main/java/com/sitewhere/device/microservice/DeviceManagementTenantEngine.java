@@ -7,9 +7,6 @@
  */
 package com.sitewhere.device.microservice;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -19,24 +16,23 @@ import com.sitewhere.device.spi.kafka.IDeviceInteractionEventsProducer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
 import com.sitewhere.grpc.service.DeviceManagementGrpc;
-import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.grpc.DeviceManagementImpl;
 import com.sitewhere.microservice.kafka.DeviceInteractionEventsProducer;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.LifecycleProgressContext;
-import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
+import com.sitewhere.spi.microservice.scripting.ScriptType;
 import com.sitewhere.spi.microservice.spring.DeviceManagementBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
+
+import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 
 /**
  * Implementation of {@link IMicroserviceTenantEngine} that implements device
@@ -129,33 +125,26 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * tenantBootstrap(com.sitewhere.spi.microservice.multitenant.IDatasetTemplate,
+     * tenantBootstrap(io.sitewhere.k8s.crd.tenant.engine.dataset.
+     * TenantEngineDatasetTemplate,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void tenantBootstrap(IDatasetTemplate template, ILifecycleProgressMonitor monitor)
+    public void tenantBootstrap(TenantEngineDatasetTemplate template, ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException {
-	List<String> scripts = Collections.emptyList();
-	if (template.getInitializers() != null) {
-	    scripts = template.getInitializers().getDeviceManagement();
-	    for (String script : scripts) {
-		getTenantScriptSynchronizer().add(script);
-	    }
-	}
+	String scriptName = String.format("%s.groovy", template.getMetadata().getName());
+	String path = getScriptSynchronizer().add(getScriptContext(), ScriptType.Initializer, scriptName,
+		template.getSpec().getConfiguration().getBytes());
 
 	// Execute remote calls as superuser.
 	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
 	try {
 	    SecurityContextHolder.getContext()
 		    .setAuthentication(getMicroservice().getSystemUser().getAuthenticationForTenant(getTenant()));
-	    GroovyConfiguration groovy = new GroovyConfiguration(getTenantScriptSynchronizer());
-	    groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize device model."),
-		    getMicroservice()));
-	    for (String script : scripts) {
-		getLogger().info(String.format("Applying bootstrap script '%s'.", script));
-		GroovyDeviceModelInitializer initializer = new GroovyDeviceModelInitializer(groovy, script);
-		initializer.initialize(getDeviceManagement(), getAssetManagement());
-	    }
+
+	    getLogger().info(String.format("Applying bootstrap script '%s'.", path));
+	    GroovyDeviceModelInitializer initializer = new GroovyDeviceModelInitializer(getGroovyConfiguration(), path);
+	    initializer.initialize(getDeviceManagement(), getAssetManagement());
 	} catch (Throwable e) {
 	    getLogger().error("Unhandled exception in bootstrap script.", e);
 	    throw new SiteWhereException(e);

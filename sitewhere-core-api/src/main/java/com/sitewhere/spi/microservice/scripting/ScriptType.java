@@ -5,12 +5,15 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.asset.spi.grpc;
-
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+package com.sitewhere.spi.microservice.scripting;
 
 /**
- * Binds to a port and listens for asset management GRPC requests.
+ * Categories of scripts.
  */
-public interface IAssetManagementGrpcServer extends ITenantEngineLifecycleComponent {
+public enum ScriptType {
+    /** Initializer logic */
+    Initializer,
+
+    /** Managed script */
+    ManagedScript;
 }

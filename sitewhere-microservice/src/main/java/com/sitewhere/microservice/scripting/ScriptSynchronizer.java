@@ -7,28 +7,23 @@
  */
 package com.sitewhere.microservice.scripting;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import org.apache.commons.io.IOUtils;
 
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
+import com.sitewhere.spi.microservice.scripting.IScriptContext;
 import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
+import com.sitewhere.spi.microservice.scripting.ScriptType;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
- * Base class for script synchronizers.
- * 
- * @author Derek
+ * Handles process of copying script artifacts onto the local container
+ * filesystem so that the Groovy runtime can properly detect
  */
-public abstract class ScriptSynchronizer extends LifecycleComponent implements IScriptSynchronizer {
+public class ScriptSynchronizer extends LifecycleComponent implements IScriptSynchronizer {
+
+    /** File system root where scripts are copied */
+    private File fileSystemRoot;
 
     /*
      * @see
@@ -38,7 +33,7 @@ public abstract class ScriptSynchronizer extends LifecycleComponent implements I
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
-	((IConfigurableMicroservice<?>) getMicroservice()).getConfigurationMonitor().getListeners().add(this);
+	this.fileSystemRoot = new File(getMicroservice().getInstanceSettings().getFileSystemStorageRoot());
     }
 
     /*
@@ -49,191 +44,42 @@ public abstract class ScriptSynchronizer extends LifecycleComponent implements I
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.start(monitor);
-	//
-	// // Copy all scipts from Zk to local.
-	// try {
-	// if (getMicroservice().getZookeeperManager().getCurator().checkExists()
-	// .forPath(getZkScriptRootPath()) != null) {
-	// ZkUtils.copyFolderRecursivelyFromZk(getMicroservice().getZookeeperManager().getCurator(),
-	// getZkScriptRootPath(), getFileSystemRoot(), getZkScriptRootPath());
-	// }
-	// } catch (Exception e) {
-	// throw new SiteWhereException("Unable to copy scripts from Zookeeper.", e);
-	// }
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.scripting.IScriptSynchronizer#add(com.
+     * sitewhere.spi.microservice.scripting.IScriptContext,
+     * com.sitewhere.spi.microservice.scripting.ScriptType, java.lang.String,
+     * byte[])
+     */
+    @Override
+    public String add(IScriptContext context, ScriptType type, String name, byte[] content) throws SiteWhereException {
+	return null;
     }
 
     /*
      * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#terminate(com.sitewhere.spi
-     * .server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.spi.microservice.scripting.IScriptSynchronizer#resolve(com.
+     * sitewhere.spi.microservice.scripting.IScriptContext,
+     * com.sitewhere.spi.microservice.scripting.ScriptType, java.lang.String)
      */
     @Override
-    public void terminate(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	super.terminate(monitor);
-	((IConfigurableMicroservice<?>) getMicroservice()).getConfigurationMonitor().getListeners().remove(this);
+    public String resolve(IScriptContext context, ScriptType type, String name) throws SiteWhereException {
+	File relative = new File(getFileSystemRoot() + File.separator + context.getBasePath());
+	File resolved = new File(relative, name);
+	return resolved.getAbsolutePath();
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.groovy.IScriptSynchronizer#add(java.lang.
-     * String)
+     * @see com.sitewhere.spi.microservice.scripting.IScriptSynchronizer#
+     * getFileSystemRoot()
      */
     @Override
-    public void add(String relativePath) throws SiteWhereException {
-	copy(getZkScriptRootPath() + "/" + relativePath);
+    public File getFileSystemRoot() {
+	return fileSystemRoot;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.groovy.IScriptSynchronizer#update(java.
-     * lang.String)
-     */
-    @Override
-    public void update(String relativePath) throws SiteWhereException {
-	copy(getZkScriptRootPath() + "/" + relativePath);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.groovy.IScriptSynchronizer#delete(java.
-     * lang.String)
-     */
-    @Override
-    public void delete(String relativePath) throws SiteWhereException {
-	File existing = getFileFor(getZkScriptRootPath() + "/" + relativePath);
-	if (existing.exists()) {
-	    try {
-		Files.delete(existing.toPath());
-		getLogger().debug("Deleted script at path '" + existing.getAbsolutePath() + "'.");
-	    } catch (IOException e) {
-		throw new SiteWhereException("Unable to delete script from filesystem.", e);
-	    }
-	}
-    }
-
-    /**
-     * Checks whether path is script content.
-     * 
-     * @param path
-     * @return
-     * @throws SiteWhereException
-     */
-    protected boolean isScriptContent(String path) throws SiteWhereException {
-	if (path.startsWith(getZkScriptRootPath())) {
-	    String relative = path.substring(getZkScriptRootPath().length());
-	    if (relative.startsWith("scripts/")) {
-		getLogger().info(String.format("Script content found for '%s'.", relative));
-		return true;
-	    }
-	    return false;
-	}
-	return false;
-    }
-
-    /**
-     * Get path relative to content root.
-     * 
-     * @param path
-     * @return
-     * @throws SiteWhereException
-     */
-    protected String getRelativePath(String path) throws SiteWhereException {
-	return path.substring(getZkScriptRootPath().length() + 1);
-    }
-
-    /**
-     * Copy Zookeeper content to filesystem.
-     * 
-     * @param zkPath
-     * @throws SiteWhereException
-     */
-    protected void copy(String zkPath) throws SiteWhereException {
-	byte[] content = getZkContent(zkPath);
-	if (isFolder(zkPath)) {
-	    // Only copy files.
-	    return;
-	}
-	FileOutputStream output = null;
-	File out = getFileFor(zkPath);
-	try {
-	    if (!out.getParentFile().exists()) {
-		getLogger().warn("Script parent folder '" + out.getParentFile().getAbsolutePath()
-			+ "' does not exist. Creating.");
-		if (!out.getParentFile().mkdirs()) {
-		    getLogger().warn("Mkdirs for '" + out.getParentFile().getAbsolutePath() + "' failed.");
-		}
-	    }
-	    output = new FileOutputStream(out);
-	    ByteArrayInputStream input = new ByteArrayInputStream(content);
-	    IOUtils.copy(input, output);
-	    getLogger().debug("Copied script content (" + content.length + " bytes) from '" + zkPath + "' to '"
-		    + out.getAbsolutePath() + "'.");
-	} catch (IOException e) {
-	    throw new SiteWhereException("Unable to copy script from Zookeeper path '" + zkPath + "' to file '"
-		    + out.getAbsolutePath() + "'.", e);
-	} finally {
-	    if (output != null) {
-		try {
-		    output.close();
-		} catch (IOException e1) {
-		    getLogger().error("Unable to close file handle.", e1);
-		}
-	    }
-	}
-    }
-
-    /**
-     * Determine whether path represents a folder.
-     * 
-     * @param pathString
-     * @return
-     */
-    protected boolean isFolder(String pathString) {
-	Path path = Paths.get(pathString);
-	path = path.getFileName();
-	if ((path == null) || (path.toString().indexOf('.') == -1)) {
-	    return true;
-	}
-	return false;
-    }
-
-    /**
-     * Get Zookeeper content from the given path.
-     * 
-     * @param zkPath
-     * @return
-     * @throws SiteWhereException
-     */
-    protected byte[] getZkContent(String zkPath) throws SiteWhereException {
-	// try {
-	// return
-	// getMicroservice().getZookeeperManager().getCurator().getData().forPath(zkPath);
-	// } catch (Exception e) {
-	// throw new SiteWhereException("Unable to get Zookeeper content for path '" +
-	// zkPath + "'.");
-	// }
-	return null;
-    }
-
-    /**
-     * Get the file (relative to filesystem root) that corresponds to the Zookeeper
-     * path.
-     * 
-     * @param zkPath
-     * @return
-     * @throws SiteWhereException
-     */
-    protected File getFileFor(String zkPath) throws SiteWhereException {
-	try {
-	    Path root = Paths.get(getZkScriptRootPath());
-	    Path relative = root.relativize(Paths.get(zkPath));
-	    Path fsRoot = getFileSystemRoot().toPath();
-	    return fsRoot.resolve(relative).toFile();
-	} catch (Throwable e) {
-	    throw new SiteWhereException("Unable to get Zookeeper script content.", e);
-	}
+    public void setFileSystemRoot(File fileSystemRoot) {
+	this.fileSystemRoot = fileSystemRoot;
     }
 }

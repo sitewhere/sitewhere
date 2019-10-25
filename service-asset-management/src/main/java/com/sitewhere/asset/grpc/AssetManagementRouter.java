@@ -46,8 +46,6 @@ import io.grpc.stub.StreamObserver;
 
 /**
  * Routes GRPC calls to service implementations in tenants.
- * 
- * @author Derek
  */
 public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementImplBase
 	implements IGrpcRouter<AssetManagementGrpc.AssetManagementImplBase> {

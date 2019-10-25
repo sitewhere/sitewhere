@@ -8,27 +8,43 @@
 package com.sitewhere.spi.microservice.groovy;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.scripting.IScriptContext;
 import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
+import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
+import com.sitewhere.spi.microservice.scripting.ScriptType;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 import groovy.lang.Binding;
 
 /**
  * Provides common Groovy configuration for core server components.
- * 
- * @author Derek
  */
 public interface IGroovyConfiguration extends ILifecycleComponent {
 
     /**
+     * Get context for scripts.
+     * 
+     * @return
+     */
+    public IScriptContext getScriptContext();
+
+    /**
+     * Get script synchronizer.
+     * 
+     * @return
+     */
+    public IScriptSynchronizer getScriptSynchronizer();
+
+    /**
      * Run a Groovy script with the given binding and potentially return a result.
      * 
-     * @param scriptPath
+     * @param type
+     * @param name
      * @param binding
      * @return
      * @throws SiteWhereException
      */
-    public Object run(String scriptPath, Binding binding) throws SiteWhereException;
+    public Object run(ScriptType type, String name, Binding binding) throws SiteWhereException;
 
     /**
      * Run a Groovy script with the given binding and potentially return a result.

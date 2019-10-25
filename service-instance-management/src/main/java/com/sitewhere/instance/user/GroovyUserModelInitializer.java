@@ -11,10 +11,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.instance.spi.user.IUserModelInitializer;
-import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.rest.model.user.request.UserManagementRequestBuilder;
 import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
+import com.sitewhere.spi.microservice.scripting.ScriptType;
 import com.sitewhere.spi.user.IUserManagement;
 
 import groovy.lang.Binding;
@@ -29,12 +30,12 @@ public class GroovyUserModelInitializer extends ModelInitializer implements IUse
     private static Log LOGGER = LogFactory.getLog(GroovyUserModelInitializer.class);
 
     /** Groovy configuration */
-    private GroovyConfiguration groovyConfiguration;
+    private IGroovyConfiguration groovyConfiguration;
 
     /** Relative path to Groovy script */
     private String scriptPath;
 
-    public GroovyUserModelInitializer(GroovyConfiguration groovyConfiguration, String scriptPath) {
+    public GroovyUserModelInitializer(IGroovyConfiguration groovyConfiguration, String scriptPath) {
 	this.groovyConfiguration = groovyConfiguration;
 	this.scriptPath = scriptPath;
     }
@@ -55,17 +56,17 @@ public class GroovyUserModelInitializer extends ModelInitializer implements IUse
 	binding.setVariable("userBuilder", new UserManagementRequestBuilder(userManagement));
 
 	try {
-	    getGroovyConfiguration().run(getScriptPath(), binding);
+	    getGroovyConfiguration().run(ScriptType.Initializer, getScriptPath(), binding);
 	} catch (SiteWhereException e) {
 	    throw new SiteWhereException("Unable to run user model initializer.", e);
 	}
     }
 
-    public GroovyConfiguration getGroovyConfiguration() {
+    public IGroovyConfiguration getGroovyConfiguration() {
 	return groovyConfiguration;
     }
 
-    public void setGroovyConfiguration(GroovyConfiguration groovyConfiguration) {
+    public void setGroovyConfiguration(IGroovyConfiguration groovyConfiguration) {
 	this.groovyConfiguration = groovyConfiguration;
     }
 

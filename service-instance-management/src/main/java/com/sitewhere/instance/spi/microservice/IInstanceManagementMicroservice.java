@@ -20,6 +20,7 @@ import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
+import com.sitewhere.spi.microservice.scripting.IScriptContext;
 import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
 import com.sitewhere.spi.user.IUserManagement;
 
@@ -33,7 +34,21 @@ public interface IInstanceManagementMicroservice<T extends IFunctionIdentifier> 
      * 
      * @return
      */
-    public IScriptSynchronizer getInstanceScriptSynchronizer();
+    public IScriptSynchronizer getScriptSynchronizer();
+
+    /**
+     * Get script context for instance.
+     * 
+     * @return
+     */
+    public IScriptContext getScriptContext();
+
+    /**
+     * Get component which bootstraps instance with data.
+     * 
+     * @return
+     */
+    public IInstanceBootstrapper getInstanceBootstrapper();
 
     /**
      * Get user management implementation.

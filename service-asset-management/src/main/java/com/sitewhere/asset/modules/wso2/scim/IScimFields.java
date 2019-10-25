@@ -9,8 +9,6 @@ package com.sitewhere.asset.modules.wso2.scim;
 
 /**
  * Field names in the SCIM spec.
- * 
- * @author dadams
  */
 public interface IScimFields {
 

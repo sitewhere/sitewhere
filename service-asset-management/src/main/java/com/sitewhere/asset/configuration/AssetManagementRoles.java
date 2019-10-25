@@ -15,8 +15,6 @@ import com.sitewhere.spi.microservice.configuration.model.IRoleKey;
 
 /**
  * Configuration roles available for asset management microservice.
- * 
- * @author Derek
  */
 public enum AssetManagementRoles implements IConfigurationRoleProvider {
 

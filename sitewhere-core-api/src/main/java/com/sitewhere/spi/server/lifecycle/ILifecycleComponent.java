@@ -15,6 +15,7 @@ import java.util.UUID;
 import org.slf4j.cal10n.LocLogger;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.state.ILifecycleComponentState;
 
@@ -51,14 +52,14 @@ public interface ILifecycleComponent {
      * 
      * @return
      */
-    public IMicroservice<?> getMicroservice();
+    public IMicroservice<? extends IFunctionIdentifier> getMicroservice();
 
     /**
      * Set microservice that owns the component.
      * 
      * @param microservice
      */
-    public void setMicroservice(IMicroservice<?> microservice);
+    public void setMicroservice(IMicroservice<? extends IFunctionIdentifier> microservice);
 
     /**
      * Get current lifecycle status.

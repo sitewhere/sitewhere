@@ -16,8 +16,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Management interface for interacting with scripts.
- * 
- * @author Derek
  */
 public interface IScriptManagement extends ILifecycleComponent {
 
@@ -29,7 +27,7 @@ public interface IScriptManagement extends ILifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public List<IScriptMetadata> getScriptMetadataList(IFunctionIdentifier identifier, UUID tenantId)
+    List<IScriptMetadata> getScriptMetadataList(IFunctionIdentifier identifier, UUID tenantId)
 	    throws SiteWhereException;
 
     /**
@@ -41,7 +39,7 @@ public interface IScriptManagement extends ILifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public IScriptMetadata getScriptMetadata(IFunctionIdentifier identifier, UUID tenantId, String scriptId)
+    IScriptMetadata getScriptMetadata(IFunctionIdentifier identifier, UUID tenantId, String scriptId)
 	    throws SiteWhereException;
 
     /**
@@ -53,7 +51,7 @@ public interface IScriptManagement extends ILifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public IScriptMetadata createScript(IFunctionIdentifier identifier, UUID tenantId, IScriptCreateRequest request)
+    IScriptMetadata createScript(IFunctionIdentifier identifier, UUID tenantId, IScriptCreateRequest request)
 	    throws SiteWhereException;
 
     /**
@@ -66,7 +64,7 @@ public interface IScriptManagement extends ILifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public byte[] getScriptContent(IFunctionIdentifier identifier, UUID tenantId, String scriptId, String versionId)
+    byte[] getScriptContent(IFunctionIdentifier identifier, UUID tenantId, String scriptId, String versionId)
 	    throws SiteWhereException;
 
     /**
@@ -80,8 +78,8 @@ public interface IScriptManagement extends ILifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public IScriptMetadata updateScript(IFunctionIdentifier identifier, UUID tenantId, String scriptId,
-	    String versionId, IScriptCreateRequest request) throws SiteWhereException;
+    IScriptMetadata updateScript(IFunctionIdentifier identifier, UUID tenantId, String scriptId, String versionId,
+	    IScriptCreateRequest request) throws SiteWhereException;
 
     /**
      * Creates a new version of a script that is a clone of the given version.
@@ -94,7 +92,7 @@ public interface IScriptManagement extends ILifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public IScriptVersion cloneScript(IFunctionIdentifier identifier, UUID tenantId, String scriptId, String versionId,
+    IScriptVersion cloneScript(IFunctionIdentifier identifier, UUID tenantId, String scriptId, String versionId,
 	    String comment) throws SiteWhereException;
 
     /**
@@ -109,8 +107,8 @@ public interface IScriptManagement extends ILifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public IScriptMetadata activateScript(IFunctionIdentifier identifier, UUID tenantId, String scriptId,
-	    String versionId) throws SiteWhereException;
+    IScriptMetadata activateScript(IFunctionIdentifier identifier, UUID tenantId, String scriptId, String versionId)
+	    throws SiteWhereException;
 
     /**
      * Delete an existing script including metadata and all versions.
@@ -121,7 +119,7 @@ public interface IScriptManagement extends ILifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public IScriptMetadata deleteScript(IFunctionIdentifier identifier, UUID tenantId, String scriptId)
+    IScriptMetadata deleteScript(IFunctionIdentifier identifier, UUID tenantId, String scriptId)
 	    throws SiteWhereException;
 
     /**
@@ -132,7 +130,7 @@ public interface IScriptManagement extends ILifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public String getScriptMetadataZkPath(IFunctionIdentifier identifier, UUID tenantId) throws SiteWhereException;
+    String getScriptMetadataZkPath(IFunctionIdentifier identifier, UUID tenantId) throws SiteWhereException;
 
     /**
      * Get path for Zk container that holds script content.
@@ -142,5 +140,5 @@ public interface IScriptManagement extends ILifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public String getScriptContentZkPath(IFunctionIdentifier identifier, UUID tenantId) throws SiteWhereException;
+    String getScriptContentZkPath(IFunctionIdentifier identifier, UUID tenantId) throws SiteWhereException;
 }
