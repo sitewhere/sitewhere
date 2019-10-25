@@ -14,8 +14,6 @@ import com.sitewhere.spi.server.IModelInitializer;
 /**
  * Class that initializes the asset model with data needed to bootstrap the
  * system.
- * 
- * @author Derek
  */
 public interface IAssetModelInitializer extends IModelInitializer {
 

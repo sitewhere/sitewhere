@@ -10,11 +10,12 @@ package com.sitewhere.schedule.initializer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.rest.model.scheduling.request.scripting.ScheduleManagementRequestBuilder;
 import com.sitewhere.schedule.spi.initializer.IScheduleModelInitializer;
 import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
+import com.sitewhere.spi.microservice.scripting.ScriptType;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 
 import groovy.lang.Binding;
@@ -22,8 +23,6 @@ import groovy.lang.Binding;
 /**
  * Implementation of {@link IScheduleModelInitializer} that delegates creation
  * logic to a Groovy script.
- * 
- * @author Derek
  */
 public class GroovyScheduleModelInitializer extends ModelInitializer implements IScheduleModelInitializer {
 
@@ -31,12 +30,12 @@ public class GroovyScheduleModelInitializer extends ModelInitializer implements 
     private static Log LOGGER = LogFactory.getLog(GroovyScheduleModelInitializer.class);
 
     /** Tenant Groovy configuration */
-    private GroovyConfiguration groovyConfiguration;
+    private IGroovyConfiguration groovyConfiguration;
 
     /** Relative path to Groovy script */
     private String scriptPath;
 
-    public GroovyScheduleModelInitializer(GroovyConfiguration groovyConfiguration, String scriptPath) {
+    public GroovyScheduleModelInitializer(IGroovyConfiguration groovyConfiguration, String scriptPath) {
 	this.groovyConfiguration = groovyConfiguration;
 	this.scriptPath = scriptPath;
     }
@@ -60,17 +59,17 @@ public class GroovyScheduleModelInitializer extends ModelInitializer implements 
 	binding.setVariable("scheduleBuilder", new ScheduleManagementRequestBuilder(scheduleManagement));
 
 	try {
-	    getGroovyConfiguration().run(getScriptPath(), binding);
+	    getGroovyConfiguration().run(ScriptType.Initializer, getScriptPath(), binding);
 	} catch (SiteWhereException e) {
 	    throw new SiteWhereException("Unable to run schedule model initializer.", e);
 	}
     }
 
-    public GroovyConfiguration getGroovyConfiguration() {
+    public IGroovyConfiguration getGroovyConfiguration() {
 	return groovyConfiguration;
     }
 
-    public void setGroovyConfiguration(GroovyConfiguration groovyConfiguration) {
+    public void setGroovyConfiguration(IGroovyConfiguration groovyConfiguration) {
 	this.groovyConfiguration = groovyConfiguration;
     }
 

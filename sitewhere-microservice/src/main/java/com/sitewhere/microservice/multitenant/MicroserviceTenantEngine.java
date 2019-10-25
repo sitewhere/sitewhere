@@ -13,8 +13,9 @@ import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
+import com.sitewhere.microservice.scripting.ScriptSynchronizer;
+import com.sitewhere.microservice.scripting.TenantEngineScriptContext;
 import com.sitewhere.microservice.scripting.TenantEngineScriptManager;
-import com.sitewhere.microservice.scripting.TenantEngineScriptSynchronizer;
 import com.sitewhere.rest.model.microservice.state.TenantEngineState;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
@@ -25,6 +26,8 @@ import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
+import com.sitewhere.spi.microservice.scripting.IScriptContext;
+import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
@@ -47,8 +50,11 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     /** Hosted tenant */
     private ITenant tenant;
 
-    /** Tenant script synchronizer */
-    private TenantEngineScriptSynchronizer tenantScriptSynchronizer;
+    /** Script synchronizer */
+    private IScriptSynchronizer scriptSynchronizer;
+
+    /** Script context */
+    private IScriptContext scriptContext;
 
     /** Script manager */
     private TenantEngineScriptManager scriptManager;
@@ -64,10 +70,11 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 
     public MicroserviceTenantEngine(ITenant tenant) {
 	this.tenant = tenant;
-	this.tenantScriptSynchronizer = new TenantEngineScriptSynchronizer(this);
+	this.scriptSynchronizer = new ScriptSynchronizer();
 	this.scriptManager = new TenantEngineScriptManager();
+	this.scriptContext = new TenantEngineScriptContext(this);
 	this.bootstrapManager = new DatasetBootstrapManager();
-	this.groovyConfiguration = new GroovyConfiguration(getTenantScriptSynchronizer());
+	this.groovyConfiguration = new GroovyConfiguration(getScriptContext(), getScriptSynchronizer());
     }
 
     /*
@@ -94,7 +101,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize tenant engine " + getTenant().getName());
 
 	// Initialize script synchronizer.
-	init.addInitializeStep(this, getTenantScriptSynchronizer(), true);
+	init.addInitializeStep(this, getScriptSynchronizer(), true);
 
 	// Initialize script manager.
 	init.addInitializeStep(this, getScriptManager(), true);
@@ -160,8 +167,8 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start tenant engine " + getTenant().getName());
 
-	// Start tenant script synchronizer.
-	start.addStartStep(this, getTenantScriptSynchronizer(), true);
+	// Start script synchronizer.
+	start.addStartStep(this, getScriptSynchronizer(), true);
 
 	// Start tenant script manager.
 	start.addStartStep(this, getScriptManager(), true);
@@ -204,8 +211,8 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	// Stop tenant script manager.
 	stop.addStopStep(this, getScriptManager());
 
-	// Stop tenant script synchronizer.
-	stop.addStopStep(this, getTenantScriptSynchronizer());
+	// Stop script synchronizer.
+	stop.addStopStep(this, getScriptSynchronizer());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -229,8 +236,8 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 	// Terminate tenant script manager.
 	stop.addTerminateStep(this, getScriptManager());
 
-	// Terminate tenant script synchronizer.
-	stop.addTerminateStep(this, getTenantScriptSynchronizer());
+	// Terminate script synchronizer.
+	stop.addTerminateStep(this, getScriptSynchronizer());
 
 	// Execute terminate steps.
 	stop.execute(monitor);
@@ -469,18 +476,16 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
-     * getTenantScriptSynchronizer()
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getScriptSynchronizer()
      */
     @Override
-    public TenantEngineScriptSynchronizer getTenantScriptSynchronizer() {
-	return tenantScriptSynchronizer;
+    public IScriptSynchronizer getScriptSynchronizer() {
+	return scriptSynchronizer;
     }
 
-    public void setTenantScriptSynchronizer(TenantEngineScriptSynchronizer tenantScriptSynchronizer) {
-	this.tenantScriptSynchronizer = tenantScriptSynchronizer;
+    public void setScriptSynchronizer(IScriptSynchronizer scriptSynchronizer) {
+	this.scriptSynchronizer = scriptSynchronizer;
     }
 
     /*
@@ -494,6 +499,19 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 
     public void setScriptManager(TenantEngineScriptManager scriptManager) {
 	this.scriptManager = scriptManager;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getScriptContext()
+     */
+    @Override
+    public IScriptContext getScriptContext() {
+	return scriptContext;
+    }
+
+    public void setScriptContext(IScriptContext scriptContext) {
+	this.scriptContext = scriptContext;
     }
 
     /*

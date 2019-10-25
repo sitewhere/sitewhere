@@ -63,8 +63,6 @@ import io.swagger.annotations.ApiParam;
 
 /**
  * Controller for instance management.
- * 
- * @author Derek Adams
  */
 @RestController
 @SiteWhereCrossOrigin
@@ -171,7 +169,7 @@ public class Instance extends RestControllerBase {
 	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier)
 	    throws SiteWhereException {
 	IConfigurationModel configModel = getMicroserviceConfigurationModel(identifier);
-	SiteWhereInstance instance = getMicroservice().getInstanceConfiguration();
+	SiteWhereInstance instance = getMicroservice().getLastInstanceConfiguration();
 	return ConfigurationContentParser.parse(instance.getSpec().getConfiguration().getBytes(), configModel);
     }
 
@@ -191,7 +189,7 @@ public class Instance extends RestControllerBase {
 	IConfigurationModel configModel = getMicroserviceConfigurationModel(identifier);
 	Document xml = ConfigurationContentParser.buildXml(content, configModel);
 	String config = ConfigurationContentParser.format(xml);
-	SiteWhereInstance instance = getMicroservice().getInstanceConfiguration();
+	SiteWhereInstance instance = getMicroservice().getLastInstanceConfiguration();
 	instance.getSpec().setConfiguration(config);
 	getMicroservice().updateInstanceConfiguration(instance);
     }

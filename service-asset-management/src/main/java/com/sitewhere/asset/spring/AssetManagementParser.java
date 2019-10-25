@@ -25,8 +25,6 @@ import com.sitewhere.spi.microservice.spring.AssetManagementBeans;
 
 /**
  * Parses configuration data for the SiteWhere asset management section.
- * 
- * @author Derek
  */
 public class AssetManagementParser extends AbstractBeanDefinitionParser {
 

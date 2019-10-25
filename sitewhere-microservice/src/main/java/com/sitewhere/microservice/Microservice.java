@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sitewhere.Version;
 import com.sitewhere.grpc.client.tenant.CachedTenantManagement;
+import com.sitewhere.microservice.exception.ConcurrentK8sUpdateException;
 import com.sitewhere.microservice.management.MicroserviceManagementGrpcServer;
 import com.sitewhere.microservice.scripting.ScriptTemplateManager;
 import com.sitewhere.microservice.tenant.persistence.KubernetesTenantManagement;
@@ -54,11 +55,13 @@ import com.sitewhere.spi.tenant.ITenantManagement;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.informers.SharedInformerFactory;
 import io.sitewhere.k8s.crd.ISiteWhereKubernetesClient;
 import io.sitewhere.k8s.crd.ResourceLabels;
 import io.sitewhere.k8s.crd.SiteWhereKubernetesClient;
 import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
+import io.sitewhere.k8s.crd.instance.dataset.InstanceDatasetTemplate;
 import io.sitewhere.k8s.crd.microservice.SiteWhereMicroservice;
 import io.sitewhere.k8s.crd.tenant.SiteWhereTenant;
 import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
@@ -417,15 +420,34 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#getInstanceConfiguration()
+     * @see com.sitewhere.spi.microservice.IMicroservice#loadInstanceConfiguration()
      */
     @Override
-    public SiteWhereInstance getInstanceConfiguration() throws SiteWhereException {
+    public SiteWhereInstance loadInstanceConfiguration() throws SiteWhereException {
 	String instanceId = getInstanceSettings().getInstanceId();
 	if (instanceId == null) {
 	    throw new SiteWhereException("Instance id not set on microservice.");
 	}
 	return getSiteWhereKubernetesClient().getInstances().withName(instanceId).get();
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.IMicroservice#loadInstanceDatasetTemplate(io.
+     * sitewhere.k8s.crd.instance.SiteWhereInstance)
+     */
+    @Override
+    public InstanceDatasetTemplate loadInstanceDatasetTemplate(SiteWhereInstance instance) throws SiteWhereException {
+	String dataset = instance.getSpec().getDatasetTemplate();
+	if (dataset == null) {
+	    throw new SiteWhereException("No dataset template specified for instance.");
+	}
+	InstanceDatasetTemplate template = getSiteWhereKubernetesClient().getInstanceDatasetTemplates()
+		.withName(dataset).get();
+	if (template == null) {
+	    throw new SiteWhereException(String.format("No dataset template found for '%s'.", dataset));
+	}
+	return template;
     }
 
     /*
@@ -440,7 +462,12 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	    throw new SiteWhereException(
 		    String.format("Attempting to edit wrong instance: '%s'", instance.getMetadata().getName()));
 	}
-	return getSiteWhereKubernetesClient().getInstances().withName(instanceId).replace(instance);
+	try {
+	    return getSiteWhereKubernetesClient().getInstances().withName(instanceId)
+		    .lockResourceVersion(instance.getMetadata().getResourceVersion()).replace(instance);
+	} catch (KubernetesClientException e) {
+	    throw new ConcurrentK8sUpdateException("Instance update failed due to concurrent update.", e);
+	}
     }
 
     /*

@@ -12,10 +12,11 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.instance.spi.tenant.ITenantModelInitializer;
-import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.rest.model.tenant.request.scripting.TenantManagementRequestBuilder;
 import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
+import com.sitewhere.spi.microservice.scripting.ScriptType;
 import com.sitewhere.spi.tenant.ITenantManagement;
 
 import groovy.lang.Binding;
@@ -30,12 +31,12 @@ public class GroovyTenantModelInitializer extends ModelInitializer implements IT
     private static Log LOGGER = LogFactory.getLog(GroovyTenantModelInitializer.class);
 
     /** Groovy configuration */
-    private GroovyConfiguration groovyConfiguration;
+    private IGroovyConfiguration groovyConfiguration;
 
     /** Relative path to Groovy script */
     private String scriptPath;
 
-    public GroovyTenantModelInitializer(GroovyConfiguration groovyConfiguration, String scriptPath) {
+    public GroovyTenantModelInitializer(IGroovyConfiguration groovyConfiguration, String scriptPath) {
 	this.groovyConfiguration = groovyConfiguration;
 	this.scriptPath = scriptPath;
     }
@@ -58,17 +59,17 @@ public class GroovyTenantModelInitializer extends ModelInitializer implements IT
 		new TenantManagementRequestBuilder(tenantManagement));
 
 	try {
-	    getGroovyConfiguration().run(getScriptPath(), binding);
+	    getGroovyConfiguration().run(ScriptType.Initializer, getScriptPath(), binding);
 	} catch (SiteWhereException e) {
 	    throw new SiteWhereException("Unable to run tenant model initializer.", e);
 	}
     }
 
-    public GroovyConfiguration getGroovyConfiguration() {
+    public IGroovyConfiguration getGroovyConfiguration() {
 	return groovyConfiguration;
     }
 
-    public void setGroovyConfiguration(GroovyConfiguration groovyConfiguration) {
+    public void setGroovyConfiguration(IGroovyConfiguration groovyConfiguration) {
 	this.groovyConfiguration = groovyConfiguration;
     }
 

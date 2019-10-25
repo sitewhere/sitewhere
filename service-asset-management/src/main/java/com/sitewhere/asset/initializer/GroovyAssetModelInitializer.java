@@ -11,19 +11,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.asset.spi.IAssetModelInitializer;
-import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.rest.model.asset.request.scripting.AssetManagementRequestBuilder;
 import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
+import com.sitewhere.spi.microservice.scripting.ScriptType;
 
 import groovy.lang.Binding;
 
 /**
  * Implementation of {@link IAssetModelInitializer} that delegates creation
  * logic to a Groovy script.
- * 
- * @author Derek
  */
 public class GroovyAssetModelInitializer extends ModelInitializer implements IAssetModelInitializer {
 
@@ -31,12 +30,12 @@ public class GroovyAssetModelInitializer extends ModelInitializer implements IAs
     private static Log LOGGER = LogFactory.getLog(GroovyAssetModelInitializer.class);
 
     /** Tenant Groovy configuration */
-    private GroovyConfiguration groovyConfiguration;
+    private IGroovyConfiguration groovyConfiguration;
 
     /** Relative path to Groovy script */
     private String scriptPath;
 
-    public GroovyAssetModelInitializer(GroovyConfiguration groovyConfiguration, String scriptPath) {
+    public GroovyAssetModelInitializer(IGroovyConfiguration groovyConfiguration, String scriptPath) {
 	this.groovyConfiguration = groovyConfiguration;
 	this.scriptPath = scriptPath;
     }
@@ -53,17 +52,17 @@ public class GroovyAssetModelInitializer extends ModelInitializer implements IAs
 	binding.setVariable("assetBuilder", new AssetManagementRequestBuilder(assetManagement));
 
 	try {
-	    getGroovyConfiguration().run(getScriptPath(), binding);
+	    getGroovyConfiguration().run(ScriptType.Initializer, getScriptPath(), binding);
 	} catch (SiteWhereException e) {
 	    throw new SiteWhereException("Unable to run asset model initializer.", e);
 	}
     }
 
-    public GroovyConfiguration getGroovyConfiguration() {
+    public IGroovyConfiguration getGroovyConfiguration() {
 	return groovyConfiguration;
     }
 
-    public void setGroovyConfiguration(GroovyConfiguration groovyConfiguration) {
+    public void setGroovyConfiguration(IGroovyConfiguration groovyConfiguration) {
 	this.groovyConfiguration = groovyConfiguration;
     }
 

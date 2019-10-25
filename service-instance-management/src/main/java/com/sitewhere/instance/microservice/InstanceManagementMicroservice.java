@@ -24,6 +24,7 @@ import com.sitewhere.grpc.client.spi.client.IDeviceStateApiChannel;
 import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiChannel;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
 import com.sitewhere.instance.configuration.InstanceManagementModelProvider;
+import com.sitewhere.instance.spi.microservice.IInstanceBootstrapper;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.instance.spi.tenant.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.instance.spi.user.grpc.IUserManagementGrpcServer;
@@ -31,13 +32,15 @@ import com.sitewhere.instance.user.persistence.SyncopeUserManagement;
 import com.sitewhere.microservice.GlobalMicroservice;
 import com.sitewhere.microservice.grpc.tenant.TenantManagementGrpcServer;
 import com.sitewhere.microservice.grpc.user.UserManagementGrpcServer;
-import com.sitewhere.microservice.scripting.InstanceScriptSynchronizer;
+import com.sitewhere.microservice.scripting.InstanceScriptContext;
+import com.sitewhere.microservice.scripting.ScriptSynchronizer;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
+import com.sitewhere.spi.microservice.scripting.IScriptContext;
 import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
@@ -52,8 +55,14 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     /** Microservice name */
     private static final String NAME = "Instance Management";
 
-    /** Instance script synchronizer */
-    private IScriptSynchronizer instanceScriptSynchronizer;
+    /** Script synchronizer */
+    private IScriptSynchronizer scriptSynchronizer;
+
+    /** Script context */
+    private IScriptContext scriptContext;
+
+    /** Instance dataset bootstrapper */
+    private IInstanceBootstrapper instanceBootstrapper;
 
     /** Responds to user management GRPC requests */
     private IUserManagementGrpcServer userManagementGrpcServer;
@@ -134,8 +143,12 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
      */
     @Override
     public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Create script synchronizer.
-	this.instanceScriptSynchronizer = new InstanceScriptSynchronizer();
+	// Create script synchronizer and context.
+	this.scriptSynchronizer = new ScriptSynchronizer();
+	this.scriptContext = new InstanceScriptContext();
+
+	// Create dataset bootstrapper.
+	this.instanceBootstrapper = new InstanceBoostrapper();
 
 	// Create management implementations.
 	createManagementImplementations();
@@ -152,11 +165,14 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Initialize user management implementation.
 	init.addInitializeStep(this, getUserManagement(), true);
 
+	// Initialize dataset bootstrapper.
+	init.addInitializeStep(this, getInstanceBootstrapper(), true);
+
 	// Initialize user management GRPC server.
 	init.addInitializeStep(this, getUserManagementGrpcServer(), true);
 
-	// Initialize instance script synchronizer.
-	init.addInitializeStep(this, getInstanceScriptSynchronizer(), true);
+	// Initialize script synchronizer.
+	init.addInitializeStep(this, getScriptSynchronizer(), true);
 
 	// Initialize device management API channel + cache.
 	init.addInitializeStep(this, getCachedDeviceManagement(), true);
@@ -181,6 +197,13 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
 	// Execute initialization steps.
 	init.execute(monitor);
+    }
+
+    /**
+     * Create management implementations.
+     */
+    protected void createManagementImplementations() {
+	this.userManagement = new SyncopeUserManagement();
     }
 
     /**
@@ -218,13 +241,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	this.deviceStateApiChannel = new DeviceStateApiChannel(getInstanceSettings());
     }
 
-    /**
-     * Create management implementations.
-     */
-    protected void createManagementImplementations() {
-	this.userManagement = new SyncopeUserManagement();
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -237,14 +253,17 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
-	// Start instance script synchronizer.
-	start.addStartStep(this, getInstanceScriptSynchronizer(), true);
+	// Start script synchronizer.
+	start.addStartStep(this, getScriptSynchronizer(), true);
 
 	// Start tenant management GRPC server.
 	start.addStartStep(this, getTenantManagementGrpcServer(), true);
 
 	// Start user management implementation.
 	start.addStartStep(this, getUserManagement(), true);
+
+	// Start dataset bootstrapper.
+	start.addStartStep(this, getInstanceBootstrapper(), true);
 
 	// Start user management GRPC server.
 	start.addStartStep(this, getUserManagementGrpcServer(), true);
@@ -312,11 +331,14 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Stop tenant management GRPC manager.
 	stop.addStopStep(this, getTenantManagementGrpcServer());
 
-	// Stop instance script synchronizer.
-	stop.addStopStep(this, getInstanceScriptSynchronizer());
+	// Stop script synchronizer.
+	stop.addStopStep(this, getScriptSynchronizer());
 
 	// Stop user management implementation.
 	stop.addStopStep(this, getUserManagement());
+
+	// Stop dataset bootstrapper.
+	stop.addStopStep(this, getInstanceBootstrapper());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -324,15 +346,41 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
     /*
      * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
-     * getInstanceScriptSynchronizer()
+     * getScriptSynchronizer()
      */
     @Override
-    public IScriptSynchronizer getInstanceScriptSynchronizer() {
-	return instanceScriptSynchronizer;
+    public IScriptSynchronizer getScriptSynchronizer() {
+	return scriptSynchronizer;
     }
 
-    public void setInstanceScriptSynchronizer(IScriptSynchronizer instanceScriptSynchronizer) {
-	this.instanceScriptSynchronizer = instanceScriptSynchronizer;
+    public void setScriptSynchronizer(IScriptSynchronizer scriptSynchronizer) {
+	this.scriptSynchronizer = scriptSynchronizer;
+    }
+
+    /*
+     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * getScriptContext()
+     */
+    @Override
+    public IScriptContext getScriptContext() {
+	return scriptContext;
+    }
+
+    public void setScriptContext(IScriptContext scriptContext) {
+	this.scriptContext = scriptContext;
+    }
+
+    /*
+     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * getInstanceBootstrapper()
+     */
+    @Override
+    public IInstanceBootstrapper getInstanceBootstrapper() {
+	return instanceBootstrapper;
+    }
+
+    public void setInstanceBootstrapper(IInstanceBootstrapper instanceBootstrapper) {
+	this.instanceBootstrapper = instanceBootstrapper;
     }
 
     /*

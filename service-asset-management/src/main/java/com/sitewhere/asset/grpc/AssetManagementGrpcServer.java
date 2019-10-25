@@ -14,8 +14,6 @@ import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 
 /**
  * Hosts a GRPC server that handles asset management requests.
- * 
- * @author Derek
  */
 public class AssetManagementGrpcServer extends MultitenantGrpcServer implements IAssetManagementGrpcServer {
 

@@ -16,8 +16,6 @@ import com.sitewhere.microservice.MicroserviceApplication;
 
 /**
  * Spring boot application for the asset management microservice.
- * 
- * @author Derek
  */
 @ComponentScan
 public class AssetManagementApplication extends MicroserviceApplication<IAssetManagementMicroservice> {

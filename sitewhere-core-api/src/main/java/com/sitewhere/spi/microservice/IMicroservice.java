@@ -31,6 +31,7 @@ import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.informers.SharedInformerFactory;
 import io.sitewhere.k8s.crd.ISiteWhereKubernetesClient;
 import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
+import io.sitewhere.k8s.crd.instance.dataset.InstanceDatasetTemplate;
 import io.sitewhere.k8s.crd.microservice.SiteWhereMicroservice;
 import io.sitewhere.k8s.crd.tenant.SiteWhereTenant;
 import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
@@ -252,12 +253,21 @@ public interface IMicroservice<T extends IFunctionIdentifier>
     public ExecutorService getMicroserviceOperationsService();
 
     /**
-     * Get instance configuration.
+     * Loads latest instance configuration from Kubernetes.
      * 
      * @return
      * @throws SiteWhereException
      */
-    public SiteWhereInstance getInstanceConfiguration() throws SiteWhereException;
+    public SiteWhereInstance loadInstanceConfiguration() throws SiteWhereException;
+
+    /**
+     * Loads latest instance dataset template from Kubernetes.
+     * 
+     * @param instance
+     * @return
+     * @throws SiteWhereException
+     */
+    public InstanceDatasetTemplate loadInstanceDatasetTemplate(SiteWhereInstance instance) throws SiteWhereException;
 
     /**
      * Update instance configuration.

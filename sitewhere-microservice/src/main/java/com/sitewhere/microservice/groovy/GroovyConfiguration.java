@@ -15,8 +15,10 @@ import org.codehaus.groovy.control.CompilationFailedException;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
+import com.sitewhere.spi.microservice.scripting.IScriptContext;
 import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
 import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
+import com.sitewhere.spi.microservice.scripting.ScriptType;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -32,7 +34,10 @@ import groovy.util.ScriptException;
  */
 public class GroovyConfiguration extends LifecycleComponent implements IGroovyConfiguration {
 
-    /** Synchronizer for loading Zk scripts to filesystem */
+    /** Script context */
+    private IScriptContext scriptContext;
+
+    /** Synchronizes scripts to the filesystem */
     private IScriptSynchronizer scriptSynchronizer;
 
     /** Groovy script engine */
@@ -44,8 +49,9 @@ public class GroovyConfiguration extends LifecycleComponent implements IGroovyCo
     /** Field for setting GSE debug flag */
     private boolean debug = false;
 
-    public GroovyConfiguration(IScriptSynchronizer scriptSynchronizer) {
+    public GroovyConfiguration(IScriptContext scriptContext, IScriptSynchronizer scriptSynchronizer) {
 	super(LifecycleComponentType.Other);
+	this.scriptContext = scriptContext;
 	this.scriptSynchronizer = scriptSynchronizer;
     }
 
@@ -70,24 +76,25 @@ public class GroovyConfiguration extends LifecycleComponent implements IGroovyCo
 
     /*
      * @see
-     * com.sitewhere.spi.microservice.groovy.IGroovyConfiguration#run(java.lang.
-     * String, groovy.lang.Binding)
+     * com.sitewhere.spi.microservice.groovy.IGroovyConfiguration#run(com.sitewhere.
+     * spi.microservice.scripting.IScriptMetadata, groovy.lang.Binding)
      */
     @Override
     public Object run(IScriptMetadata script, Binding binding) throws SiteWhereException {
-	String scriptPath = script.getId() + "." + script.getType();
-	return run(scriptPath, binding);
+	String name = script.getId() + "." + script.getType();
+	return run(ScriptType.ManagedScript, name, binding);
     }
 
     /*
      * @see
-     * com.sitewhere.spi.microservice.groovy.IGroovyConfiguration#run(java.lang.
-     * String, groovy.lang.Binding)
+     * com.sitewhere.spi.microservice.groovy.IGroovyConfiguration#run(com.sitewhere.
+     * spi.microservice.scripting.ScriptType, java.lang.String, groovy.lang.Binding)
      */
     @Override
-    public Object run(String scriptPath, Binding binding) throws SiteWhereException {
+    public Object run(ScriptType type, String name, Binding binding) throws SiteWhereException {
 	try {
-	    return getGroovyScriptEngine().run(scriptPath, binding);
+	    String resolved = getScriptSynchronizer().resolve(getScriptContext(), type, name);
+	    return getGroovyScriptEngine().run(resolved, binding);
 	} catch (ResourceException e) {
 	    throw new SiteWhereException("Unable to access Groovy script.", e);
 	} catch (ScriptException e) {
@@ -99,6 +106,24 @@ public class GroovyConfiguration extends LifecycleComponent implements IGroovyCo
 	}
     }
 
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.groovy.IGroovyConfiguration#getScriptContext()
+     */
+    @Override
+    public IScriptContext getScriptContext() {
+	return scriptContext;
+    }
+
+    public void setScriptContext(IScriptContext scriptContext) {
+	this.scriptContext = scriptContext;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.groovy.IGroovyConfiguration#
+     * getScriptSynchronizer()
+     */
+    @Override
     public IScriptSynchronizer getScriptSynchronizer() {
 	return scriptSynchronizer;
     }

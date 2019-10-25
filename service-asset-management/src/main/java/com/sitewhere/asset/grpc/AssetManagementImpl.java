@@ -50,8 +50,6 @@ import io.grpc.stub.StreamObserver;
 
 /**
  * Implements server logic for asset management GRPC requests.
- * 
- * @author Derek
  */
 public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImplBase implements IGrpcApiImplementation {
 

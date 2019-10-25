@@ -11,7 +11,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.security.SystemUserCallable;
@@ -69,12 +68,14 @@ public class GroovyComponent extends TenantEngineLifecycleComponent implements I
 	// .getScriptMetadata(getMicroservice().getIdentifier(),
 	// getTenantEngine().getTenant().getToken(),
 	// getScriptId());
-	if (getScriptMetadata() == null) {
-	    throw new SiteWhereException("Script '" + getScriptId() + "' was not found.");
-	}
-
-	getLogger().info(String.format("Groovy component will use version %s of script '%s'",
-		getScriptMetadata().getActiveVersion(), getScriptMetadata().getName()));
+	// if (getScriptMetadata() == null) {
+	// throw new SiteWhereException("Script '" + getScriptId() + "' was not
+	// found.");
+	// }
+	//
+	// getLogger().info(String.format("Groovy component will use version %s of
+	// script '%s'",
+	// getScriptMetadata().getActiveVersion(), getScriptMetadata().getName()));
     }
 
     /*
@@ -107,9 +108,8 @@ public class GroovyComponent extends TenantEngineLifecycleComponent implements I
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.microservice.groovy.IGroovyComponent#run(com.sitewhere.spi.
-     * microservice.scripting.IScriptMetadata, groovy.lang.Binding)
+     * @see com.sitewhere.spi.microservice.groovy.IGroovyComponent#run(groovy.lang.
+     * Binding)
      */
     @Override
     public Object run(Binding binding) throws SiteWhereException {
@@ -125,7 +125,6 @@ public class GroovyComponent extends TenantEngineLifecycleComponent implements I
 		    }
 		});
 	try {
-	    // TODO: Handle this in a non-blocking way.
 	    return result.get();
 	} catch (InterruptedException e) {
 	    throw new SiteWhereException("Script execution interrupted.", e);
@@ -144,12 +143,7 @@ public class GroovyComponent extends TenantEngineLifecycleComponent implements I
 	super.stop(monitor);
 
 	if (executor != null) {
-	    executor.shutdown();
-	    try {
-		executor.awaitTermination(2, TimeUnit.SECONDS);
-	    } catch (InterruptedException e) {
-		return;
-	    }
+	    executor.shutdownNow();
 	}
     }
 

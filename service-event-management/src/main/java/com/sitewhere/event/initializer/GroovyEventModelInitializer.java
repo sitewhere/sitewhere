@@ -12,13 +12,14 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.event.spi.initializer.IEventModelInitializer;
 import com.sitewhere.groovy.IGroovyVariables;
-import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
 import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequestBuilder;
 import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
+import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
+import com.sitewhere.spi.microservice.scripting.ScriptType;
 
 import groovy.lang.Binding;
 
@@ -32,12 +33,12 @@ public class GroovyEventModelInitializer extends ModelInitializer implements IEv
     private static Log LOGGER = LogFactory.getLog(GroovyEventModelInitializer.class);
 
     /** Tenant Groovy configuration */
-    private GroovyConfiguration groovyConfiguration;
+    private IGroovyConfiguration groovyConfiguration;
 
     /** Relative path to Groovy script */
     private String scriptPath;
 
-    public GroovyEventModelInitializer(GroovyConfiguration groovyConfiguration, String scriptPath) {
+    public GroovyEventModelInitializer(IGroovyConfiguration groovyConfiguration, String scriptPath) {
 	this.groovyConfiguration = groovyConfiguration;
 	this.scriptPath = scriptPath;
     }
@@ -59,17 +60,17 @@ public class GroovyEventModelInitializer extends ModelInitializer implements IEv
 		new DeviceEventRequestBuilder(deviceManagement, eventManagement));
 
 	try {
-	    getGroovyConfiguration().run(getScriptPath(), binding);
+	    getGroovyConfiguration().run(ScriptType.Initializer, getScriptPath(), binding);
 	} catch (SiteWhereException e) {
 	    throw new SiteWhereException("Unable to run event model initializer. " + e.getMessage(), e);
 	}
     }
 
-    public GroovyConfiguration getGroovyConfiguration() {
+    public IGroovyConfiguration getGroovyConfiguration() {
 	return groovyConfiguration;
     }
 
-    public void setGroovyConfiguration(GroovyConfiguration groovyConfiguration) {
+    public void setGroovyConfiguration(IGroovyConfiguration groovyConfiguration) {
 	this.groovyConfiguration = groovyConfiguration;
     }
 
