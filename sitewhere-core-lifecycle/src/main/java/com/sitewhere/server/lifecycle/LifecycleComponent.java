@@ -23,6 +23,7 @@ import org.slf4j.cal10n.LocLoggerFactory;
 import com.sitewhere.rest.model.microservice.state.LifecycleComponentState;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.state.ILifecycleComponentState;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
@@ -688,7 +689,7 @@ public class LifecycleComponent implements ILifecycleComponent {
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getMicroservice()
      */
     @Override
-    public IMicroservice<?> getMicroservice() {
+    public IMicroservice<? extends IFunctionIdentifier> getMicroservice() {
 	return microservice;
     }
 
@@ -698,7 +699,7 @@ public class LifecycleComponent implements ILifecycleComponent {
      * sitewhere.spi.microservice.IMicroservice)
      */
     @Override
-    public void setMicroservice(IMicroservice<?> microservice) {
+    public void setMicroservice(IMicroservice<? extends IFunctionIdentifier> microservice) {
 	this.microservice = microservice;
     }
 

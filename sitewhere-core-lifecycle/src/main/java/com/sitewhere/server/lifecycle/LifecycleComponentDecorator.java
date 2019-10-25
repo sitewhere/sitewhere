@@ -15,6 +15,7 @@ import java.util.UUID;
 import org.slf4j.cal10n.LocLogger;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.state.ILifecycleComponentState;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
@@ -73,7 +74,7 @@ public class LifecycleComponentDecorator<T extends ILifecycleComponent> implemen
      * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getMicroservice()
      */
     @Override
-    public IMicroservice<?> getMicroservice() {
+    public IMicroservice<? extends IFunctionIdentifier> getMicroservice() {
 	return getDelegate().getMicroservice();
     }
 
@@ -83,7 +84,7 @@ public class LifecycleComponentDecorator<T extends ILifecycleComponent> implemen
      * sitewhere.spi.microservice.IMicroservice)
      */
     @Override
-    public void setMicroservice(IMicroservice<?> microservice) {
+    public void setMicroservice(IMicroservice<? extends IFunctionIdentifier> microservice) {
 	getDelegate().setMicroservice(microservice);
     }
 
