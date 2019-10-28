@@ -56,16 +56,16 @@ public class BatchOperation implements IBatchOperation {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
-    @CollectionTable(name="batch_operation_metadata")
-    @MapKeyColumn(name="propKey")
-    @Column(name="propValue")
+    @CollectionTable(name="batch_operation_metadata", joinColumns = @JoinColumn(name = "batch_operation_id"))
+    @MapKeyColumn(name="prop_key")
+    @Column(name="prop_value")
     private Map<String, String> metadata = new HashMap<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
-    @CollectionTable(name="batch_operation_parameters")
-    @MapKeyColumn(name="propKey")
-    @Column(name="propValue")
+    @CollectionTable(name="batch_operation_parameters", joinColumns = @JoinColumn(name = "batch_operation_parameters_id"))
+    @MapKeyColumn(name="prop_key")
+    @Column(name="prop_value")
     private Map<String, String> parameters = new HashMap<>();
 
     @Override

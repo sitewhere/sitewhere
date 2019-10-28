@@ -19,25 +19,33 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "device_util")
+@Table(name = "device_unit")
 public class DeviceUnit implements IDeviceUnit, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private UUID id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id", nullable = true)
+    private Device deviceUnitParent;
+
     /** Util name */
+    @Column(name = "name")
     private String name;
 
     /** Util path */
+    @Column(name = "path")
     private String path;
 
-    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.EAGER)
+    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.EAGER, mappedBy = "deviceUnit")
     @Fetch(value = FetchMode.SUBSELECT)
-    private List<DeviceSlot> deviceSlots = new ArrayList<>();
+    private List<DeviceSlot> deviceSlots = new ArrayList();
 
     @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
+    @JoinColumn(name = "parentId", referencedColumnName = "id")
     private List<DeviceUnit> deviceUnits = new ArrayList<>();
 
     @Override
@@ -90,5 +98,13 @@ public class DeviceUnit implements IDeviceUnit, Serializable {
 
     public void setDeviceUnits(List<DeviceUnit> deviceUnits) {
         this.deviceUnits = deviceUnits;
+    }
+
+    public Device getDeviceUnitParent() {
+        return deviceUnitParent;
+    }
+
+    public void setDeviceUnitParent(Device deviceUnitParent) {
+        this.deviceUnitParent = deviceUnitParent;
     }
 }

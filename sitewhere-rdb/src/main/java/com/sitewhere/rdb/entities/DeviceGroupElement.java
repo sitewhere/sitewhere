@@ -23,21 +23,26 @@ public class DeviceGroupElement implements IDeviceGroupElement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    /** Unqiue id */
+    @Column(name = "id")
     private UUID id;
 
     /** Parent group id */
+    @Column(name = "group_id")
     private UUID groupId;
 
     /** Device id (null if nested group id specified) */
+    @Column(name = "device_id")
     private UUID deviceId;
 
     /** Nested group id (null if device id specified) */
+    @Column(name = "nested_group_id")
     private UUID nestedGroupId;
 
     /** List of roles for the element */
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
+    @CollectionTable(name="device_group_element_roles", joinColumns = @JoinColumn(name = "device_group_element_id"))
+    @Column(name = "role")
     private List<String> roles = new ArrayList<String>();
 
     @Override

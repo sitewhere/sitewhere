@@ -19,28 +19,32 @@ import java.util.*;
 @Table(name = "batch_element")
 public class BatchElement implements IBatchElement {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private UUID id;
 
     /** Batch operation id */
+    @Column(name = "batch_operation_id")
     private UUID batchOperationId;
 
     /** Device id */
+    @Column(name = "device_id")
     private UUID deviceId;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "processing_status")
     private ElementProcessingStatus processingStatus;
 
     /** Date entity was created */
+    @Column(name = "processed_date")
     private Date processedDate;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
-    @CollectionTable(name="batch_element_metadata")
-    @MapKeyColumn(name="propKey")
-    @Column(name="propValue")
+    @CollectionTable(name="batch_element_metadata", joinColumns = @JoinColumn(name = "batch_element_id"))
+    @MapKeyColumn(name="prop_key")
+    @Column(name="prop_value")
     private Map<String, String> metadata = new HashMap<>();
 
     @Override

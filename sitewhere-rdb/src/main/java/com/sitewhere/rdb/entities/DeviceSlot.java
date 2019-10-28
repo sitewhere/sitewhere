@@ -14,7 +14,7 @@ import java.io.Serializable;
 import java.util.UUID;
 
 @Entity
-@Table(name = "device_alot")
+@Table(name = "device_slot")
 public class DeviceSlot implements IDeviceSlot, Serializable {
 
     @Id
@@ -22,10 +22,20 @@ public class DeviceSlot implements IDeviceSlot, Serializable {
     private UUID id;
 
     /** Name */
+    @Column(name = "name")
     private String name;
 
     /** Path */
+    @Column(name = "path")
     private String path;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "device_unit_id", nullable = true)
+    DeviceUnit deviceUnit;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "device_element_schema_id", nullable = true)
+    DeviceElementSchema deviceElementSchema;
 
     @Override
     public String getName() {
@@ -51,5 +61,21 @@ public class DeviceSlot implements IDeviceSlot, Serializable {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public DeviceUnit getDeviceUnit() {
+        return deviceUnit;
+    }
+
+    public void setDeviceUnit(DeviceUnit deviceUnit) {
+        this.deviceUnit = deviceUnit;
+    }
+
+    public DeviceElementSchema getDeviceElementSchema() {
+        return deviceElementSchema;
+    }
+
+    public void setDeviceElementSchema(DeviceElementSchema deviceElementSchema) {
+        this.deviceElementSchema = deviceElementSchema;
     }
 }

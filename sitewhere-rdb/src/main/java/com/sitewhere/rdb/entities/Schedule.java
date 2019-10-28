@@ -57,15 +57,15 @@ public class Schedule implements ISchedule {
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
     @CollectionTable(name="schedule_metadata")
-    @MapKeyColumn(name="propKey")
-    @Column(name="propValue")
+    @MapKeyColumn(name="prop_key")
+    @Column(name="prop_value")
     private Map<String, String> metadata = new HashMap<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
     @CollectionTable(name="trigger_configuration")
-    @MapKeyColumn(name="propKey")
-    @Column(name="propValue")
+    @MapKeyColumn(name="prop_key")
+    @Column(name="prop_value")
     private Map<String, String> triggerConfiguration = new HashMap<>();
 
 

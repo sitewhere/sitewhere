@@ -20,54 +20,69 @@ public class DeviceGroup implements IDeviceGroup {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private UUID id;
 
     /** Group name */
+    @Column(name = "name")
     private String name;
 
     /** Group description */
+    @Column(name = "description")
     private String description;
 
     /** List of roles */
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
+    @CollectionTable(name="device_group_roles", joinColumns = @JoinColumn(name = "device_group_id"))
+    @Column(name = "role")
     private List<String> roles = new ArrayList<>();
 
-    /** Background color */
+        /** Date entity was last updated */
+    @Column(name = "background_color")
     private String backgroundColor;
 
     /** Foreground color */
+    @Column(name = "foreground_color")
     private String foregroundColor;
 
     /** Border color */
+    @Column(name = "border_color")
     private String borderColor;
 
     /** Image URL */
+    @Column(name = "image_url")
     private String imageUrl;
 
     /** Icon */
+    @Column(name = "icon")
     private String icon;
 
     /** Unique token */
+    @Column(name = "token")
     private String token;
 
     /** Date entity was created */
+    @Column(name = "created_date")
     private Date createdDate;
 
     /** Username for creator */
+    @Column(name = "created_by")
     private String createdBy;
 
     /** Date entity was last updated */
+    @Column(name = "updated_date")
     private Date updatedDate;
 
     /** Username that updated entity */
+    @Column(name = "updated_by")
     private String updatedBy;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
-    @CollectionTable(name="device_group_metadata")
-    @MapKeyColumn(name="propKey")
-    @Column(name="propValue")
+    @CollectionTable(name="device_group_metadata", joinColumns = @JoinColumn(name = "device_group_id"))
+    @MapKeyColumn(name="prop_key")
+    @Column(name="prop_value")
     private Map<String, String> metadata = new HashMap<>();
 
     @Override

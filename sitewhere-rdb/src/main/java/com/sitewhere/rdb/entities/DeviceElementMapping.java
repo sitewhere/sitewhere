@@ -8,7 +8,6 @@
 package com.sitewhere.rdb.entities;
 
 import com.sitewhere.spi.device.IDeviceElementMapping;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.UUID;
@@ -19,11 +18,18 @@ public class DeviceElementMapping implements IDeviceElementMapping {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private UUID id;
 
+    @Column(name = "device_element_schema_path")
     private String deviceElementSchemaPath;
 
+    @Column(name = "device_token")
     private String deviceToken;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "device_id", nullable = false)
+    Device device;
 
     public DeviceElementMapping() {
     }
@@ -59,4 +65,11 @@ public class DeviceElementMapping implements IDeviceElementMapping {
         this.deviceToken = deviceToken;
     }
 
+    public Device getDevice() {
+        return device;
+    }
+
+    public void setDevice(Device device) {
+        this.device = device;
+    }
 }

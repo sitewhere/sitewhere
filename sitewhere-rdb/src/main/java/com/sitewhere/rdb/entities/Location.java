@@ -19,16 +19,28 @@ public class Location implements ILocation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private UUID id;
 
     /** Latitude value */
+    @Column(name = "latitude")
     private Double latitude;
 
     /** Longitude value */
+    @Column(name = "longitude")
     private Double longitude;
 
     /** Elevation value */
+    @Column(name = "elevation")
     private Double elevation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "area_id", nullable = true)
+    Area area;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "zone_id", nullable = true)
+    Zone zone;
 
     /**
      * Constructor
@@ -82,5 +94,22 @@ public class Location implements ILocation {
     public void setId(UUID id) {
         this.id = id;
     }
+
+    public Area getArea() {
+        return area;
+    }
+
+    public void setArea(Area area) {
+        this.area = area;
+    }
+
+    public Zone getZone() {
+        return zone;
+    }
+
+    public void setZone(Zone zone) {
+        this.zone = zone;
+    }
+
 
 }

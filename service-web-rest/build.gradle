@@ -48,11 +48,11 @@ dependencies {
 // Pull SiteWhere admin user interface from GitHub.
 task pullSwaggerUserInterface() {
 	// Clone SiteWhere repository.
-	delete "${projectDir}/sitewhere-ui-build/sitewhere2-swagger-ui"
+	/*delete "${projectDir}/sitewhere-ui-build/sitewhere2-swagger-ui"
 	println "Pulling sitewhere2-swagger-ui from GitHub..."
 	def repo = Grgit.clone(dir: "${projectDir}/sitewhere-ui-build/sitewhere2-swagger-ui",
 		uri: 'https://github.com/sitewhere/sitewhere2-swagger-ui.git')
-	repo.close()
+	repo.close()*/
 }
 
 // Before building the Spring Boot WAR, copy Swagger interface.

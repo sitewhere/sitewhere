@@ -64,16 +64,16 @@ public class ScheduledJob implements IScheduledJob {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
-    @CollectionTable(name="scheduled_job_metadata")
-    @MapKeyColumn(name="propKey")
-    @Column(name="propValue")
+    @CollectionTable(name="scheduled_job_metadata", joinColumns = @JoinColumn(name = "schedule_job_id"))
+    @MapKeyColumn(name="prop_key")
+    @Column(name="prop_value")
     private Map<String, String> metadata = new HashMap<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
-    @CollectionTable(name="scheduled_job_configuration")
-    @MapKeyColumn(name="propKey")
-    @Column(name="propValue")
+    @CollectionTable(name="scheduled_job_configuration", joinColumns = @JoinColumn(name = "schedule_job_id"))
+    @MapKeyColumn(name="prop_key")
+    @Column(name="prop_value")
     private Map<String, String> jobConfiguration = new HashMap<>();
 
     @Override
@@ -129,5 +129,61 @@ public class ScheduledJob implements IScheduledJob {
     @Override
     public Map<String, String> getMetadata() {
         return metadata;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setScheduleToken(String scheduleToken) {
+        this.scheduleToken = scheduleToken;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public void setUpdatedDate(Date updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public void setJobType(ScheduledJobType jobType) {
+        this.jobType = jobType;
+    }
+
+    public void setJobState(ScheduledJobState jobState) {
+        this.jobState = jobState;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
+    }
+
+    public void setJobConfiguration(Map<String, String> jobConfiguration) {
+        this.jobConfiguration = jobConfiguration;
     }
 }

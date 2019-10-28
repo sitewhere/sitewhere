@@ -21,48 +21,59 @@ public class Zone implements IZone {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private UUID id;
 
     /** Id for associated area */
+    @Column(name = "area_id")
     private UUID areaId;
 
     /** Displayed name */
+    @Column(name = "name")
     private String name;
 
     /** Zone bounds */
-    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.EAGER)
+    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.EAGER, mappedBy = "zone")
     @Fetch(value = FetchMode.SUBSELECT)
     private List<Location> bounds = new ArrayList<Location>();
 
     /** Border color */
+    @Column(name = "border_color")
     private String borderColor;
 
     /** Fill color */
+    @Column(name = "fill_color")
     private String fillColor;
 
     /** Opacity */
+    @Column(name = "opacity")
     private Double opacity;
 
     /** Token */
+    @Column(name = "token")
     private String token;
 
     /** Date entity was created */
+    @Column(name = "created_date")
     private Date createdDate;
 
     /** Username for creator */
+    @Column(name = "created_by")
     private String createdBy;
 
     /** Date entity was last updated */
+    @Column(name = "updated_date")
     private Date updatedDate;
 
     /** Username that updated entity */
+    @Column(name = "updated_by")
     private String updatedBy;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
     @CollectionTable(name="zone_metadata")
-    @MapKeyColumn(name="propKey")
-    @Column(name="propValue")
+    @MapKeyColumn(name="prop_key")
+    @Column(name="prop_value")
     private Map<String, String> metadata = new HashMap<>();
 
     @Override

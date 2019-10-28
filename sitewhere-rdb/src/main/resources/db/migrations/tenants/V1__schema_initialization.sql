@@ -1,22 +1,20 @@
 create table area
 (
-    id              uuid not null
-        constraint area_pkey
-            primary key,
-    areatypeid      uuid,
-    backgroundcolor varchar(255),
-    bordercolor     varchar(255),
-    createdby       varchar(255),
-    createddate     timestamp,
+    id  uuid not null constraint area_pkey primary key,
+    area_type_id      uuid,
+    background_color varchar,
+    border_color     varchar,
+    created_by       varchar,
+    created_date     timestamp,
     description     varchar(1000),
-    foregroundcolor varchar(255),
-    icon            varchar(255),
-    imageurl        varchar(255),
-    name            varchar(255),
-    parentid        uuid,
-    token           varchar(255),
-    updatedby       varchar(255),
-    updateddate     timestamp
+    foreground_color varchar,
+    icon            varchar,
+    image_url        varchar,
+    name            varchar,
+    parent_id        uuid,
+    token           varchar,
+    updated_by       varchar,
+    updated_date     timestamp
 );
 
 alter table area
@@ -24,13 +22,10 @@ alter table area
 
 create table area_metadata
 (
-    area_id   uuid         not null
-        constraint fkhmfvnp287p956qi7bkg5dew6u
-            references area,
-    propvalue varchar(255),
-    propkey   varchar(255) not null,
-    constraint area_metadata_pkey
-        primary key (area_id, propkey)
+    area_id   uuid not null constraint fkhmfvnp287p956qi7bkg5dew6u references area,
+    prop_value varchar,
+    prop_key   varchar not null,
+    constraint area_metadata_pkey primary key (area_id, prop_key)
 );
 
 alter table area_metadata
@@ -38,21 +33,19 @@ alter table area_metadata
 
 create table area_type
 (
-    id              uuid not null
-        constraint area_type_pkey
-            primary key,
-    backgroundcolor varchar(255),
-    bordercolor     varchar(255),
-    createdby       varchar(255),
-    createddate     timestamp,
-    description     varchar(255),
-    foregroundcolor varchar(255),
-    icon            varchar(255),
-    imageurl        varchar(255),
-    name            varchar(255),
-    token           varchar(255),
-    updatedby       varchar(255),
-    updateddate     timestamp
+    id uuid not null constraint area_type_pkey primary key,
+    background_color varchar,
+    border_color     varchar,
+    created_by       varchar,
+    created_date     timestamp,
+    description     varchar,
+    foreground_color varchar,
+    icon            varchar,
+    image_url        varchar,
+    name            varchar,
+    token           varchar,
+    updated_by       varchar,
+    updated_date     timestamp
 );
 
 alter table area_type
@@ -60,61 +53,42 @@ alter table area_type
 
 create table area_type_metadata
 (
-    areatype_id uuid         not null
-        constraint fk63869vnjm3fh73tfou4sr7enb
-            references area_type,
-    propvalue   varchar(255),
-    propkey     varchar(255) not null,
-    constraint area_type_metadata_pkey
-        primary key (areatype_id, propkey)
+    area_type_id uuid not null constraint fk63869vnjm3fh73tfou4sr7enb references area_type,
+    prop_value   varchar,
+    prop_key     varchar not null,
+    constraint area_type_metadata_pkey primary key (area_type_id, prop_key)
 );
 
 alter table area_type_metadata
     owner to sitewhere;
 
-create table areatype_containedareatypeids
+create table contained_area_type_ids
 (
-    areatype_id          uuid not null
-        constraint fkivgj2wi2k2rbhlfao83urn8s0
-            references area_type,
-    containedareatypeids uuid
+    area_type_id uuid not null constraint fkivgj2wi2k2rbhlfao83urn8s0 references area_type,
+    contained_area_type_id uuid
 );
 
-alter table areatype_containedareatypeids
+alter table contained_area_type_ids
     owner to sitewhere;
 
-create table command_parameter
-(
-    id       uuid    not null
-        constraint command_parameter_pkey
-            primary key,
-    name     varchar(255),
-    required boolean not null,
-    type     varchar(255)
-);
-
-alter table command_parameter
-    owner to sitewhere;
 
 create table customer
 (
-    id              uuid not null
-        constraint customer_pkey
-            primary key,
-    backgroundcolor varchar(255),
-    bordercolor     varchar(255),
-    createdby       varchar(255),
-    createddate     timestamp,
-    customertypeid  uuid,
-    description     varchar(255),
-    foregroundcolor varchar(255),
-    icon            varchar(255),
-    imageurl        varchar(255),
-    name            varchar(255),
-    parentid        uuid,
-    token           varchar(255),
-    updatedby       varchar(255),
-    updateddate     timestamp
+    id  uuid not null constraint customer_pkey primary key,
+    background_color varchar,
+    border_color     varchar,
+    created_by       varchar,
+    created_date     timestamp,
+    customer_type_id uuid,
+    description      varchar,
+    foreground_color varchar,
+    icon             varchar,
+    image_url        varchar,
+    name             varchar,
+    parent_id        uuid,
+    token            varchar,
+    updated_by       varchar,
+    updated_date     timestamp
 );
 
 alter table customer
@@ -122,13 +96,11 @@ alter table customer
 
 create table customer_metadata
 (
-    customer_id uuid         not null
-        constraint fkegp0a66oeynm3mfdptp0fwdxc
-            references customer,
-    propvalue   varchar(255),
-    propkey     varchar(255) not null,
+    customer_id uuid not null constraint fkegp0a66oeynm3mfdptp0fwdxc references customer,
+    prop_value   varchar,
+    prop_key     varchar not null,
     constraint customer_metadata_pkey
-        primary key (customer_id, propkey)
+        primary key (customer_id, prop_key)
 );
 
 alter table customer_metadata
@@ -136,21 +108,19 @@ alter table customer_metadata
 
 create table customer_type
 (
-    id              uuid not null
-        constraint customer_type_pkey
-            primary key,
-    backgroundcolor varchar(255),
-    bordercolor     varchar(255),
-    createdby       varchar(255),
-    createddate     timestamp,
-    description     varchar(255),
-    foregroundcolor varchar(255),
-    icon            varchar(255),
-    imageurl        varchar(255),
-    name            varchar(255),
-    token           varchar(255),
-    updatedby       varchar(255),
-    updateddate     timestamp
+    id uuid not null constraint customer_type_pkey primary key,
+    background_color varchar,
+    border_color     varchar,
+    created_by       varchar,
+    created_date     timestamp,
+    description     varchar,
+    foreground_color varchar,
+    icon            varchar,
+    image_url        varchar,
+    name            varchar,
+    token           varchar,
+    updated_by       varchar,
+    updated_date     timestamp
 );
 
 alter table customer_type
@@ -158,77 +128,66 @@ alter table customer_type
 
 create table customer_type_metadata
 (
-    customertype_id uuid         not null
-        constraint fkh73yk0mon5ls1poxue1kwmis3
-            references customer_type,
-    propvalue       varchar(255),
-    propkey         varchar(255) not null,
-    constraint customer_type_metadata_pkey
-        primary key (customertype_id, propkey)
+    customer_type_id uuid not null constraint fkh73yk0mon5ls1poxue1kwmis3 references customer_type,
+    prop_value       varchar,
+    prop_key         varchar not null,
+    constraint customer_type_metadata_pkey primary key (customer_type_id, prop_key)
 );
 
 alter table customer_type_metadata
     owner to sitewhere;
 
-create table customertype_containedcustomertypeids
+create table contained_customer_type_ids
 (
-    customertype_id          uuid not null
-        constraint fk54criwc27w7ln3plk646ana8l
-            references customer_type,
-    containedcustomertypeids uuid
+    customer_type_id uuid not null constraint fk54criwc27w7ln3plk646ana8l references customer_type,
+    contained_customer_type_id uuid
 );
 
-alter table customertype_containedcustomertypeids
+alter table contained_customer_type_ids
     owner to sitewhere;
 
 create table device
 (
-    id                 uuid not null
-        constraint device_pkey
-            primary key,
-    comments           varchar(255),
-    createdby          varchar(255),
-    createddate        timestamp,
-    deviceassignmentid uuid,
-    devicetypeid       uuid,
-    devicetypetoken    varchar(255),
-    parentdeviceid     uuid,
-    status             varchar(255),
-    token              varchar(255),
-    updatedby          varchar(255),
-    updateddate        timestamp
+    id uuid not null constraint device_pkey primary key,
+    comments           varchar,
+    created_by          varchar,
+    created_date        timestamp,
+    device_assignment_id uuid,
+    device_type_id       uuid,
+    device_type_token    varchar,
+    parent_device_id     uuid,
+    status             varchar,
+    token              varchar,
+    updated_by          varchar,
+    updated_date        timestamp
 );
 
 alter table device
     owner to sitewhere;
 
-create table device_activedeviceassignmentids
+create table device_active_assignment
 (
-    device_id                 uuid not null
-        constraint fk3fi15qo5rgptuvrfwasn5dn1l
-            references device,
-    activedeviceassignmentids uuid
+    device_id uuid not null constraint fk3fi15qo5rgptuvrfwasn5dn1l references device,
+    active_device_assignment_id uuid
 );
 
-alter table device_activedeviceassignmentids
+alter table device_active_assignment
     owner to sitewhere;
 
 create table device_alarm
 (
-    id                 uuid not null
-        constraint device_alarm_pkey
-            primary key,
-    acknowledgeddate   timestamp,
-    alarmmessage       varchar(255),
-    areaid             uuid,
-    assetid            uuid,
-    customerid         uuid,
-    deviceassignmentid uuid,
-    deviceid           uuid,
-    resolveddate       timestamp,
-    state              varchar(255),
-    triggereddate      timestamp,
-    triggeringeventid  uuid
+    id  uuid not null constraint device_alarm_pkey primary key,
+    acknowledged_date   timestamp,
+    alarm_message       varchar,
+    area_id             uuid,
+    asset_id            uuid,
+    customer_id         uuid,
+    device_assignment_id uuid,
+    device_id           uuid,
+    resolved_date       timestamp,
+    state              varchar,
+    triggered_date      timestamp,
+    triggering_event_id  uuid
 );
 
 alter table device_alarm
@@ -236,48 +195,66 @@ alter table device_alarm
 
 create table device_alarm_metadata
 (
-    devicealarm_id uuid         not null
-        constraint fk7frl1jp0oylh4nkyj4x3g4tjb
-            references device_alarm,
-    propvalue      varchar(255),
-    propkey        varchar(255) not null,
-    constraint device_alarm_metadata_pkey
-        primary key (devicealarm_id, propkey)
+    device_alarm_id uuid not null constraint fk7frl1jp0oylh4nkyj4x3g4tjb references device_alarm,
+    prop_value      varchar,
+    prop_key        varchar not null,
+    constraint device_alarm_metadata_pkey primary key (device_alarm_id, prop_key)
 );
 
 alter table device_alarm_metadata
     owner to sitewhere;
 
-create table device_alot
+create table device_element_schema
 (
-    id   uuid not null
-        constraint device_alot_pkey
-            primary key,
-    name varchar(255),
-    path varchar(255)
+    id   uuid not null constraint device_element_schema_pkey primary key,
+    name varchar,
+    path varchar
 );
 
-alter table device_alot
+alter table device_element_schema
+    owner to sitewhere;
+
+create table device_unit
+(
+    id   uuid not null
+        constraint device_util_pkey primary key,
+    name varchar,
+    path varchar,
+    id_schema uuid constraint device_unit_element_schema_fk references device_element_schema,
+    parent_id uuid constraint device_unit_parent_fk references device_unit
+);
+
+alter table device_unit
+    owner to sitewhere;
+
+create table device_slot
+(
+    id uuid not null constraint device_slot_pkey primary key,
+    name varchar,
+    path varchar,
+    device_unit_id uuid constraint device_unit_fk references device_unit(id),
+    device_element_schema_id uuid constraint device_element_schema_fk references device_element_schema(id)
+);
+
+alter table device_slot
     owner to sitewhere;
 
 create table device_assignment
 (
-    id           uuid not null
-        constraint device_assignment_pkey
-            primary key,
-    activedate   timestamp,
-    areaid       uuid,
-    assetid      uuid,
-    createdby    varchar(255),
-    createddate  timestamp,
-    customerid   uuid,
-    deviceid     uuid,
-    devicetypeid uuid,
-    releaseddate timestamp,
-    status       varchar(255),
-    token        varchar(255),
-    updatedby    varchar(255),
-    updateddate  timestamp
+    id uuid not null constraint device_assignment_pkey primary key,
+    active_date   timestamp,
+    area_id       uuid,
+    asset_id      uuid,
+    created_by    varchar,
+    created_date  timestamp,
+    customer_id   uuid,
+    device_id     uuid,
+    device_type_id uuid,
+    released_date timestamp,
+    status       varchar,
+    token        varchar,
+    updated_by    varchar,
+    updated_date  timestamp
 );
 
 alter table device_assignment
@@ -285,13 +262,10 @@ alter table device_assignment
 
 create table device_assignment_metadata
 (
-    deviceassignment_id uuid         not null
-        constraint fkj09gyp8kafgn9m9e5oeqwdqms
-            references device_assignment,
-    propvalue           varchar(255),
-    propkey             varchar(255) not null,
-    constraint device_assignment_metadata_pkey
-        primary key (deviceassignment_id, propkey)
+    device_assignment_id uuid not null constraint fkj09gyp8kafgn9m9e5oeqwdqms references device_assignment,
+    prop_value varchar,
+    prop_key   varchar not null,
+    constraint device_assignment_metadata_pkey primary key (device_assignment_id, prop_key)
 );
 
 alter table device_assignment_metadata
@@ -299,124 +273,73 @@ alter table device_assignment_metadata
 
 create table device_command
 (
-    id              uuid not null
-        constraint device_command_pkey
-            primary key,
-    createdby       varchar(255),
-    createddate     timestamp,
-    description     varchar(255),
-    devicetypeid    uuid,
-    devicetypetoken varchar(255),
-    name            varchar(255),
-    namespace       varchar(255),
-    token           varchar(255),
-    updatedby       varchar(255),
-    updateddate     timestamp
+    id uuid not null constraint device_command_pkey primary key,
+    created_by       varchar,
+    created_date     timestamp,
+    description     varchar,
+    device_type_id    uuid,
+    device_type_token varchar,
+    name            varchar,
+    namespace       varchar,
+    token           varchar unique,
+    updated_by      varchar,
+    updated_date    timestamp
 );
 
 alter table device_command
     owner to sitewhere;
 
-create table device_command_command_parameter
-(
-    devicecommand_id uuid not null
-        constraint fkorjga3uqnhegt5l9aepty8nl0
-            references device_command,
-    parameterlist_id uuid not null
-        constraint uk_rdcnf3edn23qfpkew891jgt7c
-            unique
-        constraint fk7ss3l5iucmjsehmkrdxsdakjd
-            references command_parameter
-);
-
-alter table device_command_command_parameter
-    owner to sitewhere;
 
 create table device_command_metadata
 (
-    devicecommand_id uuid         not null
-        constraint fkhndjvpa5li7al6pwcne8jmq1p
-            references device_command,
-    propvalue        varchar(255),
-    propkey          varchar(255) not null,
-    constraint device_command_metadata_pkey
-        primary key (devicecommand_id, propkey)
+    device_command_id uuid not null constraint fkhndjvpa5li7al6pwcne8jmq1p references device_command,
+    prop_value        varchar,
+    prop_key          varchar not null,
+    constraint device_command_metadata_pkey primary key (device_command_id, prop_key)
 );
 
 alter table device_command_metadata
     owner to sitewhere;
 
+
+create table command_parameter
+(
+    id uuid not null constraint command_parameter_pkey primary key,
+    name     varchar,
+    required boolean not null,
+    type     varchar,
+    device_command_id uuid not null references device_command (id)
+);
+
+alter table command_parameter
+    owner to sitewhere;
+
 create table device_element_mapping
 (
-    id                      uuid not null
-        constraint device_element_mapping_pkey
-            primary key,
-    deviceelementschemapath varchar(255),
-    devicetoken             varchar(255)
+    id uuid not null constraint device_element_mapping_pkey primary key,
+    device_element_schema_path varchar,
+    device_token varchar,
+    device_id uuid not null references device (id)
 );
 
 alter table device_element_mapping
     owner to sitewhere;
 
-create table device_device_element_mapping
-(
-    device_id                uuid not null
-        constraint fkoehheg51b9yqvswagjpnirq30
-            references device,
-    deviceelementmappings_id uuid not null
-        constraint uk_b1oeavb72q3dljj4r9olpkyqw
-            unique
-        constraint fkagc31b2yxvwybcn4nwe0fq2ya
-            references device_element_mapping
-);
-
-alter table device_device_element_mapping
-    owner to sitewhere;
-
-create table device_element_schema
-(
-    id   uuid not null
-        constraint device_element_schema_pkey
-            primary key,
-    name varchar(255),
-    path varchar(255)
-);
-
-alter table device_element_schema
-    owner to sitewhere;
-
-create table device_element_schema_device_alot
-(
-    deviceelementschema_id uuid not null
-        constraint fk7ue2a18b4xs7d34yv7fr1jddv
-            references device_element_schema,
-    deviceslots_id         uuid not null
-        constraint uk_66ju75nl4nhu4jbq6g30xoxb8
-            unique
-        constraint fkk1pe4jyirkgfqapfcwxmsemj3
-            references device_alot
-);
-
-alter table device_element_schema_device_alot
-    owner to sitewhere;
-
 create table device_group
 (
-    id              uuid not null
-        constraint device_group_pkey
-            primary key,
-    backgroundcolor varchar(255),
-    bordercolor     varchar(255),
-    createdby       varchar(255),
-    createddate     timestamp,
-    description     varchar(255),
-    foregroundcolor varchar(255),
-    icon            varchar(255),
-    imageurl        varchar(255),
-    name            varchar(255),
-    token           varchar(255),
-    updatedby       varchar(255),
-    updateddate     timestamp
+    id  uuid not null constraint device_group_pkey primary key,
+    background_color varchar,
+    border_color     varchar,
+    created_by       varchar,
+    created_date     timestamp,
+    description     varchar,
+    foreground_color varchar,
+    icon            varchar,
+    image_url        varchar,
+    name            varchar,
+    token           varchar,
+    updated_by       varchar,
+    updated_date     timestamp
 );
 
 alter table device_group
@@ -424,12 +347,10 @@ alter table device_group
 
 create table device_group_element
 (
-    id            uuid not null
-        constraint device_group_element_pkey
-            primary key,
-    deviceid      uuid,
-    groupid       uuid,
-    nestedgroupid uuid
+    id uuid not null constraint device_group_element_pkey primary key,
+    device_id      uuid,
+    group_id       uuid,
+    nested_group_id uuid
 );
 
 alter table device_group_element
@@ -437,13 +358,10 @@ alter table device_group_element
 
 create table device_group_metadata
 (
-    devicegroup_id uuid         not null
-        constraint fkagh6eu89prqlut8wgrd7ru104
-            references device_group,
-    propvalue      varchar(255),
-    propkey        varchar(255) not null,
-    constraint device_group_metadata_pkey
-        primary key (devicegroup_id, propkey)
+    device_group_id uuid not null constraint fkagh6eu89prqlut8wgrd7ru104 references device_group,
+    prop_value      varchar,
+    prop_key        varchar not null,
+    constraint device_group_metadata_pkey primary key (device_group_id, prop_key)
 );
 
 alter table device_group_metadata
@@ -451,13 +369,11 @@ alter table device_group_metadata
 
 create table device_metadata
 (
-    device_id uuid         not null
-        constraint fklvnhinwxcopir2afw4hhd21dv
-            references device,
-    propvalue varchar(255),
-    propkey   varchar(255) not null,
+    device_id uuid not null constraint fklvnhinwxcopir2afw4hhd21dv references device,
+    prop_value varchar,
+    prop_key   varchar not null,
     constraint device_metadata_pkey
-        primary key (device_id, propkey)
+        primary key (device_id, prop_key)
 );
 
 alter table device_metadata
@@ -465,22 +381,20 @@ alter table device_metadata
 
 create table device_status
 (
-    id              uuid not null
-        constraint device_status_pkey
-            primary key,
-    backgroundcolor varchar(255),
-    bordercolor     varchar(255),
-    code            varchar(255),
-    createdby       varchar(255),
-    createddate     timestamp,
-    devicetypeid    uuid,
-    devicetypetoken varchar(255),
-    foregroundcolor varchar(255),
-    icon            varchar(255),
-    name            varchar(255),
-    token           varchar(255),
-    updatedby       varchar(255),
-    updateddate     timestamp
+    id uuid not null constraint device_status_pkey primary key,
+    background_color varchar,
+    border_color     varchar,
+    code            varchar,
+    created_by       varchar,
+    created_date     timestamp,
+    device_type_id    uuid,
+    device_type_token varchar,
+    foreground_color varchar,
+    icon            varchar,
+    name            varchar,
+    token           varchar,
+    updated_by       varchar,
+    updated_date     timestamp
 );
 
 alter table device_status
@@ -488,13 +402,10 @@ alter table device_status
 
 create table device_status_metadata
 (
-    devicestatus_id uuid         not null
-        constraint fk6hgkc6l5eh6j8d31tg2r1jb5g
-            references device_status,
-    propvalue       varchar(255),
-    propkey         varchar(255) not null,
-    constraint device_status_metadata_pkey
-        primary key (devicestatus_id, propkey)
+    device_status_id uuid not null constraint fk6hgkc6l5eh6j8d31tg2r1jb5g references device_status,
+    prop_value       varchar,
+    prop_key         varchar not null,
+    constraint device_status_metadata_pkey primary key (device_status_id, prop_key)
 );
 
 alter table device_status_metadata
@@ -502,23 +413,21 @@ alter table device_status_metadata
 
 create table device_type
 (
-    id                  uuid not null
-        constraint device_type_pkey
-            primary key,
-    backgroundcolor     varchar(255),
-    bordercolor         varchar(255),
-    containerpolicy     varchar(255),
-    createdby           varchar(255),
-    createddate         timestamp,
+    id uuid not null constraint device_type_pkey primary key,
+    background_color     varchar,
+    border_color         varchar,
+    container_policy     varchar,
+    created_by           varchar,
+    created_date         timestamp,
     description         varchar(1000),
-    deviceelementschema bytea,
-    foregroundcolor     varchar(255),
-    icon                varchar(255),
-    imageurl            varchar(255),
-    name                varchar(255),
-    token               varchar(255),
-    updatedby           varchar(255),
-    updateddate         timestamp
+    device_element_schema_id uuid,
+    foreground_color     varchar,
+    icon                varchar,
+    image_url            varchar,
+    name                varchar,
+    token               varchar,
+    updated_by           varchar,
+    updated_date         timestamp
 );
 
 alter table device_type
@@ -526,284 +435,176 @@ alter table device_type
 
 create table device_type_metadata
 (
-    devicetype_id uuid         not null
-        constraint fk2l7wclaxgtbmwulpn4doah587
-            references device_type,
-    propvalue     varchar(255),
-    propkey       varchar(255) not null,
-    constraint device_type_metadata_pkey
-        primary key (devicetype_id, propkey)
+    device_type_id uuid not null constraint fk2l7wclaxgtbmwulpn4doah587 references device_type,
+    prop_value     varchar,
+    prop_key       varchar not null,
+    constraint device_type_metadata_pkey primary key (device_type_id, prop_key)
 );
 
 alter table device_type_metadata
     owner to sitewhere;
 
-create table device_util
+
+
+create table device_group_roles
 (
-    id   uuid not null
-        constraint device_util_pkey
-            primary key,
-    name varchar(255),
-    path varchar(255)
+    device_group_id uuid not null constraint fkautwqvnlkybd7neyphvpmvsv7 references device_group,
+    role  varchar
 );
 
-alter table device_util
+alter table device_group_roles
     owner to sitewhere;
 
-create table device_element_schema_device_util
+create table device_group_element_roles
 (
-    deviceelementschema_id uuid not null
-        constraint fk1wook5bkpddnrwmbrd9nocbbl
-            references device_element_schema,
-    deviceunits_id         uuid not null
-        constraint uk_hnftlrnn5kik7meruwvjx6yxe
-            unique
-        constraint fksgst3d9r50s349o1qwdvidaoh
-            references device_util
+    device_group_element_id uuid not null constraint fkrhhirutvofaadogo9i22n6wm references device_group_element,
+    role varchar
 );
 
-alter table device_element_schema_device_util
-    owner to sitewhere;
-
-create table device_util_device_alot
-(
-    deviceunit_id  uuid not null
-        constraint fkjydms88on2qfubdjtu9at3k1c
-            references device_util,
-    deviceslots_id uuid not null
-        constraint uk_nnbdw0stj9imql0cg1eqkynas
-            unique
-        constraint fkf84c6jkugpviwqk9j6fcpy1cf
-            references device_alot
-);
-
-alter table device_util_device_alot
-    owner to sitewhere;
-
-create table device_util_device_util
-(
-    deviceunit_id  uuid not null
-        constraint fkt566meix9u7sej4qdv9kl3ink
-            references device_util,
-    deviceunits_id uuid not null
-        constraint uk_596eqj3seagx1ub70fjr8b2hb
-            unique
-        constraint fkk1b7dtas8igjw0ldujgmn6c75
-            references device_util
-);
-
-alter table device_util_device_util
-    owner to sitewhere;
-
-create table devicegroup_roles
-(
-    devicegroup_id uuid not null
-        constraint fkautwqvnlkybd7neyphvpmvsv7
-            references device_group,
-    roles          varchar(255)
-);
-
-alter table devicegroup_roles
-    owner to sitewhere;
-
-create table devicegroupelement_roles
-(
-    devicegroupelement_id uuid not null
-        constraint fkrhhirutvofaadogo9i22n6wm
-            references device_group_element,
-    roles                 varchar(255)
-);
-
-alter table devicegroupelement_roles
+alter table device_group_element_roles
     owner to sitewhere;
 
 create table location
 (
-    id        uuid not null
-        constraint location_pkey
-            primary key,
+    id uuid not null constraint location_pkey primary key,
     elevation double precision,
     latitude  double precision,
-    longitude double precision
+    longitude double precision,
+    area_id   uuid references area(id),
+    zone_id   uuid references zone(id)
 );
 
 alter table location
     owner to sitewhere;
 
-create table area_location
-(
-    area_id   uuid not null
-        constraint fkf9vitu38uxi8v0xg584nhb8py
-            references area,
-    bounds_id uuid not null
-        constraint uk_9u8gut07jhp8nik3ib8vo34aa
-            unique
-        constraint fkpmee0yxmo827vb8q6lcbvym38
-            references location
-);
-
-alter table area_location
-    owner to sitewhere;
-
 create table zone
 (
-    id          uuid not null
-        constraint zone_pkey
-            primary key,
-    areaid      uuid,
-    bordercolor varchar(255),
-    createdby   varchar(255),
-    createddate timestamp,
-    fillcolor   varchar(255),
-    name        varchar(255),
+    id uuid not null constraint zone_pkey primary key,
+    area_id      uuid,
+    border_color varchar,
+    created_by   varchar,
+    created_date timestamp,
+    fill_color   varchar,
+    name        varchar,
     opacity     double precision,
-    token       varchar(255),
-    updatedby   varchar(255),
-    updateddate timestamp
+    token       varchar,
+    updated_by   varchar,
+    updated_date timestamp
 );
 
 alter table zone
     owner to sitewhere;
 
-create table zone_location
-(
-    zone_id   uuid not null
-        constraint fkeml27magrfxvg7u29w8upfol5
-            references zone,
-    bounds_id uuid not null
-        constraint uk_p6g9s7qtpydk3jbmq4t3gm002
-            unique
-        constraint fk4an113j8ldfqo7qu0t6f9no94
-            references location
-);
-
-alter table zone_location
-    owner to sitewhere;
-
 create table zone_metadata
 (
-    zone_id   uuid         not null
-        constraint fkemse0xhpumauen49j0jnllp21
-            references zone,
-    propvalue varchar(255),
-    propkey   varchar(255) not null,
+    zone_id uuid not null constraint fkemse0xhpumauen49j0jnllp21 references zone,
+    prop_value varchar,
+    prop_key   varchar not null,
     constraint zone_metadata_pkey
-        primary key (zone_id, propkey)
+        primary key (zone_id, prop_key)
 );
 
 alter table zone_metadata
     owner to sitewhere;
 
-
 -- Asset Management
 create table asset
 (
-    id              uuid not null
-        constraint asset_pkey
-            primary key,
-    assettypeid      uuid,
-    backgroundcolor varchar(255),
-    bordercolor     varchar(255),
-    createdby       varchar(255),
-    createddate     timestamp,
+    id uuid not null constraint asset_pkey primary key,
+    asset_type_id      uuid,
+    background_color varchar,
+    border_color     varchar,
+    created_by       varchar,
+    created_date     timestamp,
     description     varchar(1000),
-    foregroundcolor varchar(255),
-    icon            varchar(255),
-    imageurl        varchar(255),
-    name            varchar(255),
-    parentid        uuid,
-    token           varchar(255),
-    updatedby       varchar(255),
-    updateddate     timestamp
+    foreground_color varchar,
+    icon            varchar,
+    image_url        varchar,
+    name            varchar,
+    parent_id        uuid,
+    token           varchar,
+    updated_by       varchar,
+    updated_date     timestamp
 );
 
 alter table asset
     owner to sitewhere;
 
-create table asett_metadata
+create table asset_metadata
 (
-    asset_id   uuid         not null
-        constraint fkhmfvnp287p256qi7bkg5dew6u
-            references asset,
-    propvalue varchar(255),
-    propkey   varchar(255) not null,
-    constraint asset_metadata_pkey
-        primary key (asset_id, propkey)
+    asset_id uuid not null constraint fkhmfvnp287p256qi7bkg5dew6u references asset,
+    prop_value varchar,
+    prop_key   varchar not null,
+    constraint asset_metadata_pkey primary key (asset_id, prop_key)
 );
+
+alter table asset_metadata
+    owner to sitewhere;
 
 create table asset_type
 (
-    id              uuid not null
-        constraint asset_type_pkey
-            primary key,
-    backgroundcolor varchar(255),
-    bordercolor     varchar(255),
-    createdby       varchar(255),
-    createddate     timestamp,
-    description     varchar(1000),
-    foregroundcolor varchar(255),
-    icon            varchar(255),
-    imageurl        varchar(255),
-    name            varchar(255),
-    token           varchar(255),
-    updatedby       varchar(255),
-    updateddate     timestamp,
-    assetcategory   varchar(255)
+    id uuid not null constraint asset_type_pkey primary key,
+    background_color varchar,
+    border_color     varchar,
+    created_by       varchar,
+    created_date     timestamp,
+    description      varchar,
+    foreground_color varchar,
+    icon             varchar,
+    image_url        varchar,
+    name             varchar,
+    token            varchar,
+    updated_by       varchar,
+    updated_date     timestamp,
+    asset_category   varchar
 );
 
 alter table asset_type
     owner to sitewhere;
 
-create table asett_type_metadata
+create table asset_type_metadata
 (
-    assettype_id uuid         not null
-        constraint fk13869vnjm3fh73tfou4sr7onb
-            references asset_type,
-    propvalue   varchar(255),
-    propkey     varchar(255) not null,
-    constraint asset_type_metadata_pkey
-        primary key (assettype_id, propkey)
+    asset_type_id uuid not null constraint fk13869vnjm3fh73tfou4sr7onb references asset_type,
+    prop_value   varchar,
+    prop_key     varchar not null,
+    constraint asset_type_metadata_pkey primary key (asset_type_id, prop_key)
 );
 
+alter table asset_type_metadata
+    owner to sitewhere;
 
 -- Batch operations
 create table batch_element
 (
-    id  uuid not null
-        constraint batch_element_pkey
-            primary key,
-    batchoperationid uuid,
-    deviceid      uuid,
-    processingStatus varchar (255),
-    processedDate     timestamp
+    id  uuid not null constraint batch_element_pkey primary key,
+    batch_operation_id uuid,
+    device_id          uuid,
+    processing_status  varchar ,
+    processed_date     timestamp
 );
 
-alter table batch_element
-    owner to sitewhere;
+alter table batch_element owner to sitewhere;
 
 create table batch_element_metadata
 (
-    batch_element_id uuid         not null
-        constraint fk13869vnjm3fh77tfou4sr7onb
-            references batch_element,
-    propvalue   varchar(255),
-    propkey     varchar(255) not null,
-    constraint batch_element_metadata_pkey
-        primary key (batch_element_id, propkey)
+    batch_element_id uuid not null constraint fk13869vnjm3fh77tfou4sr7onb references batch_element,
+    prop_value   varchar,
+    prop_key     varchar not null,
+    constraint batch_element_metadata_pkey primary key (batch_element_id, prop_key)
 );
 
 create table batch_operation
 (
     id  uuid not null constraint batch_operation_pkey primary key,
-    token varchar (255),
-    operation_type varchar (255),
-    processing_status varchar (255),
+    token varchar,
+    operation_type varchar ,
+    processing_status varchar ,
     processing_started_date     timestamp,
     processing_ended_date     timestamp,
     created_date     timestamp,
-    created_by     varchar (255),
+    created_by     varchar ,
     updated_date     timestamp,
-    updated_by     varchar (255)
+    updated_by     varchar
 );
 
 alter table batch_operation
@@ -811,24 +612,18 @@ alter table batch_operation
 
 create table batch_operation_metadata
 (
-    batch_operation_id uuid         not null
-        constraint fk13869vnpp3fh77tfou4sr7onb
-            references batch_operation,
-    propvalue   varchar(255),
-    propkey     varchar(255) not null,
-    constraint batch_operation_metadata_pkey
-        primary key (batch_operation_id, propkey)
+    batch_operation_id uuid not null constraint fk13869vnpp3fh77tfou4sr7onb references batch_operation,
+    prop_value   varchar,
+    prop_key     varchar not null,
+    constraint batch_operation_metadata_pkey primary key (batch_operation_id, prop_key)
 );
 
 create table batch_operation_parameters
 (
-    batch_operation_parameters_id uuid         not null
-        constraint fk13869vnpp3fh77tfoop4sr7onb
-            references batch_operation,
-    propvalue   varchar(255),
-    propkey     varchar(255) not null,
-    constraint batch_operation_parameters_pkey
-        primary key (batch_operation_parameters_id, propkey)
+    batch_operation_parameters_id uuid not null constraint fk13869vnpp3fh77tfoop4sr7onb references batch_operation,
+    prop_value   varchar,
+    prop_key     varchar not null,
+    constraint batch_operation_parameters_pkey primary key (batch_operation_parameters_id, prop_key)
 );
 
 -- Schedule Management
@@ -854,10 +649,10 @@ create table schedule_metadata
     schedule_id uuid         not null
         constraint fk13869vnpp3fh77t23fou4sr7o
             references schedule,
-    propvalue   varchar,
-    propkey     varchar not null,
+    prop_value   varchar,
+    prop_key     varchar not null,
     constraint schedule_metadata_pkey
-        primary key (schedule_id, propkey)
+        primary key (schedule_id, prop_key)
 );
 
 alter table schedule_metadata
@@ -868,10 +663,10 @@ create table trigger_configuration
     schedule_id uuid         not null
         constraint fk13869vnpp3few7t23fou4sr7o
             references schedule,
-    propvalue   varchar,
-    propkey     varchar not null,
+    prop_value   varchar,
+    prop_key     varchar not null,
     constraint trigger_configuration_pkey
-        primary key (schedule_id, propkey)
+        primary key (schedule_id, prop_key)
 );
 
 alter table trigger_configuration
@@ -905,10 +700,10 @@ create table scheduled_job_metadata
     schedule_job_id uuid         not null
         constraint fk13169vnpp3fh77t23fou4sr7o
             references scheduled_job,
-    propvalue   varchar,
-    propkey     varchar not null,
+    prop_value   varchar,
+    prop_key     varchar not null,
     constraint schedule_job_metadata_pkey
-        primary key (schedule_job_id, propkey)
+        primary key (schedule_job_id, prop_key)
 );
 
 alter table scheduled_job_metadata
@@ -919,10 +714,10 @@ create table scheduled_job_configuration
     schedule_job_id uuid         not null
         constraint flu3169vnpp3fh77t23fou4sr7o
             references scheduled_job,
-    propvalue   varchar,
-    propkey     varchar not null,
+    prop_value   varchar,
+    prop_key     varchar not null,
     constraint schedule_job_configuration_pkey
-        primary key (schedule_job_id, propkey)
+        primary key (schedule_job_id, prop_key)
 );
 
 alter table scheduled_job_configuration

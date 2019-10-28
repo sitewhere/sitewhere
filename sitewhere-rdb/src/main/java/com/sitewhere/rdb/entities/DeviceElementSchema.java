@@ -25,21 +25,24 @@ public class DeviceElementSchema implements IDeviceElementSchema, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private UUID id;
 
+    @Column(name = "name")
     private String name;
 
+    @Column(name = "path")
     private String path;
 
     /** List of device slots */
-    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.EAGER)
+    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.EAGER, mappedBy = "deviceElementSchema")
     @Fetch(value = FetchMode.SUBSELECT)
-    private List<DeviceSlot> deviceSlots = new ArrayList<DeviceSlot>();
+    private List<DeviceSlot> deviceSlots = new ArrayList();
 
     /** List of device units */
-    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.EAGER)
+    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.EAGER, mappedBy = "deviceUnitParent")
     @Fetch(value = FetchMode.SUBSELECT)
-    private List<DeviceUnit> deviceUnits = new ArrayList<DeviceUnit>();
+    private List<DeviceUnit> deviceUnits = new ArrayList();
 
     @Override
     public List<IDeviceSlot> getDeviceSlots() {

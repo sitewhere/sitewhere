@@ -19,14 +19,22 @@ public class CommandParameter implements ICommandParameter {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private UUID id;
 
+    @Column(name = "name")
     private String name;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "type")
     private ParameterType type;
 
+    @Column(name = "required")
     private boolean required;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "device_command_id", nullable = false)
+    private DeviceCommand deviceCommand;
 
     public CommandParameter() {
     }
@@ -73,4 +81,11 @@ public class CommandParameter implements ICommandParameter {
         this.required = required;
     }
 
+    public DeviceCommand getDeviceCommand() {
+        return deviceCommand;
+    }
+
+    public void setDeviceCommand(DeviceCommand deviceCommand) {
+        this.deviceCommand = deviceCommand;
+    }
 }

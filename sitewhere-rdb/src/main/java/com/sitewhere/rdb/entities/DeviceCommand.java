@@ -22,47 +22,58 @@ public class DeviceCommand implements IDeviceCommand {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private UUID id;
 
     /** Unique id for parent specification */
+    @Column(name = "device_type_id")
     private UUID deviceTypeId;
 
+    @Column(name = "device_type_token")
     private String deviceTypeToken;
 
     /** Command namespace */
+    @Column(name = "namespace")
     private String namespace;
 
     /** Command name */
+    @Column(name = "name")
     private String name;
 
     /** Command description */
+    @Column(name = "description")
     private String description;
 
     /** Parameter list */
-    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.EAGER)
+    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.EAGER, mappedBy = "deviceCommand")
     @Fetch(value = FetchMode.SUBSELECT)
     private List<CommandParameter> parameterList = new ArrayList<>();
 
     /** Unique token */
+    @Column(name = "token")
     private String token;
 
     /** Date entity was created */
+    @Column(name = "created_date")
     private Date createdDate;
 
     /** Username for creator */
+    @Column(name = "created_by")
     private String createdBy;
 
     /** Date entity was last updated */
+    @Column(name = "updated_date")
     private Date updatedDate;
 
     /** Username that updated entity */
+    @Column(name = "updated_by")
     private String updatedBy;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
-    @CollectionTable(name="device_command_metadata")
-    @MapKeyColumn(name="propKey")
-    @Column(name="propValue")
+    @CollectionTable(name="device_command_metadata", joinColumns = @JoinColumn(name = "device_command_id"))
+    @MapKeyColumn(name="prop_key")
+    @Column(name="prop_value")
     private Map<String, String> metadata = new HashMap<>();
 
     @Override

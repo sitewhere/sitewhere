@@ -26,53 +26,67 @@ public class DeviceAssignment implements IDeviceAssignment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private UUID id;
 
     /** Device id */
+    @Column(name = "device_id")
     private UUID deviceId;
 
     /** Device type id */
+    @Column(name = "device_type_id")
     private UUID deviceTypeId;
 
     /** Id of assigned customer */
+    @Column(name = "customer_id")
     private UUID customerId;
 
     /** Id of assigned area */
+    @Column(name = "area_id")
     private UUID areaId;
 
     /** Id of assigned asset */
+    @Column(name = "asset_id")
     private UUID assetId;
 
     /** Assignment status */
     @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private DeviceAssignmentStatus status;
 
     /** Assignment start date */
+    @Column(name = "active_date")
     private Date activeDate;
 
     /** Assignment end date */
+    @Column(name = "released_date")
     private Date releasedDate;
 
     /** Unique token */
+    @Column(name = "token")
     private String token;
 
     /** Date entity was created */
+    @Column(name = "created_date")
     private Date createdDate;
 
     /** Username for creator */
+    @Column(name = "created_by")
     private String createdBy;
 
     /** Date entity was last updated */
+    @Column(name = "updated_date")
     private Date updatedDate;
 
     /** Username that updated entity */
+    @Column(name = "updated_by")
     private String updatedBy;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
-    @CollectionTable(name="device_assignment_metadata")
-    @MapKeyColumn(name="propKey")
-    @Column(name="propValue")
+    @CollectionTable(name="device_assignment_metadata", joinColumns = @JoinColumn(name = "device_assignment_id"))
+    @MapKeyColumn(name="prop_key")
+    @Column(name="prop_value")
     private Map<String, String> metadata = new HashMap<>();
 
     @Override

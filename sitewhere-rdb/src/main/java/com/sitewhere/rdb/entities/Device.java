@@ -28,54 +28,67 @@ public class Device implements IDevice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private UUID id;
 
     /** Device type id */
+    @Column(name = "device_type_id")
     private UUID deviceTypeId;
 
     /** DeviceType token */
+    @Column(name = "device_type_token")
     private String deviceTypeToken;
 
     /** Id for current assignment if assigned */
+    @Column(name = "device_assignment_id")
     private UUID deviceAssignmentId;
 
     /** Parent device id (if nested) */
+    @Column(name = "parent_device_id")
     private UUID parentDeviceId;
 
-    /** Mappings of {@link IDeviceElementSchema} paths to hardware ids */
-    @OneToMany(cascade= {CascadeType.ALL},fetch=FetchType.EAGER)
+    @OneToMany(cascade= {CascadeType.ALL}, fetch=FetchType.EAGER, mappedBy = "device")
     private List<DeviceElementMapping> deviceElementMappings = new ArrayList<>();
 
     /** Comments */
+    @Column(name = "comments")
     private String comments;
 
     /** Status indicator */
+    @Column(name = "status")
     private String status;
 
     /** Unique token */
+    @Column(name = "token")
     private String token;
 
     /** Date entity was created */
+    @Column(name = "created_date")
     private Date createdDate;
 
     /** Username for creator */
+    @Column(name = "created_by")
     private String createdBy;
 
     /** Date entity was last updated */
+    @Column(name = "updated_date")
     private Date updatedDate;
 
     /** Username that updated entity */
+    @Column(name = "updated_by")
     private String updatedBy;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
+    @CollectionTable(name="device_active_assignment")
+    @Column(name = "active_device_assignment_id")
     private List<UUID> activeDeviceAssignmentIds = new ArrayList<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
     @CollectionTable(name="device_metadata")
-    @MapKeyColumn(name="propKey")
-    @Column(name="propValue")
+    @MapKeyColumn(name="prop_key")
+    @Column(name="prop_value")
     private Map<String, String> metadata = new HashMap<>();
 
     @Override
