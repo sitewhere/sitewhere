@@ -7,7 +7,6 @@
  */
 package com.sitewhere.rdb.repositories;
 
-import com.sitewhere.rdb.entities.Asset;
 import com.sitewhere.rdb.entities.Schedule;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;

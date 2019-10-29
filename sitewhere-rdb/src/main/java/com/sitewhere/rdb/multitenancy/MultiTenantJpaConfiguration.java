@@ -46,8 +46,8 @@ public class MultiTenantJpaConfiguration {
     @Autowired
     private JpaProperties jpaProperties;
 
-    @Bean(name = "dataSourcesDvdRental" )
-    public Map<String, DataSource> dataSourcesDvdRental() {
+    @Bean(name = "rdbDataSources")
+    public Map<String, DataSource> rdbDataSources() {
         Map<String, DataSource> result = new HashMap<>();
         for (MultiTenantProperties.DataSourceProperties dsProperties : MultiTenantProperties.DATA_SOURCES_PROPS) {
             DataSourceBuilder factory = DataSourceBuilder
@@ -64,7 +64,7 @@ public class MultiTenantJpaConfiguration {
 
     @Bean
     public MultiTenantConnectionProvider multiTenantConnectionProvider() {
-        // Autowires dataSourcesDvdRental
+        // Autowires rdbDataSources
         return new DataSourceMultiTenantConnectionProviderImpl();
     }
 

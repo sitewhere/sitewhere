@@ -31,11 +31,8 @@ public abstract class DbClient extends TenantEngineLifecycleComponent implements
     /** Relational database configuration */
     private RDBConfiguration configuration;
 
-    /** Hostname parameter */
-    private ILifecycleComponentParameter<String> hostname;
-
-    /** Database parameter */
-    private ILifecycleComponentParameter<String> databaseName;
+    /** Url parameter */
+    private ILifecycleComponentParameter<String> url;
 
     /**
      *
@@ -53,15 +50,11 @@ public abstract class DbClient extends TenantEngineLifecycleComponent implements
 
     @Override
     public void initializeParameters() throws SiteWhereException {
-        // Add hostname.
-        this.hostname = StringComponentParameter.newBuilder(this, "Hostname").value(configuration.getHostname())
-                .makeRequired().build();
-        getParameters().add(hostname);
+        // Add database url
+        this.url = StringComponentParameter.newBuilder(this,"Url")
+                .value(configuration.getUrl()).makeRequired().build();
+        getParameters().add(url);
 
-        // Add database name.
-        this.databaseName = StringComponentParameter.newBuilder(this, "Database")
-                .value(configuration.getDatabaseName()).makeRequired().build();
-        getParameters().add(databaseName);
     }
 
     @Override
@@ -71,9 +64,7 @@ public abstract class DbClient extends TenantEngineLifecycleComponent implements
 
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-        getLogger().info("Relation database client will connect to " + hostname.getValue() + ":"
-                + configuration.getUrl() + " for database '" + databaseName.getValue() + "'");
-
+        getLogger().info("Relation database client will connect to " + configuration.getUrl());
         String tenantId = this.getTenantEngine().getTenant().getId().toString();
         MultiTenantProperties.ADD_NEW_DATASOURCE(configuration, tenantId);
         MultiTenantContext.setTenantId(tenantId);
@@ -82,9 +73,7 @@ public abstract class DbClient extends TenantEngineLifecycleComponent implements
 
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-        getLogger().info("Relation database client will disconnect to " + hostname.getValue() + ":"
-                + configuration.getUrl() + " for database '" + databaseName.getValue() + "'");
-
+        getLogger().info("Relation database client will connect to " + configuration.getUrl());
         dbManager.stop();
     }
 
@@ -95,19 +84,11 @@ public abstract class DbClient extends TenantEngineLifecycleComponent implements
         return dbManager;
     }
 
-    public ILifecycleComponentParameter<String> getHostname() {
-        return hostname;
+    public ILifecycleComponentParameter<String> getUrl() {
+        return url;
     }
 
-    public void setHostname(ILifecycleComponentParameter<String> hostname) {
-        this.hostname = hostname;
-    }
-
-    public ILifecycleComponentParameter<String> getDatabaseName() {
-        return databaseName;
-    }
-
-    public void setDatabaseName(ILifecycleComponentParameter<String> databaseName) {
-        this.databaseName = databaseName;
+    public void setUrl(ILifecycleComponentParameter<String> url) {
+        this.url = url;
     }
 }

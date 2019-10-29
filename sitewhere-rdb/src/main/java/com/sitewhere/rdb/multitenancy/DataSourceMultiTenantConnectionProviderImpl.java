@@ -25,17 +25,17 @@ public class DataSourceMultiTenantConnectionProviderImpl extends AbstractDataSou
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
-	private Map<String, DataSource> dataSourcesDvdRental;
+	private Map<String, DataSource> rdbDataSources;
 
 	@Override
 	protected DataSource selectAnyDataSource() {
-		DataSource selected = dataSourcesDvdRental.get(MultiTenantContext.getTenantId());
+		DataSource selected = rdbDataSources.get(MultiTenantContext.getTenantId());
 		return selected;
 	}
 
 	@Override
 	protected DataSource selectDataSource(String tenantIdentifier) {
-		DataSource dataSource = this.dataSourcesDvdRental.get(tenantIdentifier);
+		DataSource dataSource = this.rdbDataSources.get(tenantIdentifier);
 		return dataSource;
 	}
 

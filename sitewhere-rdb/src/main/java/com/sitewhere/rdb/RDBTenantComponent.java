@@ -54,9 +54,9 @@ public abstract class RDBTenantComponent <T extends DbClient> extends TenantEngi
     @Override
     public void provision(ILifecycleProgressMonitor monitor) throws SiteWhereException {
         String tenantId = this.getTenantEngine().getTenant().getId().toString();
-        Map<String, DataSource> dataSourcesDvdRental = (Map<String, DataSource>) ApplicationContextUtils.getBean("dataSourcesDvdRental");
+        Map<String, DataSource> rdbDataSources = (Map<String, DataSource>) ApplicationContextUtils.getBean("rdbDataSources");
         FlywayConfig flywayConfig = new FlywayConfig();
-        flywayConfig.tenantsFlyway(tenantId, dataSourcesDvdRental.get(tenantId));
+        flywayConfig.tenantsFlyway(tenantId, rdbDataSources.get(tenantId));
     }
 
     /*

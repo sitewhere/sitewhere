@@ -8,8 +8,6 @@
 package com.sitewhere.rdb.entities;
 
 import com.sitewhere.spi.common.ILocation;
-import org.hibernate.annotations.Type;
-
 import javax.persistence.*;
 import java.util.UUID;
 

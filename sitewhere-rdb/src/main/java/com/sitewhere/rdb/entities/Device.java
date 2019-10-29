@@ -9,7 +9,6 @@ package com.sitewhere.rdb.entities;
 
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceElementMapping;
-import com.sitewhere.spi.device.element.IDeviceElementSchema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 

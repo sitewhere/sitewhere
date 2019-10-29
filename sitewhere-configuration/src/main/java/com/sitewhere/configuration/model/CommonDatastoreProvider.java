@@ -54,11 +54,8 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 	addElement(createInfluxDbReferenceElement());
 	addElement(createCassandraDatastoreElement());
 	addElement(createCassandraReferenceElement());
-
-	//---
 	addElement(createRDBDatastoreElement());
 	addElement(createRDBReferenceElement());
-	//---
     }
 
     /**
@@ -147,8 +144,6 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 	return builder.build();
     }
 
-
-    //-------------------------------------------------
 	/**
 	 * Create RDB datastore element.
 	 *
@@ -186,9 +181,6 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 
 		return builder.build();
 	}
-	//-------------------------------------------------
-
-
 
     /**
      * Create InfluxDB datastore element.
@@ -321,26 +313,14 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 	 * @param connectivity
 	 */
 	public static void addRDBAttributes(ElementNode.Builder builder, IAttributeGroup connectivity) {
-		builder.attribute((new AttributeNode.Builder("Hostname", "hostname", AttributeType.String, connectivity)
+		builder.attribute((new AttributeNode.Builder("Database url", "url", AttributeType.String, connectivity)
 				.description("Hostname for RDB instance").defaultValue("${mongodb.host:sitewhere-postgresql-headless.default.svc.cluster.local}").build()));
-		builder.attribute((new AttributeNode.Builder("Port", "port", AttributeType.Integer, connectivity)
-				.description("Port on which RDB is running").defaultValue("${mongodb.port:5432}").build()));
-		builder.attribute(
-				(new AttributeNode.Builder("Database name", "databaseName", AttributeType.String, connectivity)
-						.description("Database name").defaultValue("${mongodb.database:syncope}").build()));
+
 		builder.attribute((new AttributeNode.Builder("Username", "username", AttributeType.String, connectivity)
 				.description("Database authentication username").defaultValue("syncope").build()));
+
 		builder.attribute((new AttributeNode.Builder("Password", "password", AttributeType.String, connectivity).defaultValue("syncope")
 				.description("Database authentication password").build()));
-		builder.attribute(
-				(new AttributeNode.Builder("Replica set name", "replicaSetName", AttributeType.String, connectivity)
-						.description("Name of replica set if using replication.").defaultValue("${mongodb.replicaset:}")
-						.build()));
-		builder.attribute((new AttributeNode.Builder("Auto-configure replication", "autoConfigureReplication",
-				AttributeType.Boolean, connectivity)
-				.description("Indicates whether replication should be configured automatically "
-						+ "when multiple hosts/ports are specified.")
-				.build()));
 	}
 
     /**

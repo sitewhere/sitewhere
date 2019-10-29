@@ -8,17 +8,9 @@
 package com.sitewhere.configuration.instance.rdb;
 
 public class RDBConfiguration {
-    /** Default hostname for relational database */
-    private static final String DEFAULT_HOSTNAME = "sitewhere-postgresql-headless.default.svc.cluster.local";
 
     /** Default url for relational database */
     private static final String DEFAULT_URL = "jdbc:postgresql://sitewhere-postgresql-headless.default.svc.cluster.local/tenant1";
-
-    /** Default database name */
-    private static final String DEFAULT_DATABASE_NAME = "syncope";
-
-    /** Default authentication database name */
-    private static final String DEFAULT_AUTH_DATABASE_NAME = "syncope";
 
     /** Default parameter for formatting Hibernate SQL */
     private static final String DEFAULT_FORMATSQL = "true";
@@ -50,9 +42,6 @@ public class RDBConfiguration {
     /** Driver class for relational databases */
     private String driver = DEFAULT_DRIVER;
 
-    /** Hostname used to access the relational datastore */
-    private String hostname = DEFAULT_HOSTNAME;
-
     /** URL used to access the relational datastore */
     private String url = DEFAULT_URL;
 
@@ -67,12 +56,6 @@ public class RDBConfiguration {
 
     /** Indicates if replication should be auto-configured */
     private boolean autoConfigureReplication = true;
-
-    /** Database that holds sitewhere collections */
-    private String databaseName = DEFAULT_DATABASE_NAME;
-
-    /** Database that holds user credentials */
-    private String authDatabaseName = DEFAULT_AUTH_DATABASE_NAME;
 
     public String getFormatSql() {
         return formatSql;
@@ -114,14 +97,6 @@ public class RDBConfiguration {
         this.driver = driver;
     }
 
-    public String getHostname() {
-        return hostname;
-    }
-
-    public void setHostname(String hostname) {
-        this.hostname = hostname;
-    }
-
     public String getUrl() {
         return url;
     }
@@ -160,21 +135,5 @@ public class RDBConfiguration {
 
     public void setAutoConfigureReplication(boolean autoConfigureReplication) {
         this.autoConfigureReplication = autoConfigureReplication;
-    }
-
-    public String getDatabaseName() {
-        return databaseName;
-    }
-
-    public void setDatabaseName(String databaseName) {
-        this.databaseName = databaseName;
-    }
-
-    public String getAuthDatabaseName() {
-        return authDatabaseName;
-    }
-
-    public void setAuthDatabaseName(String authDatabaseName) {
-        this.authDatabaseName = authDatabaseName;
     }
 }

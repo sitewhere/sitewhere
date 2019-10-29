@@ -8,7 +8,6 @@
 package com.sitewhere.rdb.entities;
 
 import com.sitewhere.spi.device.IDeviceElementMapping;
-
 import javax.persistence.*;
 import java.util.UUID;
 

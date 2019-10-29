@@ -67,8 +67,6 @@ public enum CommonDatastoreRoles implements IConfigurationRoleProvider {
     MongoDBReference(ConfigurationRole.build(CommonDatastoreRoleKeys.MongoDBReference, "MongoDB Global Reference",
 	    false, false, false)),
 
-
-    //-------------------
     /** RDB datastore */
     RDBDatastore(ConfigurationRole.build(CommonDatastoreRoleKeys.RDBDatastore, "RDB Datastore", false,
             false, false)),
@@ -76,8 +74,6 @@ public enum CommonDatastoreRoles implements IConfigurationRoleProvider {
     /** MongoDB global reference */
     RDBReference(ConfigurationRole.build(CommonDatastoreRoleKeys.RDBReference, "RDB Global Reference",
             false, false, false)),
-    //-------------------
-
 
     /** InfluxDB datastore */
     InfluxDBDatastore(ConfigurationRole.build(CommonDatastoreRoleKeys.InfluxDBDatastore, "InfluxDB Datastore", false,

@@ -10,8 +10,6 @@ package com.sitewhere.rdb.entities;
 import com.sitewhere.spi.device.IDeviceStatus;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Type;
-
 import javax.persistence.*;
 import java.util.Date;
 import java.util.HashMap;

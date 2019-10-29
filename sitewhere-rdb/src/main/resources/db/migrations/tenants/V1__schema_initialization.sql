@@ -464,19 +464,6 @@ create table device_group_element_roles
 alter table device_group_element_roles
     owner to sitewhere;
 
-create table location
-(
-    id uuid not null constraint location_pkey primary key,
-    elevation double precision,
-    latitude  double precision,
-    longitude double precision,
-    area_id   uuid references area(id),
-    zone_id   uuid references zone(id)
-);
-
-alter table location
-    owner to sitewhere;
-
 create table zone
 (
     id uuid not null constraint zone_pkey primary key,
@@ -494,6 +481,20 @@ create table zone
 
 alter table zone
     owner to sitewhere;
+
+create table location
+(
+    id uuid not null constraint location_pkey primary key,
+    elevation double precision,
+    latitude  double precision,
+    longitude double precision,
+    area_id   uuid references area(id),
+    zone_id   uuid references zone(id)
+);
+
+alter table location
+    owner to sitewhere;
+
 
 create table zone_metadata
 (

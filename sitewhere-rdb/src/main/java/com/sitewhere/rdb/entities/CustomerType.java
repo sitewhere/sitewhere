@@ -10,8 +10,6 @@ package com.sitewhere.rdb.entities;
 import com.sitewhere.spi.customer.ICustomerType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Type;
-
 import javax.persistence.*;
 import java.util.*;
 
