@@ -36,7 +36,7 @@ public class KubernetesTenantManagement extends LifecycleComponent implements IT
      */
     @Override
     public ITenant createTenant(ITenantCreateRequest request) throws SiteWhereException {
-	return null;
+	throw new RuntimeException("Not implemented yet.");
     }
 
     /*
@@ -45,7 +45,7 @@ public class KubernetesTenantManagement extends LifecycleComponent implements IT
      */
     @Override
     public ITenant updateTenant(UUID id, ITenantCreateRequest request) throws SiteWhereException {
-	return null;
+	throw new RuntimeException("Not implemented yet.");
     }
 
     /*
@@ -53,7 +53,7 @@ public class KubernetesTenantManagement extends LifecycleComponent implements IT
      */
     @Override
     public ITenant getTenant(UUID id) throws SiteWhereException {
-	return null;
+	throw new RuntimeException("Not implemented yet.");
     }
 
     /*
@@ -62,7 +62,7 @@ public class KubernetesTenantManagement extends LifecycleComponent implements IT
      */
     @Override
     public ITenant getTenantByToken(String token) throws SiteWhereException {
-	return null;
+	throw new RuntimeException("Not implemented yet.");
     }
 
     /*
@@ -72,7 +72,7 @@ public class KubernetesTenantManagement extends LifecycleComponent implements IT
      */
     @Override
     public ISearchResults<ITenant> listTenants(ITenantSearchCriteria criteria) throws SiteWhereException {
-	return null;
+	throw new RuntimeException("Not implemented yet.");
     }
 
     /*
@@ -80,7 +80,7 @@ public class KubernetesTenantManagement extends LifecycleComponent implements IT
      */
     @Override
     public ITenant deleteTenant(UUID tenantId) throws SiteWhereException {
-	return null;
+	throw new RuntimeException("Not implemented yet.");
     }
 
     protected IConfigurableMicroservice<?> getConfigurableMicroservice() {

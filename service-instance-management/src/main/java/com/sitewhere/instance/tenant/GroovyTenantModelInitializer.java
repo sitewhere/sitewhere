@@ -33,12 +33,12 @@ public class GroovyTenantModelInitializer extends ModelInitializer implements IT
     /** Groovy configuration */
     private IGroovyConfiguration groovyConfiguration;
 
-    /** Relative path to Groovy script */
-    private String scriptPath;
+    /** Script name */
+    private String scriptName;
 
-    public GroovyTenantModelInitializer(IGroovyConfiguration groovyConfiguration, String scriptPath) {
+    public GroovyTenantModelInitializer(IGroovyConfiguration groovyConfiguration, String scriptName) {
 	this.groovyConfiguration = groovyConfiguration;
-	this.scriptPath = scriptPath;
+	this.scriptName = scriptName;
     }
 
     /*
@@ -59,7 +59,7 @@ public class GroovyTenantModelInitializer extends ModelInitializer implements IT
 		new TenantManagementRequestBuilder(tenantManagement));
 
 	try {
-	    getGroovyConfiguration().run(ScriptType.Initializer, getScriptPath(), binding);
+	    getGroovyConfiguration().run(ScriptType.Initializer, getScriptName(), binding);
 	} catch (SiteWhereException e) {
 	    throw new SiteWhereException("Unable to run tenant model initializer.", e);
 	}
@@ -73,11 +73,11 @@ public class GroovyTenantModelInitializer extends ModelInitializer implements IT
 	this.groovyConfiguration = groovyConfiguration;
     }
 
-    public String getScriptPath() {
-	return scriptPath;
+    public String getScriptName() {
+	return scriptName;
     }
 
-    public void setScriptPath(String scriptPath) {
-	this.scriptPath = scriptPath;
+    public void setScriptName(String scriptName) {
+	this.scriptName = scriptName;
     }
 }

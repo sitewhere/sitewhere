@@ -7,6 +7,8 @@
  */
 package com.sitewhere.device.microservice;
 
+import java.nio.file.Path;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -133,7 +135,7 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
     public void tenantBootstrap(TenantEngineDatasetTemplate template, ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException {
 	String scriptName = String.format("%s.groovy", template.getMetadata().getName());
-	String path = getScriptSynchronizer().add(getScriptContext(), ScriptType.Initializer, scriptName,
+	Path path = getScriptSynchronizer().add(getScriptContext(), ScriptType.Initializer, scriptName,
 		template.getSpec().getConfiguration().getBytes());
 
 	// Execute remote calls as superuser.

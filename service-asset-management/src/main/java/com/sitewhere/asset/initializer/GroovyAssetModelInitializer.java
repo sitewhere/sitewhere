@@ -7,6 +7,9 @@
  */
 package com.sitewhere.asset.initializer;
 
+import java.io.File;
+import java.nio.file.Path;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -35,9 +38,9 @@ public class GroovyAssetModelInitializer extends ModelInitializer implements IAs
     /** Relative path to Groovy script */
     private String scriptPath;
 
-    public GroovyAssetModelInitializer(IGroovyConfiguration groovyConfiguration, String scriptPath) {
+    public GroovyAssetModelInitializer(IGroovyConfiguration groovyConfiguration, Path scriptPath) {
 	this.groovyConfiguration = groovyConfiguration;
-	this.scriptPath = scriptPath;
+	this.scriptPath = File.separator + scriptPath.toString();
     }
 
     /*

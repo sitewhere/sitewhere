@@ -75,7 +75,7 @@ public class InstanceSettings implements IInstanceSettings {
     private boolean grpcResolveFQDN;
 
     /** File system root for storing SiteWhere data for microservices */
-    @Value("#{systemEnvironment['sitewhere.filesystem.storage.root'] ?: '/var/sitewhere'}")
+    @Value("#{systemEnvironment['sitewhere.filesystem.storage.root'] ?: '/var/sitewhere/'}")
     private String fileSystemStorageRoot;
 
     /** Flag for whether to log metrics */

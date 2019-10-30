@@ -7,6 +7,9 @@
  */
 package com.sitewhere.event.initializer;
 
+import java.io.File;
+import java.nio.file.Path;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -38,9 +41,9 @@ public class GroovyEventModelInitializer extends ModelInitializer implements IEv
     /** Relative path to Groovy script */
     private String scriptPath;
 
-    public GroovyEventModelInitializer(IGroovyConfiguration groovyConfiguration, String scriptPath) {
+    public GroovyEventModelInitializer(IGroovyConfiguration groovyConfiguration, Path scriptPath) {
 	this.groovyConfiguration = groovyConfiguration;
-	this.scriptPath = scriptPath;
+	this.scriptPath = File.separator + scriptPath.toString();
     }
 
     /*

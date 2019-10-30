@@ -30,6 +30,7 @@ import com.sitewhere.instance.spi.tenant.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.instance.spi.user.grpc.IUserManagementGrpcServer;
 import com.sitewhere.instance.user.persistence.SyncopeUserManagement;
 import com.sitewhere.microservice.GlobalMicroservice;
+import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.grpc.tenant.TenantManagementGrpcServer;
 import com.sitewhere.microservice.grpc.user.UserManagementGrpcServer;
 import com.sitewhere.microservice.scripting.InstanceScriptContext;
@@ -40,6 +41,7 @@ import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
+import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.microservice.scripting.IScriptContext;
 import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
@@ -64,11 +66,14 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     /** Instance dataset bootstrapper */
     private IInstanceBootstrapper instanceBootstrapper;
 
-    /** Responds to user management GRPC requests */
-    private IUserManagementGrpcServer userManagementGrpcServer;
+    /** Groovy configuration */
+    private IGroovyConfiguration groovyConfiguration;
 
     /** User management implementation */
     private IUserManagement userManagement;
+
+    /** Responds to user management GRPC requests */
+    private IUserManagementGrpcServer userManagementGrpcServer;
 
     /** Responds to tenant management GRPC requests */
     private ITenantManagementGrpcServer tenantManagementGrpcServer;
@@ -146,6 +151,7 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Create script synchronizer and context.
 	this.scriptSynchronizer = new ScriptSynchronizer();
 	this.scriptContext = new InstanceScriptContext();
+	this.groovyConfiguration = new GroovyConfiguration(getScriptContext(), getScriptSynchronizer());
 
 	// Create dataset bootstrapper.
 	this.instanceBootstrapper = new InstanceBoostrapper();
@@ -173,6 +179,9 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
 	// Initialize script synchronizer.
 	init.addInitializeStep(this, getScriptSynchronizer(), true);
+
+	// Initialize Groovy configuration.
+	init.addInitializeStep(this, getGroovyConfiguration(), true);
 
 	// Initialize device management API channel + cache.
 	init.addInitializeStep(this, getCachedDeviceManagement(), true);
@@ -256,6 +265,9 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Start script synchronizer.
 	start.addStartStep(this, getScriptSynchronizer(), true);
 
+	// Start Groovy configuration.
+	start.addStartStep(this, getGroovyConfiguration(), true);
+
 	// Start tenant management GRPC server.
 	start.addStartStep(this, getTenantManagementGrpcServer(), true);
 
@@ -334,6 +346,9 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Stop script synchronizer.
 	stop.addStopStep(this, getScriptSynchronizer());
 
+	// Stop Groovy configuration.
+	stop.addStopStep(this, getGroovyConfiguration());
+
 	// Stop user management implementation.
 	stop.addStopStep(this, getUserManagement());
 
@@ -381,6 +396,19 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
     public void setInstanceBootstrapper(IInstanceBootstrapper instanceBootstrapper) {
 	this.instanceBootstrapper = instanceBootstrapper;
+    }
+
+    /*
+     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * getGroovyConfiguration()
+     */
+    @Override
+    public IGroovyConfiguration getGroovyConfiguration() {
+	return groovyConfiguration;
+    }
+
+    public void setGroovyConfiguration(IGroovyConfiguration groovyConfiguration) {
+	this.groovyConfiguration = groovyConfiguration;
     }
 
     /*

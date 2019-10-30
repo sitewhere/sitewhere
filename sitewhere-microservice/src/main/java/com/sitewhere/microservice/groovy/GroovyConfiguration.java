@@ -7,7 +7,7 @@
  */
 package com.sitewhere.microservice.groovy;
 
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URL;
 
 import org.codehaus.groovy.control.CompilationFailedException;
@@ -29,8 +29,6 @@ import groovy.util.ScriptException;
 
 /**
  * Provides common Groovy configuration for core server components.
- * 
- * @author Derek
  */
 public class GroovyConfiguration extends LifecycleComponent implements IGroovyConfiguration {
 
@@ -65,11 +63,13 @@ public class GroovyConfiguration extends LifecycleComponent implements IGroovyCo
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	try {
-	    groovyScriptEngine = new GroovyScriptEngine(
-		    new URL[] { getScriptSynchronizer().getFileSystemRoot().toURI().toURL() });
+	    URL root = new URL(
+		    String.format("file://%s", getMicroservice().getInstanceSettings().getFileSystemStorageRoot()));
+	    getLogger().debug(String.format("Root path URL for script resolution is %s.", root.toString()));
+	    groovyScriptEngine = new GroovyScriptEngine(new URL[] { root });
 	    groovyScriptEngine.getConfig().setVerbose(isVerbose());
 	    groovyScriptEngine.getConfig().setDebug(isDebug());
-	} catch (MalformedURLException e) {
+	} catch (IOException e) {
 	    throw new SiteWhereException("Unable to create Groovy script engine.", e);
 	}
     }
@@ -93,7 +93,7 @@ public class GroovyConfiguration extends LifecycleComponent implements IGroovyCo
     @Override
     public Object run(ScriptType type, String name, Binding binding) throws SiteWhereException {
 	try {
-	    String resolved = getScriptSynchronizer().resolve(getScriptContext(), type, name);
+	    String resolved = getScriptSynchronizer().resolve(getScriptContext(), type, name).toString();
 	    return getGroovyScriptEngine().run(resolved, binding);
 	} catch (ResourceException e) {
 	    throw new SiteWhereException("Unable to access Groovy script.", e);

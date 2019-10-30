@@ -8,6 +8,7 @@
 package com.sitewhere.spi.microservice.scripting;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
@@ -36,7 +37,7 @@ public interface IScriptSynchronizer extends ILifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public String add(IScriptContext context, ScriptType type, String name, byte[] content) throws SiteWhereException;
+    public Path add(IScriptContext context, ScriptType type, String name, byte[] content) throws SiteWhereException;
 
     /**
      * Produce path to script that has been serialized to disk.
@@ -47,5 +48,5 @@ public interface IScriptSynchronizer extends ILifecycleComponent {
      * @return
      * @throws SiteWhereException
      */
-    public String resolve(IScriptContext context, ScriptType type, String name) throws SiteWhereException;
+    public Path resolve(IScriptContext context, ScriptType type, String name) throws SiteWhereException;
 }

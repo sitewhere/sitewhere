@@ -20,6 +20,7 @@ import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
+import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.microservice.scripting.IScriptContext;
 import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
 import com.sitewhere.spi.user.IUserManagement;
@@ -49,6 +50,13 @@ public interface IInstanceManagementMicroservice<T extends IFunctionIdentifier> 
      * @return
      */
     public IInstanceBootstrapper getInstanceBootstrapper();
+
+    /**
+     * Get Groovy configuration for instance-scoped operations.
+     * 
+     * @return
+     */
+    public IGroovyConfiguration getGroovyConfiguration();
 
     /**
      * Get user management implementation.

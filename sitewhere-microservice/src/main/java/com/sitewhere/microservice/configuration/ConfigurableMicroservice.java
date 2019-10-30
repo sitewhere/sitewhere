@@ -84,8 +84,18 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
 	boolean wasConfigured = getLastInstanceConfiguration() != null
 		&& getLastInstanceConfiguration().getSpec().getConfiguration() != null;
+	boolean configUpdated = wasConfigured && getLastInstanceConfiguration().getSpec().getConfiguration()
+		.equals(instance.getSpec().getConfiguration());
+
+	// Save updated instance.
 	this.lastInstanceConfiguration = instance;
 
+	// If configuration was not updated, skip context restart.
+	if (wasConfigured && !configUpdated) {
+	    return;
+	}
+
+	getLogger().info("Detected configuration update. Reloading context...");
 	getMicroserviceOperationsService().execute(new Runnable() {
 
 	    @Override

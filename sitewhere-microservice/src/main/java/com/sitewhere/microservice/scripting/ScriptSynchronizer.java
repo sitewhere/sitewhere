@@ -8,6 +8,15 @@
 package com.sitewhere.microservice.scripting;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLConnection;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.apache.commons.io.IOUtils;
 
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -34,6 +43,8 @@ public class ScriptSynchronizer extends LifecycleComponent implements IScriptSyn
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
 	this.fileSystemRoot = new File(getMicroservice().getInstanceSettings().getFileSystemStorageRoot());
+	getLogger().debug(String.format("File system root for script synchronizer is %s.",
+		getMicroservice().getInstanceSettings().getFileSystemStorageRoot()));
     }
 
     /*
@@ -53,8 +64,26 @@ public class ScriptSynchronizer extends LifecycleComponent implements IScriptSyn
      * byte[])
      */
     @Override
-    public String add(IScriptContext context, ScriptType type, String name, byte[] content) throws SiteWhereException {
-	return null;
+    public Path add(IScriptContext context, ScriptType type, String name, byte[] content) throws SiteWhereException {
+	Path relative = resolve(context, type, name);
+	Path destination = getFileSystemRoot().toPath().resolve(relative);
+	getLogger().debug(String.format("Resolving script file -> Root: [%s] Relative [%s]",
+		getFileSystemRoot().toPath().toString(), relative.toString()));
+
+	try {
+	    destination.getParent().toFile().mkdirs();
+	    IOUtils.write(content, new FileWriter(destination.toFile()), Charset.defaultCharset());
+	    getLogger().debug(String.format("Synchronized file '%s' to disk. Exists: %s",
+		    destination.toFile().getAbsolutePath(), String.valueOf(destination.toFile().exists())));
+	    URLConnection conn = destination.toFile().toURI().toURL().openConnection();
+	    conn.connect();
+	    InputStream stream = conn.getInputStream();
+	    stream.close();
+	} catch (IOException e) {
+	    throw new SiteWhereException(String.format("Unable to copy script to disk at path '%s'.", destination), e);
+	}
+
+	return relative;
     }
 
     /*
@@ -64,10 +93,27 @@ public class ScriptSynchronizer extends LifecycleComponent implements IScriptSyn
      * com.sitewhere.spi.microservice.scripting.ScriptType, java.lang.String)
      */
     @Override
-    public String resolve(IScriptContext context, ScriptType type, String name) throws SiteWhereException {
-	File relative = new File(getFileSystemRoot() + File.separator + context.getBasePath());
-	File resolved = new File(relative, name);
-	return resolved.getAbsolutePath();
+    public Path resolve(IScriptContext context, ScriptType type, String name) throws SiteWhereException {
+	return Paths.get(context.getBasePath(), getPathForType(type), name);
+    }
+
+    /**
+     * Get path based on script type.
+     * 
+     * @param type
+     * @return
+     * @throws SiteWhereException
+     */
+    protected String getPathForType(ScriptType type) throws SiteWhereException {
+	switch (type) {
+	case Initializer: {
+	    return "initializer";
+	}
+	case ManagedScript: {
+	    return "scripts";
+	}
+	}
+	throw new SiteWhereException(String.format("Unknown script type: %s", type.name()));
     }
 
     /*

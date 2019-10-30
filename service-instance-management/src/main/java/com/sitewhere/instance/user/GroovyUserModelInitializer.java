@@ -33,11 +33,11 @@ public class GroovyUserModelInitializer extends ModelInitializer implements IUse
     private IGroovyConfiguration groovyConfiguration;
 
     /** Relative path to Groovy script */
-    private String scriptPath;
+    private String scriptName;
 
-    public GroovyUserModelInitializer(IGroovyConfiguration groovyConfiguration, String scriptPath) {
+    public GroovyUserModelInitializer(IGroovyConfiguration groovyConfiguration, String scriptName) {
 	this.groovyConfiguration = groovyConfiguration;
-	this.scriptPath = scriptPath;
+	this.scriptName = scriptName;
     }
 
     /*
@@ -56,7 +56,7 @@ public class GroovyUserModelInitializer extends ModelInitializer implements IUse
 	binding.setVariable("userBuilder", new UserManagementRequestBuilder(userManagement));
 
 	try {
-	    getGroovyConfiguration().run(ScriptType.Initializer, getScriptPath(), binding);
+	    getGroovyConfiguration().run(ScriptType.Initializer, getScriptName(), binding);
 	} catch (SiteWhereException e) {
 	    throw new SiteWhereException("Unable to run user model initializer.", e);
 	}
@@ -70,11 +70,11 @@ public class GroovyUserModelInitializer extends ModelInitializer implements IUse
 	this.groovyConfiguration = groovyConfiguration;
     }
 
-    public String getScriptPath() {
-	return scriptPath;
+    public String getScriptName() {
+	return scriptName;
     }
 
-    public void setScriptPath(String scriptPath) {
-	this.scriptPath = scriptPath;
+    public void setScriptName(String scriptName) {
+	this.scriptName = scriptName;
     }
 }
