@@ -248,7 +248,7 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         Specification<com.sitewhere.rdb.entities.DeviceCommand> specification = new Specification<com.sitewhere.rdb.entities.DeviceCommand>() {
             @Override
             public Predicate toPredicate(Root<com.sitewhere.rdb.entities.DeviceCommand> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                List<Predicate> predicates = new ArrayList<>();
+                List<Predicate> predicates = new ArrayList();
                 if (criteria.getDeviceTypeToken() != null) {
                     Path path = root.get("deviceTypeToken");
                     predicates.add(cb.equal(path, criteria.getDeviceTypeToken()));
@@ -356,7 +356,7 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         Specification<com.sitewhere.rdb.entities.DeviceStatus> specification = new Specification<com.sitewhere.rdb.entities.DeviceStatus>() {
             @Override
             public Predicate toPredicate(Root<com.sitewhere.rdb.entities.DeviceStatus> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                List<Predicate> predicates = new ArrayList<>();
+                List<Predicate> predicates = new ArrayList();
                 if (criteria.getDeviceTypeToken() != null) {
                     Path path = root.get("deviceTypeToken");
                     predicates.add(cb.equal(path, criteria.getDeviceTypeToken()));
@@ -460,7 +460,7 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         Specification<com.sitewhere.rdb.entities.Device> specification = new Specification<com.sitewhere.rdb.entities.Device>() {
             @Override
             public Predicate toPredicate(Root<com.sitewhere.rdb.entities.Device> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                List<Predicate> predicates = new ArrayList<>();
+                List<Predicate> predicates = new ArrayList();
                 if (criteria.isExcludeAssigned()) {
                     Path path = root.get("activeDeviceAssignmentIds");
                     predicates.add(cb.not(cb.size(path).isNull()));
@@ -576,7 +576,7 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         Optional<com.sitewhere.rdb.entities.Device> opt = getRDBClient().getDbManager().getDeviceRepository().findById(deviceId);
         if(opt.isPresent()) {
             com.sitewhere.rdb.entities.Device device = opt.get();
-            List<IDeviceAssignment> active = new ArrayList<>();
+            List<IDeviceAssignment> active = new ArrayList();
             List<UUID> uuids = device.getActiveDeviceAssignmentIds();
             for(UUID uuid : uuids) {
                 Optional<com.sitewhere.rdb.entities.DeviceAssignment> opt2 = getRDBClient().getDbManager().getDeviceAssignmentRepository().findById(uuid);
@@ -647,12 +647,11 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         Specification<com.sitewhere.rdb.entities.DeviceAssignment> specification = new Specification<com.sitewhere.rdb.entities.DeviceAssignment>() {
             @Override
             public Predicate toPredicate(Root<com.sitewhere.rdb.entities.DeviceAssignment> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                List<Predicate> predicates = new ArrayList<>();
+                List<Predicate> predicates = new ArrayList();
 
                 if ((criteria.getAssignmentStatuses() != null) && (criteria.getAssignmentStatuses().size() > 0)) {
                     Path path = root.get("status");
-                    List<String> names = DeviceManagementUtils.getAssignmentStatusNames(criteria.getAssignmentStatuses());
-                    predicates.add(path.in(names));
+                    predicates.add(path.in(criteria.getAssignmentStatuses()));
                 }
                 if ((criteria.getDeviceTokens() != null) && (criteria.getDeviceTokens().size() > 0)) {
                     try {
@@ -721,7 +720,7 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
                 criteria.setAssignmentStatuses(Collections.singletonList(DeviceAssignmentStatus.Active));
                 ISearchResults<IDeviceAssignment> matches = listDeviceAssignments(criteria);
 
-                List<UUID> uuids = new ArrayList<>();
+                List<UUID> uuids = new ArrayList();
                 for (IDeviceAssignment assignment : matches.getResults()) {
                     uuids.add(assignment.getId());
                 }
@@ -797,7 +796,7 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         Specification<com.sitewhere.rdb.entities.DeviceAlarm> specification = new Specification<com.sitewhere.rdb.entities.DeviceAlarm>() {
             @Override
             public Predicate toPredicate(Root<com.sitewhere.rdb.entities.DeviceAlarm> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                List<Predicate> predicates = new ArrayList<>();
+                List<Predicate> predicates = new ArrayList();
                 if (criteria.getDeviceId() != null) {
                     Path path = root.get("deviceId");
                     predicates.add(cb.equal(path, criteria.getDeviceId()));
@@ -977,14 +976,14 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         Specification<com.sitewhere.rdb.entities.Customer> specification = new Specification<com.sitewhere.rdb.entities.Customer>() {
             @Override
             public Predicate toPredicate(Root<com.sitewhere.rdb.entities.Customer> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                List<Predicate> predicates = new ArrayList<>();
+                List<Predicate> predicates = new ArrayList();
                 Path path = root.get("parentId");
                 predicates.add(cb.equal(path, existing.getId()));
                 return query.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
             }
         };
         List<com.sitewhere.rdb.entities.Customer> result = getRDBClient().getDbManager().getCustomerRepository().findAll(specification, sort);
-        List<ICustomer> list = new ArrayList<>();
+        List<ICustomer> list = new ArrayList();
         for(com.sitewhere.rdb.entities.Customer customer : result) {
             list.add(customer);
         }
@@ -1013,7 +1012,7 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         Specification<com.sitewhere.rdb.entities.Customer> specification = new Specification<com.sitewhere.rdb.entities.Customer>() {
             @Override
             public Predicate toPredicate(Root<com.sitewhere.rdb.entities.Customer> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                List<Predicate> predicates = new ArrayList<>();
+                List<Predicate> predicates = new ArrayList();
                 if ((criteria.getRootOnly() != null) && (criteria.getRootOnly().booleanValue() == true)) {
                     Path path = root.get("parentId");
                     predicates.add(cb.isNull(path));
@@ -1150,7 +1149,7 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         Area area = DeviceManagementPersistence.areaCreateLogic(request, areaType, parentArea);
         com.sitewhere.rdb.entities.Area created = new com.sitewhere.rdb.entities.Area();
 
-        List<com.sitewhere.rdb.entities.Location> locations = new ArrayList<>();
+        List<com.sitewhere.rdb.entities.Location> locations = new ArrayList();
 
         BeanUtils.copyProperties(area, created);
         //BeanUtils.copyProperties(area.getBounds(), locations);
@@ -1193,14 +1192,14 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         Specification<com.sitewhere.rdb.entities.Area> specification = new Specification<com.sitewhere.rdb.entities.Area>() {
             @Override
             public Predicate toPredicate(Root<com.sitewhere.rdb.entities.Area> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                List<Predicate> predicates = new ArrayList<>();
+                List<Predicate> predicates = new ArrayList();
                 Path path = root.get("parentId");
                 predicates.add(cb.equal(path, existing.getId()));
                 return query.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
             }
         };
         List<com.sitewhere.rdb.entities.Area> list = getRDBClient().getDbManager().getAreaRepository().findAll(specification, sort);
-        List<IArea> newList = new ArrayList<>();
+        List<IArea> newList = new ArrayList();
         for(com.sitewhere.rdb.entities.Area a : list) {
             newList.add(a);
         }
@@ -1231,7 +1230,7 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         Specification<com.sitewhere.rdb.entities.Area> specification = new Specification<com.sitewhere.rdb.entities.Area>() {
             @Override
             public Predicate toPredicate(Root<com.sitewhere.rdb.entities.Area> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                List<Predicate> predicates = new ArrayList<>();
+                List<Predicate> predicates = new ArrayList();
                 if ((criteria.getRootOnly() != null) && (criteria.getRootOnly().booleanValue() == true)) {
                     Path path = root.get("parentId");
                     predicates.add(cb.isNull(path));
@@ -1301,7 +1300,7 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         com.sitewhere.rdb.entities.Zone created = new com.sitewhere.rdb.entities.Zone();
         BeanUtils.copyProperties(zone, created);
 
-        List<com.sitewhere.rdb.entities.Location> locations = new ArrayList<>();
+        List<com.sitewhere.rdb.entities.Location> locations = new ArrayList();
         BeanUtils.copyProperties(area, created);
         for (Location locationCommon: zone.getBounds()) {
             com.sitewhere.rdb.entities.Location l = new com.sitewhere.rdb.entities.Location();
@@ -1352,7 +1351,7 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         Specification<com.sitewhere.rdb.entities.Zone> specification = new Specification<com.sitewhere.rdb.entities.Zone>() {
             @Override
             public Predicate toPredicate(Root<com.sitewhere.rdb.entities.Zone> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                List<Predicate> predicates = new ArrayList<>();
+                List<Predicate> predicates = new ArrayList();
                 if (criteria.getAreaToken() != null) {
                     Path path = root.get("areaId");
                     predicates.add(cb.equal(path, criteria.getAreaToken()));
@@ -1447,7 +1446,7 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         Specification<com.sitewhere.rdb.entities.DeviceGroup> specification = new Specification<com.sitewhere.rdb.entities.DeviceGroup>() {
             @Override
             public Predicate toPredicate(Root<com.sitewhere.rdb.entities.DeviceGroup> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                List<Predicate> predicates = new ArrayList<>();
+                List<Predicate> predicates = new ArrayList();
                 Path path = root.get("roles");
                 predicates.add(path.in(role));
                 return query.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
@@ -1474,9 +1473,9 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
 
     @Override
     public List<IDeviceGroupElement> addDeviceGroupElements(UUID groupId, List<IDeviceGroupElementCreateRequest> elements, boolean ignoreDuplicates) throws SiteWhereException {
-        Optional<com.sitewhere.rdb.entities.DeviceGroupElement> opt = getRDBClient().getDbManager().getDeviceGroupElementRepository().findById(groupId);
-        List<IDeviceGroupElement> results = new ArrayList<IDeviceGroupElement>();
-        com.sitewhere.rdb.entities.DeviceGroupElement added = opt.get();
+        Optional<com.sitewhere.rdb.entities.DeviceGroup> opt = getRDBClient().getDbManager().getDeviceGroupRepository().findById(groupId);
+        List<IDeviceGroupElement> results = new ArrayList();
+        com.sitewhere.rdb.entities.DeviceGroup group = opt.get();
         for (IDeviceGroupElementCreateRequest request : elements) {
             // Look up referenced device if provided.
             IDevice device = null;
@@ -1494,12 +1493,12 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
                     throw new SiteWhereSystemException(ErrorCode.InvalidDeviceGroupToken, ErrorLevel.ERROR);
                 }
             }
-            DeviceGroup group = new DeviceGroup();
-            group.setId(added.getId());
+
+            com.sitewhere.rdb.entities.DeviceGroupElement created = new com.sitewhere.rdb.entities.DeviceGroupElement();
             DeviceGroupElement element = DeviceManagementPersistence.deviceGroupElementCreateLogic(request, group, device, nested);
-            BeanUtils.copyProperties(element, added);
-            added = getRDBClient().getDbManager().getDeviceGroupElementRepository().save(added);
-            results.add(added);
+            BeanUtils.copyProperties(element, created);
+            created = getRDBClient().getDbManager().getDeviceGroupElementRepository().save(created);
+            results.add(created);
         }
         return results;
     }
@@ -1523,7 +1522,7 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         Specification<com.sitewhere.rdb.entities.DeviceGroupElement> specification = new Specification<com.sitewhere.rdb.entities.DeviceGroupElement>() {
             @Override
             public Predicate toPredicate(Root<com.sitewhere.rdb.entities.DeviceGroupElement> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                List<Predicate> predicates = new ArrayList<>();
+                List<Predicate> predicates = new ArrayList();
                 Path path = root.get("groupId");
                 predicates.add(cb.equal(path, groupId));
                 return query.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
@@ -1571,7 +1570,7 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
      * @throws SiteWhereException
      */
     protected List<UUID> getAssetIds(List<String> tokens) throws SiteWhereException {
-        List<UUID> result = new ArrayList<>();
+        List<UUID> result = new ArrayList();
         for (String token : tokens) {
             IAsset asset = getAssetManagement().getAssetByToken(token);
             result.add(asset.getId());
@@ -1587,7 +1586,7 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
      * @throws SiteWhereException
      */
     protected List<UUID> convertCustomerTypeTokensToIds(List<String> tokens) throws SiteWhereException {
-        List<UUID> cctids = new ArrayList<>();
+        List<UUID> cctids = new ArrayList();
         if (tokens != null) {
             for (String token : tokens) {
                 ICustomerType contained = getCustomerTypeByToken(token);
@@ -1607,7 +1606,7 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
      * @throws SiteWhereException
      */
     protected List<UUID> convertAreaTypeTokensToIds(List<String> tokens) throws SiteWhereException {
-        List<UUID> catids = new ArrayList<>();
+        List<UUID> catids = new ArrayList();
         if (tokens != null) {
             for (String token : tokens) {
                 IAreaType contained = getAreaTypeByToken(token);
