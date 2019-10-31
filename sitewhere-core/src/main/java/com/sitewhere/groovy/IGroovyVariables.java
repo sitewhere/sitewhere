@@ -9,8 +9,6 @@ package com.sitewhere.groovy;
 
 /**
  * Variables injected into Groovy decoders.
- * 
- * @author Derek
  */
 public interface IGroovyVariables {
 

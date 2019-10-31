@@ -17,8 +17,6 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
 /**
  * Wraps a {@link DeviceAlert} so that information about the asset associated
  * with its assignment is available.
- * 
- * @author Derek
  */
 public class DeviceAlertWithAsset extends DeviceEventWithAsset implements IDeviceAlert {
 

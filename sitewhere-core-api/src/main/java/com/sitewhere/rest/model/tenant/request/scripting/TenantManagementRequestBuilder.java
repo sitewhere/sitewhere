@@ -14,8 +14,6 @@ import com.sitewhere.spi.tenant.ITenantManagement;
 
 /**
  * Builder that supports creating tenant management entities.
- * 
- * @author Derek
  */
 public class TenantManagementRequestBuilder {
 

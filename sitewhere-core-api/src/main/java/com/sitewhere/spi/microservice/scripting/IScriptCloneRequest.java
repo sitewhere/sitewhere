@@ -9,8 +9,6 @@ package com.sitewhere.spi.microservice.scripting;
 
 /**
  * Information required to clone a script.
- * 
- * @author Derek
  */
 public interface IScriptCloneRequest {
 

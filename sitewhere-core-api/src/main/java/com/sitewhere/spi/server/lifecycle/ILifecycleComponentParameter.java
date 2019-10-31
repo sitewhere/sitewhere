@@ -9,8 +9,6 @@ package com.sitewhere.spi.server.lifecycle;
 
 /**
  * Parameter used to configure a lifecycle component.
- * 
- * @author Derek
  *
  * @param <T>
  */

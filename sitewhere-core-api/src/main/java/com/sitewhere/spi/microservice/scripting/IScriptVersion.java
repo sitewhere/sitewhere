@@ -11,8 +11,6 @@ import java.util.Date;
 
 /**
  * Get information about a version of a script.
- * 
- * @author Derek
  */
 public interface IScriptVersion {
 

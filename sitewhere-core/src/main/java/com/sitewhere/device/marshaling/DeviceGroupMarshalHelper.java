@@ -18,8 +18,6 @@ import com.sitewhere.spi.device.group.IDeviceGroup;
 /**
  * Configurable helper class that allows {@link DeviceGroup} model objects to be
  * created from {@link IDeviceGroup} SPI objects.
- * 
- * @author dadams
  */
 public class DeviceGroupMarshalHelper {
 

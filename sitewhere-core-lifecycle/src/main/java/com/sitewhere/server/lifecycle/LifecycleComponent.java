@@ -39,8 +39,6 @@ import ch.qos.cal10n.MessageConveyor;
 
 /**
  * Base class for implementing {@link ILifecycleComponent}.
- * 
- * @author Derek
  */
 public class LifecycleComponent implements ILifecycleComponent {
 

@@ -9,8 +9,6 @@ package com.sitewhere.spi.microservice.state;
 
 /**
  * Details about a tenant engine running within a SiteWhere instance.
- * 
- * @author Derek
  */
 public interface IInstanceTenantEngine {
 

@@ -9,8 +9,6 @@ package com.sitewhere.spi.microservice;
 
 /**
  * Used to differentiate between functions provided by microservices.
- * 
- * @author Derek
  */
 public interface IFunctionIdentifier {
 

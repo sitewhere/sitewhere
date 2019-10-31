@@ -12,9 +12,6 @@ import java.util.List;
 /**
  * Implementation of {@link ILifecycleStep} that executes multiple steps in
  * sequence.
- * 
- * @author Derek
- *
  */
 public interface ICompositeLifecycleStep extends ILifecycleStep {
 

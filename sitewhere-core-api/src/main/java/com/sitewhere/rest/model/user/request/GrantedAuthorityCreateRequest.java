@@ -14,8 +14,6 @@ import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
 
 /**
  * Holds fields needed to create a new granted authority.
- * 
- * @author Derek Adams
  */
 @JsonInclude(Include.NON_NULL)
 public class GrantedAuthorityCreateRequest implements IGrantedAuthorityCreateRequest {
@@ -80,8 +78,7 @@ public class GrantedAuthorityCreateRequest implements IGrantedAuthorityCreateReq
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest#isGroup()
+     * @see com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest#isGroup()
      */
     public boolean isGroup() {
 	return group;

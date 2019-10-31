@@ -20,7 +20,6 @@ import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.spring.CommandDestinationsBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -67,13 +66,14 @@ public class CommandDeliveryTenantEngine extends MicroserviceTenantEngine implem
 	// Listener for enriched command invocations.
 	this.undeliveredCommandInvocationsProducer = new UndeliveredCommandInvocationsProducer();
 
-	// Load configured command destinations manager.
-	this.commandDestinationsManager = (ICommandDestinationsManager) getModuleContext()
-		.getBean(CommandDestinationsBeans.BEAN_COMMAND_DESTINATIONS_MANAGER);
-
-	// Load configured command router.
-	this.outboundCommandRouter = (IOutboundCommandRouter) getModuleContext()
-		.getBean(CommandDestinationsBeans.BEAN_COMMAND_ROUTER);
+	// // Load configured command destinations manager.
+	// this.commandDestinationsManager = (ICommandDestinationsManager)
+	// getModuleContext()
+	// .getBean(CommandDestinationsBeans.BEAN_COMMAND_DESTINATIONS_MANAGER);
+	//
+	// // Load configured command router.
+	// this.outboundCommandRouter = (IOutboundCommandRouter) getModuleContext()
+	// .getBean(CommandDestinationsBeans.BEAN_COMMAND_ROUTER);
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());

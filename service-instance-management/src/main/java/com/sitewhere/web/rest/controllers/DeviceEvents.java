@@ -9,23 +9,22 @@ package com.sitewhere.web.rest.controllers;
 
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
+import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
-import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
-import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,15 +35,18 @@ import io.swagger.annotations.ApiParam;
  * 
  * @author Derek Adams
  */
-@RestController
-@SiteWhereCrossOrigin
-@RequestMapping(value = "/events")
+@Path("/events")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "events")
-public class DeviceEvents extends RestControllerBase {
+public class DeviceEvents {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
     private static Log LOGGER = LogFactory.getLog(DeviceEvents.class);
+
+    @Inject
+    private IInstanceManagementMicroservice<?> microservice;
 
     /**
      * Find a device event by unique id.
@@ -53,32 +55,35 @@ public class DeviceEvents extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/id/{eventId}", method = RequestMethod.GET)
+    @GET
+    @Path("/id/{eventId}")
     @ApiOperation(value = "Get event by unique id")
-    @Secured({ SiteWhereRoles.REST })
-    public IDeviceEvent getEventById(@ApiParam(value = "Event id", required = true) @PathVariable String eventId)
+    public Response getEventById(@ApiParam(value = "Event id", required = true) @PathParam("eventId") String eventId)
 	    throws SiteWhereException {
-	return getDeviceEventManagement().getDeviceEventById(UUID.fromString(eventId));
+	return Response.ok(getDeviceEventManagement().getDeviceEventById(UUID.fromString(eventId))).build();
     }
 
     /**
      * Find a device event by alternate id.
      * 
      * @param alternateId
-     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/alternate/{alternateId}", method = RequestMethod.GET)
+    @GET
+    @Path("/alternate/{alternateId}")
     @ApiOperation(value = "Get event by alternate (external) id")
-    @Secured({ SiteWhereRoles.REST })
-    public IDeviceEvent getEventByAlternateId(
-	    @ApiParam(value = "Alternate id", required = true) @PathVariable String alternateId,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getDeviceEventManagement().getDeviceEventByAlternateId(alternateId);
+    public Response getEventByAlternateId(
+	    @ApiParam(value = "Alternate id", required = true) @PathParam("alternateId") String alternateId)
+	    throws SiteWhereException {
+	return Response.ok(getDeviceEventManagement().getDeviceEventByAlternateId(alternateId)).build();
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {
 	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiChannel());
+    }
+
+    protected IInstanceManagementMicroservice<?> getMicroservice() {
+	return microservice;
     }
 }

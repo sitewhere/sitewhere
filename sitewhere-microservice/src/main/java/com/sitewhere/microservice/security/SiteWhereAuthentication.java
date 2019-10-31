@@ -5,13 +5,15 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.security;
+package com.sitewhere.microservice.security;
 
 import com.sitewhere.spi.tenant.ITenant;
 
-public class UserContextManager {
+public class SiteWhereAuthentication {
 
-    public static ITenant getCurrentTenant(boolean flag) {
-	return null;
+    public SiteWhereAuthentication(SiteWhereUserDetails details, String jwt) {
+    }
+
+    public void setTenant(ITenant tenant) {
     }
 }

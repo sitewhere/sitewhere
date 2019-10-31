@@ -13,21 +13,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestTemplate;
-
 import com.sitewhere.connectors.SerialOutboundConnector;
 import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceAssignment;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
@@ -41,6 +32,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
+@SuppressWarnings("unused")
 public class InitialStateOutboundConnector extends SerialOutboundConnector {
 
     /** Base URI for REST calls */
@@ -53,7 +45,7 @@ public class InitialStateOutboundConnector extends SerialOutboundConnector {
     private static final String HEADER_BUCKET_KEY = "X-IS-BucketKey";
 
     /** Use Spring RestTemplate to send requests */
-    private RestTemplate client;
+    // private RestTemplate client;
 
     /** Account-specific key for using streaming APIs */
     private String streamingAccessKey;
@@ -73,7 +65,7 @@ public class InitialStateOutboundConnector extends SerialOutboundConnector {
 	// Required for filters.
 	super.start(monitor);
 
-	this.client = new RestTemplate();
+	// this.client = new RestTemplate();
     }
 
     /*
@@ -171,30 +163,34 @@ public class InitialStateOutboundConnector extends SerialOutboundConnector {
      * @throws SiteWhereException
      */
     protected boolean createBucket(String bucketKey, String bucketName) throws SiteWhereException {
-	try {
-	    BucketCreateRequest request = new BucketCreateRequest();
-	    request.setBucketKey(bucketKey);
-	    request.setBucketName(bucketName);
-
-	    HttpHeaders headers = new HttpHeaders();
-	    headers.add(HEADER_ACCESS_KEY, getStreamingAccessKey());
-	    HttpEntity<BucketCreateRequest> entity = new HttpEntity<BucketCreateRequest>(request, headers);
-	    String url = API_BASE + "buckets";
-	    Map<String, String> vars = new HashMap<String, String>();
-	    ResponseEntity<String> response = getClient().exchange(url, HttpMethod.POST, entity, String.class, vars);
-	    if (response.getStatusCode() == HttpStatus.CREATED) {
-		return true;
-	    }
-	    if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
-		return false;
-	    }
-	    throw new SiteWhereException("Unable to create bucket. Status code was: " + response.getStatusCode());
-	} catch (ResourceAccessException e) {
-	    if (e.getCause() instanceof SiteWhereSystemException) {
-		throw (SiteWhereSystemException) e.getCause();
-	    }
-	    throw new RuntimeException(e);
-	}
+	// try {
+	// BucketCreateRequest request = new BucketCreateRequest();
+	// request.setBucketKey(bucketKey);
+	// request.setBucketName(bucketName);
+	//
+	// HttpHeaders headers = new HttpHeaders();
+	// headers.add(HEADER_ACCESS_KEY, getStreamingAccessKey());
+	// HttpEntity<BucketCreateRequest> entity = new
+	// HttpEntity<BucketCreateRequest>(request, headers);
+	// String url = API_BASE + "buckets";
+	// Map<String, String> vars = new HashMap<String, String>();
+	// ResponseEntity<String> response = getClient().exchange(url, HttpMethod.POST,
+	// entity, String.class, vars);
+	// if (response.getStatusCode() == HttpStatus.CREATED) {
+	// return true;
+	// }
+	// if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
+	// return false;
+	// }
+	// throw new SiteWhereException("Unable to create bucket. Status code was: " +
+	// response.getStatusCode());
+	// } catch (ResourceAccessException e) {
+	// if (e.getCause() instanceof SiteWhereSystemException) {
+	// throw (SiteWhereSystemException) e.getCause();
+	// }
+	// throw new RuntimeException(e);
+	// }
+	return false;
     }
 
     /**
@@ -206,30 +202,34 @@ public class InitialStateOutboundConnector extends SerialOutboundConnector {
      * @throws SiteWhereException
      */
     protected boolean createEvents(String bucketKey, List<EventCreateRequest> events) throws SiteWhereException {
-	try {
-	    HttpHeaders headers = new HttpHeaders();
-	    headers.add(HEADER_ACCESS_KEY, getStreamingAccessKey());
-	    headers.add(HEADER_BUCKET_KEY, bucketKey);
-	    HttpEntity<List<EventCreateRequest>> entity = new HttpEntity<List<EventCreateRequest>>(events, headers);
-	    String url = API_BASE + "events";
-	    Map<String, String> vars = new HashMap<String, String>();
-	    ResponseEntity<String> response = getClient().exchange(url, HttpMethod.POST, entity, String.class, vars);
-	    if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
-		return true;
-	    }
-	    throw new SiteWhereException("Unable to create event. Status code was: " + response.getStatusCode());
-	} catch (ResourceAccessException e) {
-	    throw new SiteWhereException(e);
-	}
+	// try {
+	// HttpHeaders headers = new HttpHeaders();
+	// headers.add(HEADER_ACCESS_KEY, getStreamingAccessKey());
+	// headers.add(HEADER_BUCKET_KEY, bucketKey);
+	// HttpEntity<List<EventCreateRequest>> entity = new
+	// HttpEntity<List<EventCreateRequest>>(events, headers);
+	// String url = API_BASE + "events";
+	// Map<String, String> vars = new HashMap<String, String>();
+	// ResponseEntity<String> response = getClient().exchange(url, HttpMethod.POST,
+	// entity, String.class, vars);
+	// if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
+	// return true;
+	// }
+	// throw new SiteWhereException("Unable to create event. Status code was: " +
+	// response.getStatusCode());
+	// } catch (ResourceAccessException e) {
+	// throw new SiteWhereException(e);
+	// }
+	return false;
     }
-
-    public RestTemplate getClient() {
-	return client;
-    }
-
-    public void setClient(RestTemplate client) {
-	this.client = client;
-    }
+    //
+    // public RestTemplate getClient() {
+    // return client;
+    // }
+    //
+    // public void setClient(RestTemplate client) {
+    // this.client = client;
+    // }
 
     public String getStreamingAccessKey() {
 	return streamingAccessKey;

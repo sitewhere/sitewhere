@@ -11,8 +11,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Exception on server startup that will prevent server from functioning.
- * 
- * @author Derek
  */
 public class ServerStartupException extends SiteWhereException {
 

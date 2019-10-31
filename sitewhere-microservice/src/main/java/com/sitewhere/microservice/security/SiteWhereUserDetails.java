@@ -5,13 +5,15 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.security;
+package com.sitewhere.microservice.security;
 
-import com.sitewhere.spi.tenant.ITenant;
+import java.util.List;
 
-public class UserContextManager {
+import com.sitewhere.spi.user.IGrantedAuthority;
+import com.sitewhere.spi.user.IUser;
 
-    public static ITenant getCurrentTenant(boolean flag) {
-	return null;
+public class SiteWhereUserDetails {
+
+    public SiteWhereUserDetails(IUser user, List<IGrantedAuthority> auths) {
     }
 }

@@ -22,8 +22,6 @@ import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 /**
  * Helper class for building {@link IScheduledJobCreateRequest} instances based
  * on job types.
- * 
- * @author Derek
  */
 public class ScheduledJobHelper {
 

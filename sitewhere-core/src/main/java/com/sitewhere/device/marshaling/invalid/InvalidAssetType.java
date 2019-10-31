@@ -11,8 +11,6 @@ import com.sitewhere.rest.model.asset.AssetType;
 
 /**
  * Used to show broken link if referenced asset type is deleted.
- * 
- * @author Derek
  */
 public class InvalidAssetType extends AssetType {
 

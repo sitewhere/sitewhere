@@ -7,10 +7,6 @@
  */
 package com.sitewhere.batch;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.ComponentScan;
-
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
 
@@ -19,10 +15,8 @@ import com.sitewhere.microservice.MicroserviceApplication;
  * 
  * @author Derek
  */
-@ComponentScan
 public class BatchOperationsApplication extends MicroserviceApplication<IBatchOperationsMicroservice> {
 
-    @Autowired
     private IBatchOperationsMicroservice microservice;
 
     /*
@@ -34,14 +28,5 @@ public class BatchOperationsApplication extends MicroserviceApplication<IBatchOp
     @Override
     public IBatchOperationsMicroservice getMicroservice() {
 	return microservice;
-    }
-
-    /**
-     * Entry point for Spring Boot.
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-	SpringApplication.run(BatchOperationsApplication.class, args);
     }
 }

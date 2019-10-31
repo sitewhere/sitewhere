@@ -9,8 +9,6 @@ package com.sitewhere.spi.microservice;
 
 /**
  * Indicates that a service is temporarily or permanently unavailable.
- * 
- * @author Derek
  */
 public class RuntimeServiceNotAvailableException extends RuntimeException {
 

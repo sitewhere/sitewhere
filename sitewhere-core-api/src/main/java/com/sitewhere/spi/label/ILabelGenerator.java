@@ -22,8 +22,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Generates label which correspond to SiteWhere entities.
- * 
- * @author Derek
  */
 public interface ILabelGenerator extends ITenantEngineLifecycleComponent {
 

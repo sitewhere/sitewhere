@@ -9,8 +9,6 @@ package com.sitewhere.server;
 
 /**
  * Constants for Spring beans needed by the SiteWhere server.
- * 
- * @author Derek
  */
 public interface SiteWhereServerBeans {
 

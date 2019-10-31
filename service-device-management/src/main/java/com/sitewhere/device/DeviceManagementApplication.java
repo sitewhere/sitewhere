@@ -7,10 +7,6 @@
  */
 package com.sitewhere.device;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.ComponentScan;
-
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
 
@@ -19,10 +15,8 @@ import com.sitewhere.microservice.MicroserviceApplication;
  * 
  * @author Derek
  */
-@ComponentScan
 public class DeviceManagementApplication extends MicroserviceApplication<IDeviceManagementMicroservice> {
 
-    @Autowired
     private IDeviceManagementMicroservice microservice;
 
     /*
@@ -34,14 +28,5 @@ public class DeviceManagementApplication extends MicroserviceApplication<IDevice
     @Override
     public IDeviceManagementMicroservice getMicroservice() {
 	return microservice;
-    }
-
-    /**
-     * Entry point for Spring Boot.
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-	SpringApplication.run(DeviceManagementApplication.class, args);
     }
 }

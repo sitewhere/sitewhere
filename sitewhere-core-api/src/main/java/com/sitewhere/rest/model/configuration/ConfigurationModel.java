@@ -18,8 +18,6 @@ import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 
 /**
  * Contains information about model used to configure a microservice.
- * 
- * @author Derek
  */
 public class ConfigurationModel implements IConfigurationModel {
 

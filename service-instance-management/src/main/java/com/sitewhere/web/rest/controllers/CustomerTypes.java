@@ -10,22 +10,23 @@ package com.sitewhere.web.rest.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import com.sitewhere.device.marshaling.CustomerTypeMarshalHelper;
+import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.rest.model.customer.request.CustomerTypeCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
@@ -38,24 +39,25 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.label.ILabel;
 import com.sitewhere.spi.label.ILabelGeneration;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
-import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for customer type operations.
  * 
  * @author Derek Adams
  */
-@RestController
-@SiteWhereCrossOrigin
-@RequestMapping(value = "/customertypes")
+@Path("/customertypes")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "customertypes")
-public class CustomerTypes extends RestControllerBase {
+public class CustomerTypes {
+
+    @Inject
+    private IInstanceManagementMicroservice<?> microservice;
 
     /**
      * Create a customer type.
@@ -64,11 +66,10 @@ public class CustomerTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.POST)
+    @POST
     @ApiOperation(value = "Create new customer type")
-    @Secured({ SiteWhereRoles.REST })
-    public ICustomerType createCustomerType(@RequestBody CustomerTypeCreateRequest input) throws SiteWhereException {
-	return getDeviceManagement().createCustomerType(input);
+    public Response createCustomerType(@RequestBody CustomerTypeCreateRequest input) throws SiteWhereException {
+	return Response.ok(getDeviceManagement().createCustomerType(input)).build();
     }
 
     /**
@@ -78,13 +79,13 @@ public class CustomerTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{customerTypeToken:.+}", method = RequestMethod.GET)
+    @GET
+    @Path("/{customerTypeToken}")
     @ApiOperation(value = "Get customer type by token")
-    @Secured({ SiteWhereRoles.REST })
-    public ICustomerType getCustomerTypeByToken(
-	    @ApiParam(value = "Token that identifies customer type", required = true) @PathVariable String customerTypeToken)
+    public Response getCustomerTypeByToken(
+	    @ApiParam(value = "Token that identifies customer type", required = true) @PathParam("customerTypeToken") String customerTypeToken)
 	    throws SiteWhereException {
-	return assertCustomerType(customerTypeToken);
+	return Response.ok(assertCustomerType(customerTypeToken)).build();
     }
 
     /**
@@ -95,14 +96,14 @@ public class CustomerTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{customerTypeToken:.+}", method = RequestMethod.PUT)
+    @PUT
+    @Path("/{customerTypeToken}")
     @ApiOperation(value = "Update existing customer type")
-    @Secured({ SiteWhereRoles.REST })
-    public ICustomerType updateCustomerType(
-	    @ApiParam(value = "Token that identifies customer type", required = true) @PathVariable String customerTypeToken,
+    public Response updateCustomerType(
+	    @ApiParam(value = "Token that identifies customer type", required = true) @PathParam("customerTypeToken") String customerTypeToken,
 	    @RequestBody CustomerTypeCreateRequest request) throws SiteWhereException {
 	ICustomerType existing = assertCustomerType(customerTypeToken);
-	return getDeviceManagement().updateCustomerType(existing.getId(), request);
+	return Response.ok(getDeviceManagement().updateCustomerType(existing.getId(), request)).build();
     }
 
     /**
@@ -110,39 +111,41 @@ public class CustomerTypes extends RestControllerBase {
      * 
      * @param customerTypeToken
      * @param generatorId
-     * @param servletRequest
-     * @param response
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{customerTypeToken}/label/{generatorId}", method = RequestMethod.GET)
+    @GET
+    @Path("/{customerTypeToken}/label/{generatorId}")
+    @Produces("image/png")
     @ApiOperation(value = "Get label for customer type")
-    public ResponseEntity<byte[]> getCustomerTypeLabel(
-	    @ApiParam(value = "Token that identifies customer type", required = true) @PathVariable String customerTypeToken,
-	    @ApiParam(value = "Generator id", required = true) @PathVariable String generatorId,
-	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
+    public Response getCustomerTypeLabel(
+	    @ApiParam(value = "Token that identifies customer type", required = true) @PathParam("customerTypeToken") String customerTypeToken,
+	    @ApiParam(value = "Generator id", required = true) @PathParam("generatorId") String generatorId)
+	    throws SiteWhereException {
 	ICustomerType existing = assertCustomerType(customerTypeToken);
 	ILabel label = getLabelGeneration().getCustomerTypeLabel(generatorId, existing.getId());
-
-	final HttpHeaders headers = new HttpHeaders();
-	headers.setContentType(MediaType.IMAGE_PNG);
-	return new ResponseEntity<byte[]>(label.getContent(), headers, HttpStatus.OK);
+	if (label == null) {
+	    return Response.status(Status.NOT_FOUND).build();
+	}
+	return Response.ok(label.getContent()).build();
     }
 
     /**
      * List customer types matching criteria.
      * 
+     * @param includeContainedCustomerTypes
+     * @param page
+     * @param pageSize
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.GET)
+    @GET
     @ApiOperation(value = "List customer types matching criteria")
-    @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<ICustomerType> listCustomerTypes(
-	    @ApiParam(value = "Include contained customer types", required = false) @RequestParam(defaultValue = "false") boolean includeContainedCustomerTypes,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+    public Response listCustomerTypes(
+	    @ApiParam(value = "Include contained customer types", required = false) @QueryParam("includeContainedCustomerTypes") @DefaultValue("false") boolean includeContainedCustomerTypes,
+	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+	    throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<ICustomerType> matches = getDeviceManagement().listCustomerTypes(criteria);
 
@@ -153,7 +156,7 @@ public class CustomerTypes extends RestControllerBase {
 	for (ICustomerType customerType : matches.getResults()) {
 	    results.add(helper.convert(customerType));
 	}
-	return new SearchResults<ICustomerType>(results, matches.getNumResults());
+	return Response.ok(new SearchResults<ICustomerType>(results, matches.getNumResults())).build();
     }
 
     /**
@@ -163,14 +166,14 @@ public class CustomerTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{customerTypeToken:.+}", method = RequestMethod.DELETE)
+    @DELETE
+    @Path("/{customerTypeToken}")
     @ApiOperation(value = "Delete customer type by token")
-    @Secured({ SiteWhereRoles.REST })
-    public ICustomerType deleteCustomerType(
-	    @ApiParam(value = "Token that identifies customer type", required = true) @PathVariable String customerTypeToken)
+    public Response deleteCustomerType(
+	    @ApiParam(value = "Token that identifies customer type", required = true) @PathParam("customerTypeToken") String customerTypeToken)
 	    throws SiteWhereException {
 	ICustomerType existing = assertCustomerType(customerTypeToken);
-	return getDeviceManagement().deleteCustomerType(existing.getId());
+	return Response.ok(getDeviceManagement().deleteCustomerType(existing.getId())).build();
     }
 
     /**
@@ -188,15 +191,19 @@ public class CustomerTypes extends RestControllerBase {
 	return type;
     }
 
-    private IDeviceManagement getDeviceManagement() {
+    protected IDeviceManagement getDeviceManagement() {
 	return getMicroservice().getDeviceManagementApiChannel();
     }
 
-    private IDeviceManagement getCachedDeviceManagement() {
+    protected IDeviceManagement getCachedDeviceManagement() {
 	return getMicroservice().getCachedDeviceManagement();
     }
 
-    private ILabelGeneration getLabelGeneration() {
+    protected ILabelGeneration getLabelGeneration() {
 	return getMicroservice().getLabelGenerationApiChannel();
+    }
+
+    protected IInstanceManagementMicroservice<?> getMicroservice() {
+	return microservice;
     }
 }

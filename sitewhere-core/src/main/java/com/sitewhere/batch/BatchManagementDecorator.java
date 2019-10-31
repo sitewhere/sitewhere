@@ -25,8 +25,6 @@ import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 /**
  * Wraps a batch management implementation. Subclasses can implement only the
  * methods they need to override.
- * 
- * @author Derek
  */
 public class BatchManagementDecorator extends TenantEngineLifecycleComponentDecorator<IBatchManagement>
 	implements IBatchManagement {

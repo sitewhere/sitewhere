@@ -9,8 +9,6 @@ package com.sitewhere.microservice.security;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
@@ -52,20 +50,28 @@ public abstract class SystemUserRunnable implements Runnable {
      */
     @Override
     public void run() {
-	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
+	// Authentication previous =
+	// SecurityContextHolder.getContext().getAuthentication();
+	// try {
+	// if (tenant != null) {
+	// Authentication system =
+	// getMicroservice().getSystemUser().getAuthenticationForTenant(getTenant());
+	// SecurityContextHolder.getContext().setAuthentication(system);
+	// } else {
+	// Authentication system =
+	// getMicroservice().getSystemUser().getAuthentication();
+	// SecurityContextHolder.getContext().setAuthentication(system);
+	// }
+	// runAsSystemUser();
+	// } catch (Throwable e) {
+	// LOGGER.error("Unhandled exception.", e);
+	// } finally {
+	// SecurityContextHolder.getContext().setAuthentication(previous);
+	// }
 	try {
-	    if (tenant != null) {
-		Authentication system = getMicroservice().getSystemUser().getAuthenticationForTenant(getTenant());
-		SecurityContextHolder.getContext().setAuthentication(system);
-	    } else {
-		Authentication system = getMicroservice().getSystemUser().getAuthentication();
-		SecurityContextHolder.getContext().setAuthentication(system);
-	    }
 	    runAsSystemUser();
 	} catch (Throwable e) {
 	    LOGGER.error("Unhandled exception.", e);
-	} finally {
-	    SecurityContextHolder.getContext().setAuthentication(previous);
 	}
     }
 

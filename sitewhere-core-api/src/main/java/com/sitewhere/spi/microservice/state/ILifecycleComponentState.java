@@ -14,8 +14,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
  * Captures state information for a lifecycle component.
- * 
- * @author Derek
  */
 public interface ILifecycleComponentState {
 

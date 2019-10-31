@@ -12,8 +12,6 @@ import com.sitewhere.spi.microservice.configuration.model.NodeType;
 
 /**
  * Common base class for nodes that wrap XML content.
- * 
- * @author Derek
  */
 public abstract class XmlNode extends ConfigurationNode implements IXmlNode {
 

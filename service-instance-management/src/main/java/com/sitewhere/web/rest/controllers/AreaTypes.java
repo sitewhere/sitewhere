@@ -10,24 +10,23 @@ package com.sitewhere.web.rest.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import com.sitewhere.device.marshaling.AreaTypeMarshalHelper;
+import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.rest.model.area.request.AreaTypeCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
@@ -40,23 +39,25 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.label.ILabel;
 import com.sitewhere.spi.label.ILabelGeneration;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
-import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for area type operations.
  * 
  * @author Derek Adams
  */
-@RestController
-@SiteWhereCrossOrigin
-@RequestMapping(value = "/areatypes")
+@Path("/areatypes")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "areatypes")
-public class AreaTypes extends RestControllerBase {
+public class AreaTypes {
+
+    @Inject
+    private IInstanceManagementMicroservice<?> microservice;
 
     /**
      * Create an area type.
@@ -65,10 +66,10 @@ public class AreaTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @PostMapping
+    @POST
     @ApiOperation(value = "Create new area type")
-    public IAreaType createAreaType(@RequestBody AreaTypeCreateRequest input) throws SiteWhereException {
-	return getDeviceManagement().createAreaType(input);
+    public Response createAreaType(@RequestBody AreaTypeCreateRequest input) throws SiteWhereException {
+	return Response.ok(getDeviceManagement().createAreaType(input)).build();
     }
 
     /**
@@ -78,12 +79,13 @@ public class AreaTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @GetMapping(value = "/{areaTypeToken:.+}")
+    @GET
+    @Path("/{areaTypeToken}")
     @ApiOperation(value = "Get area type by token")
-    public IAreaType getAreaTypeByToken(
-	    @ApiParam(value = "Token that identifies area type", required = true) @PathVariable String areaTypeToken)
+    public Response getAreaTypeByToken(
+	    @ApiParam(value = "Token that identifies area type", required = true) @PathParam("areaTypeToken") String areaTypeToken)
 	    throws SiteWhereException {
-	return assertAreaType(areaTypeToken);
+	return Response.ok(assertAreaType(areaTypeToken)).build();
     }
 
     /**
@@ -94,13 +96,14 @@ public class AreaTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @PutMapping(value = "/{areaTypeToken:.+}")
+    @PUT
+    @Path("/{areaTypeToken}")
     @ApiOperation(value = "Update existing area type")
-    public IAreaType updateAreaType(
-	    @ApiParam(value = "Token that identifies area type", required = true) @PathVariable String areaTypeToken,
+    public Response updateAreaType(
+	    @ApiParam(value = "Token that identifies area type", required = true) @PathParam("areaTypeToken") String areaTypeToken,
 	    @RequestBody AreaTypeCreateRequest request) throws SiteWhereException {
 	IAreaType existing = assertAreaType(areaTypeToken);
-	return getDeviceManagement().updateAreaType(existing.getId(), request);
+	return Response.ok(getDeviceManagement().updateAreaType(existing.getId(), request)).build();
     }
 
     /**
@@ -108,38 +111,41 @@ public class AreaTypes extends RestControllerBase {
      * 
      * @param areaTypeToken
      * @param generatorId
-     * @param servletRequest
-     * @param response
      * @return
      * @throws SiteWhereException
      */
-    @GetMapping(value = "/{areaTypeToken}/label/{generatorId}")
+    @GET
+    @Path("/{areaTypeToken}/label/{generatorId}")
+    @Produces("image/png")
     @ApiOperation(value = "Get label for area type")
-    public ResponseEntity<byte[]> getAreaTypeLabel(
-	    @ApiParam(value = "Token that identifies area type", required = true) @PathVariable String areaTypeToken,
-	    @ApiParam(value = "Generator id", required = true) @PathVariable String generatorId,
-	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
+    public Response getAreaTypeLabel(
+	    @ApiParam(value = "Token that identifies area type", required = true) @PathParam("areaTypeToken") String areaTypeToken,
+	    @ApiParam(value = "Generator id", required = true) @PathParam("areaToken") String generatorId)
+	    throws SiteWhereException {
 	IAreaType existing = assertAreaType(areaTypeToken);
 	ILabel label = getLabelGeneration().getAreaTypeLabel(generatorId, existing.getId());
-
-	final HttpHeaders headers = new HttpHeaders();
-	headers.setContentType(MediaType.IMAGE_PNG);
-	return new ResponseEntity<byte[]>(label.getContent(), headers, HttpStatus.OK);
+	if (label == null) {
+	    return Response.status(Status.NOT_FOUND).build();
+	}
+	return Response.ok(label.getContent()).build();
     }
 
     /**
-     * List all area types.
+     * List area types matching criteria.
      * 
+     * @param includeContainedAreaTypes
+     * @param page
+     * @param pageSize
      * @return
      * @throws SiteWhereException
      */
-    @GetMapping
+    @GET
     @ApiOperation(value = "List area types matching criteria")
-    public ISearchResults<IAreaType> listAreaTypes(
-	    @ApiParam(value = "Include contained area types", required = false) @RequestParam(defaultValue = "false") boolean includeContainedAreaTypes,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+    public Response listAreaTypes(
+	    @ApiParam(value = "Include contained area types", required = false) @QueryParam("includeContainedAreaTypes") @DefaultValue("false") boolean includeContainedAreaTypes,
+	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+	    throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<IAreaType> matches = getDeviceManagement().listAreaTypes(criteria);
 
@@ -150,7 +156,7 @@ public class AreaTypes extends RestControllerBase {
 	for (IAreaType area : matches.getResults()) {
 	    results.add(helper.convert(area));
 	}
-	return new SearchResults<IAreaType>(results, matches.getNumResults());
+	return Response.ok(new SearchResults<IAreaType>(results, matches.getNumResults())).build();
     }
 
     /**
@@ -160,13 +166,14 @@ public class AreaTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @DeleteMapping(value = "/{areaTypeToken:.+}")
+    @DELETE
+    @Path("/{areaTypeToken}")
     @ApiOperation(value = "Delete area type by token")
-    public IAreaType deleteAreaType(
-	    @ApiParam(value = "Token that identifies area type", required = true) @PathVariable String areaTypeToken)
+    public Response deleteAreaType(
+	    @ApiParam(value = "Token that identifies area type", required = true) @PathParam("areaTypeToken") String areaTypeToken)
 	    throws SiteWhereException {
 	IAreaType existing = assertAreaType(areaTypeToken);
-	return getDeviceManagement().deleteAreaType(existing.getId());
+	return Response.ok(getDeviceManagement().deleteAreaType(existing.getId())).build();
     }
 
     /**
@@ -184,15 +191,19 @@ public class AreaTypes extends RestControllerBase {
 	return type;
     }
 
-    private IDeviceManagement getDeviceManagement() {
+    protected IDeviceManagement getDeviceManagement() {
 	return getMicroservice().getDeviceManagementApiChannel();
     }
 
-    private IDeviceManagement getCachedDeviceManagement() {
+    protected IDeviceManagement getCachedDeviceManagement() {
 	return getMicroservice().getCachedDeviceManagement();
     }
 
-    private ILabelGeneration getLabelGeneration() {
+    protected ILabelGeneration getLabelGeneration() {
 	return getMicroservice().getLabelGenerationApiChannel();
+    }
+
+    protected IInstanceManagementMicroservice<?> getMicroservice() {
+	return microservice;
     }
 }

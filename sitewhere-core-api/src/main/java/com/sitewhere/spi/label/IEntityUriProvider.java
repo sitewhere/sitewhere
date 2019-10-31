@@ -23,8 +23,6 @@ import com.sitewhere.spi.device.group.IDeviceGroup;
 
 /**
  * Translates a SiteWhere entity into a unique URI that identifies it.
- * 
- * @author Derek
  */
 public interface IEntityUriProvider {
 

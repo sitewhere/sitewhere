@@ -24,8 +24,6 @@ import com.sitewhere.spi.device.IDeviceManagement;
 /**
  * Configurable helper class that allows {@link AreaType} model objects to be
  * created from {@link IAreaType} SPI objects.
- * 
- * @author Derek
  */
 public class AreaTypeMarshalHelper {
 

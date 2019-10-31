@@ -23,8 +23,6 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 /**
  * Wraps a device event and provides extra information the associated asset from
  * its assignment.
- * 
- * @author Derek
  */
 public class DeviceEventWithAsset implements IDeviceEventWithAsset {
 

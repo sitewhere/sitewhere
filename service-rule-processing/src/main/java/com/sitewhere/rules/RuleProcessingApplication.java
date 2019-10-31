@@ -7,10 +7,6 @@
  */
 package com.sitewhere.rules;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.ComponentScan;
-
 import com.sitewhere.microservice.MicroserviceApplication;
 import com.sitewhere.rules.spi.microservice.IRuleProcessingMicroservice;
 
@@ -19,10 +15,8 @@ import com.sitewhere.rules.spi.microservice.IRuleProcessingMicroservice;
  * 
  * @author Derek
  */
-@ComponentScan
 public class RuleProcessingApplication extends MicroserviceApplication<IRuleProcessingMicroservice> {
 
-    @Autowired
     private IRuleProcessingMicroservice microservice;
 
     /*
@@ -34,14 +28,5 @@ public class RuleProcessingApplication extends MicroserviceApplication<IRuleProc
     @Override
     public IRuleProcessingMicroservice getMicroservice() {
 	return microservice;
-    }
-
-    /**
-     * Entry point for Spring Boot.
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-	SpringApplication.run(RuleProcessingApplication.class, args);
     }
 }

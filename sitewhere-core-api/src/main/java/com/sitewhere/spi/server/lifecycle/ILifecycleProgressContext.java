@@ -9,8 +9,6 @@ package com.sitewhere.spi.server.lifecycle;
 
 /**
  * Provides context for a monitoring a lifecycle operation.
- * 
- * @author Derek
  */
 public interface ILifecycleProgressContext {
 

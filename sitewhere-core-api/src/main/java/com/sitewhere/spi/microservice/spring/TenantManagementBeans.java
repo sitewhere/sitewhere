@@ -9,8 +9,6 @@ package com.sitewhere.spi.microservice.spring;
 
 /**
  * Spring bean names for tenant management configuration components.
- * 
- * @author Derek
  */
 public interface TenantManagementBeans {
 

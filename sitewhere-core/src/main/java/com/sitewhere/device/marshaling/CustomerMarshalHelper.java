@@ -28,8 +28,6 @@ import com.sitewhere.spi.search.ISearchResults;
 /**
  * Configurable helper class that allows {@link Customer} model objects to be
  * created from {@link ICustomer} SPI objects.
- * 
- * @author Derek
  */
 public class CustomerMarshalHelper {
 

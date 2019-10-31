@@ -11,8 +11,6 @@ import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Provides names for Kafka topics used in SiteWhere.
- * 
- * @author Derek
  */
 public interface IKafkaTopicNaming {
 

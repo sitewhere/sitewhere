@@ -2,74 +2,23 @@ import org.ajoberstar.grgit.*
 
 description = 'SiteWhere Web/REST Microservice'
 
-apply plugin: 'org.springframework.boot'
-springBoot {
-    mainClassName = 'com.sitewhere.instance.InstanceManagementApplication'
-}
-
-apply plugin: 'com.moowork.node'
-node {
-	version = '8.10.0'
-	npmVersion = '5.7.1'
-	nodeModulesDir = file("${projectDir}/sitewhere-ui-build/sitewhere2-admin-ui")
-	npmWorkDir = file("${projectDir}/sitewhere-ui-build")
-	download = true
-}
-
 dependencies {
 	compile project(':sitewhere-communication')
 	compile project(':sitewhere-microservice')
 	compile project(':sitewhere-grpc-client')
 	
-	compile ('org.springframework.boot:spring-boot-starter-web')
-	compile ('org.springframework.boot:spring-boot-starter-websocket')    
-	compile group: 'org.springframework', name: 'spring-web'
-	
-	// Swagger
-	compile group: 'io.swagger', name: 'swagger-annotations', version: '1.5.21'
-	compile group: 'io.swagger', name: 'swagger-models', version: '1.5.21'
-    compile group: 'io.springfox', name: 'springfox-swagger2', version:'2.9.2'
-    
-    implementation('io.swagger:swagger-annotations:1.5.21') {
-        force = true
-    }
-    implementation('io.swagger:swagger-models:1.5.21') {
-        force = true
-    }
- 
-    // Spring Security
-    compile group: 'org.springframework.security', name: 'spring-security-config'
-    compile group: 'org.springframework.security', name: 'spring-security-web'
-	
+	// Quarkus RESTEasy extension.
+    compile 'io.quarkus:quarkus-resteasy'
+
 	// Apache Syncope
 	compile group: 'org.apache.syncope.client', name: 'syncope-client-lib', version: '2.1.4'
 	
-	// Quartz.
-    compile group: 'org.quartz-scheduler', name: 'quartz', version:'2.2.2'
+	// Password encryption.
+	compile group: 'org.jasypt', name: 'jasypt', version: '1.9.3'
+	
+	// Swagger
+	compile group: 'io.swagger', name: 'swagger-annotations', version: '1.5.21'
 }
-
-// Pull SiteWhere admin user interface from GitHub.
-task pullSwaggerUserInterface() {
-	// Clone SiteWhere repository.
-	delete "${projectDir}/sitewhere-ui-build/sitewhere2-swagger-ui"
-	println "Pulling sitewhere2-swagger-ui from GitHub..."
-	def repo = Grgit.clone(dir: "${projectDir}/sitewhere-ui-build/sitewhere2-swagger-ui", 
-		uri: 'https://github.com/sitewhere/sitewhere2-swagger-ui.git')
-	repo.close()
-}
-
-// Before building the Spring Boot WAR, copy Swagger interface.
-apply plugin: 'war'
-bootWar {
-	classifier = 'boot'
-	dependsOn pullSwaggerUserInterface
-	with {
-		from( "${projectDir}/sitewhere-ui-build/sitewhere2-swagger-ui" )
-	}
-}
-
-// Keep original jar.
-jar { enabled = true }
 
 // Only publish thin jar.
 apply plugin: 'maven-publish'
@@ -80,14 +29,14 @@ publishing {
 }
 
 // Create a Dockerfile.
-task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: bootWar) {
+task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: jar) {
     destFile = project.file('build/docker/Dockerfile')
     from "${rootProject.ext['docker.base.image']}"
     instruction "LABEL maintainer=${rootProject.ext['docker.maintainer']}"
 	instruction "RUN wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.2.2/grpc_health_probe-linux-amd64 && chmod +x /bin/grpc_health_probe"
 	
-	// Copy Spring Boot jar.
-	copyFile("${project.name}-${project.version}-boot.war", "/")
+	// Copy jar.
+	copyFile("${project.name}-${project.version}-boot.jar", "/")
 
 	// Expose port
 	exposePort 8080

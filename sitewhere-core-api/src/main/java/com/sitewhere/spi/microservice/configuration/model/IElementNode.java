@@ -12,8 +12,6 @@ import java.util.Map;
 
 /**
  * Node representing an element in the configuration model.
- * 
- * @author Derek
  */
 public interface IElementNode extends IXmlNode {
 

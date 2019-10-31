@@ -17,8 +17,6 @@ import io.jsonwebtoken.Claims;
 
 /**
  * Allows for creating and validation of JWT tokens.
- * 
- * @author Derek
  */
 public interface ITokenManagement {
 

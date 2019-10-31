@@ -9,17 +9,13 @@ package com.sitewhere.devicestate.microservice;
 
 import com.sitewhere.devicestate.spi.IDevicePresenceManager;
 import com.sitewhere.devicestate.spi.kafka.IDeviceStateEnrichedEventsConsumer;
-import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
 import com.sitewhere.grpc.service.DeviceStateGrpc;
-import com.sitewhere.microservice.grpc.DeviceStateImpl;
-import com.sitewhere.microservice.kafka.DeviceStateEnrichedEventsConsumer;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.state.IDeviceStateManagement;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.spring.DeviceStateManagementBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -57,19 +53,22 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine implements
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Create management interfaces.
-	IDeviceStateManagement implementation = (IDeviceStateManagement) getModuleContext()
-		.getBean(DeviceStateManagementBeans.BEAN_DEVICE_STATE_MANAGEMENT);
-	this.deviceStateManagement = implementation;
-	this.deviceStateImpl = new DeviceStateImpl((IDeviceStateMicroservice) getMicroservice(),
-		getDeviceStateManagement());
-
-	// Create enriched events consumer for building device state.
-	this.deviceStateEnrichedEventsConsumer = new DeviceStateEnrichedEventsConsumer();
-
-	// Create presence manager.
-	this.devicePresenceManager = (IDevicePresenceManager) getModuleContext()
-		.getBean(DeviceStateManagementBeans.BEAN_PRESENCE_MANAGER);
+	// // Create management interfaces.
+	// IDeviceStateManagement implementation = (IDeviceStateManagement)
+	// getModuleContext()
+	// .getBean(DeviceStateManagementBeans.BEAN_DEVICE_STATE_MANAGEMENT);
+	// this.deviceStateManagement = implementation;
+	// this.deviceStateImpl = new DeviceStateImpl((IDeviceStateMicroservice)
+	// getMicroservice(),
+	// getDeviceStateManagement());
+	//
+	// // Create enriched events consumer for building device state.
+	// this.deviceStateEnrichedEventsConsumer = new
+	// DeviceStateEnrichedEventsConsumer();
+	//
+	// // Create presence manager.
+	// this.devicePresenceManager = (IDevicePresenceManager) getModuleContext()
+	// .getBean(DeviceStateManagementBeans.BEAN_PRESENCE_MANAGER);
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());

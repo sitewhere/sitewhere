@@ -11,8 +11,6 @@ import com.sitewhere.spi.microservice.configuration.model.IAttributeChoice;
 
 /**
  * Choice for an enumerated value for an attribute.
- * 
- * @author Derek
  */
 public class AttributeChoice implements IAttributeChoice {
 

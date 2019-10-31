@@ -11,15 +11,10 @@ import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
 import com.sitewhere.inbound.spi.kafka.IInboundEventsProducer;
 import com.sitewhere.inbound.spi.kafka.IUnregisteredEventsProducer;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
-import com.sitewhere.inbound.spi.processing.IInboundProcessingConfiguration;
-import com.sitewhere.microservice.kafka.DecodedEventsConsumer;
-import com.sitewhere.microservice.kafka.InboundEventsProducer;
-import com.sitewhere.microservice.kafka.UnregisteredEventsProducer;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.spring.InboundProcessingBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -55,12 +50,13 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine impl
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Load core configuration parameters.
-	IInboundProcessingConfiguration configuration = (IInboundProcessingConfiguration) getModuleContext()
-		.getBean(InboundProcessingBeans.BEAN_INBOUND_PROCESSING_CONFIGURATION);
+	// IInboundProcessingConfiguration configuration =
+	// (IInboundProcessingConfiguration) getModuleContext()
+	// .getBean(InboundProcessingBeans.BEAN_INBOUND_PROCESSING_CONFIGURATION);
 
-	this.decodedEventsConsumer = new DecodedEventsConsumer(configuration);
-	this.unregisteredDeviceEventsProducer = new UnregisteredEventsProducer();
-	this.inboundEventsProducer = new InboundEventsProducer();
+	// this.decodedEventsConsumer = new DecodedEventsConsumer(configuration);
+	// this.unregisteredDeviceEventsProducer = new UnregisteredEventsProducer();
+	// this.inboundEventsProducer = new InboundEventsProducer();
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());

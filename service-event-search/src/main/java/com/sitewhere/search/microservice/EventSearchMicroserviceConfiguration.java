@@ -7,9 +7,6 @@
  */
 package com.sitewhere.search.microservice;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 import com.sitewhere.microservice.instance.InstanceSettings;
 import com.sitewhere.search.spi.microservice.IEventSearchMicroservice;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
@@ -19,15 +16,12 @@ import com.sitewhere.spi.microservice.instance.IInstanceSettings;
  * 
  * @author Derek
  */
-@Configuration
 public class EventSearchMicroserviceConfiguration {
 
-    @Bean
     public IEventSearchMicroservice eventSearchMicroservice() {
 	return new EventSearchMicroservice();
     }
 
-    @Bean
     public IInstanceSettings instanceSettings() {
 	return new InstanceSettings();
     }

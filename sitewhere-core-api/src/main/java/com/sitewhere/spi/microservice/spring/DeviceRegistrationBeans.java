@@ -9,8 +9,6 @@ package com.sitewhere.spi.microservice.spring;
 
 /**
  * Spring bean names for device registration configuration components.
- * 
- * @author Derek
  */
 public class DeviceRegistrationBeans {
 

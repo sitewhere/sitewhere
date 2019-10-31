@@ -38,8 +38,6 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Functionality common to all SiteWhere microservices.
- * 
- * @author Derek
  */
 public interface IMicroservice<T extends IFunctionIdentifier>
 	extends ILifecycleComponent, IMicroserviceClassification<T> {

@@ -5,17 +5,6 @@ dependencies {
 	compile project(':sitewhere-grpc-client')
 }
 
-apply plugin: 'org.springframework.boot'
-springBoot {
-    mainClassName = 'com.sitewhere.rules.RuleProcessingApplication'
-}
-
-// Keep original jar.
-jar { enabled = true }
-
-// Reclassify Spring Boot jar.
-bootJar { classifier = 'boot' }
-
 // Only publish thin jar.
 apply plugin: 'maven-publish'
 publishing {
@@ -25,14 +14,14 @@ publishing {
 }
 
 // Create a Dockerfile.
-task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: bootJar) {
+task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: jar) {
     destFile = project.file('build/docker/Dockerfile')
     from "${rootProject.ext['docker.base.image']}"
     instruction "LABEL maintainer=${rootProject.ext['docker.maintainer']}"
 	instruction "RUN wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.2.2/grpc_health_probe-linux-amd64 && chmod +x /bin/grpc_health_probe"
 	
-	// Copy Spring Boot jar.
-	copyFile("${project.name}-${project.version}-boot.jar", "/")
+	// Copy jar.
+	copyFile("${project.name}-${project.version}.jar", "/")
 
 	// Run Java command to start application.
 	if(!project.hasProperty("debug")) {

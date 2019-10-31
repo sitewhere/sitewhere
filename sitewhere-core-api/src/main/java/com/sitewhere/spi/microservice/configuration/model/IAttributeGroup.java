@@ -9,8 +9,6 @@ package com.sitewhere.spi.microservice.configuration.model;
 
 /**
  * Defines a group of related attributes.
- * 
- * @author Derek
  */
 public interface IAttributeGroup {
 

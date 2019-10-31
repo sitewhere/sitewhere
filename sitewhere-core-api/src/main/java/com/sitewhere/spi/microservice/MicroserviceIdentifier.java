@@ -9,8 +9,6 @@ package com.sitewhere.spi.microservice;
 
 /**
  * Provides a list of known identifiers for microservices.
- * 
- * @author Derek
  */
 public enum MicroserviceIdentifier implements IFunctionIdentifier {
 

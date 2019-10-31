@@ -14,8 +14,6 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.client.common.security.NotAuthorizedException;
@@ -24,8 +22,6 @@ import com.sitewhere.grpc.client.common.tracing.DebugParameter;
 import com.sitewhere.grpc.client.spi.IApiChannel;
 import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
 import com.sitewhere.rest.model.user.User;
-import com.sitewhere.security.SitewhereAuthentication;
-import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
@@ -138,11 +134,12 @@ public class GrpcUtils {
      * Indicate that Spring security content was not properly cleared previously.
      */
     protected static void displaySecurityContext() {
-	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-	if (auth != null) {
-	    String user = (String) auth.getPrincipal();
-	    LOGGER.warn("!!! Thread already has Spring Security auth info !!! user=" + user);
-	}
+	// Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	// if (auth != null) {
+	// String user = (String) auth.getPrincipal();
+	// LOGGER.warn("!!! Thread already has Spring Security auth info !!! user=" +
+	// user);
+	// }
     }
 
     /**
@@ -159,12 +156,12 @@ public class GrpcUtils {
 	User user = new User();
 	user.setUsername(username);
 	user.setAuthorities(auths);
-	SitewhereUserDetails details = new SitewhereUserDetails(user, gauths);
-	SitewhereAuthentication auth = new SitewhereAuthentication(details, jwt);
-	if (tenant != null) {
-	    auth.setTenant(tenant);
-	}
-	SecurityContextHolder.getContext().setAuthentication(auth);
+	// SitewhereUserDetails details = new SitewhereUserDetails(user, gauths);
+	// SitewhereAuthentication auth = new SitewhereAuthentication(details, jwt);
+	// if (tenant != null) {
+	// auth.setTenant(tenant);
+	// }
+	// SecurityContextHolder.getContext().setAuthentication(auth);
 	LOGGER.trace("Set security context: username=" + username + " jwt=" + jwt);
     }
 
@@ -181,7 +178,7 @@ public class GrpcUtils {
 
     public static void handleServerMethodExit(MethodDescriptor<?, ?> method) {
 	LOGGER.debug("Server finished call to  " + method.getFullMethodName() + ".");
-	SecurityContextHolder.getContext().setAuthentication(null);
+	// SecurityContextHolder.getContext().setAuthentication(null);
     }
 
     /**

@@ -31,8 +31,6 @@ import com.sitewhere.spi.search.ISearchResults;
 
 /**
  * Exposes builders for creating SiteWhere events.
- * 
- * @author Derek
  */
 public class DeviceEventRequestBuilder {
 

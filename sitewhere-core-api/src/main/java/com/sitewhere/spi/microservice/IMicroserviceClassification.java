@@ -9,8 +9,6 @@ package com.sitewhere.spi.microservice;
 
 /**
  * Provides an identifier for classifying a microservice.
- * 
- * @author Derek
  *
  * @param <T>
  */

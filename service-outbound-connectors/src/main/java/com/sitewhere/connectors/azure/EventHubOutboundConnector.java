@@ -14,18 +14,8 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Hashtable;
 
-import javax.jms.BytesMessage;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
 import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.connectors.SerialOutboundConnector;
 import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.spi.SiteWhereException;
@@ -59,11 +49,11 @@ public class EventHubOutboundConnector extends SerialOutboundConnector {
     private String eventHubName;
 
     /** JMS objects */
-    private ConnectionFactory factory;
-    private Destination destination;
-    private Connection connection;
-    private Session session;
-    private MessageProducer sender;
+    // private ConnectionFactory factory;
+    // private Destination destination;
+    // private Connection connection;
+    // private Session session;
+    // private MessageProducer sender;
 
     /*
      * (non-Javadoc)
@@ -92,20 +82,22 @@ public class EventHubOutboundConnector extends SerialOutboundConnector {
 	    env.put(Context.INITIAL_CONTEXT_FACTORY,
 		    "org.apache.qpid.amqp_1_0.jms.jndi.PropertiesFileInitialContextFactory");
 	    env.put(Context.PROVIDER_URL, file.getAbsolutePath());
-	    Context context = new InitialContext(env);
+	    // Context context = new InitialContext(env);
 
-	    this.factory = (ConnectionFactory) context.lookup("SBCF");
-	    this.destination = (Destination) context.lookup("EVENTHUB");
-	    this.connection = factory.createConnection();
-	    this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-	    this.sender = session.createProducer(destination);
+	    // this.factory = (ConnectionFactory) context.lookup("SBCF");
+	    // this.destination = (Destination) context.lookup("EVENTHUB");
+	    // this.connection = factory.createConnection();
+	    // this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+	    // this.sender = session.createProducer(destination);
 	} catch (IOException e) {
 	    throw new SiteWhereException(e);
-	} catch (NamingException e) {
-	    throw new SiteWhereException(e);
-	} catch (JMSException e) {
-	    throw new SiteWhereException(e);
 	}
+	// catch (NamingException e) {
+	// throw new SiteWhereException(e);
+	// }
+	// catch (JMSException e) {
+	// throw new SiteWhereException(e);
+	// }
     }
 
     /*
@@ -118,27 +110,27 @@ public class EventHubOutboundConnector extends SerialOutboundConnector {
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.stop(monitor);
-	if (sender != null) {
-	    try {
-		sender.close();
-	    } catch (JMSException e) {
-		getLogger().warn("Error closing message source for EventHub processor.", e);
-	    }
-	}
-	if (session != null) {
-	    try {
-		session.close();
-	    } catch (JMSException e) {
-		getLogger().warn("Error closing session for EventHub processor.", e);
-	    }
-	}
-	if (connection != null) {
-	    try {
-		connection.close();
-	    } catch (JMSException e) {
-		getLogger().warn("Error closing session for EventHub processor.", e);
-	    }
-	}
+	// if (sender != null) {
+	// try {
+	// sender.close();
+	// } catch (JMSException e) {
+	// getLogger().warn("Error closing message source for EventHub processor.", e);
+	// }
+	// }
+	// if (session != null) {
+	// try {
+	// session.close();
+	// } catch (JMSException e) {
+	// getLogger().warn("Error closing session for EventHub processor.", e);
+	// }
+	// }
+	// if (connection != null) {
+	// try {
+	// connection.close();
+	// } catch (JMSException e) {
+	// getLogger().warn("Error closing session for EventHub processor.", e);
+	// }
+	// }
     }
 
     /*
@@ -204,14 +196,14 @@ public class EventHubOutboundConnector extends SerialOutboundConnector {
      * @throws SiteWhereException
      */
     protected void sendEvent(IDeviceEvent event) throws SiteWhereException {
-	try {
-	    BytesMessage message = session.createBytesMessage();
-	    message.writeBytes(MarshalUtils.marshalJson(event));
-	    message.setJMSMessageID("ID:" + event.getId());
-	    sender.send(message);
-	} catch (JMSException e) {
-	    throw new SiteWhereException(e);
-	}
+	// try {
+	// BytesMessage message = session.createBytesMessage();
+	// message.writeBytes(MarshalUtils.marshalJson(event));
+	// message.setJMSMessageID("ID:" + event.getId());
+	// sender.send(message);
+	// } catch (JMSException e) {
+	// throw new SiteWhereException(e);
+	// }
     }
 
     public String getSasName() {

@@ -12,8 +12,6 @@ import java.util.UUID;
 
 /**
  * Microservice associated with a SiteWhere instance.
- * 
- * @author Derek
  */
 public interface IInstanceMicroservice {
 

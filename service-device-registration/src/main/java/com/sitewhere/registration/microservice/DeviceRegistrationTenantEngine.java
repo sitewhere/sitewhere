@@ -17,7 +17,6 @@ import com.sitewhere.registration.spi.microservice.IDeviceRegistrationTenantEngi
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.spring.DeviceRegistrationBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -59,9 +58,9 @@ public class DeviceRegistrationTenantEngine extends MicroserviceTenantEngine
 	// Device registration events consumer.
 	this.deviceRegistrationEventsConsumer = new DeviceRegistrationEventsConsumer();
 
-	// Load configured registration manager.
-	this.registrationManager = (IRegistrationManager) getModuleContext()
-		.getBean(DeviceRegistrationBeans.BEAN_REGISTRATION_MANAGER);
+	// // Load configured registration manager.
+	// this.registrationManager = (IRegistrationManager) getModuleContext()
+	// .getBean(DeviceRegistrationBeans.BEAN_REGISTRATION_MANAGER);
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());

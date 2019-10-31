@@ -14,8 +14,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Manages a list of label generators.
- * 
- * @author Derek
  */
 public interface ILabelGeneratorManager extends ITenantEngineLifecycleComponent {
 

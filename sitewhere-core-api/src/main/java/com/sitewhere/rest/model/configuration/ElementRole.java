@@ -13,8 +13,6 @@ import com.sitewhere.spi.microservice.configuration.model.IElementRole;
 
 /**
  * Model object for a configuration element role.
- * 
- * @author Derek
  */
 public class ElementRole implements IElementRole {
 

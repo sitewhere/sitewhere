@@ -23,8 +23,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Interface for device event management operations.
- * 
- * @author Derek
  */
 public interface IDeviceEventManagement extends ITenantEngineLifecycleComponent {
 

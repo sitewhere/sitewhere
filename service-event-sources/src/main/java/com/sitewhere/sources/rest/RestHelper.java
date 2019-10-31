@@ -7,9 +7,6 @@
  */
 package com.sitewhere.sources.rest;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -18,27 +15,13 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 
 /**
- * Helper class that simplifies use of Spring {@link RestTemplate} for
- * scripting.
+ * Helper class that simplifies use of Spring for scripting.
  * 
  * @author Derek
  */
@@ -54,7 +37,7 @@ public class RestHelper {
     private String password;
 
     /** Use CXF web client to send requests */
-    private RestTemplate client;
+    // private RestTemplate client;
 
     /** Indicates whether to ignore a bad SSL certificate on the server */
     private boolean ignoreBadCertificate = true;
@@ -63,11 +46,13 @@ public class RestHelper {
 	this.baseUrl = baseUrl;
 	this.username = username;
 	this.password = password;
-
-	this.client = isIgnoreBadCertificate() ? new RestTemplate(createSecureTransport()) : new RestTemplate();
-	List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>();
-	converters.add(new MappingJackson2HttpMessageConverter());
-	client.setMessageConverters(converters);
+	//
+	// this.client = isIgnoreBadCertificate() ? new
+	// RestTemplate(createSecureTransport()) : new RestTemplate();
+	// List<HttpMessageConverter<?>> converters = new
+	// ArrayList<HttpMessageConverter<?>>();
+	// converters.add(new MappingJackson2HttpMessageConverter());
+	// client.setMessageConverters(converters);
     }
 
     /**
@@ -101,18 +86,21 @@ public class RestHelper {
      * @throws SiteWhereSystemException
      */
     protected <T> T get(String relativeUrl, Class<T> responseType) throws SiteWhereException {
-	try {
-	    HttpHeaders headers = new HttpHeaders();
-	    if (!StringUtils.isEmpty(getUsername()) && !StringUtils.isEmpty(getPassword())) {
-		headers.add("Authorization", getAuthHeader());
-	    }
-	    HttpEntity<Void> entity = new HttpEntity<Void>(headers);
-	    String url = baseUrl + relativeUrl;
-	    ResponseEntity<T> response = client.exchange(url, HttpMethod.GET, entity, responseType);
-	    return response.getBody();
-	} catch (ResourceAccessException e) {
-	    throw new SiteWhereException(e);
-	}
+	// try {
+	// HttpHeaders headers = new HttpHeaders();
+	// if (!StringUtils.isEmpty(getUsername()) &&
+	// !StringUtils.isEmpty(getPassword())) {
+	// headers.add("Authorization", getAuthHeader());
+	// }
+	// HttpEntity<Void> entity = new HttpEntity<Void>(headers);
+	// String url = baseUrl + relativeUrl;
+	// ResponseEntity<T> response = client.exchange(url, HttpMethod.GET, entity,
+	// responseType);
+	// return response.getBody();
+	// } catch (ResourceAccessException e) {
+	// throw new SiteWhereException(e);
+	// }
+	return null;
     }
 
     /**
@@ -124,26 +112,6 @@ public class RestHelper {
 	String token = getUsername() + ":" + getPassword();
 	String encoded = new String(Base64.encodeBase64(token.getBytes()));
 	return "Basic " + encoded;
-    }
-
-    /**
-     * Removes requirement for valid certificate on server.
-     * 
-     * @return
-     */
-    protected ClientHttpRequestFactory createSecureTransport() {
-	HostnameVerifier nullHostnameVerifier = new HostnameVerifier() {
-	    public boolean verify(String hostname, SSLSession session) {
-		return true;
-	    }
-	};
-
-	HttpClient client = HttpClientBuilder.create().setSSLHostnameVerifier(nullHostnameVerifier)
-		.setSSLContext(createContext()).build();
-
-	HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(client);
-
-	return requestFactory;
     }
 
     /**

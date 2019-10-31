@@ -11,13 +11,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 
 /**
  * Helper class for wrapping messages in a border.
- * 
- * @author Derek
  */
 public class Boilerplate {
 
@@ -36,6 +34,7 @@ public class Boilerplate {
 	return boilerplate(messages, c, DEFAULT_MESSAGE_WIDTH);
     }
 
+    @SuppressWarnings("deprecation")
     public static String boilerplate(List<String> messages, String c, int maxlength) {
 	int size;
 	StringBuffer buf = new StringBuffer(messages.size() * maxlength);

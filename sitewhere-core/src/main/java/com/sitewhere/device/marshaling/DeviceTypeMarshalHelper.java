@@ -20,8 +20,6 @@ import com.sitewhere.spi.device.IDeviceType;
 /**
  * Configurable helper class that allows {@link DeviceType} model objects to be
  * created from {@link IDeviceType} SPI objects.
- * 
- * @author dadams
  */
 public class DeviceTypeMarshalHelper {
 

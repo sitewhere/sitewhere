@@ -7,50 +7,55 @@
  */
 package com.sitewhere.web.rest.controllers;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.sitewhere.rest.model.search.external.SearchProvider;
+import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
-import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
-import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for search operations.
  * 
  * @author Derek
  */
-@RestController
-@SiteWhereCrossOrigin
-@RequestMapping(value = "/search")
+@Path("/search")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "search")
-public class ExternalSearch extends RestControllerBase {
+public class ExternalSearch {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
     private static Log LOGGER = LogFactory.getLog(ExternalSearch.class);
 
-    @RequestMapping(method = RequestMethod.GET)
+    @Inject
+    private IInstanceManagementMicroservice<?> microservice;
+
+    /**
+     * Get list of all search providers.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    @GET
     @ApiOperation(value = "List available search providers")
-    @Secured({ SiteWhereRoles.REST })
-    public List<SearchProvider> listSearchProviders(HttpServletRequest servletRequest) throws SiteWhereException {
+    public Response listSearchProviders() throws SiteWhereException {
 	// List<ISearchProvider> providers =
 	// getSearchProviderManager().getSearchProviders();
 	// List<SearchProvider> retval = new ArrayList<SearchProvider>();
@@ -58,7 +63,7 @@ public class ExternalSearch extends RestControllerBase {
 	// retval.add(SearchProvider.copy(provider));
 	// }
 	// return retval;
-	return null;
+	return Response.ok().build();
     }
 
     /**
@@ -66,17 +71,15 @@ public class ExternalSearch extends RestControllerBase {
      * response.
      * 
      * @param providerId
-     * @param request
-     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{providerId}/events", method = RequestMethod.GET)
+    @GET
+    @Path("/{providerId}/events")
     @ApiOperation(value = "Search for events in provider")
-    @Secured({ SiteWhereRoles.REST })
-    public List<IDeviceEvent> searchDeviceEvents(
-	    @ApiParam(value = "Search provider id", required = true) @PathVariable String providerId,
-	    HttpServletRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
+    public Response searchDeviceEvents(
+	    @ApiParam(value = "Search provider id", required = true) @PathParam("providerId") String providerId)
+	    throws SiteWhereException {
 	// ISearchProvider provider =
 	// getSearchProviderManager().getSearchProvider(providerId);
 	// if (provider == null) {
@@ -90,7 +93,7 @@ public class ExternalSearch extends RestControllerBase {
 	// }
 	// String query = request.getQueryString();
 	// return ((IDeviceEventSearchProvider) provider).executeQuery(query);
-	return null;
+	return Response.ok().build();
     }
 
     /**
@@ -102,11 +105,12 @@ public class ExternalSearch extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{providerId}/raw", method = RequestMethod.POST)
+    @POST
+    @Path("/{providerId}/raw")
     @ApiOperation(value = "Execute search and return raw results")
-    @Secured({ SiteWhereRoles.REST })
-    public JsonNode rawSearch(@ApiParam(value = "Search provider id", required = true) @PathVariable String providerId,
-	    @RequestBody String query, HttpServletRequest servletRequest) throws SiteWhereException {
+    public Response rawSearch(
+	    @ApiParam(value = "Search provider id", required = true) @PathParam("providerId") String providerId,
+	    @RequestBody String query) throws SiteWhereException {
 	// ISearchProvider provider =
 	// getSearchProviderManager().getSearchProvider(providerId);
 	// if (provider == null) {
@@ -120,6 +124,10 @@ public class ExternalSearch extends RestControllerBase {
 	// }
 	// return ((IDeviceEventSearchProvider)
 	// provider).executeQueryWithRawResponse(query);
-	return null;
+	return Response.ok().build();
+    }
+
+    protected IInstanceManagementMicroservice<?> getMicroservice() {
+	return microservice;
     }
 }

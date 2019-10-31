@@ -9,8 +9,6 @@ package com.sitewhere.spi.microservice.scripting;
 
 /**
  * Information required to create a new script.
- * 
- * @author Derek
  */
 public interface IScriptCreateRequest {
 

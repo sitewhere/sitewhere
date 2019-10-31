@@ -14,8 +14,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
  * Interface for tenant engine components.
- * 
- * @author Derek
  */
 public interface ITenantEngineComponent extends Serializable {
 

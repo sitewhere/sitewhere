@@ -21,8 +21,6 @@ import com.sitewhere.spi.device.IDeviceManagement;
 /**
  * Configurable helper class that allows {@link BatchElement} model objects to
  * be created from {@link IBatchElement} SPI objects.
- * 
- * @author Derek
  */
 public class BatchElementMarshalHelper {
 

@@ -23,8 +23,6 @@ import com.sitewhere.spi.search.asset.IAssetTypeSearchCritiera;
 /**
  * Wraps an asset management implementation. Subclasses can implement only the
  * methods they need to override.
- * 
- * @author Derek
  */
 public class AssetManagementDecorator extends TenantEngineLifecycleComponentDecorator<IAssetManagement>
 	implements IAssetManagement {

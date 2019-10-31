@@ -7,8 +7,6 @@
  */
 package com.sitewhere.spi.microservice.multitenant;
 
-import org.springframework.context.ApplicationContext;
-
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.configuration.ITenantEngineConfigurationListener;
@@ -106,7 +104,7 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
      * 
      * @return
      */
-    public ApplicationContext getModuleContext();
+    public Object getModuleContext();
 
     /**
      * Get module configuration data.
@@ -191,7 +189,7 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
      * @return
      * @throws SiteWhereException
      */
-    public ILifecycleStep initializeDiscoverableBeans(ApplicationContext context) throws SiteWhereException;
+    public ILifecycleStep initializeDiscoverableBeans(Object context) throws SiteWhereException;
 
     /**
      * Start components from the given context marked as
@@ -201,7 +199,7 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
      * @return
      * @throws SiteWhereException
      */
-    public ILifecycleStep startDiscoverableBeans(ApplicationContext context) throws SiteWhereException;
+    public ILifecycleStep startDiscoverableBeans(Object context) throws SiteWhereException;
 
     /**
      * Stop components from the given context marked as
@@ -211,7 +209,7 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
      * @return
      * @throws SiteWhereException
      */
-    public ILifecycleStep stopDiscoverableBeans(ApplicationContext context) throws SiteWhereException;
+    public ILifecycleStep stopDiscoverableBeans(Object context) throws SiteWhereException;
 
     /**
      * Terminate components from the given context marked as
@@ -221,5 +219,5 @@ public interface IMicroserviceTenantEngine extends ITenantEngineLifecycleCompone
      * @return
      * @throws SiteWhereException
      */
-    public ILifecycleStep terminateDiscoverableBeans(ApplicationContext context) throws SiteWhereException;
+    public ILifecycleStep terminateDiscoverableBeans(Object context) throws SiteWhereException;
 }

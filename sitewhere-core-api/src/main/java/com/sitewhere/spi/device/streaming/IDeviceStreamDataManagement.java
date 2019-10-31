@@ -17,8 +17,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Interface for device stream data management operations.
- * 
- * @author Derek
  */
 public interface IDeviceStreamDataManagement extends ITenantEngineLifecycleComponent {
 

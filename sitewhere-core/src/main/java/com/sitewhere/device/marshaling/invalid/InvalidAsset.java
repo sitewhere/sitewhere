@@ -11,8 +11,6 @@ import com.sitewhere.rest.model.asset.Asset;
 
 /**
  * Used to show broken link if referenced asset is deleted.
- * 
- * @author Derek
  */
 public class InvalidAsset extends Asset {
 

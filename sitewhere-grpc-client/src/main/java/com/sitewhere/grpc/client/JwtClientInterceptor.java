@@ -9,8 +9,6 @@ package com.sitewhere.grpc.client;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import io.grpc.CallOptions;
 import io.grpc.Channel;
@@ -54,16 +52,19 @@ public class JwtClientInterceptor implements ClientInterceptor {
 	     */
 	    @Override
 	    public void start(Listener<RespT> responseListener, Metadata headers) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication == null) {
-		    throw new RuntimeException("Attempting to make remote call with no Spring Security context.");
-		}
-		String jwt = (String) authentication.getCredentials();
-		if (jwt == null) {
-		    throw new RuntimeException("Attempting to make remote call with no JWT provided.");
-		}
-		LOGGER.trace("Adding JWT into gRPC headers: " + jwt);
-		headers.put(JWT_KEY, jwt);
+		// Authentication authentication =
+		// SecurityContextHolder.getContext().getAuthentication();
+		// if (authentication == null) {
+		// throw new RuntimeException("Attempting to make remote call with no Spring
+		// Security context.");
+		// }
+		// String jwt = (String) authentication.getCredentials();
+		// if (jwt == null) {
+		// throw new RuntimeException("Attempting to make remote call with no JWT
+		// provided.");
+		// }
+		// LOGGER.trace("Adding JWT into gRPC headers: " + jwt);
+		// headers.put(JWT_KEY, jwt);
 		super.start(responseListener, headers);
 	    }
 	};

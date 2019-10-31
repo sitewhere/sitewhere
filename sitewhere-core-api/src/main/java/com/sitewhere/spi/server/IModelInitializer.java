@@ -9,8 +9,6 @@ package com.sitewhere.spi.server;
 
 /**
  * Common interface for model initializers.
- * 
- * @author Derek
  */
 public interface IModelInitializer {
 

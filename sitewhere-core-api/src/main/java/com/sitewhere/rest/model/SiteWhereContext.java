@@ -25,8 +25,6 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 
 /**
  * Default context implementation.
- * 
- * @author dadams
  */
 public class SiteWhereContext implements ISiteWhereContext {
 

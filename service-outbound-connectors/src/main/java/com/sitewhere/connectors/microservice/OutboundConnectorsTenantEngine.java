@@ -13,7 +13,6 @@ import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.spring.OutboundConnectorsBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -44,8 +43,9 @@ public class OutboundConnectorsTenantEngine extends MicroserviceTenantEngine
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create outbound connectors manager.
-	this.outboundConnectorsManager = (IOutboundConnectorsManager) getModuleContext()
-		.getBean(OutboundConnectorsBeans.BEAN_OUTBOUND_CONNECTORS_MANAGER);
+	// this.outboundConnectorsManager = (IOutboundConnectorsManager)
+	// getModuleContext()
+	// .getBean(OutboundConnectorsBeans.BEAN_OUTBOUND_CONNECTORS_MANAGER);
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());

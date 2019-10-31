@@ -18,8 +18,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 /**
  * Manages creation of {@link IDeviceStream} entities based on requests from
  * devices.
- * 
- * @author Derek
  */
 public interface IDeviceStreamManager extends ITenantEngineLifecycleComponent {
 

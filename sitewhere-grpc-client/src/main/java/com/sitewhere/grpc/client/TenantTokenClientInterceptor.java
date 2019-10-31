@@ -7,12 +7,6 @@
  */
 package com.sitewhere.grpc.client;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import com.sitewhere.spi.security.ITenantAwareAuthentication;
-import com.sitewhere.spi.tenant.ITenant;
-
 import io.grpc.CallOptions;
 import io.grpc.Channel;
 import io.grpc.ClientCall;
@@ -51,13 +45,15 @@ public class TenantTokenClientInterceptor implements ClientInterceptor {
 	     */
 	    @Override
 	    public void start(Listener<RespT> responseListener, Metadata headers) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if ((authentication != null) && (authentication instanceof ITenantAwareAuthentication)) {
-		    ITenant tenant = ((ITenantAwareAuthentication) authentication).getTenant();
-		    if (tenant != null) {
-			headers.put(TENANT_TOKEN_KEY, tenant.getToken().toString());
-		    }
-		}
+		// Authentication authentication =
+		// SecurityContextHolder.getContext().getAuthentication();
+		// if ((authentication != null) && (authentication instanceof
+		// ITenantAwareAuthentication)) {
+		// ITenant tenant = ((ITenantAwareAuthentication) authentication).getTenant();
+		// if (tenant != null) {
+		// headers.put(TENANT_TOKEN_KEY, tenant.getToken().toString());
+		// }
+		// }
 		super.start(responseListener, headers);
 	    }
 	};

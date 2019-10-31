@@ -7,8 +7,6 @@
  */
 package com.sitewhere.microservice.instance;
 
-import org.springframework.beans.factory.annotation.Value;
-
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
@@ -19,79 +17,85 @@ import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 public class InstanceSettings implements IInstanceSettings {
 
     /** Product id */
-    @Value("#{systemEnvironment['sitewhere.product.id'] ?: 'sitewhere'}")
+    // @Value("#{systemEnvironment['sitewhere.product.id'] ?: 'sitewhere'}")
     private String productId;
 
     /** Instance id service belongs to */
-    @Value("#{systemEnvironment['sitewhere.instance.id'] ?: 'sitewhere1'}")
+    // @Value("#{systemEnvironment['sitewhere.instance.id'] ?: 'sitewhere1'}")
     private String instanceId;
 
     /** Id of instance template to use */
-    @Value("#{systemEnvironment['sitewhere.instance.template.id'] ?: 'default'}")
+    // @Value("#{systemEnvironment['sitewhere.instance.template.id'] ?: 'default'}")
     private String instanceTemplateId;
 
     /** Kafka bootstrap services configuration for microservices */
-    @Value("#{systemEnvironment['sitewhere.kafka.bootstrap.servers'] ?: 'cp-kafka:9092'}")
+    // @Value("#{systemEnvironment['sitewhere.kafka.bootstrap.servers'] ?:
+    // 'cp-kafka:9092'}")
     private String kafkaBootstrapServers;
 
     /** Kafka default number of partitions for topics */
-    @Value("#{systemEnvironment['sitewhere.kafka.defaultTopicPartitions'] ?: '8'}")
+    // @Value("#{systemEnvironment['sitewhere.kafka.defaultTopicPartitions'] ?:
+    // '8'}")
     private int kafkaDefaultTopicPartitions;
 
     /** Kafka default number of partitions for topics */
-    @Value("#{systemEnvironment['sitewhere.kafka.defaultTopicReplicationFactor'] ?: '3'}")
+    // @Value("#{systemEnvironment['sitewhere.kafka.defaultTopicReplicationFactor']
+    // ?: '3'}")
     private int kafkaDefaultTopicReplicationFactor;
 
     /** Apache Synote hostname info for microservices */
-    @Value("#{systemEnvironment['sitewhere.syncope.host'] ?: 'syncope'}")
+    // @Value("#{systemEnvironment['sitewhere.syncope.host'] ?: 'syncope'}")
     private String syncopeHost;
 
     /** Apache Synote port info for microservices */
-    @Value("#{systemEnvironment['sitewhere.syncope.port'] ?: '8080'}")
+    // @Value("#{systemEnvironment['sitewhere.syncope.port'] ?: '8080'}")
     private int syncopePort;
 
     /** Prometheus HTTP port info for microservices */
-    @Value("#{systemEnvironment['sitewhere.metrics.port'] ?: '9090'}")
+    // @Value("#{systemEnvironment['sitewhere.metrics.port'] ?: '9090'}")
     private int metricsHttpPort;
 
     /** Number of retries on gRPC exponential backoff */
-    @Value("#{systemEnvironment['sitewhere.grpc.maxRetryCount'] ?: '6'}")
+    // @Value("#{systemEnvironment['sitewhere.grpc.maxRetryCount'] ?: '6'}")
     private double grpcMaxRetryCount;
 
     /** Initial backoff in seconds for gRPC exponential backoff */
-    @Value("#{systemEnvironment['sitewhere.grpc.initialBackoffSeconds'] ?: '10'}")
+    // @Value("#{systemEnvironment['sitewhere.grpc.initialBackoffSeconds'] ?:
+    // '10'}")
     private int grpcInitialBackoffInSeconds;
 
     /** Max backoff in seconds for gRPC exponential backoff */
-    @Value("#{systemEnvironment['sitewhere.grpc.maxBackoffSeconds'] ?: '600'}")
+    // @Value("#{systemEnvironment['sitewhere.grpc.maxBackoffSeconds'] ?: '600'}")
     private int grpcMaxBackoffInSeconds;
 
     /** Mulitplier used for gRPC exponential backoff */
-    @Value("#{systemEnvironment['sitewhere.grpc.backoffMultiplier'] ?: '1.5'}")
+    // @Value("#{systemEnvironment['sitewhere.grpc.backoffMultiplier'] ?: '1.5'}")
     private double grpcBackoffMultiplier;
 
     /** Flag for whether to resolve via FQDN on gRPC calls */
-    @Value("#{systemEnvironment['sitewhere.grpc.resolveFQDN'] ?: 'false'}")
+    // @Value("#{systemEnvironment['sitewhere.grpc.resolveFQDN'] ?: 'false'}")
     private boolean grpcResolveFQDN;
 
     /** File system root for storing SiteWhere data for microservices */
-    @Value("#{systemEnvironment['sitewhere.filesystem.storage.root'] ?: '/var/sitewhere/'}")
+    // @Value("#{systemEnvironment['sitewhere.filesystem.storage.root'] ?:
+    // '/var/sitewhere/'}")
     private String fileSystemStorageRoot;
 
     /** Flag for whether to log metrics */
-    @Value("#{systemEnvironment['sitewhere.log.metrics'] ?: 'false'}")
+    // @Value("#{systemEnvironment['sitewhere.log.metrics'] ?: 'false'}")
     private boolean logMetrics;
 
     /** Microservice publicly resolvable hostname */
-    @Value("#{systemEnvironment['sitewhere.service.public.hostname'] ?: '#{null}'}")
+    // @Value("#{systemEnvironment['sitewhere.service.public.hostname'] ?:
+    // '#{null}'}")
     private String publicHostname;
 
     /** Microservice publicly resolvable hostname */
-    @Value("#{systemEnvironment['sitewhere.namespace'] ?: '#{null}'}")
+    // @Value("#{systemEnvironment['sitewhere.namespace'] ?: '#{null}'}")
     private String kubernetesNamespace;
 
     /** Microservice publicly resolvable hostname */
-    @Value("#{systemEnvironment['sitewhere.k8s.pod.ip'] ?: '#{null}'}")
+    // @Value("#{systemEnvironment['sitewhere.k8s.pod.ip'] ?: '#{null}'}")
     private String kubernetesPodAddress;
 
     /*

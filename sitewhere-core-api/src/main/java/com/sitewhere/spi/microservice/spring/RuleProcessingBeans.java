@@ -9,8 +9,6 @@ package com.sitewhere.spi.microservice.spring;
 
 /**
  * Spring bean names for rule processing configuration components.
- * 
- * @author Derek
  */
 public class RuleProcessingBeans {
 

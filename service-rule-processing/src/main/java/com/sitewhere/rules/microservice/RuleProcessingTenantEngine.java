@@ -13,7 +13,6 @@ import com.sitewhere.rules.spi.microservice.IRuleProcessingTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.spring.RuleProcessingBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -43,8 +42,8 @@ public class RuleProcessingTenantEngine extends MicroserviceTenantEngine impleme
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create outbound connectors manager.
-	this.ruleProcessorsManager = (IRuleProcessorsManager) getModuleContext()
-		.getBean(RuleProcessingBeans.BEAN_RULE_PROCESSORS_MANAGER);
+	// this.ruleProcessorsManager = (IRuleProcessorsManager) getModuleContext()
+	// .getBean(RuleProcessingBeans.BEAN_RULE_PROCESSORS_MANAGER);
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());

@@ -56,8 +56,6 @@ import com.sitewhere.spi.search.device.IZoneSearchCriteria;
  * Allows classes to inject themselves as a facade around an existing device
  * management implementation. By default all methods just pass calls to the
  * underlying delegate.
- * 
- * @author Derek
  */
 public class DeviceManagementDecorator extends TenantEngineLifecycleComponentDecorator<IDeviceManagement>
 	implements IDeviceManagement {

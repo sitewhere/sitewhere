@@ -21,8 +21,6 @@ import com.sitewhere.spi.asset.IAssetType;
 /**
  * Configurable helper class that allows {@link Asset} model objects to be
  * created from {@link IAsset} SPI objects.
- * 
- * @author Derek
  */
 public class AssetMarshalHelper {
 

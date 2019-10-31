@@ -14,8 +14,6 @@ import groovy.lang.Binding;
 
 /**
  * Component that leverages a Groovy script.
- * 
- * @author Derek
  */
 public interface IGroovyComponent extends ILifecycleComponent {
 

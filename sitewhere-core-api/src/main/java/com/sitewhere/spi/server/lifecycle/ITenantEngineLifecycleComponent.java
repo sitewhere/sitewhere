@@ -11,8 +11,6 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
  * Extends {@link ILifecycleComponent} with ability to access tenant engine.
- * 
- * @author Derek
  */
 public interface ITenantEngineLifecycleComponent extends ILifecycleComponent {
 

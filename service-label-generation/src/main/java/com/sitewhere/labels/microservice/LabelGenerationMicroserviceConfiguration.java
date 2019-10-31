@@ -7,9 +7,6 @@
  */
 package com.sitewhere.labels.microservice;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 import com.sitewhere.labels.spi.microservice.ILabelGenerationMicroservice;
 import com.sitewhere.microservice.instance.InstanceSettings;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
@@ -19,15 +16,12 @@ import com.sitewhere.spi.microservice.instance.IInstanceSettings;
  * 
  * @author Derek
  */
-@Configuration
 public class LabelGenerationMicroserviceConfiguration {
 
-    @Bean
     public ILabelGenerationMicroservice labelGenerationMicroservice() {
 	return new LabelGenerationMicroservice();
     }
 
-    @Bean
     public IInstanceSettings instanceSettings() {
 	return new InstanceSettings();
     }

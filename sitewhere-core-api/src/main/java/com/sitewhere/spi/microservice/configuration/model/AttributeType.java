@@ -9,8 +9,6 @@ package com.sitewhere.spi.microservice.configuration.model;
 
 /**
  * Type indicator for attribute.
- * 
- * @author Derek
  */
 public enum AttributeType {
 

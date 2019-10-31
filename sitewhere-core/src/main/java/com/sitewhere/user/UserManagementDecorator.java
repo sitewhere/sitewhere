@@ -23,8 +23,6 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
 /**
  * Uses decorator pattern to allow behaviors to be injected around user
  * management API calls.
- * 
- * @author Derek
  */
 public class UserManagementDecorator extends LifecycleComponentDecorator<IUserManagement> implements IUserManagement {
 

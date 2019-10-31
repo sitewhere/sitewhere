@@ -7,9 +7,6 @@
  */
 package com.sitewhere.inbound.microservice;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.microservice.instance.InstanceSettings;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
@@ -19,15 +16,12 @@ import com.sitewhere.spi.microservice.instance.IInstanceSettings;
  * 
  * @author Derek
  */
-@Configuration
 public class InboundProcessingMicroserviceConfiguration {
 
-    @Bean
     public IInboundProcessingMicroservice inboundProcessingMicroservice() {
 	return new InboundProcessingMicroservice();
     }
 
-    @Bean
     public IInstanceSettings instanceSettings() {
 	return new InstanceSettings();
     }

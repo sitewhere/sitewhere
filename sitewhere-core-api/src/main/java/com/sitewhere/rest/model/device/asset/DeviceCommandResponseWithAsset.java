@@ -17,8 +17,6 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 /**
  * Wraps a {@link DeviceCommandResponse} so that information about the asset
  * associated with its assignment is available.
- * 
- * @author Derek
  */
 public class DeviceCommandResponseWithAsset extends DeviceEventWithAsset implements IDeviceCommandResponse {
 

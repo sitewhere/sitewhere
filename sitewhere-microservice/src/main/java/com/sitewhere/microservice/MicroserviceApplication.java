@@ -19,8 +19,6 @@ import java.util.concurrent.ThreadFactory;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.springframework.context.annotation.ComponentScan;
-
 import com.sitewhere.core.Boilerplate;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
 import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
@@ -31,10 +29,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
  * Base application for SiteWhere microservices.
- * 
- * @author Derek
  */
-@ComponentScan
 public abstract class MicroserviceApplication<T extends IMicroservice<?>> implements IMicroserviceApplication<T> {
 
     /** Executor for background thread */

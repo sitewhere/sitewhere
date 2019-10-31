@@ -3,7 +3,7 @@ description = 'SiteWhere MongoDB Implementation'
 dependencies {
     compile project(':sitewhere-configuration')
     
-    compile group: 'org.mongodb', name: 'mongo-java-driver'
+    compile group: 'org.mongodb', name: 'mongo-java-driver', version: "${rootProject.ext['mongodb.version']}"
 }
 
 // Publish jar.

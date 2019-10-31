@@ -7,77 +7,71 @@
  */
 package com.sitewhere.configuration;
 
-import java.io.ByteArrayInputStream;
 import java.util.Map;
-
-import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.io.InputStreamResource;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Utility class for managing server configuration.
- * 
- * @author Derek
  */
 public class ConfigurationUtils {
 
     /**
      * Builds a Spring {@link ApplicationContext} from a byte array containing the
      * XML configuration.
-     * 
+     *
      * @param logProvider
      * @param configuration
      * @param properties
      * @return
      * @throws SiteWhereException
      */
-    public static ApplicationContext buildGlobalContext(ILifecycleComponent logProvider, byte[] configuration,
+    public static Object buildGlobalContext(ILifecycleComponent logProvider, byte[] configuration,
 	    Map<String, Object> properties) throws SiteWhereException {
-	logProvider.getLogger().debug("Using global configuration:\n\n" + new String(configuration) + "\n\n");
-	GenericApplicationContext context = new GenericApplicationContext();
-
-	// Plug in custom property source.
-	MapPropertySource source = new MapPropertySource("sitewhere", properties);
-	context.getEnvironment().getPropertySources().addLast(source);
-
-	// Read context from XML configuration file.
-	XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(context);
-	reader.setValidationMode(XmlBeanDefinitionReader.VALIDATION_XSD);
-	reader.loadBeanDefinitions(new InputStreamResource(new ByteArrayInputStream(configuration)));
-
-	context.refresh();
-	return context;
+	// logProvider.getLogger().debug("Using global configuration:\n\n" + new
+	// String(configuration) + "\n\n");
+	// GenericApplicationContext context = new GenericApplicationContext();
+	//
+	// // Plug in custom property source.
+	// MapPropertySource source = new MapPropertySource("sitewhere", properties);
+	// context.getEnvironment().getPropertySources().addLast(source);
+	//
+	// // Read context from XML configuration file.
+	// XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(context);
+	// reader.setValidationMode(XmlBeanDefinitionReader.VALIDATION_XSD);
+	// reader.loadBeanDefinitions(new InputStreamResource(new
+	// ByteArrayInputStream(configuration)));
+	//
+	// context.refresh();
+	return null;
     }
 
     /**
      * Build a Spring {@link ApplicationContext} from a byte[] containing a tenant
      * configuration. The context will inherit from the global context.
-     * 
+     *
      * @param configuration
      * @param properties
      * @param global
      * @return
      * @throws SiteWhereException
      */
-    public static ApplicationContext buildSubcontext(byte[] configuration, Map<String, Object> properties,
-	    ApplicationContext global) throws SiteWhereException {
-	GenericApplicationContext context = new GenericApplicationContext(global);
-
-	// Plug in custom property source.
-	MapPropertySource source = new MapPropertySource("sitewhere", properties);
-	context.getEnvironment().getPropertySources().addLast(source);
-
-	// Read context from XML configuration file.
-	XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(context);
-	reader.setValidationMode(XmlBeanDefinitionReader.VALIDATION_XSD);
-	reader.loadBeanDefinitions(new InputStreamResource(new ByteArrayInputStream(configuration)));
-
-	context.refresh();
-	return context;
+    public static Object buildSubcontext(byte[] configuration, Map<String, Object> properties, Object global)
+	    throws SiteWhereException {
+	// GenericApplicationContext context = new GenericApplicationContext(global);
+	//
+	// // Plug in custom property source.
+	// MapPropertySource source = new MapPropertySource("sitewhere", properties);
+	// context.getEnvironment().getPropertySources().addLast(source);
+	//
+	// // Read context from XML configuration file.
+	// XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(context);
+	// reader.setValidationMode(XmlBeanDefinitionReader.VALIDATION_XSD);
+	// reader.loadBeanDefinitions(new InputStreamResource(new
+	// ByteArrayInputStream(configuration)));
+	//
+	// context.refresh();
+	return null;
     }
 }

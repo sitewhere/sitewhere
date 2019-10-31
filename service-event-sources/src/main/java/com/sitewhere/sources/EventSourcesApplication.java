@@ -7,10 +7,6 @@
  */
 package com.sitewhere.sources;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.ComponentScan;
-
 import com.sitewhere.microservice.MicroserviceApplication;
 import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
 
@@ -19,10 +15,8 @@ import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
  * 
  * @author Derek
  */
-@ComponentScan
 public class EventSourcesApplication extends MicroserviceApplication<IEventSourcesMicroservice> {
 
-    @Autowired
     private IEventSourcesMicroservice microservice;
 
     /*
@@ -34,14 +28,5 @@ public class EventSourcesApplication extends MicroserviceApplication<IEventSourc
     @Override
     public IEventSourcesMicroservice getMicroservice() {
 	return microservice;
-    }
-
-    /**
-     * Entry point for Spring Boot.
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-	SpringApplication.run(EventSourcesApplication.class, args);
     }
 }

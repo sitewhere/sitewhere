@@ -11,8 +11,6 @@ import com.sitewhere.spi.microservice.configuration.model.NodeType;
 
 /**
  * Base class for all configuration node types.
- * 
- * @author Derek
  */
 public class ConfigurationNode {
 

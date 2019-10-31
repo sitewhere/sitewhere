@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.sitewhere.grpc.model.CommonModel;
 import com.sitewhere.grpc.model.CommonModel.GBrandingInformation;

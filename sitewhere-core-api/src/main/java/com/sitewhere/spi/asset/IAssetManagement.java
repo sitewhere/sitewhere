@@ -19,8 +19,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Asset management interface implemented by datastores that can store assets.
- * 
- * @author Derek
  */
 public interface IAssetManagement extends ITenantEngineLifecycleComponent {
 

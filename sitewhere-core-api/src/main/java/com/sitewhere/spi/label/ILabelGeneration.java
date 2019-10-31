@@ -14,8 +14,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Management interface for label generation.
- * 
- * @author Derek
  */
 public interface ILabelGeneration extends ITenantEngineLifecycleComponent {
 

@@ -38,8 +38,6 @@ public interface IDatasetTemplate {
 
     /**
      * Model initializers information.
-     * 
-     * @author Derek
      */
     public static interface Initializers {
 

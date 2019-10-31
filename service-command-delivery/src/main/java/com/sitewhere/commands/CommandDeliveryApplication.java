@@ -7,10 +7,6 @@
  */
 package com.sitewhere.commands;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.ComponentScan;
-
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
 
@@ -19,10 +15,8 @@ import com.sitewhere.microservice.MicroserviceApplication;
  * 
  * @author Derek
  */
-@ComponentScan
 public class CommandDeliveryApplication extends MicroserviceApplication<ICommandDeliveryMicroservice> {
 
-    @Autowired
     private ICommandDeliveryMicroservice microservice;
 
     /*
@@ -34,14 +28,5 @@ public class CommandDeliveryApplication extends MicroserviceApplication<ICommand
     @Override
     public ICommandDeliveryMicroservice getMicroservice() {
 	return microservice;
-    }
-
-    /**
-     * Entry point for Spring Boot.
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-	SpringApplication.run(CommandDeliveryApplication.class, args);
     }
 }

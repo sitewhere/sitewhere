@@ -7,9 +7,6 @@
  */
 package com.sitewhere.schedule.microservice;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 import com.sitewhere.microservice.instance.InstanceSettings;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
@@ -19,15 +16,12 @@ import com.sitewhere.spi.microservice.instance.IInstanceSettings;
  * 
  * @author Derek
  */
-@Configuration
 public class ScheduleManagementMicroserviceConfiguration {
 
-    @Bean
     public IScheduleManagementMicroservice ruleProcessingMicroservice() {
 	return new ScheduleManagementMicroservice();
     }
 
-    @Bean
     public IInstanceSettings instanceSettings() {
 	return new InstanceSettings();
     }

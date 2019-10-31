@@ -10,8 +10,6 @@ package com.sitewhere.spi.microservice.state;
 /**
  * Listener interested in updates to the instance topology as microservices and
  * tenant engines are added or removed.
- * 
- * @author Derek
  */
 public interface IInstanceTopologyUpdatesListener {
 

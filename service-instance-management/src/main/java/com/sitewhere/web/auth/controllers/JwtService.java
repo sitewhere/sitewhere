@@ -7,50 +7,43 @@
  */
 package com.sitewhere.web.auth.controllers;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.web.ISiteWhereWebConstants;
-import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
  * Controller for security operations.
- * 
- * @author Derek Adams
  */
-@RestController
-@CrossOrigin(exposedHeaders = { ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR,
-	ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR_CODE, ISiteWhereWebConstants.HEADER_JWT })
-@RequestMapping(value = "/jwt")
+@Path("/jwt")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "jwt")
-public class JwtService extends RestControllerBase {
+public class JwtService {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Log LOGGER = LogFactory.getLog(JwtService.class);
 
     /** Number of minutes a token remains valid */
     private static final int TOKEN_EXPIRATION_IN_MINUTES = 60;
 
     /** Injected reference to token management */
-    @Autowired
+    @Inject
     ITokenManagement tokenManagement;
 
     /**
@@ -58,23 +51,15 @@ public class JwtService extends RestControllerBase {
      * header in the servlet response. This is the only method that allows basic
      * authentication. All others expect the JWT in the Authorization header.
      * 
-     * @param servletRequest
-     * @param servletResponse
+     * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.GET)
+    @GET
     @ApiOperation(value = "Authenticate and receive a JWT")
-    public ResponseEntity<?> jwt(HttpServletRequest servletRequest, HttpServletResponse servletResponse)
-	    throws SiteWhereException {
-	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-	if (auth == null) {
-	    LOGGER.info("No credentials passsed when requesting JWT.");
-	    return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-	} else {
-	    IUser user = (IUser) auth.getPrincipal();
-	    String jwt = getTokenManagement().generateToken(user, TOKEN_EXPIRATION_IN_MINUTES);
-	    return ResponseEntity.ok().header(ISiteWhereWebConstants.HEADER_JWT, jwt).build();
-	}
+    public Response jwt() throws SiteWhereException {
+	IUser user = null; // TODO: Add basic auth and user context.
+	String jwt = getTokenManagement().generateToken(user, TOKEN_EXPIRATION_IN_MINUTES);
+	return Response.ok().header(ISiteWhereWebConstants.HEADER_JWT, jwt).build();
     }
 
     /**

@@ -36,8 +36,6 @@ import com.sitewhere.spi.search.ISearchResults;
 /**
  * Configurable helper class that allows {@link Area} model objects to be
  * created from {@link IArea} SPI objects.
- * 
- * @author Derek
  */
 public class AreaMarshalHelper {
 

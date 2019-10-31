@@ -7,16 +7,24 @@
  */
 package com.sitewhere.web.rest.controllers;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.rest.model.area.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.search.device.ZoneSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
@@ -25,73 +33,75 @@ import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
-import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for site operations.
  * 
  * @author Derek Adams
  */
-@RestController
-@SiteWhereCrossOrigin
-@RequestMapping(value = "/zones")
+@Path("/zones")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "zones")
-public class Zones extends RestControllerBase {
+public class Zones {
+
+    /** Static logger instance */
+    @SuppressWarnings("unused")
+    private static Log LOGGER = LogFactory.getLog(Zones.class);
+
+    @Inject
+    private IInstanceManagementMicroservice<?> microservice;
 
     /**
      * Create a new zone.
      * 
-     * @param areaToken
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.POST)
+    @POST
     @ApiOperation(value = "Create new zone")
-    @Secured({ SiteWhereRoles.REST })
-    public IZone createZone(@RequestBody ZoneCreateRequest request) throws SiteWhereException {
-	return getDeviceManagement().createZone(request);
+    public Response createZone(@RequestBody ZoneCreateRequest request) throws SiteWhereException {
+	return Response.ok(getDeviceManagement().createZone(request)).build();
     }
 
     /**
      * Get zone based on unique token.
      * 
      * @param zoneToken
-     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{zoneToken}", method = RequestMethod.GET)
+    @GET
+    @Path("/{zoneToken}")
     @ApiOperation(value = "Get zone by token")
-    @Secured({ SiteWhereRoles.REST })
-    public IZone getZone(
-	    @ApiParam(value = "Unique token that identifies zone", required = true) @PathVariable String zoneToken,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return assertZone(zoneToken);
+    public Response getZone(
+	    @ApiParam(value = "Unique token that identifies zone", required = true) @PathParam("zoneToken") String zoneToken)
+	    throws SiteWhereException {
+	return Response.ok(assertZone(zoneToken)).build();
     }
 
     /**
      * Update information for a zone.
      * 
-     * @param input
+     * @param zoneToken
+     * @param request
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{zoneToken}", method = RequestMethod.PUT)
+    @PUT
+    @Path("/{zoneToken}")
     @ApiOperation(value = "Update an existing zone")
-    @Secured({ SiteWhereRoles.REST })
-    public IZone updateZone(
-	    @ApiParam(value = "Unique token that identifies zone", required = true) @PathVariable String zoneToken,
-	    @RequestBody ZoneCreateRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
+    public Response updateZone(
+	    @ApiParam(value = "Unique token that identifies zone", required = true) @PathParam("zoneToken") String zoneToken,
+	    @RequestBody ZoneCreateRequest request) throws SiteWhereException {
 	IZone existing = assertZone(zoneToken);
-	return getDeviceManagement().updateZone(existing.getId(), request);
+	return Response.ok(getDeviceManagement().updateZone(existing.getId(), request)).build();
     }
 
     /**
@@ -103,17 +113,16 @@ public class Zones extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.GET)
+    @GET
     @ApiOperation(value = "List zones that match criteria")
-    @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IZone> listZones(
-	    @ApiParam(value = "Token that identifies an area", required = false) @RequestParam(required = false) String areaToken,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize)
+    public Response listZones(
+	    @ApiParam(value = "Token that identifies an area", required = false) @QueryParam("areaToken") String areaToken,
+	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	ZoneSearchCriteria criteria = new ZoneSearchCriteria(page, pageSize);
 	criteria.setAreaToken(areaToken);
-	return getDeviceManagement().listZones(criteria);
+	return Response.ok(getDeviceManagement().listZones(criteria)).build();
     }
 
     /**
@@ -123,14 +132,14 @@ public class Zones extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{zoneToken}", method = RequestMethod.DELETE)
+    @DELETE
+    @Path("/{zoneToken}")
     @ApiOperation(value = "Delete zone by unique token")
-    @Secured({ SiteWhereRoles.REST })
-    public IZone deleteZone(
-	    @ApiParam(value = "Unique token that identifies zone", required = true) @PathVariable String zoneToken)
+    public Response deleteZone(
+	    @ApiParam(value = "Unique token that identifies zone", required = true) @PathParam("zoneToken") String zoneToken)
 	    throws SiteWhereException {
 	IZone existing = assertZone(zoneToken);
-	return getDeviceManagement().deleteZone(existing.getId());
+	return Response.ok(getDeviceManagement().deleteZone(existing.getId())).build();
     }
 
     /**
@@ -148,7 +157,11 @@ public class Zones extends RestControllerBase {
 	return zone;
     }
 
-    private IDeviceManagement getDeviceManagement() {
+    protected IDeviceManagement getDeviceManagement() {
 	return getMicroservice().getDeviceManagementApiChannel();
+    }
+
+    protected IInstanceManagementMicroservice<?> getMicroservice() {
+	return microservice;
     }
 }

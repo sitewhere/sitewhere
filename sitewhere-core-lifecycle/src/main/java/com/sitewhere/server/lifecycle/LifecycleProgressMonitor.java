@@ -23,8 +23,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleProgressUtils;
 
 /**
  * Default implementation of {@link ILifecycleProgressMonitor}.
- * 
- * @author Derek
  */
 public class LifecycleProgressMonitor implements ILifecycleProgressMonitor {
 

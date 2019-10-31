@@ -9,8 +9,6 @@ package com.sitewhere.spi.microservice.spring;
 
 /**
  * Spring bean names for event management configuration components.
- * 
- * @author Derek
  */
 public class EventManagementBeans {
 

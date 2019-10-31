@@ -7,8 +7,6 @@
  */
 package com.sitewhere.microservice.kafka;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.kafka.IKafkaTopicNaming;
 import com.sitewhere.spi.tenant.ITenant;
@@ -77,7 +75,6 @@ public class KafkaTopicNaming implements IKafkaTopicNaming {
     /** Topic suffix for failed batch elements */
     protected static final String TENANT_TOPIC_FAILED_BATCH_ELEMENTS = "failed-batch-elements";
 
-    @Autowired
     private IInstanceSettings instanceSettings;
 
     /*

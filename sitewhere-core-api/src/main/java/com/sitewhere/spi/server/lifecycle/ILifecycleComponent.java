@@ -21,8 +21,6 @@ import com.sitewhere.spi.microservice.state.ILifecycleComponentState;
 
 /**
  * Lifecycle methods used in SiteWhere components.
- * 
- * @author Derek
  */
 public interface ILifecycleComponent {
 

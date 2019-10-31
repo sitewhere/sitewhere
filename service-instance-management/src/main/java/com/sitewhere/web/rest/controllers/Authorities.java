@@ -7,47 +7,45 @@
  */
 package com.sitewhere.web.rest.controllers;
 
-import java.util.List;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
 import com.sitewhere.rest.model.user.request.GrantedAuthorityCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.error.ErrorCode;
-import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUserManagement;
-import com.sitewhere.spi.user.SiteWhereAuthority;
-import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
-import com.sitewhere.web.rest.RestControllerBase;
 import com.sitewhere.web.rest.model.GrantedAuthorityHierarchyBuilder;
-import com.sitewhere.web.rest.model.GrantedAuthorityHierarchyNode;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for user operations.
  * 
  * @author Derek Adams
  */
-@RestController
-@SiteWhereCrossOrigin
-@RequestMapping(value = "/authorities")
+@Path("/authorities")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "authorities")
-public class Authorities extends RestControllerBase {
+public class Authorities {
+
+    @Inject
+    private IInstanceManagementMicroservice<?> microservice;
 
     /**
      * Create a new authority.
@@ -56,13 +54,12 @@ public class Authorities extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @PostMapping
+    @POST
     @ApiOperation(value = "Create a new authority")
-    public GrantedAuthority createAuthority(@RequestBody GrantedAuthorityCreateRequest input)
-	    throws SiteWhereException {
-	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
+    public Response createAuthority(@RequestBody GrantedAuthorityCreateRequest input) throws SiteWhereException {
+	// checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	IGrantedAuthority auth = getUserManagement().createGrantedAuthority(input);
-	return GrantedAuthority.copy(auth);
+	return Response.ok(GrantedAuthority.copy(auth)).build();
     }
 
     /**
@@ -72,17 +69,18 @@ public class Authorities extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @GetMapping(value = "/{name}")
+    @GET
+    @Path("/{name}")
     @ApiOperation(value = "Get authority by id")
-    public GrantedAuthority getAuthorityByName(
-	    @ApiParam(value = "Authority name", required = true) @PathVariable String name) throws SiteWhereException {
-	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
+    public Response getAuthorityByName(
+	    @ApiParam(value = "Authority name", required = true) @PathParam("name") String name)
+	    throws SiteWhereException {
+	// checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	IGrantedAuthority auth = getUserManagement().getGrantedAuthorityByName(name);
 	if (auth == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidAuthority, ErrorLevel.ERROR,
-		    HttpServletResponse.SC_NOT_FOUND);
+	    return Response.status(Status.NOT_FOUND).build();
 	}
-	return GrantedAuthority.copy(auth);
+	return Response.ok(GrantedAuthority.copy(auth)).build();
     }
 
     /**
@@ -91,12 +89,12 @@ public class Authorities extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @GetMapping
+    @GET
     @ApiOperation(value = "List authorities that match criteria")
-    public ISearchResults<IGrantedAuthority> listAuthorities() throws SiteWhereException {
-	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
+    public Response listAuthorities() throws SiteWhereException {
+	// checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	GrantedAuthoritySearchCriteria criteria = new GrantedAuthoritySearchCriteria();
-	return getUserManagement().listGrantedAuthorities(criteria);
+	return Response.ok(getUserManagement().listGrantedAuthorities(criteria)).build();
     }
 
     /**
@@ -105,13 +103,14 @@ public class Authorities extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @GetMapping(value = "/hierarchy")
+    @GET
+    @Path("/hierarchy")
     @ApiOperation(value = "Get authorities hierarchy")
-    public List<GrantedAuthorityHierarchyNode> getAuthoritiesHierarchy() throws SiteWhereException {
-	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
+    public Response getAuthoritiesHierarchy() throws SiteWhereException {
+	// checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	GrantedAuthoritySearchCriteria criteria = new GrantedAuthoritySearchCriteria(1, 0);
 	ISearchResults<IGrantedAuthority> auths = getUserManagement().listGrantedAuthorities(criteria);
-	return GrantedAuthorityHierarchyBuilder.build(auths.getResults());
+	return Response.ok(GrantedAuthorityHierarchyBuilder.build(auths.getResults())).build();
     }
 
     /**
@@ -122,5 +121,9 @@ public class Authorities extends RestControllerBase {
      */
     protected IUserManagement getUserManagement() throws SiteWhereException {
 	return getMicroservice().getUserManagement();
+    }
+
+    protected IInstanceManagementMicroservice<?> getMicroservice() {
+	return microservice;
     }
 }

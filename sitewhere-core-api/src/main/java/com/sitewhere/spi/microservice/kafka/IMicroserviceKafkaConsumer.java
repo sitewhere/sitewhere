@@ -18,8 +18,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Component that consumes messages that are sent to a Kafka topic.
- * 
- * @author Derek
  */
 public interface IMicroserviceKafkaConsumer extends ITenantEngineLifecycleComponent {
 

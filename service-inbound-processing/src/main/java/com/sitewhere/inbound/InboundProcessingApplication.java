@@ -7,10 +7,6 @@
  */
 package com.sitewhere.inbound;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.ComponentScan;
-
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
 
@@ -19,10 +15,8 @@ import com.sitewhere.microservice.MicroserviceApplication;
  * 
  * @author Derek
  */
-@ComponentScan
 public class InboundProcessingApplication extends MicroserviceApplication<IInboundProcessingMicroservice> {
 
-    @Autowired
     private IInboundProcessingMicroservice microservice;
 
     /*
@@ -34,14 +28,5 @@ public class InboundProcessingApplication extends MicroserviceApplication<IInbou
     @Override
     public IInboundProcessingMicroservice getMicroservice() {
 	return microservice;
-    }
-
-    /**
-     * Entry point for Spring Boot.
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-	SpringApplication.run(InboundProcessingApplication.class, args);
     }
 }

@@ -11,8 +11,6 @@ import java.util.Map;
 
 /**
  * Snapshot of instance topology at a given point in time.
- * 
- * @author Derek
  */
 public interface IInstanceTopologySnapshot {
 

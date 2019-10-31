@@ -11,8 +11,6 @@ import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 
 /**
  * Information that identifies and describes a microservice.
- * 
- * @author Derek
  */
 public class MicroserviceDetails implements IMicroserviceDetails {
 

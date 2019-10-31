@@ -23,8 +23,6 @@ import com.sitewhere.spi.microservice.configuration.model.NodeType;
 
 /**
  * Configuration node associated with an XML element.
- * 
- * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
 public class ElementNode extends XmlNode implements IElementNode {
@@ -149,8 +147,6 @@ public class ElementNode extends XmlNode implements IElementNode {
 
     /**
      * Builder for creating element nodes.
-     * 
-     * @author Derek
      */
     public static class Builder {
 

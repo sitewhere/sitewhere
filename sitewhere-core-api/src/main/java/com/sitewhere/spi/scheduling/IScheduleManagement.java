@@ -16,8 +16,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Management interface for persistent scheduling implementations.
- * 
- * @author Derek
  */
 public interface IScheduleManagement extends ITenantEngineLifecycleComponent {
 

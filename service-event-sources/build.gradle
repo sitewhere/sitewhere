@@ -5,8 +5,6 @@ dependencies {
 	compile project(':sitewhere-microservice')
 	compile project(':sitewhere-grpc-client')
 	
-    compile group: 'org.springframework', name: 'spring-web'
-	
 	// ActiveMQ dependencies.
     compile group: 'org.apache.activemq', name: 'activemq-amqp', version:'5.14.0'
     compile group: 'org.apache.activemq', name: 'activemq-mqtt', version:'5.14.0'
@@ -23,6 +21,9 @@ dependencies {
     compile group: 'javax.websocket', name: 'javax.websocket-api', version:'1.1'
     compile group: 'org.glassfish.tyrus', name: 'tyrus-server', version:'1.13.1'
     compile group: 'org.glassfish.tyrus', name: 'tyrus-container-grizzly-server', version:'1.13.1'
+
+	// JUnit.
+	testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 test {
     exclude '**/*'
@@ -30,21 +31,6 @@ test {
 
 license {
 	exclude "**/azure/**"
-}
-
-apply plugin: 'org.springframework.boot'
-springBoot {
-    mainClassName = 'com.sitewhere.sources.EventSourcesApplication'
-}
-
-// Keep original jar.
-jar {
-	enabled = true
-}
-
-// Reclassify Spring Boot jar.
-bootJar {
-	classifier = 'boot'
 }
 
 // Only publish thin jar.
@@ -58,14 +44,14 @@ publishing {
 }
 
 // Create a Dockerfile.
-task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: bootJar) {
+task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: jar) {
     destFile = project.file('build/docker/Dockerfile')
     from "${rootProject.ext['docker.base.image']}"
     instruction "LABEL maintainer=${rootProject.ext['docker.maintainer']}"
 	instruction "RUN wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.2.2/grpc_health_probe-linux-amd64 && chmod +x /bin/grpc_health_probe"
 	
-	// Copy Spring Boot jar.
-	copyFile("${project.name}-${project.version}-boot.jar", "/")
+	// Copy jar.
+	copyFile("${project.name}-${project.version}.jar", "/")
 	
 	// Copy script templates.
 	copyFile("script-templates", "/script-templates")

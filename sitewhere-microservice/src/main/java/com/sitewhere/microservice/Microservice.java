@@ -16,8 +16,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.sitewhere.Version;
 import com.sitewhere.grpc.client.tenant.CachedTenantManagement;
 import com.sitewhere.microservice.exception.ConcurrentK8sUpdateException;
@@ -74,7 +72,6 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	implements IMicroservice<T> {
 
     /** Instance settings */
-    @Autowired
     private IInstanceSettings instanceSettings;
 
     /** Kubernetes client */
@@ -87,19 +84,15 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     private SharedInformerFactory sharedInformerFactory;
 
     /** Metrics server */
-    @Autowired
     private IMetricsServer metricsServer;
 
     /** JWT token management */
-    @Autowired
     private ITokenManagement tokenManagement;
 
     /** System superuser */
-    @Autowired
     private ISystemUser systemUser;
 
     /** Kafka topic naming */
-    @Autowired
     private IKafkaTopicNaming kafkaTopicNaming;
 
     /** Tenant management implementation */

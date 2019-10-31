@@ -12,8 +12,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Management interface for interacting with instance configuration data.
- * 
- * @author Derek
  */
 public interface IConfigurationManagement extends ITenantEngineLifecycleComponent {
 

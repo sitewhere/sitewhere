@@ -11,8 +11,6 @@ import com.sitewhere.rest.model.area.Area;
 
 /**
  * Used to show broken link if referenced area is deleted.
- * 
- * @author Derek
  */
 public class InvalidArea extends Area {
 

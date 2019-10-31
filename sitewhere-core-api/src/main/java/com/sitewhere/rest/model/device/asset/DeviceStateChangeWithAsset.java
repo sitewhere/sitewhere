@@ -14,8 +14,6 @@ import com.sitewhere.spi.device.event.IDeviceStateChange;
 /**
  * Wraps a {@link IDeviceStateChange} so that information about the asset
  * associated with its assignment is available.
- * 
- * @author Derek
  */
 public class DeviceStateChangeWithAsset extends DeviceEventWithAsset implements IDeviceStateChange {
 

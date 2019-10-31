@@ -16,8 +16,6 @@ import com.sitewhere.spi.asset.IAssetType;
 
 /**
  * Builder that supports creating asset management entities.
- * 
- * @author Derek
  */
 public class AssetManagementRequestBuilder {
 

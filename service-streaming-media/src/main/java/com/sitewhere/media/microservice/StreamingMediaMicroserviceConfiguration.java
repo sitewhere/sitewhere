@@ -7,9 +7,6 @@
  */
 package com.sitewhere.media.microservice;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 import com.sitewhere.media.spi.microservice.IStreamingMediaMicroservice;
 import com.sitewhere.microservice.instance.InstanceSettings;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
@@ -19,15 +16,12 @@ import com.sitewhere.spi.microservice.instance.IInstanceSettings;
  * 
  * @author Derek
  */
-@Configuration
 public class StreamingMediaMicroserviceConfiguration {
 
-    @Bean
     public IStreamingMediaMicroservice eventSearchMicroservice() {
 	return new StreamingMediaMicroservice();
     }
 
-    @Bean
     public IInstanceSettings instanceSettings() {
 	return new InstanceSettings();
     }

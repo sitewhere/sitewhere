@@ -9,8 +9,7 @@ package com.sitewhere.instance.user.persistence;
 
 import java.util.List;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import javax.inject.Inject;
 
 import com.sitewhere.persistence.Persistence;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
@@ -31,8 +30,8 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
  */
 public class UserManagementPersistenceLogic extends Persistence {
 
-    /** Password encoder */
-    private static PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Inject
+    private static PasswordEncoder PASSWORD_ENCODER;
 
     /**
      * Common logic for creating a user based on an incoming request.
@@ -47,7 +46,8 @@ public class UserManagementPersistenceLogic extends Persistence {
 	Persistence.entityCreateLogic(request, user);
 
 	require("Username", request.getUsername());
-	String password = (encodePassword) ? passwordEncoder.encode(request.getPassword()) : request.getPassword();
+	String password = (encodePassword) ? getPasswordEncoder().encrypt(request.getPassword())
+		: request.getPassword();
 
 	user.setUsername(request.getUsername());
 	user.setHashedPassword(password);
@@ -77,7 +77,8 @@ public class UserManagementPersistenceLogic extends Persistence {
 	    target.setUsername(request.getUsername());
 	}
 	if (request.getPassword() != null) {
-	    String password = (encodePassword) ? passwordEncoder.encode(request.getPassword()) : request.getPassword();
+	    String password = (encodePassword) ? getPasswordEncoder().encrypt(request.getPassword())
+		    : request.getPassword();
 	    target.setHashedPassword(password);
 	}
 	if (request.getFirstName() != null) {
@@ -145,6 +146,10 @@ public class UserManagementPersistenceLogic extends Persistence {
      * @return
      */
     public static boolean passwordMatches(String plaintext, String encoded) {
-	return passwordEncoder.matches(plaintext, encoded);
+	return getPasswordEncoder().decrypt(encoded).equals(plaintext);
+    }
+
+    protected static PasswordEncoder getPasswordEncoder() {
+	return PASSWORD_ENCODER;
     }
 }

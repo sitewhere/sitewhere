@@ -9,8 +9,6 @@ package com.sitewhere.microservice.multitenant;
 
 import java.util.Map;
 
-import org.springframework.context.ApplicationContext;
-
 import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.microservice.scripting.ScriptSynchronizer;
@@ -30,7 +28,6 @@ import com.sitewhere.spi.microservice.scripting.IScriptContext;
 import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
 import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
-import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -66,7 +63,7 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     private IGroovyConfiguration groovyConfiguration;
 
     /** Module context information */
-    private ApplicationContext moduleContext;
+    private Object moduleContext;
 
     public MicroserviceTenantEngine(ITenant tenant) {
 	this.tenant = tenant;
@@ -245,80 +242,80 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * initializeDiscoverableBeans(org.springframework.context.ApplicationContext)
+     * initializeDiscoverableBeans(java.lang.Object)
      */
     @Override
-    public ILifecycleStep initializeDiscoverableBeans(ApplicationContext context) throws SiteWhereException {
+    public ILifecycleStep initializeDiscoverableBeans(Object context) throws SiteWhereException {
 	return new SimpleLifecycleStep("Initialize discoverable beans") {
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-		Map<String, IDiscoverableTenantLifecycleComponent> components = context
-			.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
-
-		for (IDiscoverableTenantLifecycleComponent component : components.values()) {
-		    initializeNestedComponent(component, monitor, component.isRequired());
-		}
+		// Map<String, IDiscoverableTenantLifecycleComponent> components = context
+		// .getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
+		//
+		// for (IDiscoverableTenantLifecycleComponent component : components.values()) {
+		// initializeNestedComponent(component, monitor, component.isRequired());
+		// }
 	    }
 	};
     }
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * startDiscoverableBeans(org.springframework.context.ApplicationContext)
+     * startDiscoverableBeans(java.lang.Object)
      */
     @Override
-    public ILifecycleStep startDiscoverableBeans(ApplicationContext context) throws SiteWhereException {
+    public ILifecycleStep startDiscoverableBeans(Object context) throws SiteWhereException {
 	return new SimpleLifecycleStep("Start discoverable beans") {
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-		Map<String, IDiscoverableTenantLifecycleComponent> components = context
-			.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
-
-		for (IDiscoverableTenantLifecycleComponent component : components.values()) {
-		    startNestedComponent(component, monitor, component.isRequired());
-		}
+		// Map<String, IDiscoverableTenantLifecycleComponent> components = context
+		// .getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
+		//
+		// for (IDiscoverableTenantLifecycleComponent component : components.values()) {
+		// startNestedComponent(component, monitor, component.isRequired());
+		// }
 	    }
 	};
     }
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * stopDiscoverableBeans(org.springframework.context.ApplicationContext)
+     * stopDiscoverableBeans(java.lang.Object)
      */
     @Override
-    public ILifecycleStep stopDiscoverableBeans(ApplicationContext context) throws SiteWhereException {
+    public ILifecycleStep stopDiscoverableBeans(Object context) throws SiteWhereException {
 	return new SimpleLifecycleStep("Stop discoverable beans") {
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-		Map<String, IDiscoverableTenantLifecycleComponent> components = context
-			.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
-
-		for (IDiscoverableTenantLifecycleComponent component : components.values()) {
-		    component.lifecycleStop(monitor);
-		}
+		// Map<String, IDiscoverableTenantLifecycleComponent> components = context
+		// .getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
+		//
+		// for (IDiscoverableTenantLifecycleComponent component : components.values()) {
+		// component.lifecycleStop(monitor);
+		// }
 	    }
 	};
     }
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * terminateDiscoverableBeans(org.springframework.context.ApplicationContext)
+     * terminateDiscoverableBeans(java.lang.Object)
      */
     @Override
-    public ILifecycleStep terminateDiscoverableBeans(ApplicationContext context) throws SiteWhereException {
+    public ILifecycleStep terminateDiscoverableBeans(Object context) throws SiteWhereException {
 	return new SimpleLifecycleStep("Terminate discoverable beans") {
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-		Map<String, IDiscoverableTenantLifecycleComponent> components = context
-			.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
-
-		for (IDiscoverableTenantLifecycleComponent component : components.values()) {
-		    component.lifecycleTerminate(monitor);
-		}
+		// Map<String, IDiscoverableTenantLifecycleComponent> components = context
+		// .getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
+		//
+		// for (IDiscoverableTenantLifecycleComponent component : components.values()) {
+		// component.lifecycleTerminate(monitor);
+		// }
 	    }
 	};
     }
@@ -541,17 +538,15 @@ public abstract class MicroserviceTenantEngine extends TenantEngineLifecycleComp
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
      * getModuleContext()
      */
     @Override
-    public ApplicationContext getModuleContext() {
+    public Object getModuleContext() {
 	return moduleContext;
     }
 
-    public void setModuleContext(ApplicationContext moduleContext) {
+    public void setModuleContext(Object moduleContext) {
 	this.moduleContext = moduleContext;
     }
 }

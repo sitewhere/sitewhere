@@ -12,12 +12,17 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
+import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.rest.model.device.command.DeviceCommandNamespace;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.DeviceCommandSearchCriteria;
@@ -25,10 +30,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.command.IDeviceCommandNamespace;
-import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
-import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -39,46 +40,49 @@ import io.swagger.annotations.ApiParam;
  * 
  * @author Derek Adams
  */
-@RestController
-@SiteWhereCrossOrigin
-@RequestMapping(value = "/commands")
+@Path("/commands")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "commands")
-public class DeviceCommands extends RestControllerBase {
+public class DeviceCommands {
+
+    @Inject
+    private IInstanceManagementMicroservice<?> microservice;
 
     /**
      * List commands that match the given criteria.
      * 
-     * @param request
+     * @param deviceTypeToken
+     * @param page
+     * @param pageSize
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.GET)
+    @GET
     @ApiOperation(value = "List device commands that match criteria.")
-    @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IDeviceCommand> listDeviceCommands(
-	    @ApiParam(value = "Device type token", required = false) @RequestParam(required = false) String deviceTypeToken,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize)
+    public Response listDeviceCommands(
+	    @ApiParam(value = "Device type token", required = false) @QueryParam("deviceTypeToken") String deviceTypeToken,
+	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	DeviceCommandSearchCriteria criteria = new DeviceCommandSearchCriteria(page, pageSize);
 	criteria.setDeviceTypeToken(deviceTypeToken);
 
-	return getDeviceManagement().listDeviceCommands(criteria);
+	return Response.ok(getDeviceManagement().listDeviceCommands(criteria)).build();
     }
 
     /**
      * List commands grouped by namespace.
      * 
-     * @param token
-     * @param includeDeleted
+     * @param deviceTypeToken
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/namespaces", method = RequestMethod.GET)
+    @GET
+    @Path("/namespaces")
     @ApiOperation(value = "List device commands by namespace")
-    @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IDeviceCommandNamespace> listAllDeviceCommandsByNamespace(
-	    @ApiParam(value = "Device type token", required = false) @RequestParam(defaultValue = "false") String deviceTypeToken)
+    public Response listAllDeviceCommandsByNamespace(
+	    @ApiParam(value = "Device type token", required = false) @QueryParam("deviceTypeToken") String deviceTypeToken)
 	    throws SiteWhereException {
 	DeviceCommandSearchCriteria criteria = new DeviceCommandSearchCriteria(1, 0);
 	criteria.setDeviceTypeToken(deviceTypeToken);
@@ -112,10 +116,14 @@ public class DeviceCommands extends RestControllerBase {
 	    }
 	    current.getCommands().add(command);
 	}
-	return new SearchResults<IDeviceCommandNamespace>(namespaces);
+	return Response.ok(new SearchResults<IDeviceCommandNamespace>(namespaces)).build();
     }
 
-    private IDeviceManagement getDeviceManagement() {
+    protected IDeviceManagement getDeviceManagement() {
 	return getMicroservice().getDeviceManagementApiChannel();
+    }
+
+    protected IInstanceManagementMicroservice<?> getMicroservice() {
+	return microservice;
     }
 }

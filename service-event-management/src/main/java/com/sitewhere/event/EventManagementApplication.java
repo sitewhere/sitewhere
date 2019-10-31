@@ -7,10 +7,6 @@
  */
 package com.sitewhere.event;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.ComponentScan;
-
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
 
@@ -19,10 +15,8 @@ import com.sitewhere.microservice.MicroserviceApplication;
  * 
  * @author Derek
  */
-@ComponentScan
 public class EventManagementApplication extends MicroserviceApplication<IEventManagementMicroservice> {
 
-    @Autowired
     private IEventManagementMicroservice microservice;
 
     /*
@@ -34,14 +28,5 @@ public class EventManagementApplication extends MicroserviceApplication<IEventMa
     @Override
     public IEventManagementMicroservice getMicroservice() {
 	return microservice;
-    }
-
-    /**
-     * Entry point for Spring Boot.
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-	SpringApplication.run(EventManagementApplication.class, args);
     }
 }

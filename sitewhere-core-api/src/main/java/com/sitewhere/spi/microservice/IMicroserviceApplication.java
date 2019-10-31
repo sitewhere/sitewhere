@@ -10,8 +10,6 @@ package com.sitewhere.spi.microservice;
 /**
  * Common interface for Spring Boot applications that wrap SiteWhere
  * microservices.
- * 
- * @author Derek
  *
  * @param <T>
  */

@@ -12,8 +12,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Provides context for a nesting level in an {@link ILifecycleProgressMonitor}.
- * 
- * @author Derek
  */
 public class LifecycleProgressContext implements ILifecycleProgressContext {
 
@@ -38,8 +36,7 @@ public class LifecycleProgressContext implements ILifecycleProgressContext {
      * (non-Javadoc)
      * 
      * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressContext#getTaskName(
-     * )
+     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressContext#getTaskName( )
      */
     public String getTaskName() {
 	return taskName;

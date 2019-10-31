@@ -9,11 +9,9 @@ package com.sitewhere.spi.microservice.configuration.model;
 
 /**
  * Node in the configuration model that contains XML information.
- * 
- * @author Derek
  */
 public interface IXmlNode {
-    
+
     public String getName();
 
     public String getIcon();

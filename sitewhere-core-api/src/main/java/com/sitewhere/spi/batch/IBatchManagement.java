@@ -21,8 +21,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Interface for batch management operations.
- * 
- * @author Derek
  */
 public interface IBatchManagement extends ITenantEngineLifecycleComponent {
 

@@ -12,8 +12,6 @@ import com.sitewhere.spi.microservice.configuration.model.IRoleKey;
 
 /**
  * Used to indicate role of an element.
- * 
- * @author Derek
  */
 public class ConfigurationRole implements IConfigurationRole {
 

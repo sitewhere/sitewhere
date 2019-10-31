@@ -16,8 +16,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Component that produces messages that are sent to a Kafka topic.
- * 
- * @author Derek
  */
 public interface IMicroserviceKafkaProducer extends ILifecycleComponent {
 

@@ -7,14 +7,6 @@
  */
 package com.sitewhere.asset.microservice;
 
-import java.nio.file.Path;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import com.sitewhere.asset.grpc.AssetManagementImpl;
-import com.sitewhere.asset.initializer.GroovyAssetModelInitializer;
-import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
@@ -22,8 +14,6 @@ import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.scripting.ScriptType;
-import com.sitewhere.spi.microservice.spring.AssetManagementBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -77,10 +67,11 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
      * @throws SiteWhereException
      */
     protected void initializeAssetManagementApis() throws SiteWhereException {
-	this.assetManagement = (IAssetManagement) getModuleContext()
-		.getBean(AssetManagementBeans.BEAN_ASSET_MANAGEMENT);
-	this.assetManagementImpl = new AssetManagementImpl((IAssetManagementMicroservice) getMicroservice(),
-		getAssetManagement());
+	// this.assetManagement = (IAssetManagement) getModuleContext()
+	// .getBean(AssetManagementBeans.BEAN_ASSET_MANAGEMENT);
+	// this.assetManagementImpl = new
+	// AssetManagementImpl((IAssetManagementMicroservice) getMicroservice(),
+	// getAssetManagement());
     }
 
     /*
@@ -113,25 +104,29 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
     @Override
     public void tenantBootstrap(TenantEngineDatasetTemplate template, ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException {
-	String scriptName = String.format("%s.groovy", template.getMetadata().getName());
-	Path path = getScriptSynchronizer().add(getScriptContext(), ScriptType.Initializer, scriptName,
-		template.getSpec().getConfiguration().getBytes());
-
+	// String scriptName = String.format("%s.groovy",
+	// template.getMetadata().getName());
+	// Path path = getScriptSynchronizer().add(getScriptContext(),
+	// ScriptType.Initializer, scriptName,
+	// template.getSpec().getConfiguration().getBytes());
+	//
 	// Execute remote calls as superuser.
-	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
-	try {
-	    SecurityContextHolder.getContext()
-		    .setAuthentication(getMicroservice().getSystemUser().getAuthenticationForTenant(getTenant()));
-
-	    getLogger().info(String.format("Applying bootstrap script '%s'.", path));
-	    GroovyAssetModelInitializer initializer = new GroovyAssetModelInitializer(getGroovyConfiguration(), path);
-	    initializer.initialize(getAssetManagement());
-	} catch (Throwable e) {
-	    getLogger().error("Unhandled exception in bootstrap script.", e);
-	    throw new SiteWhereException(e);
-	} finally {
-	    SecurityContextHolder.getContext().setAuthentication(previous);
-	}
+	// Authentication previous =
+	// SecurityContextHolder.getContext().getAuthentication();
+	// try {
+	// SecurityContextHolder.getContext()
+	// .setAuthentication(getMicroservice().getSystemUser().getAuthenticationForTenant(getTenant()));
+	//
+	// getLogger().info(String.format("Applying bootstrap script '%s'.", path));
+	// GroovyAssetModelInitializer initializer = new
+	// GroovyAssetModelInitializer(getGroovyConfiguration(), path);
+	// initializer.initialize(getAssetManagement());
+	// } catch (Throwable e) {
+	// getLogger().error("Unhandled exception in bootstrap script.", e);
+	// throw new SiteWhereException(e);
+	// } finally {
+	// SecurityContextHolder.getContext().setAuthentication(previous);
+	// }
     }
 
     /*

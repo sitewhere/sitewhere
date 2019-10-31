@@ -11,8 +11,6 @@ import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Single step executed as part of a lifecycle operation.
- * 
- * @author Derek
  */
 public interface ILifecycleStep {
 

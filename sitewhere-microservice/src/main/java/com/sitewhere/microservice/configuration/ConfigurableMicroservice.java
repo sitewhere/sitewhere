@@ -11,8 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
-import org.springframework.context.ApplicationContext;
-
 import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.microservice.Microservice;
 import com.sitewhere.microservice.scripting.KubernetesScriptManagement;
@@ -27,7 +25,6 @@ import com.sitewhere.spi.microservice.configuration.IInstanceConfigurationListen
 import com.sitewhere.spi.microservice.configuration.IInstanceConfigurationMonitor;
 import com.sitewhere.spi.microservice.scripting.IScriptManagement;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
-import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -51,10 +48,10 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
     private IScriptManagement scriptManagement;
 
     /** Global instance application context */
-    private ApplicationContext globalApplicationContext;
+    private Object globalApplicationContext;
 
     /** Local microservice application context */
-    private ApplicationContext localApplicationContext;
+    private Object localApplicationContext;
 
     /** Latest instance configuration */
     private SiteWhereInstance lastInstanceConfiguration;
@@ -200,13 +197,12 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * configurationInitialize(org.springframework.context.ApplicationContext,
-     * org.springframework.context.ApplicationContext,
+     * configurationInitialize(java.lang.Object, java.lang.Object,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void configurationInitialize(ApplicationContext global, ApplicationContext local,
-	    ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void configurationInitialize(Object global, Object local, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException {
 	if (local != null) {
 	    initializeDiscoverableBeans(local).execute(monitor);
 	}
@@ -214,13 +210,12 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * configurationStart(org.springframework.context.ApplicationContext,
-     * org.springframework.context.ApplicationContext,
+     * configurationStart(java.lang.Object, java.lang.Object,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void configurationStart(ApplicationContext global, ApplicationContext local,
-	    ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void configurationStart(Object global, Object local, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException {
 	if (local != null) {
 	    startDiscoverableBeans(local).execute(monitor);
 	}
@@ -228,13 +223,12 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * configurationStop(org.springframework.context.ApplicationContext,
-     * org.springframework.context.ApplicationContext,
+     * configurationStop(java.lang.Object, java.lang.Object,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void configurationStop(ApplicationContext global, ApplicationContext local,
-	    ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void configurationStop(Object global, Object local, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException {
 	if (local != null) {
 	    stopDiscoverableBeans(local).execute(monitor);
 	}
@@ -242,13 +236,12 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * configurationTerminate(org.springframework.context.ApplicationContext,
-     * org.springframework.context.ApplicationContext,
+     * configurationTerminate(java.lang.Object, java.lang.Object,
      * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void configurationTerminate(ApplicationContext global, ApplicationContext local,
-	    ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void configurationTerminate(Object global, Object local, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException {
 	if (local != null) {
 	    terminateDiscoverableBeans(local).execute(monitor);
 	}
@@ -256,84 +249,84 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * initializeDiscoverableBeans(org.springframework.context.ApplicationContext)
+     * initializeDiscoverableBeans(java.lang.Object)
      */
     @Override
-    public ILifecycleStep initializeDiscoverableBeans(ApplicationContext context) throws SiteWhereException {
+    public ILifecycleStep initializeDiscoverableBeans(Object context) throws SiteWhereException {
 	return new SimpleLifecycleStep("Initialize discoverable beans") {
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 		getLogger().info("Initializing discoverable beans...");
-		Map<String, IDiscoverableTenantLifecycleComponent> components = context
-			.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
-
-		for (IDiscoverableTenantLifecycleComponent component : components.values()) {
-		    initializeNestedComponent(component, monitor, component.isRequired());
-		}
+		// Map<String, IDiscoverableTenantLifecycleComponent> components = context
+		// .getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
+		//
+		// for (IDiscoverableTenantLifecycleComponent component : components.values()) {
+		// initializeNestedComponent(component, monitor, component.isRequired());
+		// }
 	    }
 	};
     }
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * startDiscoverableBeans(org.springframework.context.ApplicationContext)
+     * startDiscoverableBeans(java.lang.Object)
      */
     @Override
-    public ILifecycleStep startDiscoverableBeans(ApplicationContext context) throws SiteWhereException {
+    public ILifecycleStep startDiscoverableBeans(Object context) throws SiteWhereException {
 	return new SimpleLifecycleStep("Start discoverable beans") {
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 		getLogger().info("Starting discoverable beans...");
-		Map<String, IDiscoverableTenantLifecycleComponent> components = context
-			.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
-
-		for (IDiscoverableTenantLifecycleComponent component : components.values()) {
-		    startNestedComponent(component, monitor, component.isRequired());
-		}
+		// Map<String, IDiscoverableTenantLifecycleComponent> components = context
+		// .getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
+		//
+		// for (IDiscoverableTenantLifecycleComponent component : components.values()) {
+		// startNestedComponent(component, monitor, component.isRequired());
+		// }
 	    }
 	};
     }
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * stopDiscoverableBeans(org.springframework.context.ApplicationContext)
+     * stopDiscoverableBeans(java.lang.Object)
      */
     @Override
-    public ILifecycleStep stopDiscoverableBeans(ApplicationContext context) throws SiteWhereException {
+    public ILifecycleStep stopDiscoverableBeans(Object context) throws SiteWhereException {
 	return new SimpleLifecycleStep("Stop discoverable beans") {
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 		getLogger().info("Stopping discoverable beans...");
-		Map<String, IDiscoverableTenantLifecycleComponent> components = context
-			.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
-
-		for (IDiscoverableTenantLifecycleComponent component : components.values()) {
-		    component.lifecycleStop(monitor);
-		}
+		// Map<String, IDiscoverableTenantLifecycleComponent> components = context
+		// .getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
+		//
+		// for (IDiscoverableTenantLifecycleComponent component : components.values()) {
+		// component.lifecycleStop(monitor);
+		// }
 	    }
 	};
     }
 
     /*
      * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * terminateDiscoverableBeans(org.springframework.context.ApplicationContext)
+     * terminateDiscoverableBeans(java.lang.Object)
      */
     @Override
-    public ILifecycleStep terminateDiscoverableBeans(ApplicationContext context) throws SiteWhereException {
+    public ILifecycleStep terminateDiscoverableBeans(Object context) throws SiteWhereException {
 	return new SimpleLifecycleStep("Terminate discoverable beans") {
 
 	    @Override
 	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 		getLogger().info("Terminating discoverable beans...");
-		Map<String, IDiscoverableTenantLifecycleComponent> components = context
-			.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
-
-		for (IDiscoverableTenantLifecycleComponent component : components.values()) {
-		    component.lifecycleTerminate(monitor);
-		}
+		// Map<String, IDiscoverableTenantLifecycleComponent> components = context
+		// .getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
+		//
+		// for (IDiscoverableTenantLifecycleComponent component : components.values()) {
+		// component.lifecycleTerminate(monitor);
+		// }
 	    }
 	};
     }
@@ -380,10 +373,10 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
 		throw new SiteWhereException("Global instance configuration not set. Unable to start microservice.");
 	    }
 	    byte[] globalConfig = instance.getSpec().getConfiguration().getBytes();
-	    ApplicationContext globalContext = ConfigurationUtils.buildGlobalContext(this, globalConfig,
+	    Object globalContext = ConfigurationUtils.buildGlobalContext(this, globalConfig,
 		    getMicroservice().getSpringProperties());
 
-	    ApplicationContext localContext = null;
+	    Object localContext = null;
 	    byte[] localConfig = getLocalConfiguration(instance);
 	    if (localConfig != null) {
 		localContext = ConfigurationUtils.buildSubcontext(localConfig, getMicroservice().getSpringProperties(),
@@ -592,16 +585,12 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
      * getGlobalApplicationContext()
      */
     @Override
-    public ApplicationContext getGlobalApplicationContext() {
+    public Object getGlobalApplicationContext() {
 	return globalApplicationContext;
     }
 
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * setGlobalApplicationContext(org.springframework.context.ApplicationContext)
-     */
     @Override
-    public void setGlobalApplicationContext(ApplicationContext globalApplicationContext) {
+    public void setGlobalApplicationContext(Object globalApplicationContext) {
 	this.globalApplicationContext = globalApplicationContext;
     }
 
@@ -610,16 +599,12 @@ public abstract class ConfigurableMicroservice<T extends IFunctionIdentifier> ex
      * getLocalApplicationContext()
      */
     @Override
-    public ApplicationContext getLocalApplicationContext() {
+    public Object getLocalApplicationContext() {
 	return localApplicationContext;
     }
 
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * setLocalApplicationContext(org.springframework.context.ApplicationContext)
-     */
     @Override
-    public void setLocalApplicationContext(ApplicationContext localApplicationContext) {
+    public void setLocalApplicationContext(Object localApplicationContext) {
 	this.localApplicationContext = localApplicationContext;
     }
 

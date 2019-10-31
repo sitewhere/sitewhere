@@ -16,8 +16,6 @@ import com.sitewhere.spi.user.IUserManagement;
 
 /**
  * Builder that supports creating user management entities.
- * 
- * @author Derek
  */
 public class UserManagementRequestBuilder {
 

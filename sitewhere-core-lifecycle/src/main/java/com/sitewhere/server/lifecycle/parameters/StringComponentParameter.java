@@ -13,8 +13,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponentParameter;
 
 /**
  * Parameter which wraps a String value.
- * 
- * @author Derek
  */
 public class StringComponentParameter extends LifecycleComponentParameter<String> {
 
@@ -31,8 +29,6 @@ public class StringComponentParameter extends LifecycleComponentParameter<String
 
     /**
      * Builder pattern for creating parameter.
-     * 
-     * @author Derek
      */
     public static class Builder {
 

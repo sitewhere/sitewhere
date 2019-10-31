@@ -7,8 +7,6 @@
  */
 package com.sitewhere.spi.microservice.configuration;
 
-import org.springframework.context.ApplicationContext;
-
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IMicroservice;
@@ -21,8 +19,6 @@ import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
 
 /**
  * Microservice that supports dynamic monitoring of configuration.
- * 
- * @author Derek
  */
 public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extends IMicroservice<T> {
 
@@ -62,8 +58,8 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
      * @param monitor
      * @throws SiteWhereException
      */
-    public void configurationInitialize(ApplicationContext global, ApplicationContext local,
-	    ILifecycleProgressMonitor monitor) throws SiteWhereException;
+    public void configurationInitialize(Object global, Object local, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException;
 
     /**
      * Start configurable components.
@@ -73,8 +69,8 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
      * @param monitor
      * @throws SiteWhereException
      */
-    public void configurationStart(ApplicationContext global, ApplicationContext local,
-	    ILifecycleProgressMonitor monitor) throws SiteWhereException;
+    public void configurationStart(Object global, Object local, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException;
 
     /**
      * Stop configurable components.
@@ -84,8 +80,8 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
      * @param monitor
      * @throws SiteWhereException
      */
-    public void configurationStop(ApplicationContext global, ApplicationContext local,
-	    ILifecycleProgressMonitor monitor) throws SiteWhereException;
+    public void configurationStop(Object global, Object local, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException;
 
     /**
      * Terminate configurable components.
@@ -95,8 +91,8 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
      * @param monitor
      * @throws SiteWhereException
      */
-    public void configurationTerminate(ApplicationContext global, ApplicationContext local,
-	    ILifecycleProgressMonitor monitor) throws SiteWhereException;
+    public void configurationTerminate(Object global, Object local, ILifecycleProgressMonitor monitor)
+	    throws SiteWhereException;
 
     /**
      * Get global application context.
@@ -104,7 +100,7 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
      * @return
      * @throws SiteWhereException
      */
-    public ApplicationContext getGlobalApplicationContext() throws SiteWhereException;
+    public Object getGlobalApplicationContext() throws SiteWhereException;
 
     /**
      * Set the global application context.
@@ -112,7 +108,7 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
      * @param context
      * @throws SiteWhereException
      */
-    public void setGlobalApplicationContext(ApplicationContext context) throws SiteWhereException;
+    public void setGlobalApplicationContext(Object context) throws SiteWhereException;
 
     /**
      * Get local microservice application context.
@@ -120,7 +116,7 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
      * @return
      * @throws SiteWhereException
      */
-    public ApplicationContext getLocalApplicationContext() throws SiteWhereException;
+    public Object getLocalApplicationContext() throws SiteWhereException;
 
     /**
      * Set the local application context.
@@ -128,7 +124,7 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
      * @param context
      * @throws SiteWhereException
      */
-    public void setLocalApplicationContext(ApplicationContext context) throws SiteWhereException;
+    public void setLocalApplicationContext(Object context) throws SiteWhereException;
 
     /**
      * Perform microservice initialization.
@@ -162,7 +158,7 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
      * @return
      * @throws SiteWhereException
      */
-    public ILifecycleStep initializeDiscoverableBeans(ApplicationContext context) throws SiteWhereException;
+    public ILifecycleStep initializeDiscoverableBeans(Object context) throws SiteWhereException;
 
     /**
      * Start components from the given context marked as
@@ -172,7 +168,7 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
      * @return
      * @throws SiteWhereException
      */
-    public ILifecycleStep startDiscoverableBeans(ApplicationContext context) throws SiteWhereException;
+    public ILifecycleStep startDiscoverableBeans(Object context) throws SiteWhereException;
 
     /**
      * Stop components from the given context marked as
@@ -182,7 +178,7 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
      * @return
      * @throws SiteWhereException
      */
-    public ILifecycleStep stopDiscoverableBeans(ApplicationContext context) throws SiteWhereException;
+    public ILifecycleStep stopDiscoverableBeans(Object context) throws SiteWhereException;
 
     /**
      * Terminate components from the given context marked as
@@ -192,7 +188,7 @@ public interface IConfigurableMicroservice<T extends IFunctionIdentifier> extend
      * @return
      * @throws SiteWhereException
      */
-    public ILifecycleStep terminateDiscoverableBeans(ApplicationContext context) throws SiteWhereException;
+    public ILifecycleStep terminateDiscoverableBeans(Object context) throws SiteWhereException;
 
     /**
      * Initialize the current configuration.

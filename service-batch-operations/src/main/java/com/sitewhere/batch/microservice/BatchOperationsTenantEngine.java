@@ -7,15 +7,12 @@
  */
 package com.sitewhere.batch.microservice;
 
-import com.sitewhere.batch.BatchManagementTriggers;
 import com.sitewhere.batch.spi.IBatchOperationManager;
 import com.sitewhere.batch.spi.kafka.IFailedBatchElementsProducer;
 import com.sitewhere.batch.spi.kafka.IUnprocessedBatchElementsProducer;
 import com.sitewhere.batch.spi.kafka.IUnprocessedBatchOperationsProducer;
-import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
 import com.sitewhere.grpc.service.BatchManagementGrpc;
-import com.sitewhere.microservice.grpc.BatchManagementImpl;
 import com.sitewhere.microservice.kafka.FailedBatchElementsProducer;
 import com.sitewhere.microservice.kafka.UnprocessedBatchElementsProducer;
 import com.sitewhere.microservice.kafka.UnprocessedBatchOperationsProducer;
@@ -24,7 +21,6 @@ import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.spring.BatchManagementBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -68,16 +64,17 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Create management interfaces.
-	IBatchManagement implementation = (IBatchManagement) getModuleContext()
-		.getBean(BatchManagementBeans.BEAN_BATCH_MANAGEMENT);
-	this.batchManagement = new BatchManagementTriggers(implementation);
-	this.batchManagementImpl = new BatchManagementImpl((IBatchOperationsMicroservice) getMicroservice(),
-		getBatchManagement());
-
-	// Load configured batch operation manager.
-	this.batchOperationManager = (IBatchOperationManager) getModuleContext()
-		.getBean(BatchManagementBeans.BEAN_BATCH_OPERATION_MANAGER);
+	// // Create management interfaces.
+	// IBatchManagement implementation = (IBatchManagement) getModuleContext()
+	// .getBean(BatchManagementBeans.BEAN_BATCH_MANAGEMENT);
+	// this.batchManagement = new BatchManagementTriggers(implementation);
+	// this.batchManagementImpl = new
+	// BatchManagementImpl((IBatchOperationsMicroservice) getMicroservice(),
+	// getBatchManagement());
+	//
+	// // Load configured batch operation manager.
+	// this.batchOperationManager = (IBatchOperationManager) getModuleContext()
+	// .getBean(BatchManagementBeans.BEAN_BATCH_OPERATION_MANAGER);
 
 	// Create Kafka components.
 	this.unprocessedBatchOperationsProducer = new UnprocessedBatchOperationsProducer();

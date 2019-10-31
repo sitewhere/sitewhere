@@ -9,8 +9,6 @@ package com.sitewhere.spi.microservice.spring;
 
 /**
  * Spring bean names for command destination components.
- * 
- * @author Derek
  */
 public class CommandDestinationsBeans {
 

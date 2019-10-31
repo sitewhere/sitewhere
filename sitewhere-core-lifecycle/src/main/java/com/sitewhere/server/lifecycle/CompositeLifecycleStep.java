@@ -22,8 +22,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 /**
  * Implementation of {@link ILifecycleStep} that is composed of multiple
  * lifecycle steps that are executed in order.
- * 
- * @author Derek
  */
 public class CompositeLifecycleStep implements ICompositeLifecycleStep {
 

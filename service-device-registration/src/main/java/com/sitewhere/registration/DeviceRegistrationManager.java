@@ -7,14 +7,10 @@
  */
 package com.sitewhere.registration;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
 import com.sitewhere.registration.spi.IRegistrationManager;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice;
 import com.sitewhere.rest.model.device.command.RegistrationAckCommand;
 import com.sitewhere.rest.model.device.command.RegistrationFailureCommand;
-import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -79,36 +75,38 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
      */
     @Override
     public void handleDeviceRegistration(IDeviceRegistrationPayload registration) throws SiteWhereException {
-	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
-	try {
-	    Authentication system = getMicroservice().getSystemUser()
-		    .getAuthenticationForTenant(getTenantEngine().getTenant());
-	    SecurityContextHolder.getContext().setAuthentication(system);
-
-	    IDevice device = getOrCreateDevice(registration);
-
-	    // Find assignment metadata that should be associated.
-	    ICustomer customer = getCustomerFor(registration);
-	    IArea area = getAreaFor(registration);
-
-	    // Make sure device is assigned.
-	    if (device.getActiveDeviceAssignmentIds().size() == 0) {
-		getLogger().debug("Handling unassigned device for registration.");
-		DeviceAssignmentCreateRequest assnCreate = new DeviceAssignmentCreateRequest();
-		assnCreate.setDeviceToken(device.getToken());
-		if (customer != null) {
-		    assnCreate.setCustomerToken(customer.getToken());
-		}
-		if (area != null) {
-		    assnCreate.setAreaToken(area.getToken());
-		}
-		getDeviceManagement().createDeviceAssignment(assnCreate);
-	    }
-	    boolean isNewRegistration = (device != null);
-	    sendRegistrationAck(registration.getDeviceToken(), isNewRegistration);
-	} finally {
-	    SecurityContextHolder.getContext().setAuthentication(previous);
-	}
+	// Authentication previous =
+	// SecurityContextHolder.getContext().getAuthentication();
+	// try {
+	// Authentication system = getMicroservice().getSystemUser()
+	// .getAuthenticationForTenant(getTenantEngine().getTenant());
+	// SecurityContextHolder.getContext().setAuthentication(system);
+	//
+	// IDevice device = getOrCreateDevice(registration);
+	//
+	// // Find assignment metadata that should be associated.
+	// ICustomer customer = getCustomerFor(registration);
+	// IArea area = getAreaFor(registration);
+	//
+	// // Make sure device is assigned.
+	// if (device.getActiveDeviceAssignmentIds().size() == 0) {
+	// getLogger().debug("Handling unassigned device for registration.");
+	// DeviceAssignmentCreateRequest assnCreate = new
+	// DeviceAssignmentCreateRequest();
+	// assnCreate.setDeviceToken(device.getToken());
+	// if (customer != null) {
+	// assnCreate.setCustomerToken(customer.getToken());
+	// }
+	// if (area != null) {
+	// assnCreate.setAreaToken(area.getToken());
+	// }
+	// getDeviceManagement().createDeviceAssignment(assnCreate);
+	// }
+	// boolean isNewRegistration = (device != null);
+	// sendRegistrationAck(registration.getDeviceToken(), isNewRegistration);
+	// } finally {
+	// SecurityContextHolder.getContext().setAuthentication(previous);
+	// }
     }
 
     /**
@@ -267,36 +265,42 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
-	try {
-	    Authentication system = getMicroservice().getSystemUser()
-		    .getAuthenticationForTenant(getTenantEngine().getTenant());
-	    SecurityContextHolder.getContext().setAuthentication(system);
-
-	    if (getDefaultDeviceTypeToken() != null) {
-		IDeviceType deviceType = getDeviceManagement().getDeviceTypeByToken(getDefaultDeviceTypeToken());
-		if (deviceType == null) {
-		    throw new SiteWhereException("Registration manager auto assignment device type is invalid.");
-		}
-		DeviceRegistrationManager.this.defaultDeviceType = deviceType;
-	    }
-	    if (getDefaultCustomerToken() != null) {
-		ICustomer customer = getDeviceManagement().getCustomerByToken(getDefaultCustomerToken());
-		if (customer == null) {
-		    throw new SiteWhereException("Registration manager auto assignment customer is invalid.");
-		}
-		DeviceRegistrationManager.this.defaultCustomer = customer;
-	    }
-	    if (getDefaultAreaToken() != null) {
-		IArea area = getDeviceManagement().getAreaByToken(getDefaultAreaToken());
-		if (area == null) {
-		    throw new SiteWhereException("Registration manager auto assignment area is invalid.");
-		}
-		DeviceRegistrationManager.this.defaultArea = area;
-	    }
-	} finally {
-	    SecurityContextHolder.getContext().setAuthentication(previous);
-	}
+	// Authentication previous =
+	// SecurityContextHolder.getContext().getAuthentication();
+	// try {
+	// Authentication system = getMicroservice().getSystemUser()
+	// .getAuthenticationForTenant(getTenantEngine().getTenant());
+	// SecurityContextHolder.getContext().setAuthentication(system);
+	//
+	// if (getDefaultDeviceTypeToken() != null) {
+	// IDeviceType deviceType =
+	// getDeviceManagement().getDeviceTypeByToken(getDefaultDeviceTypeToken());
+	// if (deviceType == null) {
+	// throw new SiteWhereException("Registration manager auto assignment device
+	// type is invalid.");
+	// }
+	// DeviceRegistrationManager.this.defaultDeviceType = deviceType;
+	// }
+	// if (getDefaultCustomerToken() != null) {
+	// ICustomer customer =
+	// getDeviceManagement().getCustomerByToken(getDefaultCustomerToken());
+	// if (customer == null) {
+	// throw new SiteWhereException("Registration manager auto assignment customer
+	// is invalid.");
+	// }
+	// DeviceRegistrationManager.this.defaultCustomer = customer;
+	// }
+	// if (getDefaultAreaToken() != null) {
+	// IArea area = getDeviceManagement().getAreaByToken(getDefaultAreaToken());
+	// if (area == null) {
+	// throw new SiteWhereException("Registration manager auto assignment area is
+	// invalid.");
+	// }
+	// DeviceRegistrationManager.this.defaultArea = area;
+	// }
+	// } finally {
+	// SecurityContextHolder.getContext().setAuthentication(previous);
+	// }
     }
 
     /*

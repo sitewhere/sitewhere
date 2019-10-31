@@ -26,8 +26,6 @@ import com.sitewhere.spi.device.IDeviceManagement;
 /**
  * Configurable helper class that allows DeviceAssignment model objects to be
  * created from IDeviceAssignment SPI objects.
- * 
- * @author dadams
  */
 public class DeviceAssignmentMarshalHelper {
 

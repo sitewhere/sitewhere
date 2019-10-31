@@ -20,8 +20,6 @@ import com.sitewhere.spi.microservice.configuration.model.NodeType;
 
 /**
  * Configuration node associated with an XML element attribute.
- * 
- * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
 public class AttributeNode extends XmlNode implements IAttributeNode {
@@ -130,8 +128,6 @@ public class AttributeNode extends XmlNode implements IAttributeNode {
 
     /**
      * Builder for creating attribute nodes.
-     * 
-     * @author Derek
      */
     public static class Builder {
 

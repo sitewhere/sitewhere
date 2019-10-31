@@ -11,8 +11,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Implemented by external search providers that index SiteWhere data.
- * 
- * @author Derek
  */
 public interface ISearchProvider extends ILifecycleComponent {
 

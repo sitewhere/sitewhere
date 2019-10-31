@@ -15,8 +15,6 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
 /**
  * Wraps a {@link DeviceLocation} so that information about the asset associated
  * with its assignment is available.
- * 
- * @author Derek
  */
 public class DeviceLocationWithAsset extends DeviceEventWithAsset implements IDeviceLocation {
 

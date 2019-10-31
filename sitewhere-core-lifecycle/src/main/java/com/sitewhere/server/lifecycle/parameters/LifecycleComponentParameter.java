@@ -12,8 +12,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponentParameter;
 
 /**
  * Parameter associated with a lifecycle component.
- * 
- * @author Derek
  *
  * @param <T>
  */

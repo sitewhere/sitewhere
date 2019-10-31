@@ -14,8 +14,6 @@ import com.sitewhere.spi.microservice.state.IMicroserviceDetails;
 
 /**
  * Contains a map of all model elements grouped by role.
- * 
- * @author Derek
  */
 public interface IConfigurationModel {
 

@@ -9,9 +9,7 @@ package com.sitewhere.search.solr;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -24,8 +22,6 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.common.util.NamedList;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -107,13 +103,15 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
      * @return
      */
     protected SolrParams createParamsFromQueryString(String queryString) {
-	MultiValueMap<String, String> parsed = UriComponentsBuilder.fromHttpUrl("http://localhost?" + queryString)
-		.build().getQueryParams();
-	Map<String, String[]> params = new HashMap<String, String[]>();
-	for (String key : parsed.keySet()) {
-	    params.put(key, parsed.get(key).toArray(new String[0]));
-	}
-	return new ModifiableSolrParams(params);
+	// MultiValueMap<String, String> parsed =
+	// UriComponentsBuilder.fromHttpUrl("http://localhost?" + queryString)
+	// .build().getQueryParams();
+	// Map<String, String[]> params = new HashMap<String, String[]>();
+	// for (String key : parsed.keySet()) {
+	// params.put(key, parsed.get(key).toArray(new String[0]));
+	// }
+	// return new ModifiableSolrParams(params);
+	return null;
     }
 
     /*

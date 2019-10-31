@@ -11,8 +11,6 @@ import com.sitewhere.spi.microservice.scripting.IScriptTemplate;
 
 /**
  * Model for script template which is used to load JSON templates.
- * 
- * @author Derek *
  */
 public class ScriptTemplate implements IScriptTemplate {
 

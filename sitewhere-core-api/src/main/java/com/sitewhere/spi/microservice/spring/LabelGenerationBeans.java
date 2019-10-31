@@ -9,8 +9,6 @@ package com.sitewhere.spi.microservice.spring;
 
 /**
  * Spring bean names for label generation components.
- * 
- * @author Derek
  */
 public class LabelGenerationBeans {
 

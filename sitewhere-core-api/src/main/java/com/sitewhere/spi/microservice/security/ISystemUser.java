@@ -7,16 +7,12 @@
  */
 package com.sitewhere.spi.microservice.security;
 
-import org.springframework.security.core.Authentication;
-
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Support access to a global "superuser" for authorizing calls between
  * microservices.
- * 
- * @author Derek
  */
 public interface ISystemUser {
 
@@ -26,7 +22,7 @@ public interface ISystemUser {
      * @return
      * @throws SiteWhereException
      */
-    public Authentication getAuthentication() throws SiteWhereException;
+    public Object getAuthentication() throws SiteWhereException;
 
     /**
      * Get authentication for superuser in context of a given tenant.
@@ -35,5 +31,5 @@ public interface ISystemUser {
      * @return
      * @throws SiteWhereException
      */
-    public Authentication getAuthenticationForTenant(ITenant tenant) throws SiteWhereException;
+    public Object getAuthenticationForTenant(ITenant tenant) throws SiteWhereException;
 }

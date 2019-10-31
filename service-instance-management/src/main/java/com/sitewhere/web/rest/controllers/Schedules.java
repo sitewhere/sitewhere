@@ -7,46 +7,51 @@
  */
 package com.sitewhere.web.rest.controllers;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
+import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.rest.model.scheduling.request.ScheduleCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
-import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
-import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for schedule operations.
  * 
  * @author Derek Adams
  */
-@RestController
-@SiteWhereCrossOrigin
-@RequestMapping(value = "/schedules")
+@Path("/schedules")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "schedules")
-public class Schedules extends RestControllerBase {
+public class Schedules {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
     private static Log LOGGER = LogFactory.getLog(Schedules.class);
+
+    @Inject
+    private IInstanceManagementMicroservice<?> microservice;
 
     /**
      * Create a schedule.
@@ -54,28 +59,25 @@ public class Schedules extends RestControllerBase {
      * @param request
      * @return
      */
-    @RequestMapping(method = RequestMethod.POST)
+    @POST
     @ApiOperation(value = "Create new schedule")
-    @Secured({ SiteWhereRoles.REST })
-    public ISchedule createSchedule(@RequestBody ScheduleCreateRequest request, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	return getScheduleManagement().createSchedule(request);
+    public Response createSchedule(@RequestBody ScheduleCreateRequest request) throws SiteWhereException {
+	return Response.ok(getScheduleManagement().createSchedule(request)).build();
     }
 
     /**
      * Get a schedule by token.
      * 
      * @param token
-     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}", method = RequestMethod.GET)
+    @GET
+    @Path("/{token}")
     @ApiOperation(value = "Get schedule by token")
-    @Secured({ SiteWhereRoles.REST })
-    public ISchedule getScheduleByToken(@ApiParam(value = "Token", required = true) @PathVariable String token,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getScheduleManagement().getScheduleByToken(token);
+    public Response getScheduleByToken(@ApiParam(value = "Token", required = true) @PathParam("token") String token)
+	    throws SiteWhereException {
+	return Response.ok(getScheduleManagement().getScheduleByToken(token)).build();
     }
 
     /**
@@ -83,17 +85,15 @@ public class Schedules extends RestControllerBase {
      * 
      * @param request
      * @param token
-     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}", method = RequestMethod.PUT)
+    @PUT
+    @Path("/{token}")
     @ApiOperation(value = "Update an existing schedule")
-    @Secured({ SiteWhereRoles.REST })
-    public ISchedule updateSchedule(@RequestBody ScheduleCreateRequest request,
-	    @ApiParam(value = "Token", required = true) @PathVariable String token, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	return getScheduleManagement().updateSchedule(token, request);
+    public Response updateSchedule(@RequestBody ScheduleCreateRequest request,
+	    @ApiParam(value = "Token", required = true) @PathParam("token") String token) throws SiteWhereException {
+	return Response.ok(getScheduleManagement().updateSchedule(token, request)).build();
     }
 
     /**
@@ -101,19 +101,17 @@ public class Schedules extends RestControllerBase {
      * 
      * @param page
      * @param pageSize
-     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.GET)
+    @GET
     @ApiOperation(value = "List schedules matching criteria")
-    @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<ISchedule> listSchedules(
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+    public Response listSchedules(
+	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+	    throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	return getScheduleManagement().listSchedules(criteria);
+	return Response.ok(getScheduleManagement().listSchedules(criteria)).build();
     }
 
     /**
@@ -123,15 +121,19 @@ public class Schedules extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
+    @DELETE
+    @Path("/{token}")
     @ApiOperation(value = "Delete a schedule")
-    @Secured({ SiteWhereRoles.REST })
-    public ISchedule deleteSchedule(@ApiParam(value = "Token", required = true) @PathVariable String token)
+    public Response deleteSchedule(@ApiParam(value = "Token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
-	return getScheduleManagement().deleteSchedule(token);
+	return Response.ok(getScheduleManagement().deleteSchedule(token)).build();
     }
 
     protected IScheduleManagement getScheduleManagement() {
 	return getMicroservice().getScheduleManagementApiChannel();
+    }
+
+    protected IInstanceManagementMicroservice<?> getMicroservice() {
+	return microservice;
     }
 }

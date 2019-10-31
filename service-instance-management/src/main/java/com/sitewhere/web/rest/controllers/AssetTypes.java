@@ -10,25 +10,23 @@ package com.sitewhere.web.rest.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import com.sitewhere.asset.marshaling.AssetTypeMarshalHelper;
+import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.rest.model.asset.request.AssetTypeCreateRequest;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.asset.AssetTypeSearchCriteria;
@@ -41,23 +39,25 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.label.ILabel;
 import com.sitewhere.spi.label.ILabelGeneration;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
-import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for asset type operations.
  * 
  * @author Derek Adams
  */
-@RestController
-@SiteWhereCrossOrigin
-@RequestMapping(value = "/assettypes")
+@Path("/assettypes")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "assettypes")
-public class AssetTypes extends RestControllerBase {
+public class AssetTypes {
+
+    @Inject
+    private IInstanceManagementMicroservice<?> microservice;
 
     /**
      * Create a new asset type.
@@ -66,10 +66,10 @@ public class AssetTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @PostMapping
+    @POST
     @ApiOperation(value = "Create a new asset type")
-    public IAssetType createAssetType(@RequestBody AssetTypeCreateRequest request) throws SiteWhereException {
-	return getAssetManagement().createAssetType(request);
+    public Response createAssetType(@RequestBody AssetTypeCreateRequest request) throws SiteWhereException {
+	return Response.ok(getAssetManagement().createAssetType(request)).build();
     }
 
     /**
@@ -79,14 +79,15 @@ public class AssetTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @GetMapping(value = "/{assetTypeToken:.+}")
+    @GET
+    @Path("/{assetTypeToken}")
     @ApiOperation(value = "Get asset by token")
-    public IAssetType getAssetTypeByToken(
-	    @ApiParam(value = "Asset type token", required = true) @PathVariable String assetTypeToken)
+    public Response getAssetTypeByToken(
+	    @ApiParam(value = "Asset type token", required = true) @PathParam("assetTypeToken") String assetTypeToken)
 	    throws SiteWhereException {
 	IAssetType existing = assureAssetType(assetTypeToken);
 	AssetTypeMarshalHelper helper = new AssetTypeMarshalHelper(getAssetManagement());
-	return helper.convert(existing);
+	return Response.ok(helper.convert(existing)).build();
     }
 
     /**
@@ -97,14 +98,14 @@ public class AssetTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @PutMapping(value = "/{assetTypeToken:.+}")
-    @ResponseBody
-    @ApiOperation(value = "Update an existing hardware asset in category")
-    public IAssetType updateAssetType(
-	    @ApiParam(value = "Asset type token", required = true) @PathVariable String assetTypeToken,
+    @PUT
+    @Path("/{assetTypeToken}")
+    @ApiOperation(value = "Update an existing asset type")
+    public Response updateAssetType(
+	    @ApiParam(value = "Asset type token", required = true) @PathParam("assetTypeToken") String assetTypeToken,
 	    @RequestBody AssetTypeCreateRequest request) throws SiteWhereException {
 	IAssetType existing = assureAssetType(assetTypeToken);
-	return getAssetManagement().updateAssetType(existing.getId(), request);
+	return Response.ok(getAssetManagement().updateAssetType(existing.getId(), request)).build();
     }
 
     /**
@@ -112,25 +113,23 @@ public class AssetTypes extends RestControllerBase {
      * 
      * @param assetTypeToken
      * @param generatorId
-     * @param servletRequest
-     * @param response
      * @return
      * @throws SiteWhereException
      */
-    @GetMapping(value = "/{assetTypeToken}/label/{generatorId}")
-    @ApiOperation(value = "Get label for area")
-    public ResponseEntity<byte[]> getAssignmentLabel(
-	    @ApiParam(value = "Asset type token", required = true) @PathVariable String assetTypeToken,
-	    @ApiParam(value = "Generator id", required = true) @PathVariable String generatorId,
-	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
+    @GET
+    @Path("/{areaTypeToken}/label/{generatorId}")
+    @Produces("image/png")
+    @ApiOperation(value = "Get label for asset type")
+    public Response getAssignmentLabel(
+	    @ApiParam(value = "Asset type token", required = true) @PathParam("assetTypeToken") String assetTypeToken,
+	    @ApiParam(value = "Generator id", required = true) @PathParam("v") String generatorId)
+	    throws SiteWhereException {
 	IAssetType existing = assureAssetType(assetTypeToken);
 	ILabel label = getLabelGeneration().getAssetTypeLabel(generatorId, existing.getId());
 	if (label == null) {
-	    return ResponseEntity.notFound().build();
+	    return Response.status(Status.NOT_FOUND).build();
 	}
-	final HttpHeaders headers = new HttpHeaders();
-	headers.setContentType(MediaType.IMAGE_PNG);
-	return new ResponseEntity<byte[]>(label.getContent(), headers, HttpStatus.OK);
+	return Response.ok(label.getContent()).build();
     }
 
     /**
@@ -141,11 +140,11 @@ public class AssetTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @GetMapping
+    @GET
     @ApiOperation(value = "List asset types matching criteria")
-    public ISearchResults<IAssetType> listAssetTypes(
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize)
+    public Response listAssetTypes(
+	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	// Build criteria.
 	AssetTypeSearchCriteria criteria = new AssetTypeSearchCriteria(page, pageSize);
@@ -158,7 +157,7 @@ public class AssetTypes extends RestControllerBase {
 	for (IAssetType assetType : matches.getResults()) {
 	    results.add(helper.convert(assetType));
 	}
-	return new SearchResults<IAssetType>(results, matches.getNumResults());
+	return Response.ok(new SearchResults<IAssetType>(results, matches.getNumResults())).build();
     }
 
     /**
@@ -168,13 +167,14 @@ public class AssetTypes extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @DeleteMapping(value = "/{assetTypeToken:.+}")
+    @DELETE
+    @Path("/{assetTypeToken}")
     @ApiOperation(value = "Delete asset type by token")
-    public IAssetType deleteAsset(
-	    @ApiParam(value = "Asset type token", required = true) @PathVariable String assetTypeToken)
+    public Response deleteAsset(
+	    @ApiParam(value = "Asset type token", required = true) @PathParam("assetTypeToken") String assetTypeToken)
 	    throws SiteWhereException {
 	IAssetType existing = assureAssetType(assetTypeToken);
-	return getAssetManagement().deleteAssetType(existing.getId());
+	return Response.ok(getAssetManagement().deleteAssetType(existing.getId())).build();
     }
 
     /**
@@ -192,11 +192,15 @@ public class AssetTypes extends RestControllerBase {
 	return assetType;
     }
 
-    private IAssetManagement getAssetManagement() throws SiteWhereException {
+    protected IAssetManagement getAssetManagement() throws SiteWhereException {
 	return getMicroservice().getAssetManagementApiChannel();
     }
 
-    private ILabelGeneration getLabelGeneration() {
+    protected ILabelGeneration getLabelGeneration() {
 	return getMicroservice().getLabelGenerationApiChannel();
+    }
+
+    protected IInstanceManagementMicroservice<?> getMicroservice() {
+	return microservice;
     }
 }

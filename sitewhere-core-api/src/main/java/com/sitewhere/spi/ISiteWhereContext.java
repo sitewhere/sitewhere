@@ -21,8 +21,6 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 
 /**
  * Holds SiteWhere information associated with a reqeust.
- * 
- * @author dadams
  */
 public interface ISiteWhereContext {
 

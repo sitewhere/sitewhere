@@ -11,8 +11,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 
 /**
  * Single operation lifeycle step with execution left abstract.
- * 
- * @author Derek
  */
 public abstract class SimpleLifecycleStep implements ILifecycleStep {
 
@@ -36,8 +34,7 @@ public abstract class SimpleLifecycleStep implements ILifecycleStep {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleStep#getOperationCount()
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleStep#getOperationCount()
      */
     @Override
     public int getOperationCount() {

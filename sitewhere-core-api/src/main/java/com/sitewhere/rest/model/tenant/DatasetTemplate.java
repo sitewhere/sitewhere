@@ -15,8 +15,6 @@ import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
 
 /**
  * Model object for an {@link IDatasetTemplate}.
- * 
- * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
 public class DatasetTemplate implements IDatasetTemplate {
@@ -69,8 +67,6 @@ public class DatasetTemplate implements IDatasetTemplate {
 
     /**
      * Model initializers.
-     * 
-     * @author Derek
      */
     public static class Initializers implements IDatasetTemplate.Initializers {
 

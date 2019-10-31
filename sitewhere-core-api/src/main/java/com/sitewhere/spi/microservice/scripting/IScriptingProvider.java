@@ -9,8 +9,6 @@ package com.sitewhere.spi.microservice.scripting;
 
 /**
  * Implemented by entities that provide scripting support.
- * 
- * @author Derek
  */
 public interface IScriptingProvider {
 

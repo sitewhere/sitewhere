@@ -13,7 +13,6 @@ import com.sitewhere.search.spi.microservice.IEventSearchTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.spring.EventSearchBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -42,9 +41,9 @@ public class EventSearchTenantEngine extends MicroserviceTenantEngine implements
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Create search providers manager.
-	this.searchProvidersManager = (ISearchProvidersManager) getModuleContext()
-		.getBean(EventSearchBeans.BEAN_SEARCH_PROVIDERS_MANAGER);
+	// // Create search providers manager.
+	// this.searchProvidersManager = (ISearchProvidersManager) getModuleContext()
+	// .getBean(EventSearchBeans.BEAN_SEARCH_PROVIDERS_MANAGER);
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());

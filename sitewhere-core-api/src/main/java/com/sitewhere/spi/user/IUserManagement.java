@@ -17,8 +17,6 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
 
 /**
  * Interface for user management operations.
- * 
- * @author Derek
  */
 public interface IUserManagement extends ILifecycleComponent {
 

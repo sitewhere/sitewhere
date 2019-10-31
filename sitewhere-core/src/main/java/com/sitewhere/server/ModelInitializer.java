@@ -11,8 +11,6 @@ import com.sitewhere.spi.server.IModelInitializer;
 
 /**
  * Base class for model initializer implementations.
- * 
- * @author Derek
  */
 public class ModelInitializer implements IModelInitializer {
 

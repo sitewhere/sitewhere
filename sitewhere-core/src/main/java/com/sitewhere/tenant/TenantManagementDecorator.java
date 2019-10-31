@@ -20,8 +20,6 @@ import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
 /**
  * Uses decorator pattern to allow behaviors to be injected around tenant
  * management API calls.
- * 
- * @author Derek
  */
 public class TenantManagementDecorator extends LifecycleComponentDecorator<ITenantManagement>
 	implements ITenantManagement {

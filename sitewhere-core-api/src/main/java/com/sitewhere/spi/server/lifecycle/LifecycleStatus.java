@@ -9,8 +9,6 @@ package com.sitewhere.spi.server.lifecycle;
 
 /**
  * Lifecycle status for component.
- * 
- * @author Derek
  */
 public enum LifecycleStatus {
 

@@ -13,8 +13,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
  * Model object that represents current microservice state.
- * 
- * @author Derek
  */
 public class MicroserviceState implements IMicroserviceState {
 

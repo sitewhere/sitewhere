@@ -21,7 +21,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -94,7 +93,7 @@ public class ConfigurationContentParser {
 	if (!acons.isEmpty()) {
 	    econ.setAttributes(acons);
 	}
-	List<Element> children = DomUtils.getChildElements(element);
+	List<Element> children = new ArrayList<>();
 	List<ElementContent> econs = new ArrayList<ElementContent>();
 	for (Element child : children) {
 	    econs.add(parse(child, configurationModel));

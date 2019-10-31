@@ -7,22 +7,17 @@
  */
 package com.sitewhere.instance;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.ComponentScan;
+import javax.inject.Inject;
 
-import com.sitewhere.instance.microservice.InstanceManagementMicroservice;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
-import com.sitewhere.web.WebRestConfiguration;
 
 /**
  * Spring Boot application for web/REST microservice.
  */
-@ComponentScan(basePackageClasses = { InstanceManagementMicroservice.class, WebRestConfiguration.class })
 public class InstanceManagementApplication extends MicroserviceApplication<IInstanceManagementMicroservice<?>> {
 
-    @Autowired
+    @Inject
     private IInstanceManagementMicroservice<?> microservice;
 
     /*
@@ -34,14 +29,5 @@ public class InstanceManagementApplication extends MicroserviceApplication<IInst
     @Override
     public IInstanceManagementMicroservice<?> getMicroservice() {
 	return microservice;
-    }
-
-    /**
-     * Entry point for Spring Boot.
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-	SpringApplication.run(InstanceManagementApplication.class, args);
     }
 }

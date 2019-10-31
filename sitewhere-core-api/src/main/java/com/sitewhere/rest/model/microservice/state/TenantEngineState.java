@@ -17,8 +17,6 @@ import com.sitewhere.spi.microservice.state.ITenantEngineState;
 
 /**
  * Model object for tenant engine state.
- * 
- * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
 public class TenantEngineState implements ITenantEngineState {

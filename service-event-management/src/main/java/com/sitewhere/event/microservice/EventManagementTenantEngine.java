@@ -7,12 +7,6 @@
  */
 package com.sitewhere.event.microservice;
 
-import java.nio.file.Path;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import com.sitewhere.event.initializer.GroovyEventModelInitializer;
 import com.sitewhere.event.spi.kafka.IInboundEventsConsumer;
 import com.sitewhere.event.spi.kafka.IOutboundCommandInvocationsProducer;
 import com.sitewhere.event.spi.kafka.IOutboundEventsProducer;
@@ -20,7 +14,6 @@ import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
 import com.sitewhere.microservice.grpc.EventManagementImpl;
-import com.sitewhere.microservice.kafka.KafkaEventPersistenceTriggers;
 import com.sitewhere.microservice.kafka.OutboundCommandInvocationsProducer;
 import com.sitewhere.microservice.kafka.OutboundEventsProducer;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
@@ -31,8 +24,6 @@ import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.scripting.ScriptType;
-import com.sitewhere.spi.microservice.spring.EventManagementBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -108,9 +99,9 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
      * @throws SiteWhereException
      */
     protected void initializeManagementImplementations() throws SiteWhereException {
-	IDeviceEventManagement impl = (IDeviceEventManagement) getModuleContext()
-		.getBean(EventManagementBeans.BEAN_EVENT_MANAGEMENT);
-	this.eventManagement = new KafkaEventPersistenceTriggers(this, impl);
+	// IDeviceEventManagement impl = (IDeviceEventManagement) getModuleContext()
+	// .getBean(EventManagementBeans.BEAN_EVENT_MANAGEMENT);
+	// this.eventManagement = new KafkaEventPersistenceTriggers(this, impl);
 
 	this.eventManagementImpl = new EventManagementImpl((IEventManagementMicroservice) getMicroservice(),
 		getEventManagement());
@@ -174,25 +165,29 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
     @Override
     public void tenantBootstrap(TenantEngineDatasetTemplate template, ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException {
-	String scriptName = String.format("%s.groovy", template.getMetadata().getName());
-	Path path = getScriptSynchronizer().add(getScriptContext(), ScriptType.Initializer, scriptName,
-		template.getSpec().getConfiguration().getBytes());
-
+	// String scriptName = String.format("%s.groovy",
+	// template.getMetadata().getName());
+	// Path path = getScriptSynchronizer().add(getScriptContext(),
+	// ScriptType.Initializer, scriptName,
+	// template.getSpec().getConfiguration().getBytes());
+	//
 	// Execute remote calls as superuser.
-	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
-	try {
-	    SecurityContextHolder.getContext()
-		    .setAuthentication(getMicroservice().getSystemUser().getAuthenticationForTenant(getTenant()));
-
-	    getLogger().info(String.format("Applying bootstrap script '%s'.", path));
-	    GroovyEventModelInitializer initializer = new GroovyEventModelInitializer(getGroovyConfiguration(), path);
-	    initializer.initialize(getCachedDeviceManagement(), getEventManagement());
-	} catch (Throwable e) {
-	    getLogger().error("Unhandled exception in bootstrap script.", e);
-	    throw new SiteWhereException(e);
-	} finally {
-	    SecurityContextHolder.getContext().setAuthentication(previous);
-	}
+	// Authentication previous =
+	// SecurityContextHolder.getContext().getAuthentication();
+	// try {
+	// SecurityContextHolder.getContext()
+	// .setAuthentication(getMicroservice().getSystemUser().getAuthenticationForTenant(getTenant()));
+	//
+	// getLogger().info(String.format("Applying bootstrap script '%s'.", path));
+	// GroovyEventModelInitializer initializer = new
+	// GroovyEventModelInitializer(getGroovyConfiguration(), path);
+	// initializer.initialize(getCachedDeviceManagement(), getEventManagement());
+	// } catch (Throwable e) {
+	// getLogger().error("Unhandled exception in bootstrap script.", e);
+	// throw new SiteWhereException(e);
+	// } finally {
+	// SecurityContextHolder.getContext().setAuthentication(previous);
+	// }
     }
 
     /*

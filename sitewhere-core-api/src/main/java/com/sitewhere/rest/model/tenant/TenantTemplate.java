@@ -13,8 +13,6 @@ import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
 
 /**
  * Model object for an {@link ITenantTemplate}.
- * 
- * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
 public class TenantTemplate implements ITenantTemplate {

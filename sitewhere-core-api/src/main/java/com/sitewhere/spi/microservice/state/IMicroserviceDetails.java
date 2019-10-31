@@ -10,8 +10,6 @@ package com.sitewhere.spi.microservice.state;
 /**
  * Contains details that allow a microservice to be uniquely identified and
  * described.
- * 
- * @author Derek
  */
 public interface IMicroserviceDetails {
 

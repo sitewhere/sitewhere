@@ -16,8 +16,6 @@ import com.sitewhere.spi.system.IVersion;
 /**
  * Gets information about system version from properties generated into the
  * classpath.
- * 
- * @author Derek
  */
 public class Version implements IVersion {
 

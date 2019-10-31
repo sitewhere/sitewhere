@@ -12,13 +12,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
-import com.sitewhere.security.SitewhereAuthentication;
-import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.security.ISystemUser;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
@@ -30,8 +25,6 @@ import com.sitewhere.spi.user.SiteWhereAuthority;
 /**
  * Bean that provides a system "superuser" that allows microservices to
  * authenticate with other microservices.
- * 
- * @author Derek
  */
 public class SystemUser implements ISystemUser {
 
@@ -42,7 +35,6 @@ public class SystemUser implements ISystemUser {
     private static final int SYSTEM_USER_TOKEN_EXPIRATION_IN_MINS = 60 * 24 * 365;
 
     /** JWT token management */
-    @Autowired
     private ITokenManagement tokenManagement;
 
     /** System user information */
@@ -52,36 +44,32 @@ public class SystemUser implements ISystemUser {
     private List<IGrantedAuthority> auths = SystemUser.getNonGroupAuthorities();
 
     /** Last authentication result */
-    private SitewhereAuthentication last = null;
+    private SiteWhereAuthentication last = null;
 
     /** Last time JWT was generated */
     private long lastGenerated = 0;
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.security.ISystemUser#getAuthentication()
+     * @see com.sitewhere.spi.microservice.security.ISystemUser#getAuthentication()
      */
     @Override
-    public SitewhereAuthentication getAuthentication() throws SiteWhereException {
+    public SiteWhereAuthentication getAuthentication() throws SiteWhereException {
 	if ((System.currentTimeMillis() - lastGenerated) > (RENEW_INTERVAL_SEC * 1000)) {
 	    String jwt = tokenManagement.generateToken(user, SYSTEM_USER_TOKEN_EXPIRATION_IN_MINS);
-	    SitewhereUserDetails details = new SitewhereUserDetails(user, auths);
-	    this.last = new SitewhereAuthentication(details, jwt);
+	    SiteWhereUserDetails details = new SiteWhereUserDetails(user, auths);
+	    this.last = new SiteWhereAuthentication(details, jwt);
 	    this.lastGenerated = System.currentTimeMillis();
 	}
 	return this.last;
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.security.ISystemUser#
+     * @see com.sitewhere.spi.microservice.security.ISystemUser#
      * getAuthenticationForTenant(com.sitewhere.spi.tenant.ITenant)
      */
     @Override
-    public Authentication getAuthenticationForTenant(ITenant tenant) throws SiteWhereException {
-	SitewhereAuthentication auth = getAuthentication();
+    public SiteWhereAuthentication getAuthenticationForTenant(ITenant tenant) throws SiteWhereException {
+	SiteWhereAuthentication auth = getAuthentication();
 	auth.setTenant(tenant);
 	return auth;
     }

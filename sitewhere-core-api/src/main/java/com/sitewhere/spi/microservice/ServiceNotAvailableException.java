@@ -11,8 +11,6 @@ import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Exeception indicating a remote service has become unavailable.
- * 
- * @author Derek
  */
 public class ServiceNotAvailableException extends SiteWhereException {
 

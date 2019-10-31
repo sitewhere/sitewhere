@@ -13,8 +13,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 /**
  * Contains progress information provided by an
  * {@link ILifecycleProgressMonitor}.
- * 
- * @author Derek
  */
 public class ProgressMessage implements IProgressMessage {
 
@@ -59,8 +57,7 @@ public class ProgressMessage implements IProgressMessage {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.monitoring.IProgressMessage#getProgressPercentage()
+     * @see com.sitewhere.spi.monitoring.IProgressMessage#getProgressPercentage()
      */
     @Override
     public double getProgressPercentage() {

@@ -9,8 +9,6 @@ package com.sitewhere.spi.microservice.instance;
 
 /**
  * Common settings used in a SiteWhere instance.
- * 
- * @author Derek
  */
 public interface IInstanceSettings {
 

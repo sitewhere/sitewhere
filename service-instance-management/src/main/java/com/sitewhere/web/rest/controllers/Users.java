@@ -10,60 +10,58 @@ package com.sitewhere.web.rest.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.user.UserSearchCriteria;
 import com.sitewhere.rest.model.user.GrantedAuthority;
-import com.sitewhere.rest.model.user.User;
 import com.sitewhere.rest.model.user.request.UserCreateRequest;
-import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.AccountStatus;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
-import com.sitewhere.spi.user.SiteWhereAuthority;
-import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
-import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for user operations.
  * 
  * @author Derek Adams
  */
-@RestController
-@SiteWhereCrossOrigin
-@RequestMapping(value = "/users")
+@Path("/users")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "users")
-public class Users extends RestControllerBase {
-
-    /** Injected reference to microservice */
-    @Autowired
-    IInstanceManagementMicroservice<?> microservice;
+public class Users {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
     private static Log LOGGER = LogFactory.getLog(Users.class);
+
+    @Inject
+    private IInstanceManagementMicroservice<?> microservice;
 
     /**
      * Create a new user.
@@ -72,10 +70,10 @@ public class Users extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.POST)
+    @POST
     @ApiOperation(value = "Create new user")
-    public User createUser(@RequestBody UserCreateRequest input) throws SiteWhereException {
-	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
+    public Response createUser(@RequestBody UserCreateRequest input) throws SiteWhereException {
+	// checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	if ((input.getUsername() == null) || (input.getPassword() == null) || (input.getFirstName() == null)
 		|| (input.getLastName() == null)) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidUserInformation, ErrorLevel.ERROR);
@@ -83,8 +81,7 @@ public class Users extends RestControllerBase {
 	if (input.getStatus() == null) {
 	    input.setStatus(AccountStatus.Active);
 	}
-	IUser user = getUserManagement().createUser(input, true);
-	return User.copy(user);
+	return Response.ok(getUserManagement().createUser(input, true)).build();
     }
 
     /**
@@ -95,13 +92,14 @@ public class Users extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{username:.+}", method = RequestMethod.PUT)
+    @PUT
+    @Path("/{username}")
     @ApiOperation(value = "Update existing user.")
-    public User updateUser(@ApiParam(value = "Unique username", required = true) @PathVariable String username,
+    public Response updateUser(
+	    @ApiParam(value = "Unique username", required = true) @PathParam("username") String username,
 	    @RequestBody UserCreateRequest input) throws SiteWhereException {
 	checkForAdminOrEditSelf(username);
-	IUser user = getUserManagement().updateUser(username, input, true);
-	return User.copy(user);
+	return Response.ok(getUserManagement().updateUser(username, input, true)).build();
     }
 
     /**
@@ -111,17 +109,18 @@ public class Users extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{username:.+}", method = RequestMethod.GET)
+    @GET
+    @Path("/{username}")
     @ApiOperation(value = "Get user by username")
-    public User getUserByUsername(@ApiParam(value = "Unique username", required = true) @PathVariable String username)
+    public Response getUserByUsername(
+	    @ApiParam(value = "Unique username", required = true) @PathParam("username") String username)
 	    throws SiteWhereException {
 	checkForAdminOrEditSelf(username);
-	IUser user = getUserManagement().getUserByUsername(StringEscapeUtils.unescapeHtml(username));
+	IUser user = getUserManagement().getUserByUsername(username);
 	if (user == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR,
-		    HttpServletResponse.SC_NOT_FOUND);
+	    return Response.status(Status.NOT_FOUND).build();
 	}
-	return User.copy(user);
+	return Response.ok(user).build();
     }
 
     /**
@@ -131,14 +130,14 @@ public class Users extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{username:.+}", method = RequestMethod.DELETE)
+    @DELETE
+    @Path("/{username}")
     @ApiOperation(value = "Delete user by username")
-    public User deleteUserByUsername(
-	    @ApiParam(value = "Unique username", required = true) @PathVariable String username)
+    public Response deleteUserByUsername(
+	    @ApiParam(value = "Unique username", required = true) @PathParam("username") String username)
 	    throws SiteWhereException {
-	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
-	IUser user = getUserManagement().deleteUser(username);
-	return User.copy(user);
+	// checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
+	return Response.ok(getUserManagement().deleteUser(username)).build();
     }
 
     /**
@@ -148,10 +147,11 @@ public class Users extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{username:.+}/authorities", method = RequestMethod.GET)
+    @GET
+    @Path("/{username}/authorities")
     @ApiOperation(value = "Get authorities for user")
-    public SearchResults<GrantedAuthority> getAuthoritiesForUsername(
-	    @ApiParam(value = "Unique username", required = true) @PathVariable String username)
+    public Response getAuthoritiesForUsername(
+	    @ApiParam(value = "Unique username", required = true) @PathParam("username") String username)
 	    throws SiteWhereException {
 	checkForAdminOrEditSelf(username);
 	List<IGrantedAuthority> matches = getUserManagement().getGrantedAuthorities(username);
@@ -159,7 +159,7 @@ public class Users extends RestControllerBase {
 	for (IGrantedAuthority auth : matches) {
 	    converted.add(GrantedAuthority.copy(auth));
 	}
-	return new SearchResults<GrantedAuthority>(converted);
+	return Response.ok(new SearchResults<GrantedAuthority>(converted)).build();
     }
 
     /**
@@ -168,11 +168,11 @@ public class Users extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.GET)
+    @GET
     @ApiOperation(value = "List users matching criteria")
-    public ISearchResults<IUser> listUsers() throws SiteWhereException {
+    public Response listUsers() throws SiteWhereException {
 	UserSearchCriteria criteria = new UserSearchCriteria();
-	return getUserManagement().listUsers(criteria);
+	return Response.ok(getUserManagement().listUsers(criteria)).build();
     }
 
     /**
@@ -183,24 +183,22 @@ public class Users extends RestControllerBase {
      * @throws SiteWhereException
      */
     public static void checkForAdminOrEditSelf(String username) throws SiteWhereException {
-	checkAuthFor(SiteWhereAuthority.REST, true);
-	if (!checkAuthFor(SiteWhereAuthority.AdminUsers, false)) {
-	    IUser loggedIn = UserContextManager.getCurrentlyLoggedInUser();
-	    if ((loggedIn == null) || (!loggedIn.getUsername().equals(username))) {
-		throw operationNotPermitted();
-	    } else {
-		checkAuthFor(SiteWhereAuthority.AdminSelf, true);
-	    }
-	}
+	// checkAuthFor(SiteWhereAuthority.REST, true);
+	// if (!checkAuthFor(SiteWhereAuthority.AdminUsers, false)) {
+	// IUser loggedIn = UserContextManager.getCurrentlyLoggedInUser();
+	// if ((loggedIn == null) || (!loggedIn.getUsername().equals(username))) {
+	// throw operationNotPermitted();
+	// } else {
+	// checkAuthFor(SiteWhereAuthority.AdminSelf, true);
+	// }
+	// }
     }
 
-    /**
-     * Get {@link IUserManagement} implementation.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
     protected IUserManagement getUserManagement() throws SiteWhereException {
-	return microservice.getUserManagement();
+	return getMicroservice().getUserManagement();
+    }
+
+    protected IInstanceManagementMicroservice<?> getMicroservice() {
+	return microservice;
     }
 }

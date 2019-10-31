@@ -9,8 +9,6 @@ package com.sitewhere.spi.microservice.configuration.model;
 
 /**
  * Unique key for a configuration role.
- * 
- * @author Derek
  */
 public interface IRoleKey {
 

@@ -7,10 +7,6 @@
  */
 package com.sitewhere.labels;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.ComponentScan;
-
 import com.sitewhere.labels.spi.microservice.ILabelGenerationMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
 
@@ -19,10 +15,8 @@ import com.sitewhere.microservice.MicroserviceApplication;
  * 
  * @author Derek
  */
-@ComponentScan
 public class LabelGenerationApplication extends MicroserviceApplication<ILabelGenerationMicroservice> {
 
-    @Autowired
     private ILabelGenerationMicroservice microservice;
 
     /*
@@ -34,14 +28,5 @@ public class LabelGenerationApplication extends MicroserviceApplication<ILabelGe
     @Override
     public ILabelGenerationMicroservice getMicroservice() {
 	return microservice;
-    }
-
-    /**
-     * Entry point for Spring Boot.
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-	SpringApplication.run(LabelGenerationApplication.class, args);
     }
 }

@@ -9,8 +9,6 @@ package com.sitewhere.spi.microservice.configuration.model;
 
 /**
  * Choice for an enumerated value for an attribute.
- * 
- * @author Derek
  */
 public interface IAttributeChoice {
 

@@ -7,20 +7,14 @@
  */
 package com.sitewhere.asset;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.ComponentScan;
-
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
 
 /**
  * Spring boot application for the asset management microservice.
  */
-@ComponentScan
 public class AssetManagementApplication extends MicroserviceApplication<IAssetManagementMicroservice> {
 
-    @Autowired
     private IAssetManagementMicroservice microservice;
 
     /*
@@ -32,14 +26,5 @@ public class AssetManagementApplication extends MicroserviceApplication<IAssetMa
     @Override
     public IAssetManagementMicroservice getMicroservice() {
 	return microservice;
-    }
-
-    /**
-     * Entry point for Spring Boot.
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-	SpringApplication.run(AssetManagementApplication.class, args);
     }
 }

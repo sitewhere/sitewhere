@@ -44,8 +44,6 @@ import com.sitewhere.spi.search.ISearchResults;
 
 /**
  * Builder that supports creating device management entities.
- * 
- * @author Derek
  */
 public class DeviceManagementRequestBuilder {
 

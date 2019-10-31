@@ -13,8 +13,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Composite step used for initializing a component.
- * 
- * @author Derek
  */
 public class InitializeComponentLifecycleStep extends ComponentOperationLifecycleStep {
 

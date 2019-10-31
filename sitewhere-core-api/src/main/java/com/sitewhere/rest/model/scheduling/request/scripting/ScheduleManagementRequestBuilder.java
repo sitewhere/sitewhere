@@ -14,8 +14,6 @@ import com.sitewhere.spi.scheduling.IScheduleManagement;
 
 /**
  * Builder that supports creating schedule management entities.
- * 
- * @author Derek
  */
 public class ScheduleManagementRequestBuilder {
 

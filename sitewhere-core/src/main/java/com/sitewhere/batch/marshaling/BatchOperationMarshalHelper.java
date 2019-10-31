@@ -19,8 +19,6 @@ import com.sitewhere.spi.batch.IBatchOperation;
 /**
  * Configurable helper class that allows {@link BatchOperation} model objects to
  * be created from {@link IBatchOperation} SPI objects.
- * 
- * @author Derek
  */
 public class BatchOperationMarshalHelper {
 

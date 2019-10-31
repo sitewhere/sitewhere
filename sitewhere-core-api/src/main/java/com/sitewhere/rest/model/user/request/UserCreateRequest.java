@@ -20,8 +20,6 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
 
 /**
  * Holds fields needed to create a new user.
- * 
- * @author Derek Adams
  */
 @JsonInclude(Include.NON_NULL)
 public class UserCreateRequest extends PersistentEntityCreateRequest implements IUserCreateRequest {

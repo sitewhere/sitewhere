@@ -11,8 +11,6 @@ import java.util.List;
 
 /**
  * Node representing an attribute in the configuration model.
- * 
- * @author Derek
  */
 public interface IAttributeNode extends IXmlNode {
 

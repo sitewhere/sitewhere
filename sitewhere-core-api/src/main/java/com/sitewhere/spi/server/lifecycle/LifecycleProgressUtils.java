@@ -18,8 +18,6 @@ import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Common logic used in lifecycle progress monitoring.
- * 
- * @author Derek
  */
 public class LifecycleProgressUtils {
 

@@ -15,8 +15,6 @@ import com.sitewhere.spi.microservice.state.IInstanceTopologySnapshot;
 
 /**
  * Snapshot of instance topology at a given point in time.
- * 
- * @author Derek
  */
 public class InstanceTopologySnapshot implements IInstanceTopologySnapshot {
 

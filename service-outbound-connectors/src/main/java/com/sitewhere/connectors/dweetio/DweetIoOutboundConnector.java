@@ -7,11 +7,6 @@
  */
 package com.sitewhere.connectors.dweetio;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestTemplate;
-
 import com.sitewhere.connectors.SerialOutboundConnector;
 import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.spi.SiteWhereException;
@@ -28,13 +23,14 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
  * 
  * @author Derek
  */
+@SuppressWarnings("unused")
 public class DweetIoOutboundConnector extends SerialOutboundConnector {
 
     /** Base URI for REST calls */
     private static final String API_BASE = "https://dweet.io:443/dweet/for/";
 
     /** Use Spring RestTemplate to send requests */
-    private RestTemplate client;
+    // private RestTemplate client;
 
     /*
      * (non-Javadoc)
@@ -48,7 +44,7 @@ public class DweetIoOutboundConnector extends SerialOutboundConnector {
 	// Required for filters.
 	super.start(monitor);
 
-	this.client = new RestTemplate();
+	// this.client = new RestTemplate();
     }
 
     /*
@@ -92,23 +88,26 @@ public class DweetIoOutboundConnector extends SerialOutboundConnector {
      * @throws SiteWhereException
      */
     protected boolean sendDweet(IDeviceEvent event) throws SiteWhereException {
-	try {
-	    String url = API_BASE + event.getDeviceAssignmentId().toString();
-	    ResponseEntity<String> response = getClient().postForEntity(url, event, String.class);
-	    if (response.getStatusCode() == HttpStatus.OK) {
-		return true;
-	    }
-	    throw new SiteWhereException("Unable to create dweet. Status code was: " + response.getStatusCode());
-	} catch (ResourceAccessException e) {
-	    throw new SiteWhereException(e);
-	}
+	// try {
+	// String url = API_BASE + event.getDeviceAssignmentId().toString();
+	// ResponseEntity<String> response = getClient().postForEntity(url, event,
+	// String.class);
+	// if (response.getStatusCode() == HttpStatus.OK) {
+	// return true;
+	// }
+	// throw new SiteWhereException("Unable to create dweet. Status code was: " +
+	// response.getStatusCode());
+	// } catch (ResourceAccessException e) {
+	// throw new SiteWhereException(e);
+	// }
+	return false;
     }
 
-    public RestTemplate getClient() {
-	return client;
-    }
-
-    public void setClient(RestTemplate client) {
-	this.client = client;
-    }
+    // public RestTemplate getClient() {
+    // return client;
+    // }
+    //
+    // public void setClient(RestTemplate client) {
+    // this.client = client;
+    // }
 }

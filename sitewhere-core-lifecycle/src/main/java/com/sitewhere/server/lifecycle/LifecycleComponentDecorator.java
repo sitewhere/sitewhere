@@ -28,8 +28,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 /**
  * Wraps instance of {@link ILifecycleComponent} to add functionality around
  * implementation.
- * 
- * @author Derek
  */
 public class LifecycleComponentDecorator<T extends ILifecycleComponent> implements ILifecycleComponent {
 

@@ -12,8 +12,6 @@ import com.sitewhere.spi.monitoring.IProgressErrorMessage;
 
 /**
  * Progress message that includes error information.
- * 
- * @author Derek
  */
 public class ProgressErrorMessage extends ProgressMessage implements IProgressErrorMessage {
 

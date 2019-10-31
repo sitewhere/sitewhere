@@ -11,8 +11,6 @@ import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Sends runtime information to Google Analytics.
- * 
- * @author Derek
  */
 public interface IMicroserviceAnalytics {
 

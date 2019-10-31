@@ -17,8 +17,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Interface for device state management operations.
- * 
- * @author Derek
  */
 public interface IDeviceStateManagement extends ITenantEngineLifecycleComponent {
 

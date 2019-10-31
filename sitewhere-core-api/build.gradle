@@ -5,29 +5,14 @@ dependencies {
     compile group: 'com.sitewhere', name: 'sitewhere-java-model', version: '2.2.0'
 	compile group: 'com.sitewhere', name: 'sitewhere-k8s-model', version: '0.0.9'
 	
-	// Spring security components.
-    compile group: 'org.springframework.security', name: 'spring-security-core'
-	
 	// Apache Kafka for reliable data pipeline.
     compile group: 'org.apache.kafka', name: 'kafka-clients', version: "${rootProject.ext['kafka.version']}"
-	
-	// Date/time conversions.
-    compile group: 'joda-time', name: 'joda-time', version:'2.9.1'
     
     // Groovy for dynamic processing.
-    compile group: 'org.codehaus.groovy', name: 'groovy'
-      
-    // Metrics support
-    compile group: 'io.prometheus', name: 'simpleclient', version:'0.6.0'
-    compile group: 'io.prometheus', name: 'simpleclient_httpserver', version:'0.6.0'
+    compile group: 'org.codehaus.groovy', name: 'groovy', version: "${rootProject.ext['groovy.version']}"
     
     // JSON web token support.
     compile group: 'io.jsonwebtoken', name: 'jjwt', version:'0.7.0'
-	
-	// Jackson JSON processing.
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
     
     // SLF4J Extension for i18n
     compile group: 'org.slf4j', name: 'slf4j-ext', version: '1.7.25'

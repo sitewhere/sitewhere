@@ -11,8 +11,6 @@ import java.io.Serializable;
 
 /**
  * Message sent to indicate progress for a long-running task.
- * 
- * @author Derek
  */
 public interface IProgressMessage extends Serializable {
 

@@ -9,19 +9,21 @@ package com.sitewhere.web.rest.controllers;
 
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
 import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
-import com.sitewhere.rest.model.device.event.view.DeviceCommandInvocationSummary;
+import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceCommandInvocation;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -30,9 +32,6 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
-import com.sitewhere.web.rest.RestControllerBase;
 import com.sitewhere.web.rest.view.DeviceInvocationSummaryBuilder;
 
 import io.swagger.annotations.Api;
@@ -44,11 +43,14 @@ import io.swagger.annotations.ApiParam;
  * 
  * @author Derek Adams
  */
-@RestController
-@SiteWhereCrossOrigin
-@RequestMapping(value = "/invocations")
+@Path("/invocations")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "invocations")
-public class CommandInvocations extends RestControllerBase {
+public class CommandInvocations {
+
+    @Inject
+    private IInstanceManagementMicroservice<?> microservice;
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -57,37 +59,35 @@ public class CommandInvocations extends RestControllerBase {
     /**
      * Get a command invocation by unique id.
      * 
-     * @param deviceToken
      * @param id
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/id/{id}", method = RequestMethod.GET)
+    @GET
+    @Path("/id/{id}")
     @ApiOperation(value = "Get command invocation by unique id.")
-    @Secured({ SiteWhereRoles.REST })
-    public IDeviceCommandInvocation getDeviceCommandInvocation(
-	    @ApiParam(value = "Unique id", required = true) @PathVariable UUID id) throws SiteWhereException {
+    public Response getDeviceCommandInvocation(@ApiParam(value = "Unique id", required = true) @PathParam("id") UUID id)
+	    throws SiteWhereException {
 	IDeviceEvent found = getDeviceEventManagement().getDeviceEventById(id);
 	if (!(found instanceof IDeviceCommandInvocation)) {
 	    throw new SiteWhereException("Event with the corresponding id is not a command invocation.");
 	}
 	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(getDeviceManagement());
-	return helper.convert((IDeviceCommandInvocation) found);
+	return Response.ok(helper.convert((IDeviceCommandInvocation) found)).build();
     }
 
     /**
      * Get a summarized version of the given device command invocation.
      * 
-     * @param deviceToken
      * @param id
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/id/{id}/summary", method = RequestMethod.GET)
+    @GET
+    @Path("/id/{id}/summary")
     @ApiOperation(value = "Get command invocation summary")
-    @Secured({ SiteWhereRoles.REST })
-    public DeviceCommandInvocationSummary getDeviceCommandInvocationSummary(
-	    @ApiParam(value = "Unique id", required = true) @PathVariable UUID id) throws SiteWhereException {
+    public Response getDeviceCommandInvocationSummary(
+	    @ApiParam(value = "Unique id", required = true) @PathParam("id") UUID id) throws SiteWhereException {
 	IDeviceEvent found = getDeviceEventManagement().getDeviceEventById(id);
 	if (!(found instanceof IDeviceCommandInvocation)) {
 	    throw new SiteWhereException("Event with the corresponding id is not a command invocation.");
@@ -99,36 +99,39 @@ public class CommandInvocations extends RestControllerBase {
 	MarshaledDeviceCommandInvocation converted = helper.convert(invocation);
 	ISearchResults<IDeviceCommandResponse> responses = getDeviceEventManagement()
 		.listDeviceCommandInvocationResponses(found.getId());
-	return DeviceInvocationSummaryBuilder.build(converted, responses.getResults(), getDeviceManagement(),
-		getDeviceEventManagement());
+	return Response.ok(DeviceInvocationSummaryBuilder.build(converted, responses.getResults(),
+		getDeviceManagement(), getDeviceEventManagement())).build();
     }
 
     /**
      * List all responses for a command invocation.
      * 
      * @param invocationId
-     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/id/{invocationId}/responses", method = RequestMethod.GET)
+    @GET
+    @Path("/id/{invocationId}/responses")
     @ApiOperation(value = "List responses for command invocation")
-    @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IDeviceCommandResponse> listCommandInvocationResponses(
-	    @ApiParam(value = "Invocation id", required = true) @PathVariable UUID invocationId,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getDeviceEventManagement().listDeviceCommandInvocationResponses(invocationId);
+    public Response listCommandInvocationResponses(
+	    @ApiParam(value = "Invocation id", required = true) @PathParam("invocationId") UUID invocationId)
+	    throws SiteWhereException {
+	return Response.ok(getDeviceEventManagement().listDeviceCommandInvocationResponses(invocationId)).build();
     }
 
-    private IDeviceManagement getDeviceManagement() {
+    protected IDeviceManagement getDeviceManagement() {
 	return getMicroservice().getDeviceManagementApiChannel();
     }
 
-    private IDeviceManagement getCachedDeviceManagement() {
+    protected IDeviceManagement getCachedDeviceManagement() {
 	return getMicroservice().getCachedDeviceManagement();
     }
 
-    private IDeviceEventManagement getDeviceEventManagement() {
+    protected IDeviceEventManagement getDeviceEventManagement() {
 	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiChannel());
+    }
+
+    protected IInstanceManagementMicroservice<?> getMicroservice() {
+	return microservice;
     }
 }

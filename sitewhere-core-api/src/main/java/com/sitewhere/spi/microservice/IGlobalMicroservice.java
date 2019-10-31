@@ -12,8 +12,6 @@ import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 
 /**
  * Microservice that serves a global funcition in a SiteWhere instance.
- * 
- * @author Derek
  */
 public interface IGlobalMicroservice<T extends IFunctionIdentifier> extends IConfigurableMicroservice<T> {
 

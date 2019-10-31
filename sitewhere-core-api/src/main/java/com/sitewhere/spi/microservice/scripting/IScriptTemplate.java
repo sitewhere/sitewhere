@@ -9,8 +9,6 @@ package com.sitewhere.spi.microservice.scripting;
 
 /**
  * Template that provides example content for a script.
- * 
- * @author Derek
  */
 public interface IScriptTemplate {
 

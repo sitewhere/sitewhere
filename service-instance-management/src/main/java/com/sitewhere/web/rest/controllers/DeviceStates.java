@@ -10,15 +10,19 @@ package com.sitewhere.web.rest.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.sitewhere.device.marshaling.DeviceStateMarshalHelper;
 import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
+import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.DeviceStateSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
@@ -28,36 +32,51 @@ import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.state.IDeviceState;
 import com.sitewhere.spi.device.state.IDeviceStateManagement;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
-import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /*
  * Controller for device state operations.
  * 
  * @author Derek Adams
  */
-@RestController
-@SiteWhereCrossOrigin
-@RequestMapping(value = "/devicestates")
+@Path("/devicestates")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "devicestates")
-public class DeviceStates extends RestControllerBase {
+public class DeviceStates {
 
-    @RequestMapping(value = "/search", method = RequestMethod.POST)
+    @Inject
+    private IInstanceManagementMicroservice<?> microservice;
+
+    /**
+     * Search device states.
+     * 
+     * @param includeDevice
+     * @param includeDeviceType
+     * @param includeDeviceAssignment
+     * @param includeCustomer
+     * @param includeArea
+     * @param includeAsset
+     * @param includeEventDetails
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    @POST
+    @Path("/search")
     @ApiOperation(value = "List device states matching criteria")
-    @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IDeviceState> searchDeviceStates(
-	    @ApiParam(value = "Include device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
-	    @ApiParam(value = "Include device type information", required = false) @RequestParam(defaultValue = "false") boolean includeDeviceType,
-	    @ApiParam(value = "Include device assignment information", required = false) @RequestParam(defaultValue = "false") boolean includeDeviceAssignment,
-	    @ApiParam(value = "Include customer information", required = false) @RequestParam(defaultValue = "false") boolean includeCustomer,
-	    @ApiParam(value = "Include area information", required = false) @RequestParam(defaultValue = "false") boolean includeArea,
-	    @ApiParam(value = "Include asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
-	    @ApiParam(value = "Include event details", required = false) @RequestParam(defaultValue = "false") boolean includeEventDetails,
+    public Response searchDeviceStates(
+	    @ApiParam(value = "Include device information", required = false) @QueryParam("includeDevice") @DefaultValue("false") boolean includeDevice,
+	    @ApiParam(value = "Include device type information", required = false) @QueryParam("includeDeviceType") @DefaultValue("false") boolean includeDeviceType,
+	    @ApiParam(value = "Include device assignment information", required = false) @QueryParam("includeDeviceAssignment") @DefaultValue("false") boolean includeDeviceAssignment,
+	    @ApiParam(value = "Include customer information", required = false) @QueryParam("includeCustomer") @DefaultValue("false") boolean includeCustomer,
+	    @ApiParam(value = "Include area information", required = false) @QueryParam("includeArea") @DefaultValue("false") boolean includeArea,
+	    @ApiParam(value = "Include asset information", required = false) @QueryParam("includeAsset") @DefaultValue("false") boolean includeAsset,
+	    @ApiParam(value = "Include event details", required = false) @QueryParam("includeEventDetails") @DefaultValue("false") boolean includeEventDetails,
 	    @RequestBody DeviceStateSearchCriteria criteria) throws SiteWhereException {
 
 	// Perform search.
@@ -76,22 +95,26 @@ public class DeviceStates extends RestControllerBase {
 	for (IDeviceState assn : matches.getResults()) {
 	    results.add(helper.convert(assn, getAssetManagement()));
 	}
-	return new SearchResults<IDeviceState>(results, matches.getNumResults());
+	return Response.ok(new SearchResults<IDeviceState>(results, matches.getNumResults())).build();
     }
 
-    private IDeviceManagement getCachedDeviceManagement() {
+    protected IDeviceManagement getCachedDeviceManagement() {
 	return getMicroservice().getCachedDeviceManagement();
     }
 
-    private IDeviceEventManagement getDeviceEventManagement() {
+    protected IDeviceEventManagement getDeviceEventManagement() {
 	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiChannel());
     }
 
-    private IAssetManagement getAssetManagement() {
+    protected IAssetManagement getAssetManagement() {
 	return getMicroservice().getAssetManagementApiChannel();
     }
 
-    private IDeviceStateManagement getDeviceStateManagement() {
+    protected IDeviceStateManagement getDeviceStateManagement() {
 	return getMicroservice().getDeviceStateApiChannel();
+    }
+
+    protected IInstanceManagementMicroservice<?> getMicroservice() {
+	return microservice;
     }
 }

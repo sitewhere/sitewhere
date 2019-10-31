@@ -34,8 +34,6 @@ import com.sitewhere.spi.device.state.IDeviceState;
 /**
  * Configurable helper class that allows {@link DeviceState} model objects to be
  * created from {@link IDeviceState} SPI objects.
- * 
- * @author dadams
  */
 public class DeviceStateMarshalHelper {
 

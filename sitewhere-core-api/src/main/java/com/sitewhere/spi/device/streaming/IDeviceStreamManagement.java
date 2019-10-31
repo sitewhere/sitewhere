@@ -16,8 +16,6 @@ import com.sitewhere.spi.search.ISearchResults;
 
 /**
  * Interface for device stream management operations.
- * 
- * @author Derek
  */
 public interface IDeviceStreamManagement {
 

@@ -24,8 +24,6 @@ import io.prometheus.client.Histogram;
 
 /**
  * Base class for implementing {@link ITenantEngineLifecycleComponent}.
- * 
- * @author Derek
  */
 public abstract class TenantEngineLifecycleComponent extends LifecycleComponent
 	implements ITenantEngineLifecycleComponent {

@@ -10,7 +10,7 @@ package com.sitewhere.persistence;
 import java.util.Date;
 import java.util.UUID;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.sitewhere.rest.model.common.BrandedEntity;
 import com.sitewhere.rest.model.common.MetadataProvider;
@@ -24,8 +24,6 @@ import com.sitewhere.spi.error.ErrorLevel;
 
 /**
  * Common methods needed by device service provider implementations.
- * 
- * @author Derek
  */
 public class Persistence {
 

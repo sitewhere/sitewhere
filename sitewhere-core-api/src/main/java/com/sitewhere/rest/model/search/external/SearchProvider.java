@@ -11,8 +11,6 @@ import com.sitewhere.spi.search.ISearchProvider;
 
 /**
  * Implementation of {@link ISearchProvider} used for marshaling.
- * 
- * @author Derek
  */
 public class SearchProvider {
 

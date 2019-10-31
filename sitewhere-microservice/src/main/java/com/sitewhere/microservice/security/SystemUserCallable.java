@@ -11,8 +11,6 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IMicroservice;
@@ -55,19 +53,23 @@ public abstract class SystemUserCallable<V> implements Callable<V> {
      */
     @Override
     public V call() throws Exception {
-	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
-	try {
-	    if (tenant != null) {
-		Authentication system = getMicroservice().getSystemUser().getAuthenticationForTenant(getTenant());
-		SecurityContextHolder.getContext().setAuthentication(system);
-	    } else {
-		Authentication system = getMicroservice().getSystemUser().getAuthentication();
-		SecurityContextHolder.getContext().setAuthentication(system);
-	    }
-	    return runAsSystemUser();
-	} finally {
-	    SecurityContextHolder.getContext().setAuthentication(previous);
-	}
+	// Authentication previous =
+	// SecurityContextHolder.getContext().getAuthentication();
+	// try {
+	// if (tenant != null) {
+	// Authentication system =
+	// getMicroservice().getSystemUser().getAuthenticationForTenant(getTenant());
+	// SecurityContextHolder.getContext().setAuthentication(system);
+	// } else {
+	// Authentication system =
+	// getMicroservice().getSystemUser().getAuthentication();
+	// SecurityContextHolder.getContext().setAuthentication(system);
+	// }
+	// return runAsSystemUser();
+	// } finally {
+	// SecurityContextHolder.getContext().setAuthentication(previous);
+	// }
+	return runAsSystemUser();
     }
 
     protected IMicroservice<?> getMicroservice() {

@@ -12,8 +12,6 @@ import java.util.Map;
 
 /**
  * Entity used to resolve a microservice configuration model.
- * 
- * @author Derek
  */
 public interface IConfigurationModelProvider {
 

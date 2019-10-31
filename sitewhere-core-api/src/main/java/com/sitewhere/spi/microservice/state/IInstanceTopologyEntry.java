@@ -11,8 +11,6 @@ import java.util.Map;
 
 /**
  * Entry that contains all microservices for a given module identifier.
- * 
- * @author Derek
  */
 public interface IInstanceTopologyEntry {
 

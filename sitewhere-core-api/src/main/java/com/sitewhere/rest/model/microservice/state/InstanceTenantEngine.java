@@ -12,8 +12,6 @@ import com.sitewhere.spi.microservice.state.ITenantEngineState;
 
 /**
  * Model object for a tenant engine represented in the instance topology.
- * 
- * @author Derek
  */
 public class InstanceTenantEngine implements IInstanceTenantEngine {
 

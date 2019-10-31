@@ -10,18 +10,24 @@ package com.sitewhere.web.rest.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
+import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.rest.model.scheduling.request.ScheduledJobCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
@@ -31,29 +37,30 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
-import com.sitewhere.web.rest.RestControllerBase;
 import com.sitewhere.web.rest.marshaling.ScheduledJobMarshalHelper;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for scheduled jobs.
  * 
  * @author Derek Adams
  */
-@RestController
-@SiteWhereCrossOrigin
-@RequestMapping(value = "/jobs")
+@Path("/jobs")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "jobs")
-public class ScheduledJobs extends RestControllerBase {
+public class ScheduledJobs {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
     private static Log LOGGER = LogFactory.getLog(ScheduledJobs.class);
+
+    @Inject
+    private IInstanceManagementMicroservice<?> microservice;
 
     /**
      * Create a new scheduled job.
@@ -63,20 +70,25 @@ public class ScheduledJobs extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.POST)
+    @POST
     @ApiOperation(value = "Create new scheduled job")
-    @Secured({ SiteWhereRoles.REST })
-    public IScheduledJob createScheduledJob(@RequestBody ScheduledJobCreateRequest request,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getScheduleManagement().createScheduledJob(request);
+    public Response createScheduledJob(@RequestBody ScheduledJobCreateRequest request) throws SiteWhereException {
+	return Response.ok(getScheduleManagement().createScheduledJob(request)).build();
     }
 
-    @RequestMapping(value = "/{token}", method = RequestMethod.GET)
+    /**
+     * Get scheduled job by token.
+     * 
+     * @param token
+     * @return
+     * @throws SiteWhereException
+     */
+    @GET
+    @Path("/{token}")
     @ApiOperation(value = "Get scheduled job by token")
-    @Secured({ SiteWhereRoles.REST })
-    public IScheduledJob getScheduledJobByToken(@ApiParam(value = "Token", required = true) @PathVariable String token,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getScheduleManagement().getScheduledJobByToken(token);
+    public Response getScheduledJobByToken(@ApiParam(value = "Token", required = true) @PathParam("token") String token)
+	    throws SiteWhereException {
+	return Response.ok(getScheduleManagement().getScheduledJobByToken(token)).build();
     }
 
     /**
@@ -84,17 +96,15 @@ public class ScheduledJobs extends RestControllerBase {
      * 
      * @param request
      * @param token
-     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}", method = RequestMethod.PUT)
+    @PUT
+    @Path("/{token}")
     @ApiOperation(value = "Update existing scheduled job")
-    @Secured({ SiteWhereRoles.REST })
-    public IScheduledJob updateScheduledJob(@RequestBody ScheduledJobCreateRequest request,
-	    @ApiParam(value = "Token", required = true) @PathVariable String token, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
-	return getScheduleManagement().updateScheduledJob(token, request);
+    public Response updateScheduledJob(@RequestBody ScheduledJobCreateRequest request,
+	    @ApiParam(value = "Token", required = true) @PathParam("token") String token) throws SiteWhereException {
+	return Response.ok(getScheduleManagement().updateScheduledJob(token, request)).build();
     }
 
     /**
@@ -103,22 +113,20 @@ public class ScheduledJobs extends RestControllerBase {
      * @param includeContext
      * @param page
      * @param pageSize
-     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.GET)
+    @GET
     @ApiOperation(value = "List scheduled jobs matching criteria")
-    @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IScheduledJob> listScheduledJobs(
-	    @ApiParam(value = "Include context information", required = false) @RequestParam(defaultValue = "false") boolean includeContext,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+    public Response listScheduledJobs(
+	    @ApiParam(value = "Include context information", required = false) @QueryParam("includeContext") @DefaultValue("false") boolean includeContext,
+	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+	    throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<IScheduledJob> results = getScheduleManagement().listScheduledJobs(criteria);
 	if (!includeContext) {
-	    return results;
+	    return Response.ok(results).build();
 	} else {
 	    List<IScheduledJob> converted = new ArrayList<IScheduledJob>();
 	    ScheduledJobMarshalHelper helper = new ScheduledJobMarshalHelper(getScheduleManagement(),
@@ -126,7 +134,7 @@ public class ScheduledJobs extends RestControllerBase {
 	    for (IScheduledJob job : results.getResults()) {
 		converted.add(helper.convert(job));
 	    }
-	    return new SearchResults<IScheduledJob>(converted, results.getNumResults());
+	    return Response.ok(new SearchResults<IScheduledJob>(converted, results.getNumResults())).build();
 	}
     }
 
@@ -137,23 +145,27 @@ public class ScheduledJobs extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
+    @DELETE
+    @Path("/{token}")
     @ApiOperation(value = "Delete scheduled job")
-    @Secured({ SiteWhereRoles.REST })
-    public IScheduledJob deleteScheduledJob(@ApiParam(value = "Token", required = true) @PathVariable String token)
+    public Response deleteScheduledJob(@ApiParam(value = "Token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
-	return getScheduleManagement().deleteScheduledJob(token);
+	return Response.ok(getScheduleManagement().deleteScheduledJob(token)).build();
     }
 
     protected IScheduleManagement getScheduleManagement() {
 	return getMicroservice().getScheduleManagementApiChannel();
     }
 
-    private IDeviceManagement getCachedDeviceManagement() {
+    protected IDeviceManagement getCachedDeviceManagement() {
 	return getMicroservice().getCachedDeviceManagement();
     }
 
-    private IAssetManagement getCachedAssetManagement() {
+    protected IAssetManagement getCachedAssetManagement() {
 	return getMicroservice().getCachedAssetManagement();
+    }
+
+    protected IInstanceManagementMicroservice<?> getMicroservice() {
+	return microservice;
     }
 }

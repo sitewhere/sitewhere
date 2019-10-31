@@ -9,8 +9,6 @@ package com.sitewhere.spi.server.lifecycle;
 
 /**
  * Enumerates types of components in the system.
- * 
- * @author Derek
  */
 public enum LifecycleComponentType {
 

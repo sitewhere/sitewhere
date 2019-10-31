@@ -11,8 +11,6 @@ import java.util.List;
 
 /**
  * Offers operations for a hierarchy of nested lifecycle components.
- * 
- * @author Derek
  */
 public interface ILifecycleHierarchyRoot {
 

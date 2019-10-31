@@ -15,8 +15,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 /**
  * Implementaton of {@link ILifecycleStep} that starts a single component as a
  * nested component of an owning lifecycle component.
- * 
- * @author Derek
  */
 public class StartComponentLifecycleStep extends ComponentOperationLifecycleStep {
 

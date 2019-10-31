@@ -18,8 +18,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 /**
  * Resolves parameter values that contain variables that should be substituted
  * at runtime.
- * 
- * @author Derek
  */
 public class ValueResolver {
 

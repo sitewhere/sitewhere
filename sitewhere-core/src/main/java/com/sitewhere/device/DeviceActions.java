@@ -27,8 +27,6 @@ import com.sitewhere.spi.search.ISearchResults;
 /**
  * Handles underlying logic to make common actions simpler to invoke from
  * scripts.
- * 
- * @author Derek
  */
 public class DeviceActions implements IDeviceActions {
 

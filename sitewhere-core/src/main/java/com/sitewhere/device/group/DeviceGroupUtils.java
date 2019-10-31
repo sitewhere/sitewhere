@@ -31,8 +31,6 @@ import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 
 /**
  * Utility methods for maniupulating device groups.
- * 
- * @author Derek
  */
 public class DeviceGroupUtils {
 

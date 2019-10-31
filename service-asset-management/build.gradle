@@ -5,34 +5,8 @@ dependencies {
 	compile project(':sitewhere-mongodb')
 	compile project(':sitewhere-microservice')
 	compile project(':sitewhere-grpc-client')
-	
-	// REST template for SCIM access.
-    compile group: 'org.springframework', name: 'spring-web'
+
     compile group: 'org.apache.httpcomponents', name: 'httpclient'
-	
-	// WSO2 dependencies.
-    compile group: 'com.google.code.ksoap2-android', name: 'ksoap2-android', version:'3.4.0'
-    compile group: 'com.google.code.ksoap2-android', name: 'ksoap2-j2se', version:'3.4.0'
-    compile group: 'com.google.code.ksoap2-android', name: 'ksoap2-extras', version:'3.4.0'
-}
-
-license {
-	exclude "**/modules/wso2/**"
-}
-
-apply plugin: 'org.springframework.boot'
-springBoot {
-    mainClassName = 'com.sitewhere.asset.AssetManagementApplication'
-}
-
-// Keep original jar.
-jar {
-	enabled = true
-}
-
-// Reclassify Spring Boot jar.
-bootJar {
-	classifier = 'boot'
 }
 
 // Only publish thin jar.
@@ -46,15 +20,15 @@ publishing {
 }
 
 // Create a Dockerfile.
-task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: bootJar) {
+task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: jar) {
     destFile = project.file('build/docker/Dockerfile')
     from "${rootProject.ext['docker.base.image']}"
 	instruction "LABEL maintainer=${rootProject.ext['docker.maintainer']}"
 	
 	instruction "RUN wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.2.2/grpc_health_probe-linux-amd64 && chmod +x /bin/grpc_health_probe"
 		
-	// Copy Spring Boot jar.
-	copyFile("${project.name}-${project.version}-boot.jar", "/")
+	// Copy jar.
+	copyFile("${project.name}-${project.version}.jar", "/")
 			
 	if(!project.hasProperty("debug")) {
 		defaultCommand 'java', '-server', '-Xmx512M', '-Xss384K', '-jar', "/${project.name}-${project.version}-boot.jar"	

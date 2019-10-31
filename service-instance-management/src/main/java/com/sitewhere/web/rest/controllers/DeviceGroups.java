@@ -11,25 +11,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.device.marshaling.DeviceGroupElementMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceGroupMarshalHelper;
+import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceGroupElementCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
@@ -47,41 +49,41 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.label.ILabel;
 import com.sitewhere.spi.label.ILabelGeneration;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
-import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for device group operations.
  * 
  * @author Derek Adams
  */
-@RestController
-@SiteWhereCrossOrigin
-@RequestMapping(value = "/devicegroups")
+@Path("/devicegroups")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "devicegroups")
-public class DeviceGroups extends RestControllerBase {
+public class DeviceGroups {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
     private static Log LOGGER = LogFactory.getLog(DeviceGroups.class);
+
+    @Inject
+    private IInstanceManagementMicroservice<?> microservice;
 
     /**
      * Create a device group.
      * 
      * @param request
      * @return
+     * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.POST)
+    @POST
     @ApiOperation(value = "Create new device group")
-    @Secured({ SiteWhereRoles.REST })
-    public IDeviceGroup createDeviceGroup(@RequestBody DeviceGroupCreateRequest request,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return getDeviceManagement().createDeviceGroup(request);
+    public Response createDeviceGroup(@RequestBody DeviceGroupCreateRequest request) throws SiteWhereException {
+	return Response.ok(getDeviceManagement().createDeviceGroup(request)).build();
     }
 
     /**
@@ -91,13 +93,13 @@ public class DeviceGroups extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{groupToken}", method = RequestMethod.GET)
+    @GET
+    @Path("/{groupToken}")
     @ApiOperation(value = "Get a device group by unique token")
-    @Secured({ SiteWhereRoles.REST })
-    public IDeviceGroup getDeviceGroupByToken(
-	    @ApiParam(value = "Unique token that identifies group", required = true) @PathVariable String groupToken,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
-	return assureDeviceGroup(groupToken);
+    public Response getDeviceGroupByToken(
+	    @ApiParam(value = "Unique token that identifies group", required = true) @PathParam("groupToken") String groupToken)
+	    throws SiteWhereException {
+	return Response.ok(assureDeviceGroup(groupToken)).build();
     }
 
     /**
@@ -108,15 +110,14 @@ public class DeviceGroups extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{groupToken}", method = RequestMethod.PUT)
+    @PUT
+    @Path("/{groupToken}")
     @ApiOperation(value = "Update an existing device group")
-    @Secured({ SiteWhereRoles.REST })
-    public IDeviceGroup updateDeviceGroup(
-	    @ApiParam(value = "Device group token", required = true) @PathVariable String groupToken,
-	    @RequestBody DeviceGroupCreateRequest request, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
+    public Response updateDeviceGroup(
+	    @ApiParam(value = "Device group token", required = true) @PathParam("groupToken") String groupToken,
+	    @RequestBody DeviceGroupCreateRequest request) throws SiteWhereException {
 	IDeviceGroup group = assureDeviceGroup(groupToken);
-	return getDeviceManagement().updateDeviceGroup(group.getId(), request);
+	return Response.ok(getDeviceManagement().updateDeviceGroup(group.getId(), request)).build();
     }
 
     /**
@@ -124,25 +125,23 @@ public class DeviceGroups extends RestControllerBase {
      * 
      * @param groupToken
      * @param generatorId
-     * @param servletRequest
-     * @param response
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{groupToken}/label/{generatorId}", method = RequestMethod.GET)
+    @GET
+    @Path("/{groupToken}/label/{generatorId}")
+    @Produces("image/png")
     @ApiOperation(value = "Get label for area")
-    public ResponseEntity<byte[]> getDeviceGroupLabel(
-	    @ApiParam(value = "Device group token", required = true) @PathVariable String groupToken,
-	    @ApiParam(value = "Generator id", required = true) @PathVariable String generatorId,
-	    HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
+    public Response getDeviceGroupLabel(
+	    @ApiParam(value = "Device group token", required = true) @PathParam("groupToken") String groupToken,
+	    @ApiParam(value = "Generator id", required = true) @PathParam("generatorId") String generatorId)
+	    throws SiteWhereException {
 	IDeviceGroup group = assureDeviceGroup(groupToken);
 	ILabel label = getLabelGeneration().getDeviceGroupLabel(generatorId, group.getId());
 	if (label == null) {
-	    return ResponseEntity.notFound().build();
+	    return Response.status(Status.NOT_FOUND).build();
 	}
-	final HttpHeaders headers = new HttpHeaders();
-	headers.setContentType(MediaType.IMAGE_PNG);
-	return new ResponseEntity<byte[]>(label.getContent(), headers, HttpStatus.OK);
+	return Response.ok(label.getContent()).build();
     }
 
     /**
@@ -152,14 +151,14 @@ public class DeviceGroups extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{groupToken}", method = RequestMethod.DELETE)
+    @DELETE
+    @Path("/{groupToken}")
     @ApiOperation(value = "Delete device group by unique token")
-    @Secured({ SiteWhereRoles.REST })
-    public IDeviceGroup deleteDeviceGroup(
-	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken)
+    public Response deleteDeviceGroup(
+	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathParam("groupToken") String groupToken)
 	    throws SiteWhereException {
 	IDeviceGroup group = assureDeviceGroup(groupToken);
-	return getDeviceManagement().deleteDeviceGroup(group.getId());
+	return Response.ok(getDeviceManagement().deleteDeviceGroup(group.getId())).build();
     }
 
     /**
@@ -168,18 +167,15 @@ public class DeviceGroups extends RestControllerBase {
      * @param role
      * @param page
      * @param pageSize
-     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.GET)
+    @GET
     @ApiOperation(value = "List device groups that match criteria")
-    @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IDeviceGroup> listDeviceGroups(
-	    @ApiParam(value = "Role", required = false) @RequestParam(required = false) String role,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+    public Response listDeviceGroups(@ApiParam(value = "Role", required = false) @QueryParam("role") String role,
+	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+	    throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<IDeviceGroup> results;
 	if (role == null) {
@@ -192,27 +188,28 @@ public class DeviceGroups extends RestControllerBase {
 	for (IDeviceGroup group : results.getResults()) {
 	    groupsConv.add(helper.convert(group));
 	}
-	return new SearchResults<IDeviceGroup>(groupsConv, results.getNumResults());
+	return Response.ok(new SearchResults<IDeviceGroup>(groupsConv, results.getNumResults())).build();
     }
 
     /**
      * List elements from a device group that meet the given criteria.
      * 
      * @param groupToken
+     * @param includeDetails
      * @param page
      * @param pageSize
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{groupToken}/elements", method = RequestMethod.GET)
+    @GET
+    @Path("/{groupToken}/elements")
     @ApiOperation(value = "List elements in a device group")
-    @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IDeviceGroupElement> listDeviceGroupElements(
-	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
-	    @ApiParam(value = "Include detailed element information", required = false) @RequestParam(defaultValue = "false") boolean includeDetails,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
-	    HttpServletRequest servletRequest) throws SiteWhereException {
+    public Response listDeviceGroupElements(
+	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathParam("groupToken") String groupToken,
+	    @ApiParam(value = "Include detailed element information", required = false) @QueryParam("includeDetails") @DefaultValue("false") boolean includeDetails,
+	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+	    throws SiteWhereException {
 	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getCachedDeviceManagement())
 		.setIncludeDetails(includeDetails);
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
@@ -224,7 +221,7 @@ public class DeviceGroups extends RestControllerBase {
 	for (IDeviceGroupElement elm : results.getResults()) {
 	    elmConv.add(helper.convert(elm, getCachedAssetManagement()));
 	}
-	return new SearchResults<IDeviceGroupElement>(elmConv, results.getNumResults());
+	return Response.ok(new SearchResults<IDeviceGroupElement>(elmConv, results.getNumResults())).build();
     }
 
     /**
@@ -235,14 +232,13 @@ public class DeviceGroups extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
+    @POST
+    @Path("/{groupToken}/elements")
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "/{groupToken}/elements", method = RequestMethod.POST)
     @ApiOperation(value = "Add elements to device group")
-    @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IDeviceGroupElement> addDeviceGroupElements(
-	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
-	    @RequestBody List<DeviceGroupElementCreateRequest> request, HttpServletRequest servletRequest)
-	    throws SiteWhereException {
+    public Response addDeviceGroupElements(
+	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathParam("groupToken") String groupToken,
+	    @RequestBody List<DeviceGroupElementCreateRequest> request) throws SiteWhereException {
 	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getCachedDeviceManagement())
 		.setIncludeDetails(false);
 	List<IDeviceGroupElementCreateRequest> elements = (List<IDeviceGroupElementCreateRequest>) (List<? extends IDeviceGroupElementCreateRequest>) request;
@@ -256,7 +252,7 @@ public class DeviceGroups extends RestControllerBase {
 	for (IDeviceGroupElement elm : results) {
 	    converted.add(helper.convert(elm, getCachedAssetManagement()));
 	}
-	return new SearchResults<IDeviceGroupElement>(converted);
+	return Response.ok(new SearchResults<IDeviceGroupElement>(converted)).build();
     }
 
     /**
@@ -288,20 +284,20 @@ public class DeviceGroups extends RestControllerBase {
      * Delete a single device group element.
      * 
      * @param groupToken
-     * @param type
      * @param elementId
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{groupToken}/elements/{elementId}", method = RequestMethod.DELETE)
+    @DELETE
+    @Path("/{groupToken}/elements/{elementId}")
     @ApiOperation(value = "Delete elements from device group")
-    @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IDeviceGroupElement> deleteDeviceGroupElement(
-	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
-	    @ApiParam(value = "Element id", required = true) @PathVariable UUID elementId) throws SiteWhereException {
+    public Response deleteDeviceGroupElement(
+	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathParam("groupToken") String groupToken,
+	    @ApiParam(value = "Element id", required = true) @PathParam("elementId") UUID elementId)
+	    throws SiteWhereException {
 	List<UUID> elements = new ArrayList<>();
 	elements.add(elementId);
-	return deleteDeviceGroupElements(groupToken, elements);
+	return Response.ok(deleteDeviceGroupElements(groupToken, elements)).build();
     }
 
     /**
@@ -312,11 +308,11 @@ public class DeviceGroups extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{groupToken}/elements", method = RequestMethod.DELETE)
+    @DELETE
+    @Path("/{groupToken}/elements")
     @ApiOperation(value = "Delete elements from device group")
-    @Secured({ SiteWhereRoles.REST })
-    public ISearchResults<IDeviceGroupElement> deleteDeviceGroupElements(
-	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
+    public Response deleteDeviceGroupElements(
+	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathParam("groupToken") String groupToken,
 	    @RequestBody List<UUID> elementIds) throws SiteWhereException {
 	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getCachedDeviceManagement())
 		.setIncludeDetails(false);
@@ -326,7 +322,7 @@ public class DeviceGroups extends RestControllerBase {
 	for (IDeviceGroupElement elm : results) {
 	    converted.add(helper.convert(elm, getCachedAssetManagement()));
 	}
-	return new SearchResults<IDeviceGroupElement>(converted);
+	return Response.ok(new SearchResults<IDeviceGroupElement>(converted)).build();
     }
 
     /**
@@ -344,19 +340,23 @@ public class DeviceGroups extends RestControllerBase {
 	return group;
     }
 
-    private IDeviceManagement getDeviceManagement() {
+    protected IDeviceManagement getDeviceManagement() {
 	return getMicroservice().getDeviceManagementApiChannel();
     }
 
-    private IDeviceManagement getCachedDeviceManagement() {
+    protected IDeviceManagement getCachedDeviceManagement() {
 	return getMicroservice().getCachedDeviceManagement();
     }
 
-    private IAssetManagement getCachedAssetManagement() {
+    protected IAssetManagement getCachedAssetManagement() {
 	return getMicroservice().getCachedAssetManagement();
     }
 
-    private ILabelGeneration getLabelGeneration() {
+    protected ILabelGeneration getLabelGeneration() {
 	return getMicroservice().getLabelGenerationApiChannel();
+    }
+
+    protected IInstanceManagementMicroservice<?> getMicroservice() {
+	return microservice;
     }
 }

@@ -2,20 +2,20 @@ description = 'SiteWhere Core Library'
 
 dependencies {
     compile project(':sitewhere-core-lifecycle')
-     
-    compile group: 'org.springframework', name: 'spring-core'
-    compile group: 'org.springframework', name: 'spring-beans'
-    compile group: 'org.springframework', name: 'spring-context'
-    compile group: 'org.springframework', name: 'spring-context-support'
     
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+    compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+	
+	// Date/time conversions.
+    compile group: 'joda-time', name: 'joda-time', version:'2.9.1'
+	
+	// Jackson JSON processing.
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "${rootProject.ext['jackson.version']}"
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "${rootProject.ext['jackson.version']}"
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "${rootProject.ext['jackson.version']}"
     
-    compile group: 'commons-lang', name: 'commons-lang'
-    compile group: 'commons-collections', name: 'commons-collections'
-    compile group: 'commons-io', name: 'commons-io'
-    
+    // Retry logic.
     compile "com.evanlennick:retry4j:0.15.0"
     
     // Geolocation classes made available to scripts.

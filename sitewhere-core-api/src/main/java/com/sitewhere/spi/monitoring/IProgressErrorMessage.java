@@ -11,8 +11,6 @@ import com.sitewhere.spi.error.ErrorLevel;
 
 /**
  * Extends {@link IProgressMessage} to add error information.
- * 
- * @author Derek
  */
 public interface IProgressErrorMessage extends IProgressMessage {
 

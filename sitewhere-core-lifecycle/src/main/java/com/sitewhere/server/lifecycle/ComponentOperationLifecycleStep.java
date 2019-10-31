@@ -13,8 +13,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 /**
  * Implementation of {@link ILifecycleStep} that represents a lifecycle
  * operation on a single component.
- * 
- * @author Derek
  */
 public abstract class ComponentOperationLifecycleStep implements ILifecycleStep {
 
@@ -42,8 +40,7 @@ public abstract class ComponentOperationLifecycleStep implements ILifecycleStep 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleStep#getOperationCount()
+     * @see com.sitewhere.spi.server.lifecycle.ILifecycleStep#getOperationCount()
      */
     @Override
     public int getOperationCount() {

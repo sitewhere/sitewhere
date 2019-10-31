@@ -15,8 +15,6 @@ import com.sitewhere.spi.microservice.state.IInstanceTopologyEntry;
 
 /**
  * Entry for a microservice within the instance topology.
- * 
- * @author Derek
  */
 public class InstanceTopologyEntry implements IInstanceTopologyEntry {
 

@@ -1,17 +1,12 @@
 description = 'SiteWhere Common Microservice Library'
 
-configurations {
-    compile.exclude module: 'spring-boot-autoconfigure'
-}
-
 dependencies {
-	compile ('org.springframework.boot:spring-boot-starter')
-	
-	// Should be removed after properties have been migrated.
-	compile ('org.springframework.boot:spring-boot-properties-migrator:2.0.0.RELEASE')
-	
 	compile project(':sitewhere-core')
 	compile project(':sitewhere-configuration')
+	
+	// Quarkus dependencies.
+    compile enforcedPlatform('io.quarkus:quarkus-bom:0.26.1')
+    compile 'io.quarkus:quarkus-kubernetes-client'
 	
 	// GRPC dependencies.
 	compile project(':sitewhere-grpc-client')

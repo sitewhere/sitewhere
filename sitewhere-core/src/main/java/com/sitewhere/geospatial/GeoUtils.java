@@ -20,8 +20,6 @@ import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * Utility functions for dealing with geographic information.
- * 
- * @author Derek
  */
 public class GeoUtils {
 

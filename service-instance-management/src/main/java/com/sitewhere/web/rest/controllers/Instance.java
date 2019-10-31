@@ -7,25 +7,26 @@
  */
 package com.sitewhere.web.rest.controllers;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 import org.w3c.dom.Document;
 
 import com.sitewhere.configuration.ConfigurationContentParser;
 import com.sitewhere.configuration.content.ElementContent;
 import com.sitewhere.grpc.client.microservice.MicroserviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IMicroserviceManagementApiChannel;
+import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.scripting.ScriptCloneRequest;
 import com.sitewhere.microservice.scripting.ScriptCreateRequest;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
@@ -36,20 +37,11 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.grpc.GrpcServiceIdentifier;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.microservice.scripting.IScriptManagement;
-import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
-import com.sitewhere.spi.microservice.scripting.IScriptTemplate;
-import com.sitewhere.spi.microservice.scripting.IScriptVersion;
-import com.sitewhere.spi.microservice.state.ITenantEngineState;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
-import com.sitewhere.spi.user.SiteWhereRoles;
-import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
-import com.sitewhere.web.rest.RestControllerBase;
-import com.sitewhere.web.rest.model.InstanceTopologySummary;
 
 import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
 import io.sitewhere.k8s.crd.microservice.SiteWhereMicroservice;
@@ -60,19 +52,23 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for instance management.
  */
-@RestController
-@SiteWhereCrossOrigin
-@RequestMapping(value = "/instance")
+@Path("/instance")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "instance")
-public class Instance extends RestControllerBase {
+public class Instance {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
     private static Log LOGGER = LogFactory.getLog(Instance.class);
+
+    @Inject
+    private IInstanceManagementMicroservice<?> microservice;
 
     /**
      * Get most recent instance topology (includes both global and tenant
@@ -81,11 +77,11 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/topology", method = RequestMethod.GET)
+    @GET
+    @Path("/topology")
     @ApiOperation(value = "Get current instance topology")
-    @Secured({ SiteWhereRoles.REST })
-    public List<InstanceTopologySummary> getInstanceTopology() throws SiteWhereException {
-	return null;
+    public Response getInstanceTopology() throws SiteWhereException {
+	return Response.ok().build();
     }
 
     /**
@@ -94,11 +90,11 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/topology/global", method = RequestMethod.GET)
+    @GET
+    @Path("/topology/global")
     @ApiOperation(value = "Get global microservices in current instance topology")
-    @Secured({ SiteWhereRoles.REST })
-    public List<InstanceTopologySummary> getGlobalInstanceTopology() throws SiteWhereException {
-	return null;
+    public Response getGlobalInstanceTopology() throws SiteWhereException {
+	return Response.ok().build();
     }
 
     /**
@@ -107,11 +103,11 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/topology/tenant", method = RequestMethod.GET)
+    @GET
+    @Path("/topology/tenant")
     @ApiOperation(value = "Get tenant microservices in current instance topology")
-    @Secured({ SiteWhereRoles.REST })
-    public List<InstanceTopologySummary> getTenantInstanceTopology() throws SiteWhereException {
-	return null;
+    public Response getTenantInstanceTopology() throws SiteWhereException {
+	return Response.ok().build();
     }
 
     /**
@@ -119,18 +115,18 @@ public class Instance extends RestControllerBase {
      * (across all microservice instances) for a given tenant id.
      * 
      * @param identifier
-     * @param tenantId
+     * @param tenantToken
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/state", method = RequestMethod.GET)
+    @GET
+    @Path("/microservice/{identifier}/tenants/{tenantToken}/state")
     @ApiOperation(value = "Get state information for specific tenant engine across all microservice instances")
-    @Secured({ SiteWhereRoles.REST })
-    public List<ITenantEngineState> getMicroserviceTenantRuntimeState(
-	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
-	    @ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken)
+    public Response getMicroserviceTenantRuntimeState(
+	    @ApiParam(value = "Service identifier", required = true) @PathParam("identifier") String identifier,
+	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken)
 	    throws SiteWhereException {
-	return null;
+	return Response.ok().build();
     }
 
     /**
@@ -140,16 +136,16 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/microservice/{identifier}/configuration/model", method = RequestMethod.GET)
+    @GET
+    @Path("/microservice/{identifier}/configuration/model")
     @ApiOperation(value = "Get configuration model based on service identifier")
-    @Secured({ SiteWhereRoles.REST })
-    public IConfigurationModel getMicroserviceConfigurationModel(
-	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier)
+    public Response getMicroserviceConfigurationModel(
+	    @ApiParam(value = "Service identifier", required = true) @PathParam("identifier") String identifier)
 	    throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
 	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
 	try {
-	    return management.getConfigurationModel();
+	    return Response.ok(management.getConfigurationModel()).build();
 	} finally {
 	    releaseChannel(management);
 	}
@@ -162,15 +158,21 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/microservice/{identifier}/configuration", method = RequestMethod.GET)
+    @GET
+    @Path("/microservice/{identifier}/configuration")
     @ApiOperation(value = "Get global configuration based on service identifier")
-    @Secured({ SiteWhereRoles.REST })
-    public ElementContent getInstanceConfiguration(
-	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier)
+    public Response getInstanceConfiguration(
+	    @ApiParam(value = "Service identifier", required = true) @PathParam("identifier") String identifier)
 	    throws SiteWhereException {
-	IConfigurationModel configModel = getMicroserviceConfigurationModel(identifier);
-	SiteWhereInstance instance = getMicroservice().getLastInstanceConfiguration();
-	return ConfigurationContentParser.parse(instance.getSpec().getConfiguration().getBytes(), configModel);
+	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
+	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
+	try {
+	    SiteWhereInstance instance = getMicroservice().getLastInstanceConfiguration();
+	    return Response.ok(ConfigurationContentParser.parse(instance.getSpec().getConfiguration().getBytes(),
+		    management.getConfigurationModel())).build();
+	} finally {
+	    releaseChannel(management);
+	}
     }
 
     /**
@@ -180,18 +182,23 @@ public class Instance extends RestControllerBase {
      * @param content
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/microservice/{identifier}/configuration", method = RequestMethod.POST)
+    @POST
+    @Path("/microservice/{identifier}/configuration")
     @ApiOperation(value = "Update global configuration based on service identifier.")
-    @Secured({ SiteWhereRoles.REST })
     public void updateInstanceConfiguration(
-	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
+	    @ApiParam(value = "Service identifier", required = true) @PathParam("identifier") String identifier,
 	    @RequestBody ElementContent content) throws SiteWhereException {
-	IConfigurationModel configModel = getMicroserviceConfigurationModel(identifier);
-	Document xml = ConfigurationContentParser.buildXml(content, configModel);
-	String config = ConfigurationContentParser.format(xml);
-	SiteWhereInstance instance = getMicroservice().getLastInstanceConfiguration();
-	instance.getSpec().setConfiguration(config);
-	getMicroservice().updateInstanceConfiguration(instance);
+	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
+	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
+	try {
+	    Document xml = ConfigurationContentParser.buildXml(content, management.getConfigurationModel());
+	    String config = ConfigurationContentParser.format(xml);
+	    SiteWhereInstance instance = getMicroservice().getLastInstanceConfiguration();
+	    instance.getSpec().setConfiguration(config);
+	    getMicroservice().updateInstanceConfiguration(instance);
+	} finally {
+	    releaseChannel(management);
+	}
     }
 
     /**
@@ -202,22 +209,27 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/configuration", method = RequestMethod.GET)
+    @GET
+    @Path("/microservice/{identifier}/tenants/{tenantToken}/configuration")
     @ApiOperation(value = "Get tenant configuration based on service identifier")
-    @Secured({ SiteWhereRoles.REST })
-    public ElementContent getTenantEngineConfiguration(
-	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
-	    @ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken)
+    public Response getTenantEngineConfiguration(
+	    @ApiParam(value = "Service identifier", required = true) @PathParam("identifier") String identifier,
+	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken)
 	    throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	IConfigurationModel configModel = getMicroserviceConfigurationModel(identifier);
-	SiteWhereMicroservice microservice = getMicroserviceForIdentifier(msid);
-	SiteWhereTenant tenant = getTenantForToken(tenantToken);
-	SiteWhereTenantEngine engine = getMicroservice().getTenantEngineConfiguration(tenant, microservice);
-	if (engine == null) {
-	    throw new SiteWhereException("No tenant engine found for tenant/microservice combination.");
+	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
+	try {
+	    SiteWhereMicroservice microservice = getMicroserviceForIdentifier(msid);
+	    SiteWhereTenant tenant = getTenantForToken(tenantToken);
+	    SiteWhereTenantEngine engine = getMicroservice().getTenantEngineConfiguration(tenant, microservice);
+	    if (engine == null) {
+		throw new SiteWhereException("No tenant engine found for tenant/microservice combination.");
+	    }
+	    return Response.ok(ConfigurationContentParser.parse(engine.getSpec().getConfiguration().getBytes(),
+		    management.getConfigurationModel())).build();
+	} finally {
+	    releaseChannel(management);
 	}
-	return ConfigurationContentParser.parse(engine.getSpec().getConfiguration().getBytes(), configModel);
     }
 
     /**
@@ -228,24 +240,28 @@ public class Instance extends RestControllerBase {
      * @param content
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/configuration", method = RequestMethod.POST)
+    @POST
+    @Path("/microservice/{identifier}/tenants/{tenantToken}/configuration")
     @ApiOperation(value = "Update global configuration based on service identifier.")
-    @Secured({ SiteWhereRoles.REST })
     public void updateTenantEngineConfiguration(
-	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
-	    @ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken,
+	    @ApiParam(value = "Service identifier", required = true) @PathParam("identifier") String identifier,
+	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
 	    @RequestBody ElementContent content) throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	IConfigurationModel configModel = getMicroserviceConfigurationModel(identifier);
-	SiteWhereMicroservice microservice = getMicroserviceForIdentifier(msid);
-	SiteWhereTenant tenant = getTenantForToken(tenantToken);
-	SiteWhereTenantEngine engine = getMicroservice().getTenantEngineConfiguration(tenant, microservice);
-	Document xml = ConfigurationContentParser.buildXml(content, configModel);
-	String config = ConfigurationContentParser.format(xml);
-	if (engine == null) {
-	    throw new SiteWhereException("No tenant engine found for tenant/microservice combination.");
+	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
+	try {
+	    SiteWhereMicroservice microservice = getMicroserviceForIdentifier(msid);
+	    SiteWhereTenant tenant = getTenantForToken(tenantToken);
+	    SiteWhereTenantEngine engine = getMicroservice().getTenantEngineConfiguration(tenant, microservice);
+	    Document xml = ConfigurationContentParser.buildXml(content, management.getConfigurationModel());
+	    String config = ConfigurationContentParser.format(xml);
+	    if (engine == null) {
+		throw new SiteWhereException("No tenant engine found for tenant/microservice combination.");
+	    }
+	    getMicroservice().setTenantEngineConfiguration(tenant, microservice, config);
+	} finally {
+	    releaseChannel(management);
 	}
-	getMicroservice().setTenantEngineConfiguration(tenant, microservice, config);
     }
 
     /**
@@ -255,13 +271,13 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/microservice/{identifier}/scripting/templates", method = RequestMethod.GET)
+    @GET
+    @Path("/microservice/{identifier}/scripting/templates")
     @ApiOperation(value = "Get list of script templates for a given microservice")
-    @Secured({ SiteWhereRoles.REST })
-    public List<IScriptTemplate> getScriptTemplates(
-	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier)
+    public Response getScriptTemplates(
+	    @ApiParam(value = "Service identifier", required = true) @PathParam("identifier") String identifier)
 	    throws SiteWhereException {
-	return null;
+	return Response.ok().build();
     }
 
     /**
@@ -272,12 +288,12 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/microservice/{identifier}/scripting/templates/{templateId}", method = RequestMethod.GET)
+    @GET
+    @Path("/microservice/{identifier}/scripting/templates/{templateId}")
     @ApiOperation(value = "Get list of script templates for a given microservice")
-    @Secured({ SiteWhereRoles.REST })
-    public ResponseEntity<byte[]> getScriptTemplateContent(
-	    @ApiParam(value = "Service identifier", required = true) @PathVariable String identifier,
-	    @ApiParam(value = "Template id", required = true) @PathVariable String templateId)
+    public Response getScriptTemplateContent(
+	    @ApiParam(value = "Service identifier", required = true) @PathParam("identifier") String identifier,
+	    @ApiParam(value = "Template id", required = true) @PathParam("templateId") String templateId)
 	    throws SiteWhereException {
 	return null;
     }
@@ -285,18 +301,18 @@ public class Instance extends RestControllerBase {
     /**
      * Get a list of global script metadata.
      * 
-     * @param functionIdentifier
+     * @param identifier
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/microservice/{identifier}/scripting/scripts", method = RequestMethod.GET)
+    @GET
+    @Path("/microservice/{identifier}/scripting/scripts")
     @ApiOperation(value = "Get list of global script metadata")
-    @Secured({ SiteWhereRoles.REST })
-    public List<IScriptMetadata> listGlobalScriptMetadata(
-	    @ApiParam(value = "Function identifier", required = true) @PathVariable String identifier)
+    public Response listGlobalScriptMetadata(
+	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier)
 	    throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return getScriptManagement().getScriptMetadataList(msid, null);
+	return Response.ok(getScriptManagement().getScriptMetadataList(msid, null)).build();
     }
 
     /**
@@ -307,14 +323,15 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/microservice/{identifier}/scripting/scripts/{scriptId}", method = RequestMethod.GET)
+    @GET
+    @Path("/microservice/{identifier}/scripting/scripts/{scriptId}")
     @ApiOperation(value = "Get metadata for a tenant script based on unique script id")
-    @Secured({ SiteWhereRoles.REST })
-    public IScriptMetadata getGlobalScriptMetadata(
-	    @ApiParam(value = "Function identifier", required = true) @PathVariable String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId) throws SiteWhereException {
+    public Response getGlobalScriptMetadata(
+	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
+	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId)
+	    throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return getScriptManagement().getScriptMetadata(msid, null, scriptId);
+	return Response.ok(getScriptManagement().getScriptMetadata(msid, null, scriptId)).build();
     }
 
     /**
@@ -325,14 +342,14 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/microservice/{identifier}/scripting/scripts", method = RequestMethod.POST)
+    @POST
+    @Path("/microservice/{identifier}/scripting/scripts")
     @ApiOperation(value = "Create a new global script")
-    @Secured({ SiteWhereRoles.REST })
-    public IScriptMetadata createGlobalScript(
-	    @ApiParam(value = "Function identifier", required = true) @PathVariable String identifier,
+    public Response createGlobalScript(
+	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
 	    @RequestBody ScriptCreateRequest request) throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return getScriptManagement().createScript(msid, null, request);
+	return Response.ok(getScriptManagement().createScript(msid, null, request)).build();
     }
 
     /**
@@ -344,15 +361,16 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/microservice/{identifier}/scripting/scripts/{scriptId}/versions/{versionId}/content", method = RequestMethod.GET)
+    @GET
+    @Path("/microservice/{identifier}/scripting/scripts/{scriptId}/versions/{versionId}/content")
     @ApiOperation(value = "Get content for a global script based on unique script id and version id")
-    @Secured({ SiteWhereRoles.REST })
-    public String getGlobalScriptContent(
-	    @ApiParam(value = "Function identifier", required = true) @PathVariable String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId,
-	    @ApiParam(value = "Version id", required = true) @PathVariable String versionId) throws SiteWhereException {
+    public Response getGlobalScriptContent(
+	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
+	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId,
+	    @ApiParam(value = "Version id", required = true) @PathParam("versionId") String versionId)
+	    throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return new String(getScriptManagement().getScriptContent(msid, null, scriptId, versionId));
+	return Response.ok(new String(getScriptManagement().getScriptContent(msid, null, scriptId, versionId))).build();
     }
 
     /**
@@ -365,16 +383,16 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/microservice/{identifier}/scripting/scripts/{scriptId}/versions/{versionId}", method = RequestMethod.POST)
+    @POST
+    @Path("/microservice/{identifier}/scripting/scripts/{scriptId}/versions/{versionId}")
     @ApiOperation(value = "Update an existing global script")
-    @Secured({ SiteWhereRoles.REST })
-    public IScriptMetadata updateGlobalScript(
-	    @ApiParam(value = "Function identifier", required = true) @PathVariable String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId,
-	    @ApiParam(value = "Version id", required = true) @PathVariable String versionId,
+    public Response updateGlobalScript(
+	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
+	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId,
+	    @ApiParam(value = "Version id", required = true) @PathParam("versionId") String versionId,
 	    @RequestBody ScriptCreateRequest request) throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return getScriptManagement().updateScript(msid, null, scriptId, versionId, request);
+	return Response.ok(getScriptManagement().updateScript(msid, null, scriptId, versionId, request)).build();
     }
 
     /**
@@ -387,16 +405,17 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/microservice/{identifier}/scripting/scripts/{scriptId}/versions/{versionId}/clone", method = RequestMethod.POST)
+    @POST
+    @Path("/microservice/{identifier}/scripting/scripts/{scriptId}/versions/{versionId}/clone")
     @ApiOperation(value = "Clone an existing global script version to create a new version")
-    @Secured({ SiteWhereRoles.REST })
-    public IScriptVersion cloneGlobalScript(
-	    @ApiParam(value = "Function identifier", required = true) @PathVariable String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId,
-	    @ApiParam(value = "Version id", required = true) @PathVariable String versionId,
+    public Response cloneGlobalScript(
+	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
+	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId,
+	    @ApiParam(value = "Version id", required = true) @PathParam("versionId") String versionId,
 	    @RequestBody ScriptCloneRequest request) throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return getScriptManagement().cloneScript(msid, null, scriptId, versionId, request.getComment());
+	return Response.ok(getScriptManagement().cloneScript(msid, null, scriptId, versionId, request.getComment()))
+		.build();
     }
 
     /**
@@ -407,17 +426,17 @@ public class Instance extends RestControllerBase {
      * @param scriptId
      * @param versionId
      * @return
-     * @throws SiteWhereException
      */
-    @RequestMapping(value = "/microservice/{identifier}/scripting/scripts/{scriptId}/versions/{versionId}/activate", method = RequestMethod.POST)
+    @POST
+    @Path("/microservice/{identifier}/scripting/scripts/{scriptId}/versions/{versionId}/activate")
     @ApiOperation(value = "Activate a global script version")
-    @Secured({ SiteWhereRoles.REST })
-    public IScriptMetadata activateGlobalScript(
-	    @ApiParam(value = "Function identifier", required = true) @PathVariable String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId,
-	    @ApiParam(value = "Version id", required = true) @PathVariable String versionId) throws SiteWhereException {
+    public Response activateGlobalScript(
+	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
+	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId,
+	    @ApiParam(value = "Version id", required = true) @PathParam("versionId") String versionId)
+	    throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return getScriptManagement().activateScript(msid, null, scriptId, versionId);
+	return Response.ok(getScriptManagement().activateScript(msid, null, scriptId, versionId)).build();
     }
 
     /**
@@ -429,14 +448,15 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/microservice/{identifier}/scripting/scripts/{scriptId}", method = RequestMethod.DELETE)
+    @DELETE
+    @Path("/microservice/{identifier}/scripting/scripts/{scriptId}")
     @ApiOperation(value = "Delete a global script and version history")
-    @Secured({ SiteWhereRoles.REST })
-    public IScriptMetadata deleteGlobalScript(
-	    @ApiParam(value = "Function identifier", required = true) @PathVariable String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId) throws SiteWhereException {
+    public Response deleteGlobalScript(
+	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
+	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId)
+	    throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return getScriptManagement().deleteScript(msid, null, scriptId);
+	return Response.ok(getScriptManagement().deleteScript(msid, null, scriptId)).build();
     }
 
     /**
@@ -447,17 +467,17 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
+    @GET
+    @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts")
     @SuppressWarnings("unused")
-    @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts", method = RequestMethod.GET)
     @ApiOperation(value = "Get list of script metadata for the given tenant")
-    @Secured({ SiteWhereRoles.REST })
-    public List<IScriptMetadata> listTenantScriptMetadata(
-	    @ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken,
-	    @ApiParam(value = "Function identifier", required = true) @PathVariable String identifier)
+    public Response listTenantScriptMetadata(
+	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
+	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier)
 	    throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantToken);
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return getScriptManagement().getScriptMetadataList(msid, null);
+	return Response.ok(getScriptManagement().getScriptMetadataList(msid, null)).build();
     }
 
     /**
@@ -469,17 +489,16 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @SuppressWarnings("unused")
-    @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}", method = RequestMethod.GET)
+    @GET
+    @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}")
     @ApiOperation(value = "Get metadata for a tenant script based on unique script id")
-    @Secured({ SiteWhereRoles.REST })
-    public IScriptMetadata getTenantScriptMetadata(
-	    @ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken,
-	    @ApiParam(value = "Function identifier", required = true) @PathVariable String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId) throws SiteWhereException {
-	ITenant tenant = assureTenant(tenantToken);
+    public Response getTenantScriptMetadata(
+	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
+	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
+	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId)
+	    throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return getScriptManagement().getScriptMetadata(msid, null, scriptId);
+	return Response.ok(getScriptManagement().getScriptMetadata(msid, null, scriptId)).build();
     }
 
     /**
@@ -491,17 +510,15 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @SuppressWarnings("unused")
-    @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts", method = RequestMethod.POST)
+    @POST
+    @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts")
     @ApiOperation(value = "Create a new tenant script")
-    @Secured({ SiteWhereRoles.REST })
-    public IScriptMetadata createTenantScript(
-	    @ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken,
-	    @ApiParam(value = "Function identifier", required = true) @PathVariable String identifier,
+    public Response createTenantScript(
+	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
+	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
 	    @RequestBody ScriptCreateRequest request) throws SiteWhereException {
-	ITenant tenant = assureTenant(tenantToken);
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return getScriptManagement().createScript(msid, null, request);
+	return Response.ok(getScriptManagement().createScript(msid, null, request)).build();
     }
 
     /**
@@ -514,18 +531,17 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @SuppressWarnings("unused")
-    @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}/content", method = RequestMethod.GET)
+    @GET
+    @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}/content")
     @ApiOperation(value = "Get content for a tenant script based on unique script id and version id")
-    @Secured({ SiteWhereRoles.REST })
-    public String getTenantScriptContent(
-	    @ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken,
-	    @ApiParam(value = "Function identifier", required = true) @PathVariable String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId,
-	    @ApiParam(value = "Version id", required = true) @PathVariable String versionId) throws SiteWhereException {
-	ITenant tenant = assureTenant(tenantToken);
+    public Response getTenantScriptContent(
+	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
+	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
+	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId,
+	    @ApiParam(value = "Version id", required = true) @PathParam("versionId") String versionId)
+	    throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return new String(getScriptManagement().getScriptContent(msid, null, scriptId, versionId));
+	return Response.ok(new String(getScriptManagement().getScriptContent(msid, null, scriptId, versionId))).build();
     }
 
     /**
@@ -539,19 +555,17 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @SuppressWarnings("unused")
-    @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}", method = RequestMethod.POST)
+    @POST
+    @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}")
     @ApiOperation(value = "Update an existing tenant script")
-    @Secured({ SiteWhereRoles.REST })
-    public IScriptMetadata updateTenantScript(
-	    @ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken,
-	    @ApiParam(value = "Function identifier", required = true) @PathVariable String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId,
-	    @ApiParam(value = "Version id", required = true) @PathVariable String versionId,
+    public Response updateTenantScript(
+	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
+	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
+	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId,
+	    @ApiParam(value = "Version id", required = true) @PathParam("versionId") String versionId,
 	    @RequestBody ScriptCreateRequest request) throws SiteWhereException {
-	ITenant tenant = assureTenant(tenantToken);
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return getScriptManagement().updateScript(msid, null, scriptId, versionId, request);
+	return Response.ok(getScriptManagement().updateScript(msid, null, scriptId, versionId, request)).build();
     }
 
     /**
@@ -565,19 +579,18 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @SuppressWarnings("unused")
-    @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}/clone", method = RequestMethod.POST)
+    @POST
+    @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}/clone")
     @ApiOperation(value = "Clone an existing tenant script version to create a new version")
-    @Secured({ SiteWhereRoles.REST })
-    public IScriptVersion cloneTenantScript(
-	    @ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken,
-	    @ApiParam(value = "Function identifier", required = true) @PathVariable String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId,
-	    @ApiParam(value = "Version id", required = true) @PathVariable String versionId,
+    public Response cloneTenantScript(
+	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
+	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
+	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId,
+	    @ApiParam(value = "Version id", required = true) @PathParam("versionId") String versionId,
 	    @RequestBody ScriptCloneRequest request) throws SiteWhereException {
-	ITenant tenant = assureTenant(tenantToken);
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return getScriptManagement().cloneScript(msid, null, scriptId, versionId, request.getComment());
+	return Response.ok(getScriptManagement().cloneScript(msid, null, scriptId, versionId, request.getComment()))
+		.build();
     }
 
     /**
@@ -591,18 +604,17 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @SuppressWarnings("unused")
-    @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}/activate", method = RequestMethod.POST)
+    @POST
+    @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}/activate")
     @ApiOperation(value = "Activate a tenant script version")
-    @Secured({ SiteWhereRoles.REST })
-    public IScriptMetadata activateTenantScript(
-	    @ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken,
-	    @ApiParam(value = "Function identifier", required = true) @PathVariable String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId,
-	    @ApiParam(value = "Version id", required = true) @PathVariable String versionId) throws SiteWhereException {
-	ITenant tenant = assureTenant(tenantToken);
+    public Response activateTenantScript(
+	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
+	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
+	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId,
+	    @ApiParam(value = "Version id", required = true) @PathParam("versionId") String versionId)
+	    throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return getScriptManagement().activateScript(msid, null, scriptId, versionId);
+	return Response.ok(getScriptManagement().activateScript(msid, null, scriptId, versionId)).build();
     }
 
     /**
@@ -615,17 +627,16 @@ public class Instance extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @SuppressWarnings("unused")
-    @RequestMapping(value = "/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}", method = RequestMethod.DELETE)
+    @DELETE
+    @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}")
     @ApiOperation(value = "Delete a tenant script and version history")
-    @Secured({ SiteWhereRoles.REST })
-    public IScriptMetadata deleteTenantScript(
-	    @ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken,
-	    @ApiParam(value = "Function identifier", required = true) @PathVariable String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathVariable String scriptId) throws SiteWhereException {
-	ITenant tenant = assureTenant(tenantToken);
+    public Response deleteTenantScript(
+	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
+	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
+	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId)
+	    throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return getScriptManagement().deleteScript(msid, null, scriptId);
+	return Response.ok(getScriptManagement().deleteScript(msid, null, scriptId)).build();
     }
 
     /**
@@ -660,7 +671,7 @@ public class Instance extends RestControllerBase {
 	    channel.stop(monitor);
 	    channel.terminate(monitor);
 	} catch (Throwable t) {
-	    getLogger().error("Unable to shut down management channel.", t);
+	    LOGGER.error("Unable to shut down management channel.", t);
 	}
     }
 
@@ -681,8 +692,7 @@ public class Instance extends RestControllerBase {
 		return microservice;
 	    }
 	}
-	throw new SiteWhereSystemException(ErrorCode.InvalidMicroserviceIdentifier, ErrorLevel.ERROR,
-		HttpServletResponse.SC_NOT_FOUND);
+	throw new SiteWhereSystemException(ErrorCode.InvalidMicroserviceIdentifier, ErrorLevel.ERROR);
     }
 
     /**
@@ -699,8 +709,7 @@ public class Instance extends RestControllerBase {
 		return tenant;
 	    }
 	}
-	throw new SiteWhereSystemException(ErrorCode.InvalidTenantToken, ErrorLevel.ERROR,
-		HttpServletResponse.SC_NOT_FOUND);
+	throw new SiteWhereSystemException(ErrorCode.InvalidTenantToken, ErrorLevel.ERROR);
     }
 
     /**
@@ -718,11 +727,15 @@ public class Instance extends RestControllerBase {
 	return tenant;
     }
 
-    public ITenantManagement getTenantManagement() {
+    protected ITenantManagement getTenantManagement() {
 	return getMicroservice().getCachedTenantManagement();
     }
 
-    public IScriptManagement getScriptManagement() {
+    protected IScriptManagement getScriptManagement() {
 	return getMicroservice().getScriptManagement();
+    }
+
+    protected IInstanceManagementMicroservice<?> getMicroservice() {
+	return microservice;
     }
 }

@@ -10,7 +10,7 @@ package com.sitewhere.mongodb;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;

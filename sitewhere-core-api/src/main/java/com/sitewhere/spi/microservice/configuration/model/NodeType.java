@@ -9,8 +9,6 @@ package com.sitewhere.spi.microservice.configuration.model;
 
 /**
  * Type indicator for nodes in the configuration hierarchy.
- * 
- * @author Derek
  */
 public enum NodeType {
 

@@ -11,8 +11,6 @@ import com.sitewhere.rest.model.customer.Customer;
 
 /**
  * Used to show broken link if referenced customer is deleted.
- * 
- * @author Derek
  */
 public class InvalidCustomer extends Customer {
 

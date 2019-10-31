@@ -13,7 +13,6 @@ import com.sitewhere.sources.spi.IEventSourcesManager;
 import com.sitewhere.sources.spi.microservice.IEventSourcesTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.spring.EventSourcesBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -44,8 +43,8 @@ public class EventSourcesTenantEngine extends MicroserviceTenantEngine implement
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.eventSourcesManager = (IEventSourcesManager) getModuleContext()
-		.getBean(EventSourcesBeans.BEAN_EVENT_SOURCES_MANAGER);
+	// this.eventSourcesManager = (IEventSourcesManager) getModuleContext()
+	// .getBean(EventSourcesBeans.BEAN_EVENT_SOURCES_MANAGER);
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());

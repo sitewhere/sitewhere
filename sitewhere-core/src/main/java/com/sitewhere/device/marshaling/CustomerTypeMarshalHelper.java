@@ -24,8 +24,6 @@ import com.sitewhere.spi.device.IDeviceManagement;
 /**
  * Configurable helper class that allows {@link CustomerType} model objects to
  * be created from {@link ICustomerType} SPI objects.
- * 
- * @author Derek
  */
 public class CustomerTypeMarshalHelper {
 

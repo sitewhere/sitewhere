@@ -17,8 +17,6 @@ import com.sitewhere.spi.device.command.ICommandParameter;
  * user interface. TODO: This class is really presentation-only, so it should be
  * moved to sitewhere-web at some point. For now, there is a dependency from the
  * marshal helper that prevents it.
- * 
- * @author Derek
  */
 public class CommandHtmlHelper {
 

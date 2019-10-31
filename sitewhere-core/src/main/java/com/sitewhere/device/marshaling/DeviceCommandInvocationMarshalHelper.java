@@ -22,8 +22,6 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 /**
  * Configurable helper class that allows {@link DeviceCommandInvocation} model
  * objects to be created from {@link IDeviceCommandInvocation} SPI objects.
- * 
- * @author dadams
  */
 public class DeviceCommandInvocationMarshalHelper {
 

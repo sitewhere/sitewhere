@@ -18,8 +18,6 @@ import com.sitewhere.spi.device.event.IDeviceMeasurement;
 /**
  * Wraps a {@link DeviceMeasurement} so that information about the asset
  * associated with its assignment is available.
- * 
- * @author Derek
  */
 @JsonIgnoreProperties
 @JsonInclude(Include.NON_NULL)

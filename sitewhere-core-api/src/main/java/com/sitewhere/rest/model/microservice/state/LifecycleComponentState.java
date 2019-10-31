@@ -15,8 +15,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
  * Model implementation of {@link ILifecycleComponentState}.
- * 
- * @author Derek
  */
 public class LifecycleComponentState implements ILifecycleComponentState {
 

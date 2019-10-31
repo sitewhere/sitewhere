@@ -16,8 +16,6 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
 
 /**
  * Search provider that provides information about SiteWhere device events.
- * 
- * @author Derek
  */
 public interface IDeviceEventSearchProvider extends ISearchProvider {
 

@@ -17,8 +17,6 @@ import com.sitewhere.spi.microservice.state.IMicroserviceState;
 
 /**
  * Model object for a microservice represented in the instance topology.
- * 
- * @author Derek
  */
 public class InstanceMicroservice implements IInstanceMicroservice {
 

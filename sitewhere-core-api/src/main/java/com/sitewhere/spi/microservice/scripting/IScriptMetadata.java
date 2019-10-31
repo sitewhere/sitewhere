@@ -11,8 +11,6 @@ import java.util.List;
 
 /**
  * Contains metadata about a script.
- * 
- * @author Derek
  */
 public interface IScriptMetadata {
 

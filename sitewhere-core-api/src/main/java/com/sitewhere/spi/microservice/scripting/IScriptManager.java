@@ -12,8 +12,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Manages runtime scripting support for a microservice.
- * 
- * @author Derek
  */
 public interface IScriptManager extends ITenantEngineLifecycleComponent {
 

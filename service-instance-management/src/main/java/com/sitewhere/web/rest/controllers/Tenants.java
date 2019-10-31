@@ -7,54 +7,57 @@
  */
 package com.sitewhere.web.rest.controllers;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
+import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
-import com.sitewhere.security.UserContextManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
-import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
-import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
-import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.SiteWhereAuthority;
-import com.sitewhere.web.annotation.SiteWhereCrossOrigin;
-import com.sitewhere.web.rest.RestControllerBase;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for tenant operations.
  * 
  * @author Derek Adams
  */
-@RestController
-@SiteWhereCrossOrigin
-@RequestMapping(value = "/tenants")
+@Path("/tenants")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "tenants")
-public class Tenants extends RestControllerBase {
+public class Tenants {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
     private static Log LOGGER = LogFactory.getLog(Tenants.class);
+
+    @Inject
+    private IInstanceManagementMicroservice<?> microservice;
 
     /**
      * Create a new tenant.
@@ -63,11 +66,11 @@ public class Tenants extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.POST)
+    @POST
     @ApiOperation(value = "Create new tenant")
-    public ITenant createTenant(@RequestBody TenantCreateRequest request) throws SiteWhereException {
-	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
-	return getTenantManagement().createTenant(request);
+    public Response createTenant(@RequestBody TenantCreateRequest request) throws SiteWhereException {
+	// checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
+	return Response.ok(getTenantManagement().createTenant(request)).build();
     }
 
     /**
@@ -78,13 +81,15 @@ public class Tenants extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{tenantToken}", method = RequestMethod.PUT)
+    @PUT
+    @Path("/{tenantToken}")
     @ApiOperation(value = "Update an existing tenant.")
-    public ITenant updateTenant(@ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken,
+    public Response updateTenant(
+	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
 	    @RequestBody TenantCreateRequest request) throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantToken);
 	checkForAdminOrEditSelf(tenant);
-	return getTenantManagement().updateTenant(null, request);
+	return Response.ok(getTenantManagement().updateTenant(null, request)).build();
     }
 
     /**
@@ -94,13 +99,15 @@ public class Tenants extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{tenantToken}", method = RequestMethod.GET)
+    @GET
+    @Path("/{tenantToken}")
     @ApiOperation(value = "Get tenant by token")
-    public ITenant getTenantByToken(@ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken)
+    public Response getTenantByToken(
+	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken)
 	    throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantToken);
 	checkForAdminOrEditSelf(tenant);
-	return tenant;
+	return Response.ok(tenant).build();
     }
 
     /**
@@ -110,14 +117,14 @@ public class Tenants extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(method = RequestMethod.GET)
+    @GET
     @ApiOperation(value = "List tenants that match criteria")
-    public ISearchResults<ITenant> listTenants(
-	    @ApiParam(value = "Text search (partial id or name)", required = false) @RequestParam(required = false) String textSearch,
-	    @ApiParam(value = "Authorized user id", required = false) @RequestParam(required = false) String authUserId,
-	    @ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo,
-	    @ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-	    @ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize)
+    public Response listTenants(
+	    @ApiParam(value = "Text search (partial id or name)", required = false) @QueryParam("textSearch") String textSearch,
+	    @ApiParam(value = "Authorized user id", required = false) @QueryParam("authUserId") String authUserId,
+	    @ApiParam(value = "Include runtime info", required = false) @QueryParam("includeRuntimeInfo") @DefaultValue("true") boolean includeRuntimeInfo,
+	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	checkAuthFor(SiteWhereAuthority.REST, true);
 
@@ -127,22 +134,22 @@ public class Tenants extends RestControllerBase {
 	    criteria.setTextSearch(textSearch);
 	    criteria.setUserId(authUserId);
 	    criteria.setIncludeRuntimeInfo(includeRuntimeInfo);
-	    return getTenantManagement().listTenants(criteria);
+	    return Response.ok(getTenantManagement().listTenants(criteria)).build();
 	}
 
 	// Only return auth tenants if user has 'admin own tenant'.
 	else if (checkAuthFor(SiteWhereAuthority.AdminOwnTenant, false)) {
-	    IUser loggedIn = UserContextManager.getCurrentlyLoggedInUser();
-	    if (loggedIn != null) {
-		TenantSearchCriteria criteria = new TenantSearchCriteria(page, pageSize);
-		criteria.setTextSearch(textSearch);
-		criteria.setUserId(loggedIn.getUsername());
-		criteria.setIncludeRuntimeInfo(includeRuntimeInfo);
-		return getTenantManagement().listTenants(criteria);
-	    }
+	    // IUser loggedIn = UserContextManager.getCurrentlyLoggedInUser();
+	    // if (loggedIn != null) {
+	    // TenantSearchCriteria criteria = new TenantSearchCriteria(page, pageSize);
+	    // criteria.setTextSearch(textSearch);
+	    // criteria.setUserId(loggedIn.getUsername());
+	    // criteria.setIncludeRuntimeInfo(includeRuntimeInfo);
+	    // return getTenantManagement().listTenants(criteria);
+	    // }
 	}
 
-	throw operationNotPermitted();
+	return Response.status(Status.FORBIDDEN).build();
     }
 
     /**
@@ -152,14 +159,16 @@ public class Tenants extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/{tenantToken}", method = RequestMethod.DELETE)
+    @DELETE
+    @Path("/{tenantToken}")
     @ApiOperation(value = "Delete existing tenant")
-    public ITenant deleteTenantById(@ApiParam(value = "Tenant token", required = true) @PathVariable String tenantToken)
+    public Response deleteTenantById(
+	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken)
 	    throws SiteWhereException {
-	checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
+	// checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
 	ITenant tenant = assureTenant(tenantToken);
 	checkForAdminOrEditSelf(tenant);
-	return getTenantManagement().deleteTenant(null);
+	return Response.ok(getTenantManagement().deleteTenant(null)).build();
     }
 
     /**
@@ -168,15 +177,16 @@ public class Tenants extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/templates", method = RequestMethod.GET)
+    @GET
+    @Path("/templates")
     @ApiOperation(value = "List templates available for creating tenants")
-    public List<ITenantTemplate> listTenantConfigurationTemplates() throws SiteWhereException {
+    public Response listTenantConfigurationTemplates() throws SiteWhereException {
 	checkAuthFor(SiteWhereAuthority.REST, true);
 	if (checkAuthFor(SiteWhereAuthority.AdminTenants, false)
 		|| checkAuthFor(SiteWhereAuthority.AdminOwnTenant, false)) {
 	}
 	// return getInstanceManagement().getTenantTemplates();
-	return null;
+	return Response.ok().build();
     }
 
     /**
@@ -185,15 +195,20 @@ public class Tenants extends RestControllerBase {
      * @return
      * @throws SiteWhereException
      */
-    @RequestMapping(value = "/datasets", method = RequestMethod.GET)
+    @GET
+    @Path("/datasets")
     @ApiOperation(value = "List datasets available for creating tenants")
-    public List<IDatasetTemplate> listTenantDatasetTemplates() throws SiteWhereException {
+    public Response listTenantDatasetTemplates() throws SiteWhereException {
 	checkAuthFor(SiteWhereAuthority.REST, true);
 	if (checkAuthFor(SiteWhereAuthority.AdminTenants, false)
 		|| checkAuthFor(SiteWhereAuthority.AdminOwnTenant, false)) {
 	}
 	// return getInstanceManagement().getDatasetTemplates();
-	return null;
+	return Response.ok().build();
+    }
+
+    protected boolean checkAuthFor(SiteWhereAuthority auth, boolean flag) {
+	return true;
     }
 
     /**
@@ -204,15 +219,17 @@ public class Tenants extends RestControllerBase {
      * @throws SiteWhereException
      */
     public static void checkForAdminOrEditSelf(ITenant tenant) throws SiteWhereException {
-	checkAuthFor(SiteWhereAuthority.REST, true);
-	if (!checkAuthFor(SiteWhereAuthority.AdminTenants, false)) {
-	    checkAuthFor(SiteWhereAuthority.AdminOwnTenant, true);
-	    IUser loggedIn = UserContextManager.getCurrentlyLoggedInUser();
-	    if ((loggedIn == null) || (!tenant.getAuthorizedUserIds().contains(loggedIn.getUsername()))) {
-		throw new SiteWhereSystemException(ErrorCode.OperationNotPermitted, ErrorLevel.ERROR,
-			HttpServletResponse.SC_FORBIDDEN);
-	    }
-	}
+	// checkAuthFor(SiteWhereAuthority.REST, true);
+	// if (!checkAuthFor(SiteWhereAuthority.AdminTenants, false)) {
+	// checkAuthFor(SiteWhereAuthority.AdminOwnTenant, true);
+	// IUser loggedIn = UserContextManager.getCurrentlyLoggedInUser();
+	// if ((loggedIn == null) ||
+	// (!tenant.getAuthorizedUserIds().contains(loggedIn.getUsername()))) {
+	// throw new SiteWhereSystemException(ErrorCode.OperationNotPermitted,
+	// ErrorLevel.ERROR,
+	// HttpServletResponse.SC_FORBIDDEN);
+	// }
+	// }
     }
 
     /**
@@ -230,7 +247,11 @@ public class Tenants extends RestControllerBase {
 	return tenant;
     }
 
-    private ITenantManagement getTenantManagement() {
+    protected ITenantManagement getTenantManagement() {
 	return getMicroservice().getTenantManagement();
+    }
+
+    protected IInstanceManagementMicroservice<?> getMicroservice() {
+	return microservice;
     }
 }

@@ -14,8 +14,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
 
 /**
  * Implementaton of {@link ILifecycleStep} that terminates a single component.
- * 
- * @author Derek
  */
 public class TerminateComponentLifecycleStep extends ComponentOperationLifecycleStep {
 

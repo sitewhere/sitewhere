@@ -9,13 +9,11 @@ package com.sitewhere.labels.microservice;
 
 import com.sitewhere.grpc.service.LabelGenerationGrpc;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationTenantEngine;
-import com.sitewhere.microservice.grpc.LabelGenerationImpl;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.label.ILabelGeneratorManager;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.spring.LabelGenerationBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -47,11 +45,11 @@ public class LabelGenerationTenantEngine extends MicroserviceTenantEngine implem
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Create management interfaces.
-	labelGeneratorManager = (ILabelGeneratorManager) getModuleContext()
-		.getBean(LabelGenerationBeans.BEAN_LABEL_GENERATOR_MANAGER);
-
-	this.labelGenerationImpl = new LabelGenerationImpl(this);
+	// // Create management interfaces.
+	// labelGeneratorManager = (ILabelGeneratorManager) getModuleContext()
+	// .getBean(LabelGenerationBeans.BEAN_LABEL_GENERATOR_MANAGER);
+	//
+	// this.labelGenerationImpl = new LabelGenerationImpl(this);
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());

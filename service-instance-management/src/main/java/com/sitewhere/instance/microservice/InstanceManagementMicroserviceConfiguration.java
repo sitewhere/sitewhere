@@ -7,22 +7,16 @@
  */
 package com.sitewhere.instance.microservice;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.instance.InstanceSettings;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
-@Configuration
 public class InstanceManagementMicroserviceConfiguration {
 
-    @Bean
     public IInstanceManagementMicroservice<?> instanceManagementMicroservice() {
 	return new InstanceManagementMicroservice();
     }
 
-    @Bean
     public IInstanceSettings instanceSettings() {
 	return new InstanceSettings();
     }

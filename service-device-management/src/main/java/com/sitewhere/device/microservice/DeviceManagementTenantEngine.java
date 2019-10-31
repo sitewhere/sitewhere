@@ -7,18 +7,10 @@
  */
 package com.sitewhere.device.microservice;
 
-import java.nio.file.Path;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import com.sitewhere.device.DeviceManagementTriggers;
-import com.sitewhere.device.initializer.GroovyDeviceModelInitializer;
 import com.sitewhere.device.spi.kafka.IDeviceInteractionEventsProducer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
 import com.sitewhere.grpc.service.DeviceManagementGrpc;
-import com.sitewhere.microservice.grpc.DeviceManagementImpl;
 import com.sitewhere.microservice.kafka.DeviceInteractionEventsProducer;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
@@ -28,8 +20,6 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.scripting.ScriptType;
-import com.sitewhere.spi.microservice.spring.DeviceManagementBeans;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -66,12 +56,13 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Create management interfaces.
-	IDeviceManagement implementation = (IDeviceManagement) getModuleContext()
-		.getBean(DeviceManagementBeans.BEAN_DEVICE_MANAGEMENT);
-	this.deviceManagement = new DeviceManagementTriggers(implementation, this);
-	this.deviceManagementImpl = new DeviceManagementImpl((IDeviceManagementMicroservice) getMicroservice(),
-		getDeviceManagement());
+	// // Create management interfaces.
+	// IDeviceManagement implementation = (IDeviceManagement) getModuleContext()
+	// .getBean(DeviceManagementBeans.BEAN_DEVICE_MANAGEMENT);
+	// this.deviceManagement = new DeviceManagementTriggers(implementation, this);
+	// this.deviceManagementImpl = new
+	// DeviceManagementImpl((IDeviceManagementMicroservice) getMicroservice(),
+	// getDeviceManagement());
 
 	// Device interaction events producer.
 	this.deviceInteractionEventsProducer = new DeviceInteractionEventsProducer();
@@ -134,25 +125,29 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
     @Override
     public void tenantBootstrap(TenantEngineDatasetTemplate template, ILifecycleProgressMonitor monitor)
 	    throws SiteWhereException {
-	String scriptName = String.format("%s.groovy", template.getMetadata().getName());
-	Path path = getScriptSynchronizer().add(getScriptContext(), ScriptType.Initializer, scriptName,
-		template.getSpec().getConfiguration().getBytes());
-
+	// String scriptName = String.format("%s.groovy",
+	// template.getMetadata().getName());
+	// Path path = getScriptSynchronizer().add(getScriptContext(),
+	// ScriptType.Initializer, scriptName,
+	// template.getSpec().getConfiguration().getBytes());
+	//
 	// Execute remote calls as superuser.
-	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
-	try {
-	    SecurityContextHolder.getContext()
-		    .setAuthentication(getMicroservice().getSystemUser().getAuthenticationForTenant(getTenant()));
-
-	    getLogger().info(String.format("Applying bootstrap script '%s'.", path));
-	    GroovyDeviceModelInitializer initializer = new GroovyDeviceModelInitializer(getGroovyConfiguration(), path);
-	    initializer.initialize(getDeviceManagement(), getAssetManagement());
-	} catch (Throwable e) {
-	    getLogger().error("Unhandled exception in bootstrap script.", e);
-	    throw new SiteWhereException(e);
-	} finally {
-	    SecurityContextHolder.getContext().setAuthentication(previous);
-	}
+	// Authentication previous =
+	// SecurityContextHolder.getContext().getAuthentication();
+	// try {
+	// SecurityContextHolder.getContext()
+	// .setAuthentication(getMicroservice().getSystemUser().getAuthenticationForTenant(getTenant()));
+	//
+	// getLogger().info(String.format("Applying bootstrap script '%s'.", path));
+	// GroovyDeviceModelInitializer initializer = new
+	// GroovyDeviceModelInitializer(getGroovyConfiguration(), path);
+	// initializer.initialize(getDeviceManagement(), getAssetManagement());
+	// } catch (Throwable e) {
+	// getLogger().error("Unhandled exception in bootstrap script.", e);
+	// throw new SiteWhereException(e);
+	// } finally {
+	// SecurityContextHolder.getContext().setAuthentication(previous);
+	// }
     }
 
     /*
