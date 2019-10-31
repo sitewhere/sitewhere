@@ -466,10 +466,7 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
                     predicates.add(cb.not(cb.size(path).isNull()));
                     predicates.add(cb.not(cb.size(path).in(0)));
                 }
-                if (criteria.getEndDate() != null) {
-                    Path path = root.get("createdDate");
-                    predicates.add(cb.lessThanOrEqualTo(path, criteria.getEndDate()));
-                }
+
                 if (!StringUtils.isEmpty(criteria.getDeviceTypeToken())) {
                     Path path = root.get("deviceTypeToken");
                     predicates.add(cb.equal(path, deviceType.getId()));

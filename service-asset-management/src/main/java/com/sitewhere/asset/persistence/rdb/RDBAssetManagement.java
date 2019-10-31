@@ -31,10 +31,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -139,16 +137,21 @@ public class RDBAssetManagement  extends RDBTenantComponent<AssetManagementRDBCl
         Specification<com.sitewhere.rdb.entities.Asset> specification = new Specification<com.sitewhere.rdb.entities.Asset>() {
             @Override
             public Predicate toPredicate(Root<com.sitewhere.rdb.entities.Asset> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                return null;
+                List<Predicate> predicates = new ArrayList();
+                if(criteria.getAssetTypeToken() != null) {
+                    Path path = root.get("assetTypeId");
+                    predicates.add(cb.equal(path, criteria.getAssetTypeToken()));
+                }
+                return query.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
             }
         };
         if (criteria.getPageSize() == 0) {
             List<com.sitewhere.rdb.entities.Asset> result = getRDBClient().getDbManager().getAssetRepository().findAll(specification, sort);
-            return new SearchResultsConverter().convert(result);
+            return new SearchResultsConverter().convert(result, result.size());
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
             Page<com.sitewhere.rdb.entities.Asset> page = getRDBClient().getDbManager().getAssetRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
-            return new SearchResultsConverter().convert(page.getContent());
+            return new SearchResultsConverter().convert(page.getContent(), page.getTotalElements());
         }
     }
 
@@ -214,11 +217,11 @@ public class RDBAssetManagement  extends RDBTenantComponent<AssetManagementRDBCl
         };
         if (criteria.getPageSize() == 0) {
             List<com.sitewhere.rdb.entities.AssetType> result = getRDBClient().getDbManager().getAssetTypeRepository().findAll(specification, sort);
-            return new SearchResultsConverter().convert(result);
+            return new SearchResultsConverter().convert(result, result.size());
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
             Page<com.sitewhere.rdb.entities.AssetType> page = getRDBClient().getDbManager().getAssetTypeRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
-            return new SearchResultsConverter().convert(page.getContent());
+            return new SearchResultsConverter().convert(page.getContent(), page.getTotalElements());
         }
     }
 }

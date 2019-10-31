@@ -145,11 +145,11 @@ public class RDBScheduleManagement extends RDBTenantComponent<ScheduleManagement
 
         if (criteria.getPageSize() == 0) {
             List<com.sitewhere.rdb.entities.Schedule> result = getRDBClient().getDbManager().getScheduleRepository().findAll(specification, sort);
-            return new SearchResultsConverter().convert(result);
+            return new SearchResultsConverter().convert(result, result.size());
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
             Page<com.sitewhere.rdb.entities.Schedule> page = getRDBClient().getDbManager().getScheduleRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
-            return new SearchResultsConverter().convert(page.getContent());
+            return new SearchResultsConverter().convert(page.getContent(), page.getTotalElements());
         }
     }
 
@@ -220,11 +220,11 @@ public class RDBScheduleManagement extends RDBTenantComponent<ScheduleManagement
 
         if (criteria.getPageSize() == 0) {
             List<com.sitewhere.rdb.entities.ScheduledJob> result = getRDBClient().getDbManager().getScheduledJobRepository().findAll(specification, sort);
-            return new SearchResultsConverter().convert(result);
+            return new SearchResultsConverter().convert(result, result.size());
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
             Page<com.sitewhere.rdb.entities.ScheduledJob> page = getRDBClient().getDbManager().getScheduledJobRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
-            return new SearchResultsConverter().convert(page.getContent());
+            return new SearchResultsConverter().convert(page.getContent(), page.getTotalElements());
         }
     }
 

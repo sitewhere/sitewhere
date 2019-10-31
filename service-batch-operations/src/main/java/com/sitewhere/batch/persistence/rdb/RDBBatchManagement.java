@@ -114,11 +114,11 @@ public class RDBBatchManagement extends RDBTenantComponent<BatchManagementRDBCli
         };
         if (criteria.getPageSize() == 0) {
             List<com.sitewhere.rdb.entities.BatchOperation> result = getRDBClient().getDbManager().getBatchOperationRepository().findAll(specification, sort);
-            return new SearchResultsConverter().convert(result);
+            return new SearchResultsConverter().convert(result, result.size());
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
             Page<com.sitewhere.rdb.entities.BatchOperation> page = getRDBClient().getDbManager().getBatchOperationRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
-            return new SearchResultsConverter().convert(page.getContent());
+            return new SearchResultsConverter().convert(page.getContent(), page.getTotalElements());
         }
     }
 
@@ -155,11 +155,11 @@ public class RDBBatchManagement extends RDBTenantComponent<BatchManagementRDBCli
         };
         if (criteria.getPageSize() == 0) {
             List<com.sitewhere.rdb.entities.BatchElement> result = getRDBClient().getDbManager().getBatchOperationElementRepository().findAll(specification, sort);
-            return new SearchResultsConverter().convert(result);
+            return new SearchResultsConverter().convert(result, result.size());
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
             Page<com.sitewhere.rdb.entities.BatchElement> page = getRDBClient().getDbManager().getBatchOperationElementRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
-            return new SearchResultsConverter().convert(page.getContent());
+            return new SearchResultsConverter().convert(page.getContent(), page.getTotalElements());
         }
     }
 
@@ -191,7 +191,6 @@ public class RDBBatchManagement extends RDBTenantComponent<BatchManagementRDBCli
     public IDeviceManagement getDeviceManagement() {
         return ((IBatchOperationsMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
     }
-
 
     public BatchManagementRDBClient getDbClient() {
         return dbClient;
