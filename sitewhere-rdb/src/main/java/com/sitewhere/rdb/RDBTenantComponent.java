@@ -70,36 +70,4 @@ public abstract class RDBTenantComponent <T extends DbClient> extends TenantEngi
             getIndexer().shutdownNow();
         }
     }
-
-    /**
-     * Runs indexing code in background thread.
-     */
-    protected class Indexer implements Runnable {
-        @Override
-        public void run() {
-            // Ensure that collection indexes exist.
-            getLogger().info("Verifying indexes for RDB...");
-            try {
-                ensureIndexes();
-                getLogger().info("Index verification complete.");
-            } catch (SiteWhereException e) {
-                getLogger().error("Unable to create/update MongoDB indexes.", e);
-            }
-        }
-    }
-
-    /** Used for naming indexer thread */
-    private class IndexerThreadFactory implements ThreadFactory {
-
-        public Thread newThread(Runnable r) {
-            return new Thread(r, "RDB Indexer");
-        }
-    }
-
-    /**
-     * Ensure that required collection indexes exist.
-     *
-     * @throws SiteWhereException
-     */
-    public abstract void ensureIndexes() throws SiteWhereException;
 }

@@ -18,12 +18,12 @@ import java.util.List;
  */
 public class SearchResultsConverter<T> {
 
-    public ISearchResults<T> convert(List<T> list) {
+    public ISearchResults<T> convert(List<T> list, long count) {
         return new ISearchResults<T> () {
 
             @Override
             public long getNumResults() {
-                return list.size();
+                return count;
             }
 
             @Override

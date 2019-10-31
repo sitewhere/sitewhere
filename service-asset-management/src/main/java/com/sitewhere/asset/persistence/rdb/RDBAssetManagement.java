@@ -68,11 +68,6 @@ public class RDBAssetManagement  extends RDBTenantComponent<AssetManagementRDBCl
     }
 
     @Override
-    public void ensureIndexes() throws SiteWhereException {
-
-    }
-
-    @Override
     public IAsset createAsset(IAssetCreateRequest request) throws SiteWhereException {
 
         // Look up asset type.

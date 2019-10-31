@@ -142,11 +142,11 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         };
         if (criteria.getPageSize() == 0) {
             List<com.sitewhere.rdb.entities.DeviceType> result = getRDBClient().getDbManager().getDeviceTypeRepository().findAll(specification, sort);
-            return new SearchResultsConverter().convert(result);
+            return new SearchResultsConverter().convert(result, result.size());
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
             Page<com.sitewhere.rdb.entities.DeviceType> page = getRDBClient().getDbManager().getDeviceTypeRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
-            return new SearchResultsConverter().convert(page.getContent());
+            return new SearchResultsConverter().convert(page.getContent(), page.getTotalElements());
         }
     }
 
@@ -258,11 +258,11 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         };
         if (criteria.getPageSize() == 0) {
             List<com.sitewhere.rdb.entities.DeviceCommand> result = getRDBClient().getDbManager().getDeviceCommandRepository().findAll(specification, sort);
-            return new SearchResultsConverter().convert(result);
+            return new SearchResultsConverter().convert(result, result.size());
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
             Page<com.sitewhere.rdb.entities.DeviceCommand> page = getRDBClient().getDbManager().getDeviceCommandRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
-            return new SearchResultsConverter().convert(page.getContent());
+            return new SearchResultsConverter().convert(page.getContent(), page.getTotalElements());
         }
     }
 
@@ -370,11 +370,11 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         };
         if (criteria.getPageSize() == 0) {
             List<com.sitewhere.rdb.entities.DeviceStatus> result = getRDBClient().getDbManager().getDeviceStatusRepository().findAll(specification, sort);
-            return new SearchResultsConverter().convert(result);
+            return new SearchResultsConverter().convert(result, result.size());
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
             Page<com.sitewhere.rdb.entities.DeviceStatus> page = getRDBClient().getDbManager().getDeviceStatusRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
-            return new SearchResultsConverter().convert(page.getContent());
+            return new SearchResultsConverter().convert(page.getContent(), page.getTotalElements());
         }
     }
 
@@ -466,10 +466,6 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
                     predicates.add(cb.not(cb.size(path).isNull()));
                     predicates.add(cb.not(cb.size(path).in(0)));
                 }
-                if (criteria.getStartDate() != null) {
-                    Path path = root.get("createdDate");
-                    predicates.add(cb.greaterThanOrEqualTo(path, criteria.getStartDate()));
-                }
                 if (criteria.getEndDate() != null) {
                     Path path = root.get("createdDate");
                     predicates.add(cb.lessThanOrEqualTo(path, criteria.getEndDate()));
@@ -483,11 +479,11 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         };
         if (criteria.getPageSize() == 0) {
             List<com.sitewhere.rdb.entities.Device> result = getRDBClient().getDbManager().getDeviceRepository().findAll(specification, sort);
-            return new SearchResultsConverter().convert(result);
+            return new SearchResultsConverter().convert(result, result.size());
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
             Page<com.sitewhere.rdb.entities.Device> page = getRDBClient().getDbManager().getDeviceRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
-            return new SearchResultsConverter().convert(page.getContent());
+            return new SearchResultsConverter().convert(page.getContent(), page.getTotalElements());
         }
     }
 
@@ -694,11 +690,11 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         };
         if (criteria.getPageSize() == 0) {
             List<com.sitewhere.rdb.entities.DeviceAssignment> result = getRDBClient().getDbManager().getDeviceAssignmentRepository().findAll(specification, sort);
-            return new SearchResultsConverter().convert(result);
+            return new SearchResultsConverter().convert(result, result.size());
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
             Page<com.sitewhere.rdb.entities.DeviceAssignment> page = getRDBClient().getDbManager().getDeviceAssignmentRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
-            return new SearchResultsConverter().convert(page.getContent());
+            return new SearchResultsConverter().convert(page.getContent(), page.getTotalElements());
         }
     }
 
@@ -830,11 +826,11 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         };
         if (criteria.getPageSize() == 0) {
             List<com.sitewhere.rdb.entities.DeviceAlarm> result = getRDBClient().getDbManager().getDeviceAlarmRepository().findAll(specification, sort);
-            return new SearchResultsConverter().convert(result);
+            return new SearchResultsConverter().convert(result, result.size());
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
             Page<com.sitewhere.rdb.entities.DeviceAlarm> page = getRDBClient().getDbManager().getDeviceAlarmRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
-            return new SearchResultsConverter().convert(page.getContent());
+            return new SearchResultsConverter().convert(page.getContent(), page.getTotalElements());
         }
     }
 
@@ -911,11 +907,11 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         };
         if (criteria.getPageSize() == 0) {
             List<com.sitewhere.rdb.entities.CustomerType> result = getRDBClient().getDbManager().getCustomerTypeRepository().findAll(specification, sort);
-            return new SearchResultsConverter().convert(result);
+            return new SearchResultsConverter().convert(result, result.size());
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
             Page<com.sitewhere.rdb.entities.CustomerType> page = getRDBClient().getDbManager().getCustomerTypeRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
-            return new SearchResultsConverter().convert(page.getContent());
+            return new SearchResultsConverter().convert(page.getContent(), page.getTotalElements());
         }
     }
 
@@ -1029,11 +1025,11 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         };
         if (criteria.getPageSize() == 0) {
             List<com.sitewhere.rdb.entities.Customer> result = getRDBClient().getDbManager().getCustomerRepository().findAll(specification, sort);
-            return new SearchResultsConverter().convert(result);
+            return new SearchResultsConverter().convert(result, result.size());
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
             Page<com.sitewhere.rdb.entities.Customer> page = getRDBClient().getDbManager().getCustomerRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
-            return new SearchResultsConverter().convert(page.getContent());
+            return new SearchResultsConverter().convert(page.getContent(), page.getTotalElements());
         }
     }
 
@@ -1115,11 +1111,11 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         };
         if (criteria.getPageSize() == 0) {
             List<com.sitewhere.rdb.entities.AreaType> result = getRDBClient().getDbManager().getAreaTypeRepository().findAll(specification, sort);
-            return new SearchResultsConverter().convert(result);
+            return new SearchResultsConverter().convert(result, result.size());
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
             Page<com.sitewhere.rdb.entities.AreaType> page = getRDBClient().getDbManager().getAreaTypeRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
-            return new SearchResultsConverter().convert(page.getContent());
+            return new SearchResultsConverter().convert(page.getContent(), page.getTotalElements());
         }
     }
 
@@ -1259,11 +1255,11 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         };
         if (criteria.getPageSize() == 0) {
             List<com.sitewhere.rdb.entities.Area> result = getRDBClient().getDbManager().getAreaRepository().findAll(specification, sort);
-            return new SearchResultsConverter().convert(result);
+            return new SearchResultsConverter().convert(result, result.size());
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
             Page<com.sitewhere.rdb.entities.Area> page = getRDBClient().getDbManager().getAreaRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
-            return new SearchResultsConverter().convert(page.getContent());
+            return new SearchResultsConverter().convert(page.getContent(), page.getTotalElements());
         }
     }
 
@@ -1361,11 +1357,11 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         };
         if (criteria.getPageSize() == 0) {
             List<com.sitewhere.rdb.entities.Zone> result = getRDBClient().getDbManager().getZoneRepository().findAll(specification, sort);
-            return new SearchResultsConverter().convert(result);
+            return new SearchResultsConverter().convert(result, result.size());
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
             Page<com.sitewhere.rdb.entities.Zone> page = getRDBClient().getDbManager().getZoneRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
-            return new SearchResultsConverter().convert(page.getContent());
+            return new SearchResultsConverter().convert(page.getContent(), page.getTotalElements());
         }
     }
 
@@ -1432,11 +1428,11 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         };
         if (criteria.getPageSize() == 0) {
             List<com.sitewhere.rdb.entities.DeviceGroup> result = getRDBClient().getDbManager().getDeviceGroupRepository().findAll(specification, sort);
-            return new SearchResultsConverter().convert(result);
+            return new SearchResultsConverter().convert(result, result.size());
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
             Page<com.sitewhere.rdb.entities.DeviceGroup> page = getRDBClient().getDbManager().getDeviceGroupRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
-            return new SearchResultsConverter().convert(page.getContent());
+            return new SearchResultsConverter().convert(page.getContent(), page.getTotalElements());
         }
     }
 
@@ -1454,11 +1450,11 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         };
         if (criteria.getPageSize() == 0) {
             List<com.sitewhere.rdb.entities.DeviceGroup> result = getRDBClient().getDbManager().getDeviceGroupRepository().findAll(specification, sort);
-            return new SearchResultsConverter().convert(result);
+            return new SearchResultsConverter().convert(result, result.size());
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
             Page<com.sitewhere.rdb.entities.DeviceGroup> page = getRDBClient().getDbManager().getDeviceGroupRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize(), sort));
-            return new SearchResultsConverter().convert(page.getContent());
+            return new SearchResultsConverter().convert(page.getContent(), page.getTotalElements());
         }
     }
 
@@ -1530,11 +1526,11 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         };
         if (criteria.getPageSize() == 0) {
             List<com.sitewhere.rdb.entities.DeviceGroupElement> result = getRDBClient().getDbManager().getDeviceGroupElementRepository().findAll(specification);
-            return new SearchResultsConverter().convert(result);
+            return new SearchResultsConverter().convert(result, result.size());
         } else {
             int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
             Page<com.sitewhere.rdb.entities.DeviceGroupElement> page = getRDBClient().getDbManager().getDeviceGroupElementRepository().findAll(specification, PageRequest.of(pageIndex, criteria.getPageSize()));
-            return new SearchResultsConverter().convert(page.getContent());
+            return new SearchResultsConverter().convert(page.getContent(), page.getTotalElements());
         }
     }
 
@@ -1624,7 +1620,4 @@ public class RDBDeviceManagement extends RDBTenantComponent<DeviceManagementRDBC
         MultiTenantContext.setTenantId(tenantId);
         return dbClient;
     }
-
-    @Override
-    public void ensureIndexes() throws SiteWhereException { }
 }

@@ -61,9 +61,6 @@ public class RDBBatchManagement extends RDBTenantComponent<BatchManagementRDBCli
     }
 
     @Override
-    public void ensureIndexes() throws SiteWhereException { }
-
-    @Override
     public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request) throws SiteWhereException {
         BatchOperation batch = BatchManagementPersistence.batchOperationCreateLogic(request);
         com.sitewhere.rdb.entities.BatchOperation created = new com.sitewhere.rdb.entities.BatchOperation();

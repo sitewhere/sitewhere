@@ -59,11 +59,6 @@ public class RDBScheduleManagement extends RDBTenantComponent<ScheduleManagement
         return dbClient;
     }
 
-    @Override
-    public void ensureIndexes() throws SiteWhereException {
-
-    }
-
     /** Injected with global SiteWhere relational database client */
     private ScheduleManagementRDBClient dbClient;
 
