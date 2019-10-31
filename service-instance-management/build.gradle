@@ -1,6 +1,6 @@
 import org.ajoberstar.grgit.*
 
-description = 'SiteWhere Web/REST Microservice'
+description = 'SiteWhere Instance Management Microservice'
 
 dependencies {
 	compile project(':sitewhere-communication')
@@ -36,14 +36,14 @@ task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, depends
 	instruction "RUN wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.2.2/grpc_health_probe-linux-amd64 && chmod +x /bin/grpc_health_probe"
 	
 	// Copy jar.
-	copyFile("${project.name}-${project.version}-boot.jar", "/")
+	copyFile("${project.name}-${project.version}.jar", "/")
 
 	// Expose port
 	exposePort 8080
 
 	// Run Java command to start application.
 	if(!project.hasProperty("debug")) {
-		defaultCommand 'java', '-Xmx512M', '-Xss384K', '-jar', "/${project.name}-${project.version}-boot.war"
+		defaultCommand 'java', '-Xmx512M', '-Xss384K', '-jar', "/${project.name}-${project.version}.jar"
 	} else {
 		println "Generating DEBUG IMAGE for project ${project.name}"
 
@@ -57,13 +57,13 @@ task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, depends
 		exposePort jdwpPort
 		exposePort jmxPort
 
-		defaultCommand 'java', '-server', '-Xdebug', '-Dcom.sun.management.jmxremote.local.only=false', '-Dcom.sun.management.jmxremote.ssl=false', '-Dcom.sun.management.jmxremote.authenticate=false', "-Dcom.sun.management.jmxremote.port=${jmxPort}", "-Dcom.sun.management.jmxremote.rmi.port=${jmxPort}", '-Dcom.sun.management.jmxremote.host=0.0.0.0', '-Djava.rmi.server.hostname=0.0.0.0', "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=${jdwpPort}", '-Xmx512M', '-Xss384K', '-jar', "/${project.name}-${project.version}-boot.war"
+		defaultCommand 'java', '-server', '-Xdebug', '-Dcom.sun.management.jmxremote.local.only=false', '-Dcom.sun.management.jmxremote.ssl=false', '-Dcom.sun.management.jmxremote.authenticate=false', "-Dcom.sun.management.jmxremote.port=${jmxPort}", "-Dcom.sun.management.jmxremote.rmi.port=${jmxPort}", '-Dcom.sun.management.jmxremote.host=0.0.0.0', '-Djava.rmi.server.hostname=0.0.0.0', "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=${jdwpPort}", '-Xmx512M', '-Xss384K', '-jar', "/${project.name}-${project.version}.jar"
 	}
 }
 
 // Copy artifact to Docker input folder.
 task copyArtifactsToDocker(type: Copy, dependsOn: dockerFile) {
-    from "${buildDir}/libs/${project.name}-${project.version}-boot.war"
+    from "${buildDir}/libs/${project.name}-${project.version}.jar"
     into 'build/docker'
 }
 

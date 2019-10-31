@@ -14,9 +14,6 @@ dependencies {
     compile group: 'org.fusesource.hawtdispatch', name: 'hawtdispatch', version:'1.22'
 	
 	compile group: 'com.google.protobuf', name: 'protobuf-java', version: "${rootProject.ext['protobuf.version']}"
-
-	// JUnit.
-	testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
 test {
