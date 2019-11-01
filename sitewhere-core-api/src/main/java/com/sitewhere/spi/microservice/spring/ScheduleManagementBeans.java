@@ -17,6 +17,9 @@ public class ScheduleManagementBeans {
     /** Bean id for schedule management MongoDB client */
     public static final String BEAN_MONGODB_CLIENT = "mongoClient";
 
+    /** Bean id for device mangement RDB client */
+    public static final String BEAN_RDB_CLIENT = "rdbClient";
+
     /** Bean id for schedule management in server configuration */
     public static final String BEAN_SCHEDULE_MANAGEMENT = "scheduleManagement";
 }

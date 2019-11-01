@@ -10,6 +10,7 @@ package com.sitewhere.batch.spring;
 import java.util.List;
 
 import com.sitewhere.batch.persistence.rdb.BatchManagementRDBClient;
+import com.sitewhere.batch.persistence.rdb.RDBBatchManagement;
 import com.sitewhere.spi.microservice.spring.DeviceManagementBeans;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -140,14 +141,14 @@ public class BatchOperationsParser extends AbstractBeanDefinitionParser {
 
 	private BeanDefinitionBuilder buildMongoDeviceManagament() {
 		// Build device management implementation.
-		BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(BatchManagementMongoClient.class);
+		BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(MongoBatchManagement.class);
 		management.addPropertyReference("mongoClient", DeviceManagementBeans.BEAN_MONGODB_CLIENT);
 		return management;
 	}
 
 	private BeanDefinitionBuilder buildRDBDeviceManagament() {
 		// Build device management implementation.
-		BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(BatchManagementRDBClient.class);
+		BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(RDBBatchManagement.class);
 		management.addPropertyReference("dbClient", DeviceManagementBeans.BEAN_RDB_CLIENT);
 		return management;
 	}
