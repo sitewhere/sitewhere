@@ -11,8 +11,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Binds to a port and listens for batch management GRPC requests.
- * 
- * @author Derek
  */
 public interface IBatchManagementGrpcServer extends ITenantEngineLifecycleComponent {
 }

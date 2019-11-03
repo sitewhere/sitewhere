@@ -7,96 +7,95 @@
  */
 package com.sitewhere.microservice.instance;
 
+import java.util.Optional;
+
+import javax.enterprise.context.ApplicationScoped;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * SiteWhere instance settings.
- * 
- * @author Derek
  */
+@ApplicationScoped
 public class InstanceSettings implements IInstanceSettings {
 
     /** Product id */
-    // @Value("#{systemEnvironment['sitewhere.product.id'] ?: 'sitewhere'}")
+    @ConfigProperty(name = "sitewhere.product.id", defaultValue = "sitewhere")
     private String productId;
 
     /** Instance id service belongs to */
-    // @Value("#{systemEnvironment['sitewhere.instance.id'] ?: 'sitewhere1'}")
+    @ConfigProperty(name = "sitewhere.instance.id", defaultValue = "sitewhere1")
     private String instanceId;
 
     /** Id of instance template to use */
-    // @Value("#{systemEnvironment['sitewhere.instance.template.id'] ?: 'default'}")
+    @ConfigProperty(name = "sitewhere.instance.template.id", defaultValue = "default")
     private String instanceTemplateId;
 
     /** Kafka bootstrap services configuration for microservices */
-    // @Value("#{systemEnvironment['sitewhere.kafka.bootstrap.servers'] ?:
-    // 'cp-kafka:9092'}")
+    @ConfigProperty(name = "sitewhere.kafka.bootstrap.servers", defaultValue = "cp-kafka:9092")
     private String kafkaBootstrapServers;
 
     /** Kafka default number of partitions for topics */
-    // @Value("#{systemEnvironment['sitewhere.kafka.defaultTopicPartitions'] ?:
-    // '8'}")
+    @ConfigProperty(name = "sitewhere.kafka.defaultTopicPartitions", defaultValue = "8")
     private int kafkaDefaultTopicPartitions;
 
     /** Kafka default number of partitions for topics */
-    // @Value("#{systemEnvironment['sitewhere.kafka.defaultTopicReplicationFactor']
-    // ?: '3'}")
+    @ConfigProperty(name = "sitewhere.kafka.defaultTopicReplicationFactor", defaultValue = "3")
     private int kafkaDefaultTopicReplicationFactor;
 
     /** Apache Synote hostname info for microservices */
-    // @Value("#{systemEnvironment['sitewhere.syncope.host'] ?: 'syncope'}")
+    @ConfigProperty(name = "sitewhere.syncope.host", defaultValue = "syncope")
     private String syncopeHost;
 
     /** Apache Synote port info for microservices */
-    // @Value("#{systemEnvironment['sitewhere.syncope.port'] ?: '8080'}")
+    @ConfigProperty(name = "sitewhere.syncope.port", defaultValue = "8080")
     private int syncopePort;
 
     /** Prometheus HTTP port info for microservices */
-    // @Value("#{systemEnvironment['sitewhere.metrics.port'] ?: '9090'}")
+    @ConfigProperty(name = "sitewhere.metrics.port", defaultValue = "9090")
     private int metricsHttpPort;
 
     /** Number of retries on gRPC exponential backoff */
-    // @Value("#{systemEnvironment['sitewhere.grpc.maxRetryCount'] ?: '6'}")
+    @ConfigProperty(name = "sitewhere.grpc.maxRetryCount", defaultValue = "6")
     private double grpcMaxRetryCount;
 
     /** Initial backoff in seconds for gRPC exponential backoff */
-    // @Value("#{systemEnvironment['sitewhere.grpc.initialBackoffSeconds'] ?:
-    // '10'}")
+    @ConfigProperty(name = "sitewhere.grpc.initialBackoffSeconds", defaultValue = "10")
     private int grpcInitialBackoffInSeconds;
 
     /** Max backoff in seconds for gRPC exponential backoff */
-    // @Value("#{systemEnvironment['sitewhere.grpc.maxBackoffSeconds'] ?: '600'}")
+    @ConfigProperty(name = "sitewhere.grpc.maxBackoffSeconds", defaultValue = "600")
     private int grpcMaxBackoffInSeconds;
 
     /** Mulitplier used for gRPC exponential backoff */
-    // @Value("#{systemEnvironment['sitewhere.grpc.backoffMultiplier'] ?: '1.5'}")
+    @ConfigProperty(name = "sitewhere.grpc.backoffMultiplier", defaultValue = "1.5")
     private double grpcBackoffMultiplier;
 
     /** Flag for whether to resolve via FQDN on gRPC calls */
-    // @Value("#{systemEnvironment['sitewhere.grpc.resolveFQDN'] ?: 'false'}")
+    @ConfigProperty(name = "sitewhere.grpc.resolveFQDN", defaultValue = "false")
     private boolean grpcResolveFQDN;
 
     /** File system root for storing SiteWhere data for microservices */
-    // @Value("#{systemEnvironment['sitewhere.filesystem.storage.root'] ?:
-    // '/var/sitewhere/'}")
+    @ConfigProperty(name = "sitewhere.filesystem.storage.root", defaultValue = "/var/sitewhere/")
     private String fileSystemStorageRoot;
 
     /** Flag for whether to log metrics */
-    // @Value("#{systemEnvironment['sitewhere.log.metrics'] ?: 'false'}")
+    @ConfigProperty(name = "sitewhere.log.metrics", defaultValue = "false")
     private boolean logMetrics;
 
     /** Microservice publicly resolvable hostname */
-    // @Value("#{systemEnvironment['sitewhere.service.public.hostname'] ?:
-    // '#{null}'}")
-    private String publicHostname;
+    @ConfigProperty(name = "sitewhere.service.public.hostname")
+    private Optional<String> publicHostname;
 
     /** Microservice publicly resolvable hostname */
-    // @Value("#{systemEnvironment['sitewhere.namespace'] ?: '#{null}'}")
-    private String kubernetesNamespace;
+    @ConfigProperty(name = "sitewhere.namespace")
+    private Optional<String> kubernetesNamespace;
 
     /** Microservice publicly resolvable hostname */
-    // @Value("#{systemEnvironment['sitewhere.k8s.pod.ip'] ?: '#{null}'}")
-    private String kubernetesPodAddress;
+    @ConfigProperty(name = "sitewhere.k8s.pod.ip")
+    private Optional<String> kubernetesPodAddress;
 
     /*
      * @see com.sitewhere.spi.microservice.instance.IInstanceSettings#getProductId()
@@ -310,11 +309,11 @@ public class InstanceSettings implements IInstanceSettings {
      * com.sitewhere.spi.microservice.instance.IInstanceSettings#getPublicHostname()
      */
     @Override
-    public String getPublicHostname() {
+    public Optional<String> getPublicHostname() {
 	return publicHostname;
     }
 
-    public void setPublicHostname(String publicHostname) {
+    public void setPublicHostname(Optional<String> publicHostname) {
 	this.publicHostname = publicHostname;
     }
 
@@ -323,11 +322,11 @@ public class InstanceSettings implements IInstanceSettings {
      * getKubernetesNamespace()
      */
     @Override
-    public String getKubernetesNamespace() {
+    public Optional<String> getKubernetesNamespace() {
 	return kubernetesNamespace;
     }
 
-    public void setKubernetesNamespace(String kubernetesNamespace) {
+    public void setKubernetesNamespace(Optional<String> kubernetesNamespace) {
 	this.kubernetesNamespace = kubernetesNamespace;
     }
 
@@ -336,11 +335,11 @@ public class InstanceSettings implements IInstanceSettings {
      * getKubernetesPodAddress()
      */
     @Override
-    public String getKubernetesPodAddress() {
+    public Optional<String> getKubernetesPodAddress() {
 	return kubernetesPodAddress;
     }
 
-    public void setKubernetesPodAddress(String kubernetesPodAddress) {
+    public void setKubernetesPodAddress(Optional<String> kubernetesPodAddress) {
 	this.kubernetesPodAddress = kubernetesPodAddress;
     }
 }

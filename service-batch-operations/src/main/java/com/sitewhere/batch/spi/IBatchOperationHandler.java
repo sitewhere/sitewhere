@@ -16,8 +16,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Handler registered for a type of batch operation.
- * 
- * @author Derek
  */
 public interface IBatchOperationHandler extends ITenantEngineLifecycleComponent {
 

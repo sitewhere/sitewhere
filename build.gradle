@@ -1,15 +1,12 @@
-buildscript {
-	repositories {
-		maven { url "https://plugins.gradle.org/m2/" }
- 	}
-	dependencies {
-		classpath 'com.netflix.nebula:gradle-extra-configurations-plugin:3.0.3'
-		classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.3'
-		classpath 'com.bmuschko:gradle-docker-plugin:5.2.0'
-		classpath "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0"
-		classpath "com.moowork.gradle:gradle-node-plugin:1.2.0"
-    	classpath "org.ajoberstar:grgit:2.2.1"
-	}
+plugins {
+    id 'java'
+    id 'distribution'
+    id 'io.quarkus' version '0.26.1' 
+    id "com.google.protobuf" version "0.8.10"
+    id 'com.bmuschko.docker-remote-api' version '5.3.0' 
+    id 'org.ajoberstar.grgit' version '2.2.1' 
+    id 'com.github.hierynomus.license' version '0.15.0' 
+    id 'com.moowork.node' version '1.3.1'
 }
 
 ext {
@@ -22,7 +19,7 @@ ext['git.revision.abbrev'] = ext.git.head().abbreviatedId
 ext['docker.base.image'] = 'openjdk:8-jre-alpine'
 ext['docker.maintainer'] = 'admin@sitewhere.com'
 
-ext['sitewhere.grpc.api.version'] = '2.2.1'
+ext['sitewhere.microservice.api.version'] = '3.0.0.alpha1'
 ext['kafka.version'] = '2.0.0'
 ext['protobuf.version'] = '3.5.1'
 ext['grpc.version'] = '1.21.0'
@@ -33,12 +30,10 @@ ext['mongodb.version'] = '3.10.1'
 ext['solr.version'] = '6.4.0'
 ext['siddhi.version'] = '3.1.2'
 ext['jackson.version'] = '2.9.10'
-
-apply plugin: 'distribution'
     
 allprojects {
     group = 'com.sitewhere'
-	version = '3.0.0'
+	version = '3.0.0.alpha1'
 	
     repositories {
         maven { url "http://repo.maven.apache.org/maven2" }
@@ -52,16 +47,11 @@ allprojects {
 }
 
 subprojects {
-	apply plugin: 'eclipse'
-	
 	apply plugin: "com.github.hierynomus.license"
 	license {
 		header rootProject.file('HEADER')
     	include "**/*.java"
 	}
-
-	// Use Docker plugin to allow for creating/pushing an image.
-	apply plugin: 'com.bmuschko.docker-remote-api'
 	
 	// Allow Docker settings to be overridden by build environment.
 	if (System.getenv("DOCKER_REGISTRY_URL") != null) registryUrl = System.getenv("DOCKER_REGISTRY_URL")
@@ -69,6 +59,7 @@ subprojects {
 	if (System.getenv("DOCKER_REGISTRY_PASSWORD") != null) registryPassword = System.getenv("DOCKER_REGISTRY_PASSWORD")
 	if (System.getenv("DOCKER_REGISTRY_EMAIL") != null) registryEmail = System.getenv("DOCKER_REGISTRY_EMAIL")
 	
+	apply plugin: 'com.bmuschko.docker-remote-api'
 	docker {
 	    url = (System.getenv("DOCKER_HOST") != null) ? System.getenv("DOCKER_HOST") : dockerProtocol + '://' + dockerHostname + ':' + dockerPort
 	    registryCredentials {
@@ -78,6 +69,9 @@ subprojects {
 	        email = registryEmail
 	    }
 	}
+	
+	// Apply Quarkus.
+	apply plugin: 'io.quarkus'
  	
  	// Choose Java settings.
     apply plugin: 'java'
@@ -85,7 +79,11 @@ subprojects {
     targetCompatibility = 1.8
     
     // Common dependencies used for all projects.
-    dependencies {
+    dependencies {	
+		// Quarkus dependencies.
+	    compile enforcedPlatform('io.quarkus:quarkus-bom:0.26.1')
+    
+    	// Testing dependencies.
 		testCompile group: 'junit', name: 'junit', version: '4.12'
     }
 }

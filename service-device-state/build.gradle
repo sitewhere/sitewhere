@@ -1,11 +1,11 @@
 description = 'SiteWhere Device State Microservice'
 
 dependencies {
-	compile project(':sitewhere-microservice')
-	compile project(':sitewhere-grpc-client')
-	
 	// Supported databases.
 	compile project(':sitewhere-mongodb')
+	
+	// SiteWhere microservice library.	
+    compile group: 'com.sitewhere', name: 'sitewhere-microservice', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
 }
 
 

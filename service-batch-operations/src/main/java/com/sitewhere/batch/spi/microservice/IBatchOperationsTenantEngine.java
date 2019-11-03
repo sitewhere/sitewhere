@@ -18,8 +18,6 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 /**
  * Extends {@link IMicroserviceTenantEngine} with features specific to batch
  * operations.
- * 
- * @author Derek
  */
 public interface IBatchOperationsTenantEngine extends IMicroserviceTenantEngine {
 

@@ -20,8 +20,6 @@ import com.sitewhere.spi.batch.IBatchElement;
 
 /**
  * Used to load or save batch element data to MongoDB.
- * 
- * @author Derek
  */
 public class MongoBatchElement implements MongoConverter<IBatchElement> {
 

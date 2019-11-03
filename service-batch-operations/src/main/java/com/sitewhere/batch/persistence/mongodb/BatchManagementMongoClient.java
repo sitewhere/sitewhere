@@ -16,8 +16,6 @@ import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Mongo client for interacting with batch management object model.
- * 
- * @author Derek
  */
 public class BatchManagementMongoClient extends MongoDbClient implements IBatchManagementMongoClient {
 

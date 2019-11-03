@@ -1,10 +1,10 @@
 description = 'SiteWhere Schedule Management Microservice'
 
 dependencies {
-	compile project(':sitewhere-core')
 	compile project(':sitewhere-mongodb')
-	compile project(':sitewhere-microservice')
-	compile project(':sitewhere-grpc-client')
+
+	// SiteWhere microservice library.	
+    compile group: 'com.sitewhere', name: 'sitewhere-microservice', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
 	
     compile group: 'org.quartz-scheduler', name: 'quartz', version:'2.2.2'
 }

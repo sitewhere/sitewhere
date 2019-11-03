@@ -19,8 +19,6 @@ import com.sitewhere.spi.batch.IBatchOperation;
 
 /**
  * Used to load or save batch operation data to MongoDB.
- * 
- * @author Derek
  */
 public class MongoBatchOperation implements MongoConverter<IBatchOperation> {
 

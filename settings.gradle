@@ -1,3 +1,17 @@
+pluginManagement {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id == 'io.quarkus') {
+                useModule("io.quarkus:quarkus-gradle-plugin:${requested.version}")
+            }
+        }
+    }
+}
+
 rootProject.name = 'sitewhere'
 include ':service-asset-management'
 include ':service-batch-operations'
@@ -19,12 +33,7 @@ include ':service-streaming-media'
 include ':sitewhere-cassandra'
 include ':sitewhere-communication'
 include ':sitewhere-configuration'
-include ':sitewhere-core'
-include ':sitewhere-core-api'
-include ':sitewhere-core-lifecycle'
-include ':sitewhere-grpc-client'
 include ':sitewhere-influxdb'
-include ':sitewhere-microservice'
 include ':sitewhere-mongodb'
 include ':sitewhere-solr'
 
@@ -48,11 +57,6 @@ project(':service-streaming-media').projectDir = "$rootDir/service-streaming-med
 project(':sitewhere-cassandra').projectDir = "$rootDir/sitewhere-cassandra" as File
 project(':sitewhere-communication').projectDir = "$rootDir/sitewhere-communication" as File
 project(':sitewhere-configuration').projectDir = "$rootDir/sitewhere-configuration" as File
-project(':sitewhere-core').projectDir = "$rootDir/sitewhere-core" as File
-project(':sitewhere-core-api').projectDir = "$rootDir/sitewhere-core-api" as File
-project(':sitewhere-core-lifecycle').projectDir = "$rootDir/sitewhere-core-lifecycle" as File
-project(':sitewhere-grpc-client').projectDir = "$rootDir/sitewhere-grpc-client" as File
 project(':sitewhere-influxdb').projectDir = "$rootDir/sitewhere-influxdb" as File
-project(':sitewhere-microservice').projectDir = "$rootDir/sitewhere-microservice" as File
 project(':sitewhere-mongodb').projectDir = "$rootDir/sitewhere-mongodb" as File
 project(':sitewhere-solr').projectDir = "$rootDir/sitewhere-solr" as File

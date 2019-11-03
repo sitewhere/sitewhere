@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.microservice.instance;
 
+import java.util.Optional;
+
 /**
  * Common settings used in a SiteWhere instance.
  */
@@ -129,19 +131,19 @@ public interface IInstanceSettings {
      * 
      * @return
      */
-    public String getPublicHostname();
+    public Optional<String> getPublicHostname();
 
     /**
      * Get Kubernetes namespace.
      * 
      * @return
      */
-    public String getKubernetesNamespace();
+    public Optional<String> getKubernetesNamespace();
 
     /**
      * Get IP address for Kubernetes Pod running microservice.
      * 
      * @return
      */
-    public String getKubernetesPodAddress();
+    public Optional<String> getKubernetesPodAddress();
 }

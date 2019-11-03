@@ -2,8 +2,10 @@ description = 'SiteWhere Event Sources Microservice'
 
 dependencies {
 	compile project(':sitewhere-communication')
-	compile project(':sitewhere-microservice')
-	compile project(':sitewhere-grpc-client')
+	compile project(':sitewhere-configuration')
+	
+	// SiteWhere microservice library.	
+    compile group: 'com.sitewhere', name: 'sitewhere-microservice', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
 	
 	// ActiveMQ dependencies.
     compile group: 'org.apache.activemq', name: 'activemq-amqp', version:'5.14.0'

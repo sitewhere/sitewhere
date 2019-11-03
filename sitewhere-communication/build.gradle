@@ -1,7 +1,8 @@
 description = 'SiteWhere Common Communication Components'
 
 dependencies {
-	compile project(':sitewhere-core')
+	// SiteWhere microservice library.	
+    compile group: 'com.sitewhere', name: 'sitewhere-core', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
     
      // Protobuf device API.
     compile group: 'com.sitewhere', name: 'sitewhere-device-protobuf', version:'2.0.1'

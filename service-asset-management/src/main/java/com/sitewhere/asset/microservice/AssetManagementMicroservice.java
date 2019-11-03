@@ -7,6 +7,8 @@
  */
 package com.sitewhere.asset.microservice;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import com.sitewhere.asset.configuration.AssetManagementModelProvider;
 import com.sitewhere.asset.grpc.AssetManagementGrpcServer;
 import com.sitewhere.asset.spi.grpc.IAssetManagementGrpcServer;
@@ -28,6 +30,7 @@ import com.sitewhere.spi.tenant.ITenant;
 /**
  * Microservice that provides asset management functionality.
  */
+@ApplicationScoped
 public class AssetManagementMicroservice
 	extends MultitenantMicroservice<MicroserviceIdentifier, IAssetManagementTenantEngine>
 	implements IAssetManagementMicroservice {

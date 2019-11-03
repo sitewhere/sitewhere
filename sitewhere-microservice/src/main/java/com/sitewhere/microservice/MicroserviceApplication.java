@@ -16,8 +16,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import javax.enterprise.event.Observes;
 
 import com.sitewhere.core.Boilerplate;
 import com.sitewhere.server.lifecycle.LifecycleProgressContext;
@@ -27,8 +26,11 @@ import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.IMicroserviceApplication;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
+import io.quarkus.runtime.ShutdownEvent;
+import io.quarkus.runtime.StartupEvent;
+
 /**
- * Base application for SiteWhere microservices.
+ * Base class for SiteWhere microservice application lifecycle.
  */
 public abstract class MicroserviceApplication<T extends IMicroservice<?>> implements IMicroserviceApplication<T> {
 
@@ -38,8 +40,7 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
     /**
      * Called to initialize and start microservice components.
      */
-    @PostConstruct
-    public void start() {
+    void onStart(@Observes StartupEvent ev) {
 	getMicroservice().getLogger().info("Starting microservice...");
 	Future<Integer> futureCode = executor.submit(new StartMicroservice());
 	try {
@@ -58,8 +59,7 @@ public abstract class MicroserviceApplication<T extends IMicroservice<?>> implem
     /**
      * Called to shutdown and terminate microservice components.
      */
-    @PreDestroy
-    public void stop() {
+    void onStop(@Observes ShutdownEvent ev) {
 	getMicroservice().getLogger().info("Shutdown signal received. Stopping microservice...");
 	Future<Integer> futureCode = executor.submit(new StopMicroservice());
 	try {

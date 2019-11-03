@@ -1,8 +1,11 @@
 description = 'SiteWhere Event Search Microservice'
 
 dependencies {
-	compile project(':sitewhere-microservice')
-    compile project(':sitewhere-solr')
+	compile project(':sitewhere-configuration')
+	compile project(':sitewhere-solr')
+	
+	// SiteWhere microservice library.	
+    compile group: 'com.sitewhere', name: 'sitewhere-microservice', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
 }
 
 // Only publish thin jar.

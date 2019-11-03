@@ -9,8 +9,6 @@ package com.sitewhere.batch;
 
 /**
  * Constants for batch operation types.
- * 
- * @author Derek
  */
 public interface BatchOperationTypes {
 

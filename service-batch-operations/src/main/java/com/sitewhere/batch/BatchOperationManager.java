@@ -55,8 +55,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 /**
  * Default implementation of {@link IBatchOperationManager}. Uses multiple
  * threads to process batch operations.
- * 
- * @author Derek
  */
 public class BatchOperationManager extends TenantEngineLifecycleComponent implements IBatchOperationManager {
 
@@ -258,8 +256,6 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 
     /**
      * Creates an unprocessed batch operation in a separate thread.
-     * 
-     * @author Derek
      */
     private class BatchOperationCreator implements Runnable {
 
@@ -306,8 +302,6 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 
     /**
      * Initializes a batch operation in a separate thread.
-     * 
-     * @author Derek
      */
     private class BatchOperationInitializer extends SystemUserRunnable {
 
@@ -394,8 +388,6 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 
     /**
      * Processes a batch element in a separate thread.
-     * 
-     * @author Derek
      */
     private class BatchElementProcessor extends SystemUserRunnable {
 

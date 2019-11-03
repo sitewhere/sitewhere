@@ -1,8 +1,10 @@
 description = 'SiteWhere Label Generation Microservice'
 
 dependencies {
-	compile project(':sitewhere-microservice')
-	compile project(':sitewhere-grpc-client')
+	compile project(':sitewhere-configuration')
+	
+	// SiteWhere microservice library.	
+    compile group: 'com.sitewhere', name: 'sitewhere-microservice', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
 	
     compile group: 'com.github.kenglxn.qrgen', name: 'javase', version:'2.5.0'
 }

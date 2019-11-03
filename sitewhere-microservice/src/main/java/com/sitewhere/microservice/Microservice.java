@@ -16,6 +16,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+
 import com.sitewhere.Version;
 import com.sitewhere.grpc.client.tenant.CachedTenantManagement;
 import com.sitewhere.microservice.exception.ConcurrentK8sUpdateException;
@@ -55,6 +58,7 @@ import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.informers.SharedInformerFactory;
+import io.quarkus.runtime.StartupEvent;
 import io.sitewhere.k8s.crd.ISiteWhereKubernetesClient;
 import io.sitewhere.k8s.crd.ResourceLabels;
 import io.sitewhere.k8s.crd.SiteWhereKubernetesClient;
@@ -72,7 +76,8 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
 	implements IMicroservice<T> {
 
     /** Instance settings */
-    private IInstanceSettings instanceSettings;
+    @Inject
+    IInstanceSettings instanceSettings;
 
     /** Kubernetes client */
     private DefaultKubernetesClient kubernetesClient;
@@ -147,6 +152,22 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
     @Override
     public IMicroservice<T> getMicroservice() {
 	return this;
+    }
+
+    /**
+     * Called when microservice is started.
+     * 
+     * @param ev
+     */
+    void onStart(@Observes StartupEvent ev) {
+	getLogger().info("Microservice starting...");
+
+	// Initialize configuration model.
+	try {
+	    initializeK8sConnectivity();
+	} catch (SiteWhereException e) {
+	    getLogger().error("Unable to start microservice.", e);
+	}
     }
 
     /*
@@ -337,8 +358,8 @@ public abstract class Microservice<T extends IFunctionIdentifier> extends Lifecy
      */
     @Override
     public String getHostname() {
-	if (getInstanceSettings().getKubernetesPodAddress() != null) {
-	    return getInstanceSettings().getKubernetesPodAddress();
+	if (getInstanceSettings().getKubernetesPodAddress().isPresent()) {
+	    return getInstanceSettings().getKubernetesPodAddress().get();
 	}
 	try {
 	    InetAddress local = InetAddress.getLocalHost();

@@ -1,8 +1,10 @@
 description = 'SiteWhere Rule Processing Microservice'
 
 dependencies {
-	compile project(':sitewhere-microservice')
-	compile project(':sitewhere-grpc-client')
+	compile project(':sitewhere-configuration')
+	
+	// SiteWhere microservice library.	
+    compile group: 'com.sitewhere', name: 'sitewhere-microservice', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
 }
 
 // Only publish thin jar.

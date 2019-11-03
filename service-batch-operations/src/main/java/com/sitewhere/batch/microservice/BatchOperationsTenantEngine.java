@@ -30,8 +30,6 @@ import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 /**
  * Implementation of {@link IMicroserviceTenantEngine} that implements batch
  * operations functionality.
- * 
- * @author Derek
  */
 public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implements IBatchOperationsTenantEngine {
 

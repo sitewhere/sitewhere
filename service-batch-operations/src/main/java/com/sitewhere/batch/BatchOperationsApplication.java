@@ -7,16 +7,19 @@
  */
 package com.sitewhere.batch;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
 
 /**
  * Spring Boot application for batch operations microservice.
- * 
- * @author Derek
  */
+@ApplicationScoped
 public class BatchOperationsApplication extends MicroserviceApplication<IBatchOperationsMicroservice> {
 
+    @Inject
     private IBatchOperationsMicroservice microservice;
 
     /*

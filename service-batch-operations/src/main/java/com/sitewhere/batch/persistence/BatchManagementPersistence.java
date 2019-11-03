@@ -28,8 +28,6 @@ import com.sitewhere.spi.device.IDevice;
 
 /**
  * Common methods needed by batch management implementations.
- * 
- * @author Derek
  */
 public class BatchManagementPersistence extends Persistence {
 

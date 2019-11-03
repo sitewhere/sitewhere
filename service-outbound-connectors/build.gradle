@@ -1,12 +1,11 @@
 description = 'SiteWhere Outbound Connectors Microservice'
 
-apply plugin: 'nebula.provided-base'
-
 dependencies {
-    compile project(':sitewhere-microservice')
     compile project(':sitewhere-communication')
     compile project(':sitewhere-solr')
-	compile project(':sitewhere-grpc-client')
+    
+	// SiteWhere microservice library.	
+    compile group: 'com.sitewhere', name: 'sitewhere-microservice', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
 
     // Amazon SQS dependencies.
     compile group: 'com.amazonaws', name: 'aws-java-sdk-sqs', version: '1.9.6'

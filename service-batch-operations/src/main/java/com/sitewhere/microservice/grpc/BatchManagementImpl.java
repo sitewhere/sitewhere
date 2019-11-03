@@ -51,8 +51,6 @@ import io.grpc.stub.StreamObserver;
 
 /**
  * Implements server logic for batch management GRPC requests.
- * 
- * @author Derek
  */
 public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImplBase implements IGrpcApiImplementation {
 

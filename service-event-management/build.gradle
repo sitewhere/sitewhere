@@ -1,15 +1,13 @@
 description = 'SiteWhere Device Event Management Microservice'
 
 dependencies {
-	compile project(':sitewhere-core')
-	compile project(':sitewhere-grpc-client')
-	
 	// Supported databases.
 	compile project(':sitewhere-cassandra')
 	compile project(':sitewhere-mongodb')
 	compile project(':sitewhere-influxdb')
 	
-	compile project(':sitewhere-microservice')
+	// SiteWhere microservice library.	
+    compile group: 'com.sitewhere', name: 'sitewhere-microservice', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
 }
 
 // Only publish thin jar.

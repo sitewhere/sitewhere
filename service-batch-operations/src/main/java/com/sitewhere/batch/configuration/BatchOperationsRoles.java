@@ -15,8 +15,6 @@ import com.sitewhere.spi.microservice.configuration.model.IRoleKey;
 
 /**
  * Configuration roles available for batch operations microservice.
- * 
- * @author Derek
  */
 public enum BatchOperationsRoles implements IConfigurationRoleProvider {
 

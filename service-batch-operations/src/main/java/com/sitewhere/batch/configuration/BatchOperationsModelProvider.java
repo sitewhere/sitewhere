@@ -17,8 +17,6 @@ import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProv
 
 /**
  * Configuration model provider for batch operations microservice.
- * 
- * @author Derek
  */
 public class BatchOperationsModelProvider extends ConfigurationModelProvider {
 

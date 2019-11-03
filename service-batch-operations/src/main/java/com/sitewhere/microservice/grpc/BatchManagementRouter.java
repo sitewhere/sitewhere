@@ -42,8 +42,6 @@ import io.grpc.stub.StreamObserver;
 
 /**
  * Routes GRPC calls to service implementations in tenants.
- * 
- * @author Derek
  */
 public class BatchManagementRouter extends BatchManagementGrpc.BatchManagementImplBase
 	implements IGrpcRouter<BatchManagementGrpc.BatchManagementImplBase> {

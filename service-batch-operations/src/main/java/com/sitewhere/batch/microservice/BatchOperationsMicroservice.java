@@ -7,6 +7,8 @@
  */
 package com.sitewhere.batch.microservice;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import com.sitewhere.batch.configuration.BatchOperationsModelProvider;
 import com.sitewhere.batch.spi.grpc.IBatchManagementGrpcServer;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
@@ -29,9 +31,8 @@ import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Microservice that provides batch operations functionality.
- * 
- * @author Derek
  */
+@ApplicationScoped
 public class BatchOperationsMicroservice
 	extends MultitenantMicroservice<MicroserviceIdentifier, IBatchOperationsTenantEngine>
 	implements IBatchOperationsMicroservice {

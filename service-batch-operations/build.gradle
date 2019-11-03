@@ -1,10 +1,11 @@
 description = 'SiteWhere Batch Operations Microservice'
 
 dependencies {
-	compile project(':sitewhere-core')
+	compile project(':sitewhere-configuration')
 	compile project(':sitewhere-mongodb')
-	compile project(':sitewhere-microservice')
-	compile project(':sitewhere-grpc-client')
+
+	// SiteWhere microservice library.	
+    compile group: 'com.sitewhere', name: 'sitewhere-microservice', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
 }
 
 license {
@@ -21,18 +22,18 @@ publishing {
 }
 
 // Create a Dockerfile.
-task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: jar) {
+task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: build) {
     destFile = project.file('build/docker/Dockerfile')
     from "${rootProject.ext['docker.base.image']}"
 	instruction "LABEL maintainer=${rootProject.ext['docker.maintainer']}"
 	instruction "RUN wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.2.2/grpc_health_probe-linux-amd64 && chmod +x /bin/grpc_health_probe"
 	
 	// Copy jar.
-	copyFile("${project.name}-${project.version}.jar", "/")
+	copyFile("${project.name}-${project.version}-runner.jar", "/")
 
 	// Run Java command to start application.
 	if(!project.hasProperty("debug")) {
-		defaultCommand 'java', '-Xmx512M', '-Xss384K', '-jar', "/${project.name}-${project.version}.jar"
+		defaultCommand 'java', '-Xmx512M', '-Xss384K', '-jar', "/${project.name}-${project.version}-runner.jar"
 	} else {
 		println "Generating DEBUG IMAGE for project ${project.name}"
 
@@ -46,13 +47,13 @@ task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, depends
 		exposePort jdwpPort
 		exposePort jmxPort
 
-		defaultCommand 'java', '-server', '-Xdebug', '-Dcom.sun.management.jmxremote.local.only=false', '-Dcom.sun.management.jmxremote.ssl=false', '-Dcom.sun.management.jmxremote.authenticate=false', "-Dcom.sun.management.jmxremote.port=${jmxPort}", "-Dcom.sun.management.jmxremote.rmi.port=${jmxPort}", '-Dcom.sun.management.jmxremote.host=0.0.0.0', '-Djava.rmi.server.hostname=0.0.0.0', "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=${jdwpPort}", '-Xmx512M', '-Xss384K', '-jar', "/${project.name}-${project.version}.jar"
+		defaultCommand 'java', '-server', '-Xdebug', '-Dcom.sun.management.jmxremote.local.only=false', '-Dcom.sun.management.jmxremote.ssl=false', '-Dcom.sun.management.jmxremote.authenticate=false', "-Dcom.sun.management.jmxremote.port=${jmxPort}", "-Dcom.sun.management.jmxremote.rmi.port=${jmxPort}", '-Dcom.sun.management.jmxremote.host=0.0.0.0', '-Djava.rmi.server.hostname=0.0.0.0', "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=${jdwpPort}", '-Xmx512M', '-Xss384K', '-jar', "/${project.name}-${project.version}-runner.jar"
 	}	
 }
 
 // Copy artifact to Docker input folder.
 task copyArtifactsToDocker(type: Copy, dependsOn: dockerFile) {
-    from "${buildDir}/libs/${project.name}-${project.version}.jar"
+    from "${buildDir}/${project.name}-${project.version}-runner.jar"
     into 'build/docker'
 }
 

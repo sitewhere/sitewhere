@@ -1,9 +1,11 @@
 description = 'SiteWhere Command Delivery Microservice'
 
 dependencies {
+	compile project(':sitewhere-configuration')
 	compile project(':sitewhere-communication')
-	compile project(':sitewhere-microservice')
-	compile project(':sitewhere-grpc-client')
+
+	// SiteWhere microservice library.	
+    compile group: 'com.sitewhere', name: 'sitewhere-microservice', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
 	
 	// Commons Lang 3 for utility functions.
 	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'

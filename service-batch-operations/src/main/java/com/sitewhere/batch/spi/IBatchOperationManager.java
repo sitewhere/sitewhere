@@ -19,8 +19,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Interface for interacting with a batch operation manager.
- * 
- * @author Derek
  */
 public interface IBatchOperationManager extends ITenantEngineLifecycleComponent {
 

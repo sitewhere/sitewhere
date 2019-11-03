@@ -3,9 +3,11 @@ import org.ajoberstar.grgit.*
 description = 'SiteWhere Instance Management Microservice'
 
 dependencies {
+	compile project(':sitewhere-configuration')
 	compile project(':sitewhere-communication')
-	compile project(':sitewhere-microservice')
-	compile project(':sitewhere-grpc-client')
+	
+	// SiteWhere microservice library.	
+    compile group: 'com.sitewhere', name: 'sitewhere-microservice', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
 	
 	// Quarkus RESTEasy extension.
     compile 'io.quarkus:quarkus-resteasy'
