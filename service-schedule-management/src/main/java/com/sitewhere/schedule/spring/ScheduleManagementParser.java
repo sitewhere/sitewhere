@@ -50,20 +50,20 @@ public class ScheduleManagementParser extends AbstractBeanDefinitionParser {
      */
     @Override
     protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
-        List<Element> dsChildren = DomUtils.getChildElements(element);
-        for (Element child : dsChildren) {
-            Elements type = Elements.getByLocalName(child.getLocalName());
-            if (type == null) {
-                throw new RuntimeException("Unknown schedule management element: " + child.getLocalName());
-            }
-            switch (type) {
-                case DeviceManagementDatastore: {
-                    parseDeviceManagementDatastore(child, context);
-                    break;
-                }
-            }
-        }
-        return null;
+	List<Element> dsChildren = DomUtils.getChildElements(element);
+	for (Element child : dsChildren) {
+	    Elements type = Elements.getByLocalName(child.getLocalName());
+	    if (type == null) {
+		throw new RuntimeException("Unknown schedule management element: " + child.getLocalName());
+	    }
+	    switch (type) {
+	    case DeviceManagementDatastore: {
+		parseDeviceManagementDatastore(child, context);
+		break;
+	    }
+	    }
+	}
+	return null;
     }
 
     /**
@@ -73,67 +73,67 @@ public class ScheduleManagementParser extends AbstractBeanDefinitionParser {
      * @param context
      */
     protected void parseDeviceManagementDatastore(Element element, ParserContext context) {
-        DatastoreConfigurationChoice config = DatastoreConfigurationParser.parseDeviceManagementDatastoreChoice(element,
-                context);
-		BeanDefinitionBuilder management;
-        switch (config.getType()) {
-            case MongoDB: {
-                BeanDefinitionBuilder client = BeanDefinitionBuilder
-                        .rootBeanDefinition(ScheduleManagementMongoClient.class);
-                client.addConstructorArgValue(config.getConfiguration());
-                context.getRegistry().registerBeanDefinition(ScheduleManagementBeans.BEAN_MONGODB_CLIENT,
-                        client.getBeanDefinition());
-				management = buildMongoDeviceManagament();
-				break;
-            }
-            case MongoDBReference: {
-                BeanDefinitionBuilder client = BeanDefinitionBuilder
-                        .rootBeanDefinition(ScheduleManagementMongoClient.class);
-                client.addConstructorArgReference((String) config.getConfiguration());
-                context.getRegistry().registerBeanDefinition(ScheduleManagementBeans.BEAN_MONGODB_CLIENT,
-                        client.getBeanDefinition());
-				management = buildMongoDeviceManagament();
-                break;
-            }
-            case RDB: {
-                BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(ScheduleManagementRDBClient.class);
-                client.addConstructorArgValue(config.getConfiguration());
-                context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_RDB_CLIENT,
-                        client.getBeanDefinition());
+	DatastoreConfigurationChoice config = DatastoreConfigurationParser.parseDeviceManagementDatastoreChoice(element,
+		context);
+	BeanDefinitionBuilder management;
+	switch (config.getType()) {
+	case MongoDB: {
+	    BeanDefinitionBuilder client = BeanDefinitionBuilder
+		    .rootBeanDefinition(ScheduleManagementMongoClient.class);
+	    client.addConstructorArgValue(config.getConfiguration());
+	    context.getRegistry().registerBeanDefinition(ScheduleManagementBeans.BEAN_MONGODB_CLIENT,
+		    client.getBeanDefinition());
+	    management = buildMongoDeviceManagament();
+	    break;
+	}
+	case MongoDBReference: {
+	    BeanDefinitionBuilder client = BeanDefinitionBuilder
+		    .rootBeanDefinition(ScheduleManagementMongoClient.class);
+	    client.addConstructorArgReference((String) config.getConfiguration());
+	    context.getRegistry().registerBeanDefinition(ScheduleManagementBeans.BEAN_MONGODB_CLIENT,
+		    client.getBeanDefinition());
+	    management = buildMongoDeviceManagament();
+	    break;
+	}
+	case RDB: {
+	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(ScheduleManagementRDBClient.class);
+	    client.addConstructorArgValue(config.getConfiguration());
+	    context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_RDB_CLIENT,
+		    client.getBeanDefinition());
 
-                management = buildRDBDeviceManagament();
-                break;
-            }
-            case RDBReference: {
-                BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(ScheduleManagementRDBClient.class);
-                client.addConstructorArgReference((String) config.getConfiguration());
-                context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_RDB_CLIENT,
-                        client.getBeanDefinition());
+	    management = buildRDBDeviceManagament();
+	    break;
+	}
+	case RDBReference: {
+	    BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(ScheduleManagementRDBClient.class);
+	    client.addConstructorArgReference((String) config.getConfiguration());
+	    context.getRegistry().registerBeanDefinition(DeviceManagementBeans.BEAN_RDB_CLIENT,
+		    client.getBeanDefinition());
 
-                management = buildRDBDeviceManagament();
-                break;
-            }
-            default: {
-                throw new RuntimeException("Invalid datastore configured: " + config.getType());
-            }
-        }
+	    management = buildRDBDeviceManagament();
+	    break;
+	}
+	default: {
+	    throw new RuntimeException("Invalid datastore configured: " + config.getType());
+	}
+	}
 
-        // Build schedule management implementation.
-        context.getRegistry().registerBeanDefinition(ScheduleManagementBeans.BEAN_SCHEDULE_MANAGEMENT,
-                management.getBeanDefinition());
+	// Build schedule management implementation.
+	context.getRegistry().registerBeanDefinition(ScheduleManagementBeans.BEAN_SCHEDULE_MANAGEMENT,
+		management.getBeanDefinition());
     }
 
     private BeanDefinitionBuilder buildMongoDeviceManagament() {
-        // Build device management implementation.
-        BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(MongoScheduleManagement.class);
-        management.addPropertyReference("mongoClient", ScheduleManagementBeans.BEAN_MONGODB_CLIENT);
-        return management;
+	// Build device management implementation.
+	BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(MongoScheduleManagement.class);
+	management.addPropertyReference("mongoClient", ScheduleManagementBeans.BEAN_MONGODB_CLIENT);
+	return management;
     }
 
     private BeanDefinitionBuilder buildRDBDeviceManagament() {
-        // Build device management implementation.
-        BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(RDBScheduleManagement.class);
-        management.addPropertyReference("dbClient", ScheduleManagementBeans.BEAN_RDB_CLIENT);
-        return management;
+	// Build device management implementation.
+	BeanDefinitionBuilder management = BeanDefinitionBuilder.rootBeanDefinition(RDBScheduleManagement.class);
+	management.addPropertyReference("dbClient", ScheduleManagementBeans.BEAN_RDB_CLIENT);
+	return management;
     }
 }

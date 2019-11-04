@@ -26,124 +26,124 @@ public class DbManager {
     public DbManager() {}
 
     public void start() {
-        SpringApplication app = new SpringApplication(Application.class);
-        app.addListeners(new MainBusiListeners());
-        context = app.run();
+	SpringApplication app = new SpringApplication(Application.class);
+	app.addListeners(new MainBusiListeners());
+	context = app.run();
     }
 
     public void stop() {
-        if(context != null) {
-            System.exit(SpringApplication.exit(context));
-        }
+	if(context != null) {
+	    System.exit(SpringApplication.exit(context));
+	}
     }
 
     public DeviceTypeRepository getDeviceTypeRepository() {
-        DeviceTypeRepository bean = ApplicationContextUtils.getBean(DeviceTypeRepository.class);
-        return bean;
+	DeviceTypeRepository bean = ApplicationContextUtils.getBean(DeviceTypeRepository.class);
+	return bean;
     }
 
     public AreaRepository getAreaRepository() {
-        AreaRepository bean = ApplicationContextUtils.getBean(AreaRepository.class);
-        return bean;
+	AreaRepository bean = ApplicationContextUtils.getBean(AreaRepository.class);
+	return bean;
     }
 
     public LocationRepository getLocationRepository() {
-        LocationRepository bean = ApplicationContextUtils.getBean(LocationRepository.class);
-        return bean;
+	LocationRepository bean = ApplicationContextUtils.getBean(LocationRepository.class);
+	return bean;
     }
 
     public AreaTypeRepository getAreaTypeRepository() {
-        AreaTypeRepository bean = ApplicationContextUtils.getBean(AreaTypeRepository.class);
-        return bean;
+	AreaTypeRepository bean = ApplicationContextUtils.getBean(AreaTypeRepository.class);
+	return bean;
     }
 
     public CommandParameterRepository getCommandParameterRepository() {
-        CommandParameterRepository bean = ApplicationContextUtils.getBean(CommandParameterRepository.class);
-        return bean;
+	CommandParameterRepository bean = ApplicationContextUtils.getBean(CommandParameterRepository.class);
+	return bean;
     }
 
     public CustomerRepository getCustomerRepository() {
-        CustomerRepository bean = ApplicationContextUtils.getBean(CustomerRepository.class);
-        return bean;
+	CustomerRepository bean = ApplicationContextUtils.getBean(CustomerRepository.class);
+	return bean;
     }
 
     public CustomerTypeRepository getCustomerTypeRepository() {
-        CustomerTypeRepository bean = ApplicationContextUtils.getBean(CustomerTypeRepository.class);
-        return bean;
+	CustomerTypeRepository bean = ApplicationContextUtils.getBean(CustomerTypeRepository.class);
+	return bean;
     }
 
     public DeviceRepository getDeviceRepository() {
-        DeviceRepository bean = ApplicationContextUtils.getBean(DeviceRepository.class);
-        return bean;
+	DeviceRepository bean = ApplicationContextUtils.getBean(DeviceRepository.class);
+	return bean;
     }
 
     public DeviceElementMappingRepository getDeviceElementMappingRepository() {
-        DeviceElementMappingRepository bean = ApplicationContextUtils.getBean(DeviceElementMappingRepository.class);
-        return bean;
+	DeviceElementMappingRepository bean = ApplicationContextUtils.getBean(DeviceElementMappingRepository.class);
+	return bean;
     }
 
     public DeviceAlarmRepository getDeviceAlarmRepository() {
-        DeviceAlarmRepository bean = ApplicationContextUtils.getBean(DeviceAlarmRepository.class);
-        return bean;
+	DeviceAlarmRepository bean = ApplicationContextUtils.getBean(DeviceAlarmRepository.class);
+	return bean;
     }
 
     public DeviceAssignmentRepository getDeviceAssignmentRepository() {
-        DeviceAssignmentRepository bean = ApplicationContextUtils.getBean(DeviceAssignmentRepository.class);
-        return bean;
+	DeviceAssignmentRepository bean = ApplicationContextUtils.getBean(DeviceAssignmentRepository.class);
+	return bean;
     }
 
     public DeviceCommandRepository getDeviceCommandRepository() {
-        DeviceCommandRepository bean = ApplicationContextUtils.getBean(DeviceCommandRepository.class);
-        return bean;
+	DeviceCommandRepository bean = ApplicationContextUtils.getBean(DeviceCommandRepository.class);
+	return bean;
     }
 
     public DeviceGroupRepository getDeviceGroupRepository() {
-        DeviceGroupRepository bean = ApplicationContextUtils.getBean(DeviceGroupRepository.class);
-        return bean;
+	DeviceGroupRepository bean = ApplicationContextUtils.getBean(DeviceGroupRepository.class);
+	return bean;
     }
 
     public DeviceGroupElementRepository getDeviceGroupElementRepository() {
-        DeviceGroupElementRepository bean = ApplicationContextUtils.getBean(DeviceGroupElementRepository.class);
-        return bean;
+	DeviceGroupElementRepository bean = ApplicationContextUtils.getBean(DeviceGroupElementRepository.class);
+	return bean;
     }
 
     public DeviceStatusRepository getDeviceStatusRepository() {
-        DeviceStatusRepository bean = ApplicationContextUtils.getBean(DeviceStatusRepository.class);
-        return bean;
+	DeviceStatusRepository bean = ApplicationContextUtils.getBean(DeviceStatusRepository.class);
+	return bean;
     }
 
     public ZoneRepository getZoneRepository() {
-        ZoneRepository bean = ApplicationContextUtils.getBean(ZoneRepository.class);
-        return bean;
+	ZoneRepository bean = ApplicationContextUtils.getBean(ZoneRepository.class);
+	return bean;
     }
 
     public AssetRepository getAssetRepository() {
-        AssetRepository bean = ApplicationContextUtils.getBean(AssetRepository.class);
-        return bean;
+	AssetRepository bean = ApplicationContextUtils.getBean(AssetRepository.class);
+	return bean;
     }
 
     public AssetTypeRepository getAssetTypeRepository() {
-        AssetTypeRepository bean = ApplicationContextUtils.getBean(AssetTypeRepository.class);
-        return bean;
+	AssetTypeRepository bean = ApplicationContextUtils.getBean(AssetTypeRepository.class);
+	return bean;
     }
 
     public BatchOperationRepository getBatchOperationRepository() {
-        BatchOperationRepository bean = ApplicationContextUtils.getBean(BatchOperationRepository.class);
-        return bean;
+	BatchOperationRepository bean = ApplicationContextUtils.getBean(BatchOperationRepository.class);
+	return bean;
     }
 
     public BatchOperationElementRepository getBatchOperationElementRepository() {
-        BatchOperationElementRepository bean = ApplicationContextUtils.getBean(BatchOperationElementRepository.class);
-        return bean;
+	BatchOperationElementRepository bean = ApplicationContextUtils.getBean(BatchOperationElementRepository.class);
+	return bean;
     }
 
     public ScheduleRepository getScheduleRepository() {
-        ScheduleRepository bean = ApplicationContextUtils.getBean(ScheduleRepository.class);
-        return bean;
+	ScheduleRepository bean = ApplicationContextUtils.getBean(ScheduleRepository.class);
+	return bean;
     }
 
     public ScheduledJobRepository getScheduledJobRepository() {
-        ScheduledJobRepository bean = ApplicationContextUtils.getBean(ScheduledJobRepository.class);
-        return bean;
+	ScheduledJobRepository bean = ApplicationContextUtils.getBean(ScheduledJobRepository.class);
+	return bean;
     }
 }

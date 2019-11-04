@@ -22,27 +22,27 @@ import java.util.Map;
  */
 public class DataSourceMultiTenantConnectionProviderImpl extends AbstractDataSourceBasedMultiTenantConnectionProviderImpl {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Autowired
-	private Map<String, DataSource> rdbDataSources;
+    @Autowired
+    private Map<String, DataSource> rdbDataSources;
 
-	@Override
-	protected DataSource selectAnyDataSource() {
-		DataSource selected = rdbDataSources.get(MultiTenantContext.getTenantId());
-		return selected;
-	}
+    @Override
+    protected DataSource selectAnyDataSource() {
+	DataSource selected = rdbDataSources.get(MultiTenantContext.getTenantId());
+	return selected;
+    }
 
-	@Override
-	protected DataSource selectDataSource(String tenantIdentifier) {
-		DataSource dataSource = this.rdbDataSources.get(tenantIdentifier);
-		return dataSource;
-	}
+    @Override
+    protected DataSource selectDataSource(String tenantIdentifier) {
+	DataSource dataSource = this.rdbDataSources.get(tenantIdentifier);
+	return dataSource;
+    }
 
-	@Override
-	public Connection getConnection(String tenantIdentifier) throws SQLException {
-		Connection connection = super.getConnection(tenantIdentifier);
-		connection.setSchema(tenantIdentifier);
-		return connection;
-	}
+    @Override
+    public Connection getConnection(String tenantIdentifier) throws SQLException {
+	Connection connection = super.getConnection(tenantIdentifier);
+	connection.setSchema(tenantIdentifier);
+	return connection;
+    }
 }

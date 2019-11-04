@@ -38,34 +38,34 @@ public class DatastoreConfigurationParser {
      * @param context
      * @return
      */
-	public static DatastoreConfigurationChoice parseDeviceManagementDatastoreChoice(Element element,
-																					ParserContext context) {
-		List<Element> children = DomUtils.getChildElements(element);
-		for (Element child : children) {
-			DeviceManagementDatastoreElements type = DeviceManagementDatastoreElements
-					.getByLocalName(child.getLocalName());
-			if (type == null) {
-				throw new RuntimeException("Unknown datastore element: " + child.getLocalName());
-			}
-			switch (type) {
-				case MongoDBDatastore: {
-					return parseMongoDbDatastore(child, context);
-				}
-				case MongoDBReference: {
-					return parseMongoDbReference(child, context);
-				}
-				case RDBDatastore:{
-					return parseRDBDatastore(child, context);
-				}
-				case RDBReference:{
-					return parseRDBReferences(child, context);
-				}
-			}
-		}
-		return null;
+    public static DatastoreConfigurationChoice parseDeviceManagementDatastoreChoice(Element element,
+	    ParserContext context) {
+	List<Element> children = DomUtils.getChildElements(element);
+	for (Element child : children) {
+	    DeviceManagementDatastoreElements type = DeviceManagementDatastoreElements
+		    .getByLocalName(child.getLocalName());
+	    if (type == null) {
+		throw new RuntimeException("Unknown datastore element: " + child.getLocalName());
+	    }
+	    switch (type) {
+	    case MongoDBDatastore: {
+		return parseMongoDbDatastore(child, context);
+	    }
+	    case MongoDBReference: {
+		return parseMongoDbReference(child, context);
+	    }
+	    case RDBDatastore:{
+		return parseRDBDatastore(child, context);
+	    }
+	    case RDBReference:{
+		return parseRDBReferences(child, context);
+	    }
+	    }
 	}
+	return null;
+    }
 
-	/**
+    /**
      * Parse potential configuration options for a event management datastore and
      * return configuration details.
      * 
@@ -141,11 +141,11 @@ public class DatastoreConfigurationParser {
      * @param context
      * @return
      */
-	protected static DatastoreConfigurationChoice parseMongoDbDatastore(Element element, ParserContext context) {
-		BeanDefinitionBuilder configuration = BeanDefinitionBuilder.rootBeanDefinition(MongoConfiguration.class);
-		parseMongoAttributes(element, context, configuration);
-		return new DatastoreConfigurationChoice(DatastoreConfigurationType.MongoDB, configuration.getBeanDefinition());
-	}
+    protected static DatastoreConfigurationChoice parseMongoDbDatastore(Element element, ParserContext context) {
+	BeanDefinitionBuilder configuration = BeanDefinitionBuilder.rootBeanDefinition(MongoConfiguration.class);
+	parseMongoAttributes(element, context, configuration);
+	return new DatastoreConfigurationChoice(DatastoreConfigurationType.MongoDB, configuration.getBeanDefinition());
+    }
 
     /**
      * Parse configuration reference for a MongoDB datastore.
@@ -154,43 +154,43 @@ public class DatastoreConfigurationParser {
      * @param context
      * @return
      */
-	protected static DatastoreConfigurationChoice parseMongoDbReference(Element element, ParserContext context) {
-		Attr id = element.getAttributeNode("id");
-		if (id == null) {
-			throw new RuntimeException("No id specified for MongoDB configuration.");
-		}
-		String reference = InstanceManagementBeans.BEAN_MONGO_CONFIGURATION_BASE + id.getValue();
-		return new DatastoreConfigurationChoice(DatastoreConfigurationType.MongoDBReference, reference);
+    protected static DatastoreConfigurationChoice parseMongoDbReference(Element element, ParserContext context) {
+	Attr id = element.getAttributeNode("id");
+	if (id == null) {
+	    throw new RuntimeException("No id specified for MongoDB configuration.");
 	}
+	String reference = InstanceManagementBeans.BEAN_MONGO_CONFIGURATION_BASE + id.getValue();
+	return new DatastoreConfigurationChoice(DatastoreConfigurationType.MongoDBReference, reference);
+    }
 
-	/**
-	 * Parse configuration for a RDB datastore.
-	 *
-	 * @param element
-	 * @param context
-	 * @return
-	 */
-	protected static DatastoreConfigurationChoice parseRDBDatastore(Element element, ParserContext context) {
-		BeanDefinitionBuilder configuration = BeanDefinitionBuilder.rootBeanDefinition(RDBConfiguration.class);
-		parseRDBAttributes(element, context, configuration);
-		return new DatastoreConfigurationChoice(DatastoreConfigurationType.RDB, configuration.getBeanDefinition());
-	}
+    /**
+     * Parse configuration for a RDB datastore.
+     *
+     * @param element
+     * @param context
+     * @return
+     */
+    protected static DatastoreConfigurationChoice parseRDBDatastore(Element element, ParserContext context) {
+	BeanDefinitionBuilder configuration = BeanDefinitionBuilder.rootBeanDefinition(RDBConfiguration.class);
+	parseRDBAttributes(element, context, configuration);
+	return new DatastoreConfigurationChoice(DatastoreConfigurationType.RDB, configuration.getBeanDefinition());
+    }
 
-	/**
-	 * Parse configuration reference for a RDB datastore.
-	 *
-	 * @param element
-	 * @param context
-	 * @return
-	 */
-	protected static DatastoreConfigurationChoice parseRDBReferences(Element element, ParserContext context) {
-		Attr id = element.getAttributeNode("id");
-		if (id == null) {
-			throw new RuntimeException("No id specified for RDB configuration.");
-		}
-		String reference = InstanceManagementBeans.BEAN_RDB_CONFIGURATION_BASE + id.getValue();
-		return new DatastoreConfigurationChoice(DatastoreConfigurationType.RDBReference, reference);
+    /**
+     * Parse configuration reference for a RDB datastore.
+     *
+     * @param element
+     * @param context
+     * @return
+     */
+    protected static DatastoreConfigurationChoice parseRDBReferences(Element element, ParserContext context) {
+	Attr id = element.getAttributeNode("id");
+	if (id == null) {
+	    throw new RuntimeException("No id specified for RDB configuration.");
 	}
+	String reference = InstanceManagementBeans.BEAN_RDB_CONFIGURATION_BASE + id.getValue();
+	return new DatastoreConfigurationChoice(DatastoreConfigurationType.RDBReference, reference);
+    }
 
     /**
      * Common parser logic for MongoDB attributes.
@@ -372,41 +372,41 @@ public class DatastoreConfigurationParser {
 	}
     }
 
-	public static void parseRDBAttributes(Element element, ParserContext context, BeanDefinitionBuilder client) {
-		Attr hostname = element.getAttributeNode("hostname");
-		if (hostname != null) {
-			client.addPropertyValue("hostname", hostname.getValue());
-		}
-
-		Attr databaseName = element.getAttributeNode("databaseName");
-
-		if (databaseName != null) {
-			client.addPropertyValue("databaseName", databaseName.getValue());
-		}
-
-		Attr url = element.getAttributeNode("url");
-		if (url != null) {
-			client.addPropertyValue("url", url.getValue());
-		}
-
-		// Determine if username and password are supplied.
-		Attr username = element.getAttributeNode("username");
-		Attr password = element.getAttributeNode("password");
-		if ((username != null) && ((password == null))) {
-			throw new RuntimeException("If username is specified for RDB, password must be specified as well.");
-		}
-		if ((username == null) && ((password != null))) {
-			throw new RuntimeException("If password is specified for RDB, username must be specified as well.");
-		}
-		if ((username != null) && (password != null)) {
-			client.addPropertyValue("username", username.getValue());
-			client.addPropertyValue("password", password.getValue());
-		}
-
-		// Set replica set name if specified.
-		Attr replicaSetName = element.getAttributeNode("replicaSetName");
-		if (replicaSetName != null) {
-			client.addPropertyValue("replicaSetName", replicaSetName.getValue());
-		}
+    public static void parseRDBAttributes(Element element, ParserContext context, BeanDefinitionBuilder client) {
+	Attr hostname = element.getAttributeNode("hostname");
+	if (hostname != null) {
+	    client.addPropertyValue("hostname", hostname.getValue());
 	}
+
+	Attr databaseName = element.getAttributeNode("databaseName");
+
+	if (databaseName != null) {
+	    client.addPropertyValue("databaseName", databaseName.getValue());
+	}
+
+	Attr url = element.getAttributeNode("url");
+	if (url != null) {
+	    client.addPropertyValue("url", url.getValue());
+	}
+
+	// Determine if username and password are supplied.
+	Attr username = element.getAttributeNode("username");
+	Attr password = element.getAttributeNode("password");
+	if ((username != null) && ((password == null))) {
+	    throw new RuntimeException("If username is specified for RDB, password must be specified as well.");
+	}
+	if ((username == null) && ((password != null))) {
+	    throw new RuntimeException("If password is specified for RDB, username must be specified as well.");
+	}
+	if ((username != null) && (password != null)) {
+	    client.addPropertyValue("username", username.getValue());
+	    client.addPropertyValue("password", password.getValue());
+	}
+
+	// Set replica set name if specified.
+	Attr replicaSetName = element.getAttributeNode("replicaSetName");
+	if (replicaSetName != null) {
+	    client.addPropertyValue("replicaSetName", replicaSetName.getValue());
+	}
+    }
 }

@@ -14,23 +14,23 @@ import java.util.List;
 /**
  * @param <T>
  *
- * Luciano Baez
+ * @author Luciano Baez
  */
 public class SearchResultsConverter<T> {
 
     public ISearchResults<T> convert(List<T> list, long totalElements) {
-        return new ISearchResults<T> () {
+	return new ISearchResults<T> () {
 
-            @Override
-            public long getNumResults() {
-                return totalElements;
-            }
+	    @Override
+	    public long getNumResults() {
+		return totalElements;
+	    }
 
-            @Override
-            public List<T> getResults() {
-                return list;
-            }
-        };
+	    @Override
+	    public List<T> getResults() {
+		return list;
+	    }
+	};
     }
 
 }

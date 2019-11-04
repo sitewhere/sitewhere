@@ -15,6 +15,6 @@ public class BatchManagementRDBClient extends DbClient {
      * @param configuration
      */
     public BatchManagementRDBClient(RDBConfiguration configuration) {
-        super(configuration);
+	super(configuration);
     }
 }

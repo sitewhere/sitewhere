@@ -40,52 +40,52 @@ public class CommandParameter implements ICommandParameter {
     }
 
     public CommandParameter(UUID id, String name, ParameterType type, boolean required) {
-        this.id = id;
-        this.name = name;
-        this.type = type;
-        this.required = required;
+	this.id = id;
+	this.name = name;
+	this.type = type;
+	this.required = required;
     }
 
     @Override
     public String getName() {
-        return name;
+	return name;
     }
 
     @Override
     public ParameterType getType() {
-        return type;
+	return type;
     }
 
     @Override
     public boolean isRequired() {
-        return required;
+	return required;
     }
 
     public UUID getId() {
-        return id;
+	return id;
     }
 
     public void setId(UUID id) {
-        this.id = id;
+	this.id = id;
     }
 
     public void setName(String name) {
-        this.name = name;
+	this.name = name;
     }
 
     public void setType(ParameterType type) {
-        this.type = type;
+	this.type = type;
     }
 
     public void setRequired(boolean required) {
-        this.required = required;
+	this.required = required;
     }
 
     public DeviceCommand getDeviceCommand() {
-        return deviceCommand;
+	return deviceCommand;
     }
 
     public void setDeviceCommand(DeviceCommand deviceCommand) {
-        this.deviceCommand = deviceCommand;
+	this.deviceCommand = deviceCommand;
     }
 }

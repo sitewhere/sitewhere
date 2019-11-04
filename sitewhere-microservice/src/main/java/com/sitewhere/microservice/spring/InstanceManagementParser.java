@@ -61,33 +61,33 @@ public class InstanceManagementParser extends AbstractBeanDefinitionParser {
      * @param element
      * @param context
      */
-	protected void parsePersistenceConfigurations(Element element, ParserContext context) {
-		List<Element> children = DomUtils.getChildElements(element);
-		for (Element child : children) {
-			PersistenceConfigurationsElements type = PersistenceConfigurationsElements
-					.getByLocalName(child.getLocalName());
-			if (type == null) {
-				throw new RuntimeException("Unknown persistence configurations element: " + child.getLocalName());
-			}
-			switch (type) {
-				case MongoConfigurations: {
-					(new MongoConfigurationsParser()).parse(child, context);
-					break;
-				}
-				case InfluxConfigurations: {
-					(new InfluxConfigurationsParser()).parse(child, context);
-					break;
-				}
-				case CassandraConfigurations: {
-					(new CassandraConfigurationsParser()).parse(child, context);
-					break;
-				}
-				case RDBConfigurations: {
-					(new RDBConfigurationsParser()).parse(child, context);
-				}
-			}
-		}
+    protected void parsePersistenceConfigurations(Element element, ParserContext context) {
+	List<Element> children = DomUtils.getChildElements(element);
+	for (Element child : children) {
+	    PersistenceConfigurationsElements type = PersistenceConfigurationsElements
+		    .getByLocalName(child.getLocalName());
+	    if (type == null) {
+		throw new RuntimeException("Unknown persistence configurations element: " + child.getLocalName());
+	    }
+	    switch (type) {
+	    case MongoConfigurations: {
+		(new MongoConfigurationsParser()).parse(child, context);
+		break;
+	    }
+	    case InfluxConfigurations: {
+		(new InfluxConfigurationsParser()).parse(child, context);
+		break;
+	    }
+	    case CassandraConfigurations: {
+		(new CassandraConfigurationsParser()).parse(child, context);
+		break;
+	    }
+	    case RDBConfigurations: {
+		(new RDBConfigurationsParser()).parse(child, context);
+	    }
+	    }
 	}
+    }
 
     /**
      * Parse connector configurations section.

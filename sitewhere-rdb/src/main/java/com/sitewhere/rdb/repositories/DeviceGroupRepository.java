@@ -17,6 +17,5 @@ import java.util.UUID;
 
 @Component
 public interface DeviceGroupRepository extends CrudRepository<DeviceGroup, UUID>, JpaSpecificationExecutor<DeviceGroup> {
-
     Optional<DeviceGroup> findByToken(String token);
 }

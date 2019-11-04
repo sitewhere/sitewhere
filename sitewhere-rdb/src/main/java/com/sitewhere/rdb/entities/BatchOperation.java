@@ -70,109 +70,109 @@ public class BatchOperation implements IBatchOperation {
 
     @Override
     public String getOperationType() {
-        return operationType;
+	return operationType;
     }
 
     @Override
     public Map<String, String> getParameters() {
-        return parameters;
+	return parameters;
     }
 
     @Override
     public BatchOperationStatus getProcessingStatus() {
-        return processingStatus;
+	return processingStatus;
     }
 
     @Override
     public Date getProcessingStartedDate() {
-        return processingStartedDate;
+	return processingStartedDate;
     }
 
     @Override
     public Date getProcessingEndedDate() {
-        return processingEndedDate;
+	return processingEndedDate;
     }
 
     @Override
     public UUID getId() {
-        return id;
+	return id;
     }
 
     @Override
     public String getToken() {
-        return token;
+	return token;
     }
 
     @Override
     public Date getCreatedDate() {
-        return createdDate;
+	return createdDate;
     }
 
     @Override
     public String getCreatedBy() {
-        return createdBy;
+	return createdBy;
     }
 
     @Override
     public Date getUpdatedDate() {
-        return updatedDate;
+	return updatedDate;
     }
 
     @Override
     public String getUpdatedBy() {
-        return updatedBy;
+	return updatedBy;
     }
 
     @Override
     public Map<String, String> getMetadata() {
-        return metadata;
+	return metadata;
     }
 
     public void setId(UUID id) {
-        this.id = id;
+	this.id = id;
     }
 
     public void setToken(String token) {
-        this.token = token;
+	this.token = token;
     }
 
     public void setOperationType(String operationType) {
-        this.operationType = operationType;
+	this.operationType = operationType;
     }
 
     public void setProcessingStatus(BatchOperationStatus processingStatus) {
-        this.processingStatus = processingStatus;
+	this.processingStatus = processingStatus;
     }
 
     public void setProcessingStartedDate(Date processingStartedDate) {
-        this.processingStartedDate = processingStartedDate;
+	this.processingStartedDate = processingStartedDate;
     }
 
     public void setProcessingEndedDate(Date processingEndedDate) {
-        this.processingEndedDate = processingEndedDate;
+	this.processingEndedDate = processingEndedDate;
     }
 
     public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
+	this.createdDate = createdDate;
     }
 
     public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
+	this.createdBy = createdBy;
     }
 
     public void setUpdatedDate(Date updatedDate) {
-        this.updatedDate = updatedDate;
+	this.updatedDate = updatedDate;
     }
 
     public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
+	this.updatedBy = updatedBy;
     }
 
     public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
+	this.metadata = metadata;
     }
 
     public void setParameters(Map<String, String> parameters) {
-        this.parameters = parameters;
+	this.parameters = parameters;
     }
 }

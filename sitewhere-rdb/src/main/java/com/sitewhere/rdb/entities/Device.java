@@ -92,138 +92,138 @@ public class Device implements IDevice {
 
     @Override
     public UUID getDeviceTypeId() {
-        return deviceTypeId;
+	return deviceTypeId;
     }
 
     @Override
     public List<UUID> getActiveDeviceAssignmentIds() {
-        return activeDeviceAssignmentIds;
+	return activeDeviceAssignmentIds;
     }
 
     @Override
     public UUID getParentDeviceId() {
-        return parentDeviceId;
+	return parentDeviceId;
     }
 
     @Override
     public List<IDeviceElementMapping> getDeviceElementMappings() {
-        List<IDeviceElementMapping> lst = new ArrayList<>();
-        for(DeviceElementMapping mapping : deviceElementMappings) {
-            lst.add(mapping);
-        }
-        return lst;
+	List<IDeviceElementMapping> lst = new ArrayList<>();
+	for(DeviceElementMapping mapping : deviceElementMappings) {
+	    lst.add(mapping);
+	}
+	return lst;
     }
 
     @Override
     public String getComments() {
-        return comments;
+	return comments;
     }
 
     @Override
     public String getStatus() {
-        return status;
+	return status;
     }
 
     @Override
     public UUID getId() {
-        return id;
+	return id;
     }
 
     @Override
     public String getToken() {
-        return token;
+	return token;
     }
 
     @Override
     public Date getCreatedDate() {
-        return createdDate;
+	return createdDate;
     }
 
     @Override
     public String getCreatedBy() {
-        return createdBy;
+	return createdBy;
     }
 
     @Override
     public Date getUpdatedDate() {
-        return updatedDate;
+	return updatedDate;
     }
 
     @Override
     public String getUpdatedBy() {
-        return updatedBy;
+	return updatedBy;
     }
 
     @Override
     public Map<String, String> getMetadata() {
-        return metadata;
+	return metadata;
     }
 
     public void setId(UUID id) {
-        this.id = id;
+	this.id = id;
     }
 
     public void setDeviceTypeId(UUID deviceTypeId) {
-        this.deviceTypeId = deviceTypeId;
+	this.deviceTypeId = deviceTypeId;
     }
 
     public void setDeviceAssignmentId(UUID deviceAssignmentId) {
-        this.deviceAssignmentId = deviceAssignmentId;
+	this.deviceAssignmentId = deviceAssignmentId;
     }
 
     public void setParentDeviceId(UUID parentDeviceId) {
-        this.parentDeviceId = parentDeviceId;
+	this.parentDeviceId = parentDeviceId;
     }
 
     public void setComments(String comments) {
-        this.comments = comments;
+	this.comments = comments;
     }
 
     public void setStatus(String status) {
-        this.status = status;
+	this.status = status;
     }
 
     public void setToken(String token) {
-        this.token = token;
+	this.token = token;
     }
 
     public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
+	this.createdDate = createdDate;
     }
 
     public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
+	this.createdBy = createdBy;
     }
 
     public void setUpdatedDate(Date updatedDate) {
-        this.updatedDate = updatedDate;
+	this.updatedDate = updatedDate;
     }
 
     public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
+	this.updatedBy = updatedBy;
     }
 
     public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
+	this.metadata = metadata;
     }
 
     public void setDeviceElementMappings(List<DeviceElementMapping> deviceElementMappings) {
-        this.deviceElementMappings = deviceElementMappings;
+	this.deviceElementMappings = deviceElementMappings;
     }
 
     public UUID getDeviceAssignmentId() {
-        return deviceAssignmentId;
+	return deviceAssignmentId;
     }
 
     public void setActiveDeviceAssignmentIds(List<UUID> activeDeviceAssignmentIds) {
-        this.activeDeviceAssignmentIds = activeDeviceAssignmentIds;
+	this.activeDeviceAssignmentIds = activeDeviceAssignmentIds;
     }
 
     public String getDeviceTypeToken() {
-        return deviceTypeToken;
+	return deviceTypeToken;
     }
 
     public void setDeviceTypeToken(String deviceTypeToken) {
-        this.deviceTypeToken = deviceTypeToken;
+	this.deviceTypeToken = deviceTypeToken;
     }
 }

@@ -10,11 +10,16 @@ package com.sitewhere.asset.persistence.rdb;
 import com.sitewhere.configuration.instance.rdb.RDBConfiguration;
 import com.sitewhere.rdb.DbClient;
 
+/**
+ * 
+ * @author Luciano Baez
+ *
+ */
 public class AssetManagementRDBClient extends DbClient {
     /**
      * @param configuration
      */
     public AssetManagementRDBClient(RDBConfiguration configuration) {
-        super(configuration);
+	super(configuration);
     }
 }

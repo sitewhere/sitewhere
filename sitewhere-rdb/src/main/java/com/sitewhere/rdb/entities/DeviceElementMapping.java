@@ -34,41 +34,41 @@ public class DeviceElementMapping implements IDeviceElementMapping {
     }
 
     public DeviceElementMapping(String deviceElementSchemaPath, String deviceToken) {
-        this.deviceElementSchemaPath = deviceElementSchemaPath;
-        this.deviceToken = deviceToken;
+	this.deviceElementSchemaPath = deviceElementSchemaPath;
+	this.deviceToken = deviceToken;
     }
 
     @Override
     public String getDeviceElementSchemaPath() {
-        return deviceElementSchemaPath;
+	return deviceElementSchemaPath;
     }
 
     @Override
     public String getDeviceToken() {
-        return deviceToken;
+	return deviceToken;
     }
 
     public UUID getId() {
-        return id;
+	return id;
     }
 
     public void setId(UUID id) {
-        this.id = id;
+	this.id = id;
     }
 
     public void setDeviceElementSchemaPath(String deviceElementSchemaPath) {
-        this.deviceElementSchemaPath = deviceElementSchemaPath;
+	this.deviceElementSchemaPath = deviceElementSchemaPath;
     }
 
     public void setDeviceToken(String deviceToken) {
-        this.deviceToken = deviceToken;
+	this.deviceToken = deviceToken;
     }
 
     public Device getDevice() {
-        return device;
+	return device;
     }
 
     public void setDevice(Device device) {
-        this.device = device;
+	this.device = device;
     }
 }

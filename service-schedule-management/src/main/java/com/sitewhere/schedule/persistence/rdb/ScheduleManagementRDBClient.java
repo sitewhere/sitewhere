@@ -15,6 +15,6 @@ public class ScheduleManagementRDBClient extends DbClient {
      * @param configuration
      */
     public ScheduleManagementRDBClient(RDBConfiguration configuration) {
-        super(configuration);
+	super(configuration);
     }
 }

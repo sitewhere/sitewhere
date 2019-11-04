@@ -86,132 +86,132 @@ public class AssetType implements IAssetType {
 
     @Override
     public AssetCategory getAssetCategory() {
-        return assetCategory;
+	return assetCategory;
     }
 
     @Override
     public String getName() {
-        return name;
+	return name;
     }
 
     @Override
     public String getDescription() {
-        return description;
+	return description;
     }
 
     @Override
     public String getBackgroundColor() {
-        return backgroundColor;
+	return backgroundColor;
     }
 
     @Override
     public String getForegroundColor() {
-        return foregroundColor;
+	return foregroundColor;
     }
 
     @Override
     public String getBorderColor() {
-        return borderColor;
+	return borderColor;
     }
 
     @Override
     public String getIcon() {
-        return icon;
+	return icon;
     }
 
     @Override
     public String getImageUrl() {
-        return imageUrl;
+	return imageUrl;
     }
 
     @Override
     public UUID getId() {
-        return id;
+	return id;
     }
 
     @Override
     public String getToken() {
-        return token;
+	return token;
     }
 
     @Override
     public Date getCreatedDate() {
-        return createdDate;
+	return createdDate;
     }
 
     @Override
     public String getCreatedBy() {
-        return createdBy;
+	return createdBy;
     }
 
     @Override
     public Date getUpdatedDate() {
-        return updatedDate;
+	return updatedDate;
     }
 
     @Override
     public String getUpdatedBy() {
-        return updatedBy;
+	return updatedBy;
     }
 
     @Override
     public Map<String, String> getMetadata() {
-        return metadata;
+	return metadata;
     }
 
     public void setAssetCategory(AssetCategory assetCategory) {
-        this.assetCategory = assetCategory;
+	this.assetCategory = assetCategory;
     }
 
     public void setName(String name) {
-        this.name = name;
+	this.name = name;
     }
 
     public void setDescription(String description) {
-        this.description = description;
+	this.description = description;
     }
 
     public void setBackgroundColor(String backgroundColor) {
-        this.backgroundColor = backgroundColor;
+	this.backgroundColor = backgroundColor;
     }
 
     public void setForegroundColor(String foregroundColor) {
-        this.foregroundColor = foregroundColor;
+	this.foregroundColor = foregroundColor;
     }
 
     public void setBorderColor(String borderColor) {
-        this.borderColor = borderColor;
+	this.borderColor = borderColor;
     }
 
     public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+	this.imageUrl = imageUrl;
     }
 
     public void setIcon(String icon) {
-        this.icon = icon;
+	this.icon = icon;
     }
 
     public void setToken(String token) {
-        this.token = token;
+	this.token = token;
     }
 
     public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
+	this.createdDate = createdDate;
     }
 
     public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
+	this.createdBy = createdBy;
     }
 
     public void setUpdatedDate(Date updatedDate) {
-        this.updatedDate = updatedDate;
+	this.updatedDate = updatedDate;
     }
 
     public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
+	this.updatedBy = updatedBy;
     }
 
     public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
+	this.metadata = metadata;
     }
 }

@@ -41,13 +41,13 @@ public class RDBConfigurationsParser extends AbstractBeanDefinitionParser {
     protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
 	List<Element> children = DomUtils.getChildElements(element);
 	for (Element child : children) {
-		RDBElements type = RDBElements.getByLocalName(child.getLocalName());
+	    RDBElements type = RDBElements.getByLocalName(child.getLocalName());
 	    if (type == null) {
 		throw new RuntimeException("Unknown RDB configuration element: " + child.getLocalName());
 	    }
 	    switch (type) {
 	    case RDBConfiguration: {
-			parseRDBConfiguration(child, context);
+		parseRDBConfiguration(child, context);
 		break;
 	    }
 	    }
@@ -61,17 +61,17 @@ public class RDBConfigurationsParser extends AbstractBeanDefinitionParser {
      * @param element
      * @param context
      */
-	protected void parseRDBConfiguration(Element element, ParserContext context) {
-		BeanDefinitionBuilder configuration = BeanDefinitionBuilder.rootBeanDefinition(RDBConfiguration.class);
+    protected void parseRDBConfiguration(Element element, ParserContext context) {
+	BeanDefinitionBuilder configuration = BeanDefinitionBuilder.rootBeanDefinition(RDBConfiguration.class);
 
-		Attr id = element.getAttributeNode("id");
-		if (id == null) {
-			throw new RuntimeException("No id specified for RDB configuration.");
-		}
-		DatastoreConfigurationParser.parseRDBAttributes(element, context, configuration);
-
-		// Register bean using id as part of name.
-		String beanName = InstanceManagementBeans.BEAN_RDB_CONFIGURATION_BASE + id.getValue();
-		context.getRegistry().registerBeanDefinition(beanName, configuration.getBeanDefinition());
+	Attr id = element.getAttributeNode("id");
+	if (id == null) {
+	    throw new RuntimeException("No id specified for RDB configuration.");
 	}
+	DatastoreConfigurationParser.parseRDBAttributes(element, context, configuration);
+
+	// Register bean using id as part of name.
+	String beanName = InstanceManagementBeans.BEAN_RDB_CONFIGURATION_BASE + id.getValue();
+	context.getRegistry().registerBeanDefinition(beanName, configuration.getBeanDefinition());
+    }
 }

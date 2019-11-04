@@ -53,61 +53,60 @@ public class Location implements ILocation {
      * @param elevation
      */
     public Location(Double latitude, Double longitude, Double elevation) {
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.elevation = elevation;
+	this.latitude = latitude;
+	this.longitude = longitude;
+	this.elevation = elevation;
     }
 
     @Override
     public Double getLatitude() {
-        return latitude;
+	return latitude;
     }
 
     @Override
     public Double getLongitude() {
-        return longitude;
+	return longitude;
     }
 
     @Override
     public Double getElevation() {
-        return elevation;
+	return elevation;
     }
 
     public void setLatitude(Double latitude) {
-        this.latitude = latitude;
+	this.latitude = latitude;
     }
 
     public void setLongitude(Double longitude) {
-        this.longitude = longitude;
+	this.longitude = longitude;
     }
 
     public void setElevation(Double elevation) {
-        this.elevation = elevation;
+	this.elevation = elevation;
     }
 
     public UUID getId() {
-        return id;
+	return id;
     }
 
     public void setId(UUID id) {
-        this.id = id;
+	this.id = id;
     }
 
     public Area getArea() {
-        return area;
+	return area;
     }
 
     public void setArea(Area area) {
-        this.area = area;
+	this.area = area;
     }
 
     public Zone getZone() {
-        return zone;
+	return zone;
     }
 
     public void setZone(Zone zone) {
-        this.zone = zone;
+	this.zone = zone;
     }
-
 
 }

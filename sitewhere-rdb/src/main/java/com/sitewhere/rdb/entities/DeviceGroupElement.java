@@ -46,47 +46,47 @@ public class DeviceGroupElement implements IDeviceGroupElement {
 
     @Override
     public UUID getId() {
-        return id;
+	return id;
     }
 
     @Override
     public UUID getGroupId() {
-        return groupId;
+	return groupId;
     }
 
     @Override
     public UUID getDeviceId() {
-        return deviceId;
+	return deviceId;
     }
 
     @Override
     public UUID getNestedGroupId() {
-        return nestedGroupId;
+	return nestedGroupId;
     }
 
     @Override
     public List<String> getRoles() {
-        return roles;
+	return roles;
     }
 
     public void setId(UUID id) {
-        this.id = id;
+	this.id = id;
     }
 
     public void setGroupId(UUID groupId) {
-        this.groupId = groupId;
+	this.groupId = groupId;
     }
 
     public void setDeviceId(UUID deviceId) {
-        this.deviceId = deviceId;
+	this.deviceId = deviceId;
     }
 
     public void setNestedGroupId(UUID nestedGroupId) {
-        this.nestedGroupId = nestedGroupId;
+	this.nestedGroupId = nestedGroupId;
     }
 
     public void setRoles(List<String> roles) {
-        this.roles = roles;
+	this.roles = roles;
     }
 
 }

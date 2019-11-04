@@ -89,136 +89,136 @@ public class DeviceAssignment implements IDeviceAssignment {
 
     @Override
     public UUID getDeviceId() {
-        return deviceId;
+	return deviceId;
     }
 
     @Override
     public UUID getDeviceTypeId() {
-        return deviceTypeId;
+	return deviceTypeId;
     }
 
     @Override
     public UUID getCustomerId() {
-        return customerId;
+	return customerId;
     }
 
     @Override
     public UUID getAreaId() {
-        return areaId;
+	return areaId;
     }
 
     @Override
     public UUID getAssetId() {
-        return assetId;
+	return assetId;
     }
 
     @Override
     public DeviceAssignmentStatus getStatus() {
-        return status;
+	return status;
     }
 
     @Override
     public Date getActiveDate() {
-        return activeDate;
+	return activeDate;
     }
 
     @Override
     public Date getReleasedDate() {
-        return releasedDate;
+	return releasedDate;
     }
 
     @Override
     public UUID getId() {
-        return id;
+	return id;
     }
 
     @Override
     public String getToken() {
-        return token;
+	return token;
     }
 
     @Override
     public Date getCreatedDate() {
-        return createdDate;
+	return createdDate;
     }
 
     @Override
     public String getCreatedBy() {
-        return createdBy;
+	return createdBy;
     }
 
     @Override
     public Date getUpdatedDate() {
-        return updatedDate;
+	return updatedDate;
     }
 
     @Override
     public String getUpdatedBy() {
-        return updatedBy;
+	return updatedBy;
     }
 
     @Override
     public Map<String, String> getMetadata() {
-        return metadata;
+	return metadata;
     }
 
     public void setId(UUID id) {
-        this.id = id;
+	this.id = id;
     }
 
     public void setDeviceId(UUID deviceId) {
-        this.deviceId = deviceId;
+	this.deviceId = deviceId;
     }
 
     public void setDeviceTypeId(UUID deviceTypeId) {
-        this.deviceTypeId = deviceTypeId;
+	this.deviceTypeId = deviceTypeId;
     }
 
     public void setCustomerId(UUID customerId) {
-        this.customerId = customerId;
+	this.customerId = customerId;
     }
 
     public void setAreaId(UUID areaId) {
-        this.areaId = areaId;
+	this.areaId = areaId;
     }
 
     public void setAssetId(UUID assetId) {
-        this.assetId = assetId;
+	this.assetId = assetId;
     }
 
     public void setStatus(DeviceAssignmentStatus status) {
-        this.status = status;
+	this.status = status;
     }
 
     public void setActiveDate(Date activeDate) {
-        this.activeDate = activeDate;
+	this.activeDate = activeDate;
     }
 
     public void setReleasedDate(Date releasedDate) {
-        this.releasedDate = releasedDate;
+	this.releasedDate = releasedDate;
     }
 
     public void setToken(String token) {
-        this.token = token;
+	this.token = token;
     }
 
     public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
+	this.createdDate = createdDate;
     }
 
     public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
+	this.createdBy = createdBy;
     }
 
     public void setUpdatedDate(Date updatedDate) {
-        this.updatedDate = updatedDate;
+	this.updatedDate = updatedDate;
     }
 
     public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
+	this.updatedBy = updatedBy;
     }
 
     public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
+	this.metadata = metadata;
     }
 }

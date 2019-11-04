@@ -148,7 +148,7 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
 
 	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String,
 		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
-			.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
+		.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
 	CommonDatastoreProvider.addMongoDbAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
 	return builder.build();
@@ -161,37 +161,37 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
      * @return
      */
     protected ElementNode createRDBPersistenceConfigurationsElement() {
-        ElementNode.Builder builder = new ElementNode.Builder(
-                InstanceManagementRoles.RDBConfigurations.getRole().getName(),
-                IInstanceManagementParser.PersistenceConfigurationsElements.RDBConfigurations.getLocalName(),
-                "database", InstanceManagementRoleKeys.RDBConfigurations, this);
+	ElementNode.Builder builder = new ElementNode.Builder(
+		InstanceManagementRoles.RDBConfigurations.getRole().getName(),
+		IInstanceManagementParser.PersistenceConfigurationsElements.RDBConfigurations.getLocalName(),
+		"database", InstanceManagementRoleKeys.RDBConfigurations, this);
 
-        builder.description("Provides global RDB persistence configurations that can be reused in tenants.");
+	builder.description("Provides global RDB persistence configurations that can be reused in tenants.");
 
-        return builder.build();
+	return builder.build();
     }
 
-	/**
-	 * Create element configuration for RDB settings.
-	 *
-	 * @return
-	 */
-	protected ElementNode createRDBConfigurationElement() {
-		ElementNode.Builder builder = new ElementNode.Builder(
-				InstanceManagementRoles.RDBConfigurations.getRole().getName(),
-				IInstanceManagementParser.RDBElements.RDBConfiguration.getLocalName(), "database",
-				InstanceManagementRoleKeys.RDBConfiguration, this);
+    /**
+     * Create element configuration for RDB settings.
+     *
+     * @return
+     */
+    protected ElementNode createRDBConfigurationElement() {
+	ElementNode.Builder builder = new ElementNode.Builder(
+		InstanceManagementRoles.RDBConfigurations.getRole().getName(),
+		IInstanceManagementParser.RDBElements.RDBConfiguration.getLocalName(), "database",
+		InstanceManagementRoleKeys.RDBConfiguration, this);
 
-		builder.description("Global configuration for RDB data persistence.");
-		builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	builder.description("Global configuration for RDB data persistence.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-		builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String,
-				ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
-				.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
-		CommonDatastoreProvider.addRDBAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+		.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
+	CommonDatastoreProvider.addRDBAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-		return builder.build();
-	}
+	return builder.build();
+    }
 
 
     /**
@@ -227,7 +227,7 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
 
 	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String,
 		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
-			.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
+		.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
 	CommonDatastoreProvider.addInfluxDbAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY,
 		ConfigurationModelProvider.ATTR_GROUP_BATCH);
 
@@ -267,7 +267,7 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
 
 	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String,
 		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
-			.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
+		.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
 	CommonDatastoreProvider.addCassandraAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
 	return builder.build();
@@ -321,7 +321,7 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
 
 	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String,
 		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
-			.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
+		.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
 	CommonConnectorModel.addSolrConnectivityAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
 	return builder.build();

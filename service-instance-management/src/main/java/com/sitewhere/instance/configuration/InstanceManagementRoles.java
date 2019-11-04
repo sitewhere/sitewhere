@@ -31,7 +31,7 @@ public enum InstanceManagementRoles implements IConfigurationRoleProvider {
 	    new IRoleKey[] { InstanceManagementRoleKeys.MongoDBConfigurations,
 		    InstanceManagementRoleKeys.InfluxDBConfigurations,
 		    InstanceManagementRoleKeys.CassandraConfigurations,
-            InstanceManagementRoleKeys.RDBConfigurations })),
+		    InstanceManagementRoleKeys.RDBConfigurations })),
 
     /** MongoDB persistence configurations. */
     MongoDBConfigurations(ConfigurationRole.build(InstanceManagementRoleKeys.MongoDBConfigurations,
@@ -44,12 +44,12 @@ public enum InstanceManagementRoles implements IConfigurationRoleProvider {
 
     /** RDB persistence configurations. */
     RDBConfigurations(ConfigurationRole.build(InstanceManagementRoleKeys.RDBConfigurations,
-            "RDB Persistence Configurations", true, false, false,
-            new IRoleKey[] { InstanceManagementRoleKeys.RDBConfiguration })),
+	    "RDB Persistence Configurations", true, false, false,
+	    new IRoleKey[] { InstanceManagementRoleKeys.RDBConfiguration })),
 
     /** RDB datastore configuration. */
     RDBConfiguration(ConfigurationRole.build(InstanceManagementRoleKeys.RDBConfiguration,
-            "RDB Configuration", true, true, true)),
+	    "RDB Configuration", true, true, true)),
 
     /** InfluxDB persistence configurations. */
     InfluxDBConfigurations(ConfigurationRole.build(InstanceManagementRoleKeys.InfluxDBConfigurations,

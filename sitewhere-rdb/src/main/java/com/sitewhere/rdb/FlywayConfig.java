@@ -15,13 +15,13 @@ import javax.sql.DataSource;
 public class FlywayConfig {
     @Bean
     public Boolean tenantsFlyway(String tenantName, DataSource dataSource){
-        String schema = tenantName;
-        Flyway flyway = new Flyway();
-        flyway.setLocations("db/migrations/tenants");
-        flyway.setDataSource(dataSource);
-        flyway.setSchemas(schema);
-        int migrate = flyway.migrate();
-        return (migrate > 0);
+	String schema = tenantName;
+	Flyway flyway = new Flyway();
+	flyway.setLocations("db/migrations/tenants");
+	flyway.setDataSource(dataSource);
+	flyway.setSchemas(schema);
+	int migrate = flyway.migrate();
+	return (migrate > 0);
     }
 
 }

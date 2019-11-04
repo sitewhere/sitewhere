@@ -46,53 +46,53 @@ public class DeviceElementSchema implements IDeviceElementSchema, Serializable {
 
     @Override
     public List<IDeviceSlot> getDeviceSlots() {
-        List<IDeviceSlot> ideviceSlots = new ArrayList<>();
-        for(DeviceSlot slot : deviceSlots) {
-            ideviceSlots.add(slot);
-        }
-        return ideviceSlots;
+	List<IDeviceSlot> ideviceSlots = new ArrayList<>();
+	for(DeviceSlot slot : deviceSlots) {
+	    ideviceSlots.add(slot);
+	}
+	return ideviceSlots;
     }
 
     @Override
     public List<IDeviceUnit> getDeviceUnits() {
-        List<IDeviceUnit> ideviceUnits = new ArrayList<>();
-        for(DeviceUnit util : deviceUnits) {
-            ideviceUnits.add(util);
-        }
-        return ideviceUnits;
+	List<IDeviceUnit> ideviceUnits = new ArrayList<>();
+	for(DeviceUnit util : deviceUnits) {
+	    ideviceUnits.add(util);
+	}
+	return ideviceUnits;
     }
 
     @Override
     public String getName() {
-        return name;
+	return name;
     }
 
     @Override
     public String getPath() {
-        return path;
+	return path;
     }
 
     public void setName(String name) {
-        this.name = name;
+	this.name = name;
     }
 
     public void setPath(String path) {
-        this.path = path;
+	this.path = path;
     }
 
     public void setDeviceSlots(List<DeviceSlot> deviceSlots) {
-        this.deviceSlots = deviceSlots;
+	this.deviceSlots = deviceSlots;
     }
 
     public void setDeviceUnits(List<DeviceUnit> deviceUnits) {
-        this.deviceUnits = deviceUnits;
+	this.deviceUnits = deviceUnits;
     }
 
     public UUID getId() {
-        return id;
+	return id;
     }
 
     public void setId(UUID id) {
-        this.id = id;
+	this.id = id;
     }
 }

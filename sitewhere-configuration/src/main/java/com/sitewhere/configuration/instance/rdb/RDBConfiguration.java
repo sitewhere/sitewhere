@@ -58,82 +58,82 @@ public class RDBConfiguration {
     private boolean autoConfigureReplication = true;
 
     public String getFormatSql() {
-        return formatSql;
+	return formatSql;
     }
 
     public void setFormatSql(String formatSql) {
-        this.formatSql = formatSql;
+	this.formatSql = formatSql;
     }
 
     public String getShowSql() {
-        return showSql;
+	return showSql;
     }
 
     public void setShowSql(String showSql) {
-        this.showSql = showSql;
+	this.showSql = showSql;
     }
 
     public String getDialect() {
-        return dialect;
+	return dialect;
     }
 
     public void setDialect(String dialect) {
-        this.dialect = dialect;
+	this.dialect = dialect;
     }
 
     public String getHbm2ddlAuto() {
-        return hbm2ddlAuto;
+	return hbm2ddlAuto;
     }
 
     public void setHbm2ddlAuto(String hbm2ddlAuto) {
-        this.hbm2ddlAuto = hbm2ddlAuto;
+	this.hbm2ddlAuto = hbm2ddlAuto;
     }
 
     public String getDriver() {
-        return driver;
+	return driver;
     }
 
     public void setDriver(String driver) {
-        this.driver = driver;
+	this.driver = driver;
     }
 
     public String getUrl() {
-        return url;
+	return url;
     }
 
     public void setUrl(String url) {
-        this.url = url;
+	this.url = url;
     }
 
     public String getUsername() {
-        return username;
+	return username;
     }
 
     public void setUsername(String username) {
-        this.username = username;
+	this.username = username;
     }
 
     public String getPassword() {
-        return password;
+	return password;
     }
 
     public void setPassword(String password) {
-        this.password = password;
+	this.password = password;
     }
 
     public String getReplicaSetName() {
-        return replicaSetName;
+	return replicaSetName;
     }
 
     public void setReplicaSetName(String replicaSetName) {
-        this.replicaSetName = replicaSetName;
+	this.replicaSetName = replicaSetName;
     }
 
     public boolean isAutoConfigureReplication() {
-        return autoConfigureReplication;
+	return autoConfigureReplication;
     }
 
     public void setAutoConfigureReplication(boolean autoConfigureReplication) {
-        this.autoConfigureReplication = autoConfigureReplication;
+	this.autoConfigureReplication = autoConfigureReplication;
     }
 }

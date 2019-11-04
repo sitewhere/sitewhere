@@ -15,6 +15,6 @@ public class DeviceManagementRDBClient extends DbClient {
      * @param configuration
      */
     public DeviceManagementRDBClient(RDBConfiguration configuration) {
-        super(configuration);
+	super(configuration);
     }
 }

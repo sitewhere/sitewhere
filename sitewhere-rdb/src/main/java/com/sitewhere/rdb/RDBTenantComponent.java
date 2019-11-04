@@ -30,7 +30,7 @@ public abstract class RDBTenantComponent <T extends DbClient> extends TenantEngi
     }
 
     public RDBTenantComponent(LifecycleComponentType type) {
-        super(type);
+	super(type);
     }
 
     /**
@@ -43,7 +43,7 @@ public abstract class RDBTenantComponent <T extends DbClient> extends TenantEngi
 
 
     public ExecutorService getIndexer() {
-        return indexer;
+	return indexer;
     }
 
     /*
@@ -53,10 +53,10 @@ public abstract class RDBTenantComponent <T extends DbClient> extends TenantEngi
      */
     @Override
     public void provision(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-        String tenantId = this.getTenantEngine().getTenant().getId().toString();
-        Map<String, DataSource> rdbDataSources = (Map<String, DataSource>) ApplicationContextUtils.getBean("rdbDataSources");
-        FlywayConfig flywayConfig = new FlywayConfig();
-        flywayConfig.tenantsFlyway(tenantId, rdbDataSources.get(tenantId));
+	String tenantId = this.getTenantEngine().getTenant().getId().toString();
+	Map<String, DataSource> rdbDataSources = (Map<String, DataSource>) ApplicationContextUtils.getBean("rdbDataSources");
+	FlywayConfig flywayConfig = new FlywayConfig();
+	flywayConfig.tenantsFlyway(tenantId, rdbDataSources.get(tenantId));
     }
 
     /*
@@ -66,8 +66,8 @@ public abstract class RDBTenantComponent <T extends DbClient> extends TenantEngi
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-        if (getIndexer() != null) {
-            getIndexer().shutdownNow();
-        }
+	if (getIndexer() != null) {
+	    getIndexer().shutdownNow();
+	}
     }
 }

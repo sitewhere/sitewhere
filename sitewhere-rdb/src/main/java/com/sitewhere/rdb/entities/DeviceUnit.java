@@ -50,61 +50,61 @@ public class DeviceUnit implements IDeviceUnit, Serializable {
 
     @Override
     public String getName() {
-        return name;
+	return name;
     }
 
     @Override
     public String getPath() {
-        return path;
+	return path;
     }
 
     public UUID getId() {
-        return id;
+	return id;
     }
 
     public void setId(UUID id) {
-        this.id = id;
+	this.id = id;
     }
 
     public void setName(String name) {
-        this.name = name;
+	this.name = name;
     }
 
     public void setPath(String path) {
-        this.path = path;
+	this.path = path;
     }
 
     @Override
     public List<IDeviceSlot> getDeviceSlots() {
-        List<IDeviceSlot> list = new ArrayList<>();
-        for(DeviceSlot ds : deviceSlots) {
-            list.add(ds);
-        }
-        return list;
+	List<IDeviceSlot> list = new ArrayList<>();
+	for(DeviceSlot ds : deviceSlots) {
+	    list.add(ds);
+	}
+	return list;
     }
 
     @Override
     public List<IDeviceUnit> getDeviceUnits() {
-        List<IDeviceUnit> list = new ArrayList<>();
-        for(DeviceUnit du : deviceUnits) {
-            list.add(du);
-        }
-        return list;
+	List<IDeviceUnit> list = new ArrayList<>();
+	for(DeviceUnit du : deviceUnits) {
+	    list.add(du);
+	}
+	return list;
     }
 
     public void setDeviceSlots(List<DeviceSlot> deviceSlots) {
-        this.deviceSlots = deviceSlots;
+	this.deviceSlots = deviceSlots;
     }
 
     public void setDeviceUnits(List<DeviceUnit> deviceUnits) {
-        this.deviceUnits = deviceUnits;
+	this.deviceUnits = deviceUnits;
     }
 
     public Device getDeviceUnitParent() {
-        return deviceUnitParent;
+	return deviceUnitParent;
     }
 
     public void setDeviceUnitParent(Device deviceUnitParent) {
-        this.deviceUnitParent = deviceUnitParent;
+	this.deviceUnitParent = deviceUnitParent;
     }
 }

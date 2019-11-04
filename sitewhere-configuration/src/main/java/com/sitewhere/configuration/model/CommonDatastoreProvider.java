@@ -139,48 +139,48 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 
 	builder.attribute((new AttributeNode.Builder("Configuration Id", "id", AttributeType.String,
 		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("Unique id for global configuration")
-			.makeRequired().build()));
+		.makeRequired().build()));
 
 	return builder.build();
     }
 
-	/**
-	 * Create RDB datastore element.
-	 *
-	 * @return
-	 */
-	protected ElementNode createRDBDatastoreElement() {
-		ElementNode.Builder builder = new ElementNode.Builder(CommonDatastoreRoles.RDBDatastore.getRole().getName(),
-				IDatastoreCommonParser.DeviceManagementDatastoreElements.RDBDatastore.getLocalName(), "database",
-				CommonDatastoreRoleKeys.RDBDatastore, this);
+    /**
+     * Create RDB datastore element.
+     *
+     * @return
+     */
+    protected ElementNode createRDBDatastoreElement() {
+	ElementNode.Builder builder = new ElementNode.Builder(CommonDatastoreRoles.RDBDatastore.getRole().getName(),
+		IDatastoreCommonParser.DeviceManagementDatastoreElements.RDBDatastore.getLocalName(), "database",
+		CommonDatastoreRoleKeys.RDBDatastore, this);
 
-		builder.description("Use a locally-defined RDB datastore.");
-		builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	builder.description("Use a locally-defined RDB datastore.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-		addRDBAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	addRDBAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-		return builder.build();
-	}
+	return builder.build();
+    }
 
-	/**
-	 * Create RDB datastore reference element.
-	 *
-	 * @return
-	 */
-	protected ElementNode createRDBReferenceElement() {
-		ElementNode.Builder builder = new ElementNode.Builder(CommonDatastoreRoles.RDBReference.getRole().getName(),
-				IDatastoreCommonParser.DeviceManagementDatastoreElements.RDBReference.getLocalName(), "database",
-				CommonDatastoreRoleKeys.RDBReference, this);
+    /**
+     * Create RDB datastore reference element.
+     *
+     * @return
+     */
+    protected ElementNode createRDBReferenceElement() {
+	ElementNode.Builder builder = new ElementNode.Builder(CommonDatastoreRoles.RDBReference.getRole().getName(),
+		IDatastoreCommonParser.DeviceManagementDatastoreElements.RDBReference.getLocalName(), "database",
+		CommonDatastoreRoleKeys.RDBReference, this);
 
-		builder.description("Use a globally-defined RDB datastore.");
-		builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+	builder.description("Use a globally-defined RDB datastore.");
+	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-		builder.attribute((new AttributeNode.Builder("Configuration Id", "id", AttributeType.String,
-				ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("Unique id for global configuration")
-				.makeRequired().build()));
+	builder.attribute((new AttributeNode.Builder("Configuration Id", "id", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("Unique id for global configuration")
+		.makeRequired().build()));
 
-		return builder.build();
-	}
+	return builder.build();
+    }
 
     /**
      * Create InfluxDB datastore element.
@@ -219,7 +219,7 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 
 	builder.attribute((new AttributeNode.Builder("Configuration Id", "id", AttributeType.String,
 		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("Unique id for global configuration")
-			.makeRequired().build()));
+		.makeRequired().build()));
 
 	return builder.build();
     }
@@ -259,7 +259,7 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 
 	builder.attribute((new AttributeNode.Builder("Configuration Id", "id", AttributeType.String,
 		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("Unique id for global configuration")
-			.makeRequired().build()));
+		.makeRequired().build()));
 
 	return builder.build();
     }
@@ -301,27 +301,27 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 			.build()));
 	builder.attribute((new AttributeNode.Builder("Auto-configure replication", "autoConfigureReplication",
 		AttributeType.Boolean, connectivity)
-			.description("Indicates whether replication should be configured automatically "
-				+ "when multiple hosts/ports are specified.")
-			.build()));
+		.description("Indicates whether replication should be configured automatically "
+			+ "when multiple hosts/ports are specified.")
+		.build()));
     }
 
-	/**
-	 * Adds RDB configuration attributes.
-	 *
-	 * @param builder
-	 * @param connectivity
-	 */
-	public static void addRDBAttributes(ElementNode.Builder builder, IAttributeGroup connectivity) {
-		builder.attribute((new AttributeNode.Builder("Database url", "url", AttributeType.String, connectivity)
-				.description("Hostname for RDB instance").defaultValue("${mongodb.host:sitewhere-postgresql-headless.default.svc.cluster.local}").build()));
+    /**
+     * Adds RDB configuration attributes.
+     *
+     * @param builder
+     * @param connectivity
+     */
+    public static void addRDBAttributes(ElementNode.Builder builder, IAttributeGroup connectivity) {
+	builder.attribute((new AttributeNode.Builder("Database url", "url", AttributeType.String, connectivity)
+		.description("Hostname for RDB instance").defaultValue("${mongodb.host:sitewhere-postgresql-headless.default.svc.cluster.local}").build()));
 
-		builder.attribute((new AttributeNode.Builder("Username", "username", AttributeType.String, connectivity)
-				.description("Database authentication username").defaultValue("syncope").build()));
+	builder.attribute((new AttributeNode.Builder("Username", "username", AttributeType.String, connectivity)
+		.description("Database authentication username").defaultValue("syncope").build()));
 
-		builder.attribute((new AttributeNode.Builder("Password", "password", AttributeType.String, connectivity).defaultValue("syncope")
-				.description("Database authentication password").build()));
-	}
+	builder.attribute((new AttributeNode.Builder("Password", "password", AttributeType.String, connectivity).defaultValue("syncope")
+		.description("Database authentication password").build()));
+    }
 
     /**
      * Adds InfluxDB configuration attributes.
@@ -361,7 +361,7 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 	builder.attribute(
 		(new AttributeNode.Builder("Max batch send interval (ms)", "batchIntervalMs", AttributeType.Integer,
 			batch).description("Maximum amount of time (in ms) to wait before sending a batch.")
-				.defaultValue("100").build()));
+			.defaultValue("100").build()));
     }
 
     /**

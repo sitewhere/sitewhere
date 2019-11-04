@@ -25,25 +25,25 @@ import org.springframework.context.annotation.Bean;
  * Simeon Chen
  */
 @SpringBootApplication(
-        exclude = {
-                DataSourceAutoConfiguration.class,
-                HibernateJpaAutoConfiguration.class,
-                DataSourceTransactionManagerAutoConfiguration.class
-        },
-        scanBasePackages = { "com.sitewhere.rdb" }
-)
+	exclude = {
+		DataSourceAutoConfiguration.class,
+		HibernateJpaAutoConfiguration.class,
+		DataSourceTransactionManagerAutoConfiguration.class
+	},
+	scanBasePackages = { "com.sitewhere.rdb" }
+	)
 public class Application {
 
     private static final Logger log = LoggerFactory.getLogger(Application.class);
 
     @Bean
     public ExitCodeGenerator exitCodeGenerator() {
-        return () -> 42;
+	return () -> 42;
     }
 
     @Bean
     public CommandLineRunner demo() {
-        return (args) -> {
-        };
+	return (args) -> {
+	};
     }
 }

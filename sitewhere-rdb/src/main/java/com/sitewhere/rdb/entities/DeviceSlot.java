@@ -39,43 +39,43 @@ public class DeviceSlot implements IDeviceSlot, Serializable {
 
     @Override
     public String getName() {
-        return name;
+	return name;
     }
 
     @Override
     public String getPath() {
-        return path;
+	return path;
     }
 
     public UUID getId() {
-        return id;
+	return id;
     }
 
     public void setId(UUID id) {
-        this.id = id;
+	this.id = id;
     }
 
     public void setName(String name) {
-        this.name = name;
+	this.name = name;
     }
 
     public void setPath(String path) {
-        this.path = path;
+	this.path = path;
     }
 
     public DeviceUnit getDeviceUnit() {
-        return deviceUnit;
+	return deviceUnit;
     }
 
     public void setDeviceUnit(DeviceUnit deviceUnit) {
-        this.deviceUnit = deviceUnit;
+	this.deviceUnit = deviceUnit;
     }
 
     public DeviceElementSchema getDeviceElementSchema() {
-        return deviceElementSchema;
+	return deviceElementSchema;
     }
 
     public void setDeviceElementSchema(DeviceElementSchema deviceElementSchema) {
-        this.deviceElementSchema = deviceElementSchema;
+	this.deviceElementSchema = deviceElementSchema;
     }
 }

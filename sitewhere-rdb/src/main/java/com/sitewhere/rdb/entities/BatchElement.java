@@ -49,55 +49,55 @@ public class BatchElement implements IBatchElement {
 
     @Override
     public UUID getId() {
-        return id;
+	return id;
     }
 
     @Override
     public UUID getBatchOperationId() {
-        return batchOperationId;
+	return batchOperationId;
     }
 
     @Override
     public UUID getDeviceId() {
-        return deviceId;
+	return deviceId;
     }
 
     @Override
     public ElementProcessingStatus getProcessingStatus() {
-        return processingStatus;
+	return processingStatus;
     }
 
     @Override
     public Date getProcessedDate() {
-        return processedDate;
+	return processedDate;
     }
 
     @Override
     public Map<String, String> getMetadata() {
-        return metadata;
+	return metadata;
     }
 
     public void setId(UUID id) {
-        this.id = id;
+	this.id = id;
     }
 
     public void setBatchOperationId(UUID batchOperationId) {
-        this.batchOperationId = batchOperationId;
+	this.batchOperationId = batchOperationId;
     }
 
     public void setDeviceId(UUID deviceId) {
-        this.deviceId = deviceId;
+	this.deviceId = deviceId;
     }
 
     public void setProcessingStatus(ElementProcessingStatus processingStatus) {
-        this.processingStatus = processingStatus;
+	this.processingStatus = processingStatus;
     }
 
     public void setProcessedDate(Date processedDate) {
-        this.processedDate = processedDate;
+	this.processedDate = processedDate;
     }
 
     public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
+	this.metadata = metadata;
     }
 }

@@ -19,6 +19,6 @@ public class MainBusiListeners implements ApplicationListener<ContextRefreshedEv
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        ApplicationContextUtils.setContext(event.getApplicationContext());
+	ApplicationContextUtils.setContext(event.getApplicationContext());
     }
 }

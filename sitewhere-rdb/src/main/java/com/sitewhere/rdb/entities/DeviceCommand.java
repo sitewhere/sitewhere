@@ -76,125 +76,125 @@ public class DeviceCommand implements IDeviceCommand {
 
     @Override
     public UUID getDeviceTypeId() {
-        return deviceTypeId;
+	return deviceTypeId;
     }
 
     @Override
     public String getNamespace() {
-        return namespace;
+	return namespace;
     }
 
     @Override
     public List<ICommandParameter> getParameters() {
-        List<ICommandParameter> lst = new ArrayList<>();
-        for(CommandParameter p : parameterList) {
-            lst.add(p);
-        }
-        return lst;
+	List<ICommandParameter> lst = new ArrayList<>();
+	for(CommandParameter p : parameterList) {
+	    lst.add(p);
+	}
+	return lst;
     }
 
     @Override
     public String getName() {
-        return name;
+	return name;
     }
 
     @Override
     public String getDescription() {
-        return description;
+	return description;
     }
 
     @Override
     public UUID getId() {
-        return id;
+	return id;
     }
 
     @Override
     public String getToken() {
-        return token;
+	return token;
     }
 
     @Override
     public Date getCreatedDate() {
-        return createdDate;
+	return createdDate;
     }
 
     @Override
     public String getCreatedBy() {
-        return createdBy;
+	return createdBy;
     }
 
     @Override
     public Date getUpdatedDate() {
-        return updatedDate;
+	return updatedDate;
     }
 
     @Override
     public String getUpdatedBy() {
-        return createdBy;
+	return createdBy;
     }
 
     @Override
     public Map<String, String> getMetadata() {
-        return metadata;
+	return metadata;
     }
 
     public void setId(UUID id) {
-        this.id = id;
+	this.id = id;
     }
 
     public void setDeviceTypeId(UUID deviceTypeId) {
-        this.deviceTypeId = deviceTypeId;
+	this.deviceTypeId = deviceTypeId;
     }
 
     public void setNamespace(String namespace) {
-        this.namespace = namespace;
+	this.namespace = namespace;
     }
 
     public void setName(String name) {
-        this.name = name;
+	this.name = name;
     }
 
     public void setDescription(String description) {
-        this.description = description;
+	this.description = description;
     }
 
     public void setToken(String token) {
-        this.token = token;
+	this.token = token;
     }
 
     public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
+	this.createdDate = createdDate;
     }
 
     public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
+	this.createdBy = createdBy;
     }
 
     public void setUpdatedDate(Date updatedDate) {
-        this.updatedDate = updatedDate;
+	this.updatedDate = updatedDate;
     }
 
     public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
+	this.updatedBy = updatedBy;
     }
 
     public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
+	this.metadata = metadata;
     }
 
     public List<CommandParameter> getParameterList() {
-        return parameterList;
+	return parameterList;
     }
 
     public void setParameterList(List<CommandParameter> parameterList) {
-        this.parameterList = parameterList;
+	this.parameterList = parameterList;
     }
 
     public String getDeviceTypeToken() {
-        return deviceTypeToken;
+	return deviceTypeToken;
     }
 
     public void setDeviceTypeToken(String deviceTypeToken) {
-        this.deviceTypeToken = deviceTypeToken;
+	this.deviceTypeToken = deviceTypeToken;
     }
 }

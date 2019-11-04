@@ -82,118 +82,118 @@ public class DeviceAlarm implements IDeviceAlarm {
 
     @Override
     public UUID getId() {
-        return id;
+	return id;
     }
 
     @Override
     public UUID getDeviceId() {
-        return deviceId;
+	return deviceId;
     }
 
     @Override
     public UUID getDeviceAssignmentId() {
-        return deviceAssignmentId;
+	return deviceAssignmentId;
     }
 
     @Override
     public UUID getCustomerId() {
-        return customerId;
+	return customerId;
     }
 
     @Override
     public UUID getAreaId() {
-        return areaId;
+	return areaId;
     }
 
     @Override
     public UUID getAssetId() {
-        return assetId;
+	return assetId;
     }
 
     @Override
     public String getAlarmMessage() {
-        return alarmMessage;
+	return alarmMessage;
     }
 
     @Override
     public UUID getTriggeringEventId() {
-        return triggeringEventId;
+	return triggeringEventId;
     }
 
     @Override
     public DeviceAlarmState getState() {
-        return state;
+	return state;
     }
 
     @Override
     public Date getTriggeredDate() {
-        return triggeredDate;
+	return triggeredDate;
     }
 
     @Override
     public Date getAcknowledgedDate() {
-        return acknowledgedDate;
+	return acknowledgedDate;
     }
 
     @Override
     public Date getResolvedDate() {
-        return resolvedDate;
+	return resolvedDate;
     }
 
     @Override
     public Map<String, String> getMetadata() {
-        return metadata;
+	return metadata;
     }
 
     public void setId(UUID id) {
-        this.id = id;
+	this.id = id;
     }
 
     public void setDeviceId(UUID deviceId) {
-        this.deviceId = deviceId;
+	this.deviceId = deviceId;
     }
 
     public void setDeviceAssignmentId(UUID deviceAssignmentId) {
-        this.deviceAssignmentId = deviceAssignmentId;
+	this.deviceAssignmentId = deviceAssignmentId;
     }
 
     public void setCustomerId(UUID customerId) {
-        this.customerId = customerId;
+	this.customerId = customerId;
     }
 
     public void setAreaId(UUID areaId) {
-        this.areaId = areaId;
+	this.areaId = areaId;
     }
 
     public void setAssetId(UUID assetId) {
-        this.assetId = assetId;
+	this.assetId = assetId;
     }
 
     public void setAlarmMessage(String alarmMessage) {
-        this.alarmMessage = alarmMessage;
+	this.alarmMessage = alarmMessage;
     }
 
     public void setTriggeringEventId(UUID triggeringEventId) {
-        this.triggeringEventId = triggeringEventId;
+	this.triggeringEventId = triggeringEventId;
     }
 
     public void setState(DeviceAlarmState state) {
-        this.state = state;
+	this.state = state;
     }
 
     public void setTriggeredDate(Date triggeredDate) {
-        this.triggeredDate = triggeredDate;
+	this.triggeredDate = triggeredDate;
     }
 
     public void setAcknowledgedDate(Date acknowledgedDate) {
-        this.acknowledgedDate = acknowledgedDate;
+	this.acknowledgedDate = acknowledgedDate;
     }
 
     public void setResolvedDate(Date resolvedDate) {
-        this.resolvedDate = resolvedDate;
+	this.resolvedDate = resolvedDate;
     }
 
     public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
+	this.metadata = metadata;
     }
 }

@@ -39,56 +39,56 @@ public abstract class DbClient extends TenantEngineLifecycleComponent implements
      * @param configuration
      */
     public DbClient(RDBConfiguration configuration) {
-        super(LifecycleComponentType.DataStore);
-        this.configuration = configuration;
+	super(LifecycleComponentType.DataStore);
+	this.configuration = configuration;
     }
 
     @Override
     public boolean isRequired() {
-        return true;
+	return true;
     }
 
     @Override
     public void initializeParameters() throws SiteWhereException {
-        // Add database url
-        this.url = StringComponentParameter.newBuilder(this,"Url")
-                .value(configuration.getUrl()).makeRequired().build();
-        getParameters().add(url);
+	// Add database url
+	this.url = StringComponentParameter.newBuilder(this,"Url")
+		.value(configuration.getUrl()).makeRequired().build();
+	getParameters().add(url);
 
     }
 
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-        dbManager = new DbManager();
+	dbManager = new DbManager();
     }
 
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-        getLogger().info("Relation database client will connect to " + configuration.getUrl());
-        String tenantId = this.getTenantEngine().getTenant().getId().toString();
-        MultiTenantProperties.ADD_NEW_DATASOURCE(configuration, tenantId);
-        MultiTenantContext.setTenantId(tenantId);
-        dbManager.start();
+	getLogger().info("Relation database client will connect to " + configuration.getUrl());
+	String tenantId = this.getTenantEngine().getTenant().getId().toString();
+	MultiTenantProperties.ADD_NEW_DATASOURCE(configuration, tenantId);
+	MultiTenantContext.setTenantId(tenantId);
+	dbManager.start();
     }
 
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-        getLogger().info("Relation database client will connect to " + configuration.getUrl());
-        dbManager.stop();
+	getLogger().info("Relation database client will connect to " + configuration.getUrl());
+	dbManager.stop();
     }
 
     public DbManager getDbManager() throws SiteWhereException {
-        if (dbManager == null) {
-            throw new SiteWhereException("dbManager is null. Relational DB client was not properly initialized.");
-        }
-        return dbManager;
+	if (dbManager == null) {
+	    throw new SiteWhereException("dbManager is null. Relational DB client was not properly initialized.");
+	}
+	return dbManager;
     }
 
     public ILifecycleComponentParameter<String> getUrl() {
-        return url;
+	return url;
     }
 
     public void setUrl(ILifecycleComponentParameter<String> url) {
-        this.url = url;
+	this.url = url;
     }
 }

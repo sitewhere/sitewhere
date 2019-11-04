@@ -78,112 +78,112 @@ public class ScheduledJob implements IScheduledJob {
 
     @Override
     public String getScheduleToken() {
-        return scheduleToken;
+	return scheduleToken;
     }
 
     @Override
     public ScheduledJobType getJobType() {
-        return jobType;
+	return jobType;
     }
 
     @Override
     public Map<String, String> getJobConfiguration() {
-        return jobConfiguration;
+	return jobConfiguration;
     }
 
     @Override
     public ScheduledJobState getJobState() {
-        return jobState;
+	return jobState;
     }
 
     @Override
     public UUID getId() {
-        return id;
+	return id;
     }
 
     @Override
     public String getToken() {
-        return token;
+	return token;
     }
 
     @Override
     public Date getCreatedDate() {
-        return createdDate;
+	return createdDate;
     }
 
     @Override
     public String getCreatedBy() {
-        return createdBy;
+	return createdBy;
     }
 
     @Override
     public Date getUpdatedDate() {
-        return updatedDate;
+	return updatedDate;
     }
 
     @Override
     public String getUpdatedBy() {
-        return updatedBy;
+	return updatedBy;
     }
 
     @Override
     public Map<String, String> getMetadata() {
-        return metadata;
+	return metadata;
     }
 
     public void setId(UUID id) {
-        this.id = id;
+	this.id = id;
     }
 
     public void setName(String name) {
-        this.name = name;
+	this.name = name;
     }
 
     public void setScheduleToken(String scheduleToken) {
-        this.scheduleToken = scheduleToken;
+	this.scheduleToken = scheduleToken;
     }
 
     public void setToken(String token) {
-        this.token = token;
+	this.token = token;
     }
 
     public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+	this.startDate = startDate;
     }
 
     public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+	this.endDate = endDate;
     }
 
     public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
+	this.createdDate = createdDate;
     }
 
     public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
+	this.createdBy = createdBy;
     }
 
     public void setUpdatedDate(Date updatedDate) {
-        this.updatedDate = updatedDate;
+	this.updatedDate = updatedDate;
     }
 
     public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
+	this.updatedBy = updatedBy;
     }
 
     public void setJobType(ScheduledJobType jobType) {
-        this.jobType = jobType;
+	this.jobType = jobType;
     }
 
     public void setJobState(ScheduledJobState jobState) {
-        this.jobState = jobState;
+	this.jobState = jobState;
     }
 
     public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
+	this.metadata = metadata;
     }
 
     public void setJobConfiguration(Map<String, String> jobConfiguration) {
-        this.jobConfiguration = jobConfiguration;
+	this.jobConfiguration = jobConfiguration;
     }
 }

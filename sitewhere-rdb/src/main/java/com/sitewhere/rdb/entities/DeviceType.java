@@ -45,7 +45,7 @@ public class DeviceType implements IDeviceType {
     @JoinColumn(name="device_element_schema_id", referencedColumnName = "id")
     private DeviceElementSchema deviceElementSchema;
 
-        /** Date entity was last updated */
+    /** Date entity was last updated */
     @Column(name = "background_color")
     private String backgroundColor;
 
@@ -94,146 +94,146 @@ public class DeviceType implements IDeviceType {
 
     @Override
     public DeviceContainerPolicy getContainerPolicy() {
-        return containerPolicy;
+	return containerPolicy;
     }
 
     @Override
     public IDeviceElementSchema getDeviceElementSchema() {
-        return deviceElementSchema;
+	return deviceElementSchema;
     }
 
     @Override
     public String getName() {
-        return name;
+	return name;
     }
 
     @Override
     public String getDescription() {
-        return description;
+	return description;
     }
 
     @Override
     public String getBackgroundColor() {
-        return backgroundColor;
+	return backgroundColor;
     }
 
     @Override
     public String getForegroundColor() {
-        return foregroundColor;
+	return foregroundColor;
     }
 
     @Override
     public String getBorderColor() {
-        return borderColor;
+	return borderColor;
     }
 
     @Override
     public String getIcon() {
-        return icon;
+	return icon;
     }
 
     @Override
     public String getImageUrl() {
-        return imageUrl;
+	return imageUrl;
     }
 
     @Override
     public UUID getId() {
-        return id;
+	return id;
     }
 
     @Override
     public String getToken() {
-        return token;
+	return token;
     }
 
     @Override
     public Date getCreatedDate() {
-        return createdDate;
+	return createdDate;
     }
 
     @Override
     public String getCreatedBy() {
-        return createdBy;
+	return createdBy;
     }
 
     @Override
     public Date getUpdatedDate() {
-        return updatedDate;
+	return updatedDate;
     }
 
     @Override
     public String getUpdatedBy() {
-        return updatedBy;
+	return updatedBy;
     }
 
     @Override
     public Map<String, String> getMetadata() {
-        return metadata;
+	return metadata;
     }
 
     public void setId(UUID id) {
-        this.id = id;
+	this.id = id;
     }
 
     public void setName(String name) {
-        this.name = name;
+	this.name = name;
     }
 
     public void setDescription(String description) {
-        this.description = description;
+	this.description = description;
     }
 
     public void setContainerPolicy(DeviceContainerPolicy containerPolicy) {
-        this.containerPolicy = containerPolicy;
+	this.containerPolicy = containerPolicy;
     }
 
     public void setDeviceElementSchema(DeviceElementSchema deviceElementSchema) {
-        this.deviceElementSchema = deviceElementSchema;
+	this.deviceElementSchema = deviceElementSchema;
     }
 
     public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+	this.imageUrl = imageUrl;
     }
 
     public void setBackgroundColor(String backgroundColor) {
-        this.backgroundColor = backgroundColor;
+	this.backgroundColor = backgroundColor;
     }
 
     public void setForegroundColor(String foregroundColor) {
-        this.foregroundColor = foregroundColor;
+	this.foregroundColor = foregroundColor;
     }
 
     public void setBorderColor(String borderColor) {
-        this.borderColor = borderColor;
+	this.borderColor = borderColor;
     }
 
     public void setIcon(String icon) {
-        this.icon = icon;
+	this.icon = icon;
     }
 
     public void setToken(String token) {
-        this.token = token;
+	this.token = token;
     }
 
     public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
+	this.createdDate = createdDate;
     }
 
     public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
+	this.createdBy = createdBy;
     }
 
     public void setUpdatedDate(Date updatedDate) {
-        this.updatedDate = updatedDate;
+	this.updatedDate = updatedDate;
     }
 
     public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
+	this.updatedBy = updatedBy;
     }
 
     public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
+	this.metadata = metadata;
     }
 
 }

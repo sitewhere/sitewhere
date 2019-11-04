@@ -71,109 +71,109 @@ public class Schedule implements ISchedule {
 
     @Override
     public String getName() {
-        return name;
+	return name;
     }
 
     @Override
     public TriggerType getTriggerType() {
-        return triggerType;
+	return triggerType;
     }
 
     @Override
     public Map<String, String> getTriggerConfiguration() {
-        return triggerConfiguration;
+	return triggerConfiguration;
     }
 
     @Override
     public Date getStartDate() {
-        return startDate;
+	return startDate;
     }
 
     @Override
     public Date getEndDate() {
-        return endDate;
+	return endDate;
     }
 
     @Override
     public UUID getId() {
-        return id;
+	return id;
     }
 
     @Override
     public String getToken() {
-        return token;
+	return token;
     }
 
     @Override
     public Date getCreatedDate() {
-        return createdDate;
+	return createdDate;
     }
 
     @Override
     public String getCreatedBy() {
-        return createdBy;
+	return createdBy;
     }
 
     @Override
     public Date getUpdatedDate() {
-        return updatedDate;
+	return updatedDate;
     }
 
     @Override
     public String getUpdatedBy() {
-        return updatedBy;
+	return updatedBy;
     }
 
     @Override
     public Map<String, String> getMetadata() {
-        return metadata;
+	return metadata;
     }
 
     public void setId(UUID id) {
-        this.id = id;
+	this.id = id;
     }
 
     public void setName(String name) {
-        this.name = name;
+	this.name = name;
     }
 
     public void setToken(String token) {
-        this.token = token;
+	this.token = token;
     }
 
     public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+	this.startDate = startDate;
     }
 
     public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+	this.endDate = endDate;
     }
 
     public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
+	this.createdDate = createdDate;
     }
 
     public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
+	this.createdBy = createdBy;
     }
 
     public void setUpdatedDate(Date updatedDate) {
-        this.updatedDate = updatedDate;
+	this.updatedDate = updatedDate;
     }
 
     public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
+	this.updatedBy = updatedBy;
     }
 
     public void setTriggerType(TriggerType triggerType) {
-        this.triggerType = triggerType;
+	this.triggerType = triggerType;
     }
 
     public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
+	this.metadata = metadata;
     }
 
     public void setTriggerConfiguration(Map<String, String> triggerConfiguration) {
-        this.triggerConfiguration = triggerConfiguration;
+	this.triggerConfiguration = triggerConfiguration;
     }
 }
