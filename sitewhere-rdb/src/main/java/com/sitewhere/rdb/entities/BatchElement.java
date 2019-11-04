@@ -74,7 +74,7 @@ public class BatchElement implements IBatchElement {
 
     @Override
     public Map<String, String> getMetadata() {
-        return null;
+        return metadata;
     }
 
     public void setId(UUID id) {

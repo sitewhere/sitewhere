@@ -76,7 +76,7 @@ public class Schedule implements ISchedule {
 
     @Override
     public TriggerType getTriggerType() {
-        return null;
+        return triggerType;
     }
 
     @Override

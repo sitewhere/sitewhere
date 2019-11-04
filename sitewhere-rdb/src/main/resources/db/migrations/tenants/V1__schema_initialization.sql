@@ -473,7 +473,8 @@ create table zone
     created_date timestamp,
     fill_color   varchar,
     name        varchar,
-    opacity     double precision,
+    border_opacity     double precision,
+    fill_opacity     double precision,
     token       varchar,
     updated_by   varchar,
     updated_date timestamp

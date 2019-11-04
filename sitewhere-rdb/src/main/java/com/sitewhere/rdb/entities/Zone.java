@@ -46,8 +46,12 @@ public class Zone implements IZone {
     private String fillColor;
 
     /** Opacity */
-    @Column(name = "opacity")
-    private Double opacity;
+    @Column(name = "border_opacity")
+    private Double borderOpacity;
+
+    /** Opacity */
+    @Column(name = "fill_opacity")
+    private Double fillOpacity;
 
     /** Token */
     @Column(name = "token")
@@ -93,7 +97,7 @@ public class Zone implements IZone {
 
     @Override
     public Double getBorderOpacity() {
-        return null;
+        return borderOpacity;
     }
 
     @Override
@@ -103,11 +107,7 @@ public class Zone implements IZone {
 
     @Override
     public Double getFillOpacity() {
-        return null;
-    }
-
-    public Double getOpacity() {
-        return opacity;
+        return fillOpacity;
     }
 
     @Override
@@ -174,10 +174,6 @@ public class Zone implements IZone {
         this.fillColor = fillColor;
     }
 
-    public void setOpacity(Double opacity) {
-        this.opacity = opacity;
-    }
-
     public void setToken(String token) {
         this.token = token;
     }
@@ -202,4 +198,11 @@ public class Zone implements IZone {
         this.metadata = metadata;
     }
 
+    public void setBorderOpacity(Double borderOpacity) {
+        this.borderOpacity = borderOpacity;
+    }
+
+    public void setFillOpacity(Double fillOpacity) {
+        this.fillOpacity = fillOpacity;
+    }
 }
