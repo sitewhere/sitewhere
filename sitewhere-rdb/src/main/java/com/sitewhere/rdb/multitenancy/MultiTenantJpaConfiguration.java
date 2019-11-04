@@ -84,6 +84,7 @@ public class MultiTenantJpaConfiguration {
         hibernateProps.put(Environment.DIALECT, "org.hibernate.dialect.PostgreSQL94Dialect");
         hibernateProps.put(Environment.SHOW_SQL,"true");
         hibernateProps.put(Environment.FORMAT_SQL, "true");
+        hibernateProps.put(Environment.NON_CONTEXTUAL_LOB_CREATION, "true");
         // No dataSource is set to resulting entityManagerFactoryBean
         LocalContainerEntityManagerFactoryBean result = new LocalContainerEntityManagerFactoryBean();
         result.setPackagesToScan(new String[] { Area.class.getPackage().getName() });
