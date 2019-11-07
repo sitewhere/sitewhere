@@ -1,0 +1,15 @@
+description = 'SiteWhere InfluxDB Library'
+
+dependencies {
+    compile project(':sitewhere-configuration')
+}
+
+// Publish jar.
+apply plugin: 'maven-publish'
+publishing {
+	publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+	}
+}

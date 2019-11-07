@@ -25,6 +25,7 @@ include ':sitewhere-core-api'
 include ':sitewhere-core-lifecycle'
 include ':sitewhere-grpc-client'
 include ':sitewhere-influxdb'
+include ':sitewhere-warp10'
 include ':sitewhere-microservice'
 include ':sitewhere-mongodb'
 include ':sitewhere-solr'
@@ -55,6 +56,7 @@ project(':sitewhere-core-api').projectDir = "$rootDir/sitewhere-core-api" as Fil
 project(':sitewhere-core-lifecycle').projectDir = "$rootDir/sitewhere-core-lifecycle" as File
 project(':sitewhere-grpc-client').projectDir = "$rootDir/sitewhere-grpc-client" as File
 project(':sitewhere-influxdb').projectDir = "$rootDir/sitewhere-influxdb" as File
+project(':sitewhere-warp10').projectDir = "$rootDir/sitewhere-warp10" as File
 project(':sitewhere-microservice').projectDir = "$rootDir/sitewhere-microservice" as File
 project(':sitewhere-mongodb').projectDir = "$rootDir/sitewhere-mongodb" as File
 project(':sitewhere-solr').projectDir = "$rootDir/sitewhere-solr" as File
