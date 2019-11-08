@@ -165,6 +165,97 @@
 		<xsd:attributeGroup ref="ds:influx-attributes" />
 	</xsd:complexType>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<!-- Warp 10 persistence configuration elements -->
+	<xsd:element name="warp10-configurations"
+				 type="warp10ConfigurationsType"
+				 substitutionGroup="abstract-persistence-configuration">
+		<xsd:annotation>
+			<xsd:documentation>
+				Provides global configuration for InfluxDB that
+				can be referenced by microservices.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="warp10ConfigurationsType">
+		<xsd:complexContent>
+			<xsd:extension
+					base="abstractPersistenceConfigurationType">
+				<xsd:sequence>
+					<xsd:element name="warp10-configuration"
+								 type="warp10DatastoreConfigurationType" minOccurs="0"
+								 maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:documentation>
+								Configuration data for MongoDB datastores.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Warp 10 datastore configuration -->
+	<xsd:complexType
+			name="warp10DatastoreConfigurationType">
+		<xsd:attribute name="id" type="xsd:string"  use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Unique id for datastore configuration.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attributeGroup ref="ds:warp10-attributes" />
+	</xsd:complexType>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	<!-- Apache Cassandra persistence configuration elements -->
 	<xsd:element name="cassandra-configurations"
 		type="cassandraConfigurationsType"

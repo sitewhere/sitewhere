@@ -8,7 +8,8 @@ dependencies {
 	compile project(':sitewhere-cassandra')
 	compile project(':sitewhere-mongodb')
 	compile project(':sitewhere-influxdb')
-	
+	compile project(':sitewhere-warp10')
+
 	compile project(':sitewhere-microservice')
 }
 

@@ -97,6 +97,12 @@ public interface IDatastoreCommonParser {
 	/** InfluxDB datastore reference */
 	InfluxDBReference("influxdb-datastore-reference"),
 
+        /** InfluxDB datastore */
+	Warp10DBDatastore("warp10db-datastore"),
+
+	/** InfluxDB datastore reference */
+	Warp10DBReference("warp10db-datastore-reference"),
+
 	/** Cassandra datastore */
 	CassandraDatastore("cassandra-datastore"),
 

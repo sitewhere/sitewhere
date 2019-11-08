@@ -20,6 +20,9 @@ public class EventManagementBeans {
     /** Bean id for InfluxDB client */
     public static final String BEAN_INFLUXDB_CLIENT = "influxClient";
 
+     /** Bean id for InfluxDB client */
+    public static final String BEAN_WARP10DB_CLIENT = "warp10Client";
+
     /** Bean id for Apache Cassandra client */
     public static final String BEAN_CASSANDRA_CLIENT = "cassandraClient";
 

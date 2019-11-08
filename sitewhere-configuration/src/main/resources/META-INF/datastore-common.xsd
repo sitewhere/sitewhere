@@ -42,6 +42,8 @@
 				<xsd:element ref="influxdb-datastore-reference" />
 				<xsd:element ref="mongodb-datastore" />
 				<xsd:element ref="mongodb-datastore-reference" />
+				<xsd:element ref="warp10db-datastore" />
+				<xsd:element ref="warp10db-datastore-reference" />
 			</xsd:choice>
 		</xsd:complexType>
 	</xsd:element>
@@ -361,6 +363,71 @@
 				<xsd:documentation>ZooKeeper znode root server. Defaults to
 					'root-region-server'.
 				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
+
+	<!-- Alternate warp10DB datastore reference -->
+	<xsd:element name="warp10db-datastore-reference"
+				 type="warp10DatastoreReferenceType"
+				 substitutionGroup="abstract-datastore">
+		<xsd:annotation>
+			<xsd:documentation>
+				Connects to InfluxDB using a globally defined
+				configuration.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="warp10DatastoreReferenceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDatastoreType">
+				<xsd:attribute name="id" type="xsd:string"
+							   use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Unique id for global datastore configuration.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Custom warp10 datastore definition -->
+	<xsd:element name="warp10db-datastore"
+				 type="warp10DatastoreType" substitutionGroup="abstract-datastore">
+		<xsd:annotation>
+			<xsd:documentation>
+				Creates a custom InfluxDB datastore that does not
+				reference a global configuration.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="warp10DatastoreType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDatastoreType">
+				<xsd:attributeGroup ref="warp10-attributes" />
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Attributes for configuring warp 10 event storage -->
+	<xsd:attributeGroup name="warp10-attributes">
+		<xsd:attribute name="hostname" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Hostname for warp10 instance.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="port" type="xsd:integer">
+			<xsd:annotation>
+				<xsd:documentation>Server port for InfluxDB instance.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="tokenSecret" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Token secret</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 	</xsd:attributeGroup>

@@ -58,8 +58,12 @@ public interface IInstanceManagementParser {
 	/** InfluxDB configuration elements */
 	InfluxConfigurations("influxdb-configurations"),
 
-	/** InfluxDB configuration elements */
+	/** Warp 10 configuration elements */
+	Warp10Configurations("warp10-configurations"),
+
+	 /** Cassandra configuration elements */
 	CassandraConfigurations("cassandra-configurations");
+
 
 	/** Event code */
 	private String localName;
@@ -130,6 +134,36 @@ public interface IInstanceManagementParser {
 
 	public static InfluxDbElements getByLocalName(String localName) {
 	    for (InfluxDbElements value : InfluxDbElements.values()) {
+		if (value.getLocalName().equals(localName)) {
+		    return value;
+		}
+	    }
+	    return null;
+	}
+
+	public String getLocalName() {
+	    return localName;
+	}
+
+	public void setLocalName(String localName) {
+	    this.localName = localName;
+	}
+    }
+
+    public static enum Warp10DbElements {
+
+	/** InfluxDB configuration */
+	Warp10Configuration("warp10db-configuration");
+
+	/** Event code */
+	private String localName;
+
+	private Warp10DbElements(String localName) {
+	    this.localName = localName;
+	}
+
+	public static Warp10DbElements getByLocalName(String localName) {
+	    for (Warp10DbElements value : Warp10DbElements.values()) {
 		if (value.getLocalName().equals(localName)) {
 		    return value;
 		}

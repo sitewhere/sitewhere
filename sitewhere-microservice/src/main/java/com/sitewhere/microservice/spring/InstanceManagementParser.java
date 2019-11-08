@@ -21,89 +21,93 @@ import com.sitewhere.configuration.parser.IInstanceManagementParser.TopLevelElem
 
 /**
  * Parses configuration data for the instance global configuration.
- * 
+ *
  * @author Derek
  */
 public class InstanceManagementParser extends AbstractBeanDefinitionParser {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.springframework.beans.factory.xml.AbstractBeanDefinitionParser#
      * parseInternal (org.w3c.dom.Element,
      * org.springframework.beans.factory.xml.ParserContext)
      */
     @Override
     protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
-	List<Element> dsChildren = DomUtils.getChildElements(element);
-	for (Element child : dsChildren) {
-	    TopLevelElements type = TopLevelElements.getByLocalName(child.getLocalName());
-	    if (type == null) {
-		throw new RuntimeException("Unknown top level instance management element: " + child.getLocalName());
-	    }
-	    switch (type) {
-	    case PersistenceConfigurations: {
-		parsePersistenceConfigurations(child, context);
-		break;
-	    }
-	    case ConnectorConfigurations: {
-		parseConnectorConfigurations(child, context);
-		break;
-	    }
-	    }
-	}
-	return null;
+        List<Element> dsChildren = DomUtils.getChildElements(element);
+        for (Element child : dsChildren) {
+            TopLevelElements type = TopLevelElements.getByLocalName(child.getLocalName());
+            if (type == null) {
+                throw new RuntimeException("Unknown top level instance management element: " + child.getLocalName());
+            }
+            switch (type) {
+                case PersistenceConfigurations: {
+                    parsePersistenceConfigurations(child, context);
+                    break;
+                }
+                case ConnectorConfigurations: {
+                    parseConnectorConfigurations(child, context);
+                    break;
+                }
+            }
+        }
+        return null;
     }
 
     /**
      * Parse persistence configurations section.
-     * 
+     *
      * @param element
      * @param context
      */
     protected void parsePersistenceConfigurations(Element element, ParserContext context) {
-	List<Element> children = DomUtils.getChildElements(element);
-	for (Element child : children) {
-	    PersistenceConfigurationsElements type = PersistenceConfigurationsElements
-		    .getByLocalName(child.getLocalName());
-	    if (type == null) {
-		throw new RuntimeException("Unknown persistence configurations element: " + child.getLocalName());
-	    }
-	    switch (type) {
-	    case MongoConfigurations: {
-		(new MongoConfigurationsParser()).parse(child, context);
-		break;
-	    }
-	    case InfluxConfigurations: {
-		(new InfluxConfigurationsParser()).parse(child, context);
-		break;
-	    }
-	    case CassandraConfigurations: {
-		(new CassandraConfigurationsParser()).parse(child, context);
-	    }
-	    }
-	}
+        List<Element> children = DomUtils.getChildElements(element);
+        for (Element child : children) {
+            PersistenceConfigurationsElements type = PersistenceConfigurationsElements
+             .getByLocalName(child.getLocalName());
+            if (type == null) {
+                throw new RuntimeException("Unknown persistence configurations element: " + child.getLocalName());
+            }
+            switch (type) {
+                case MongoConfigurations: {
+                    (new MongoConfigurationsParser()).parse(child, context);
+                    break;
+                }
+                case InfluxConfigurations: {
+                    (new InfluxConfigurationsParser()).parse(child, context);
+                    break;
+                }
+                case Warp10Configurations: {
+                    (new Warp10ConfigurationsParser()).parse(child, context);
+                    break;
+                }
+                case CassandraConfigurations: {
+                    (new CassandraConfigurationsParser()).parse(child, context);
+                }
+            }
+        }
     }
 
     /**
      * Parse connector configurations section.
-     * 
+     *
      * @param element
      * @param context
      */
     protected void parseConnectorConfigurations(Element element, ParserContext context) {
-	List<Element> dsChildren = DomUtils.getChildElements(element);
-	for (Element child : dsChildren) {
-	    ConnectorConfigurationsElements type = ConnectorConfigurationsElements.getByLocalName(child.getLocalName());
-	    if (type == null) {
-		throw new RuntimeException("Unknown connector configurations element: " + child.getLocalName());
-	    }
-	    switch (type) {
-	    case SolrConfigurations: {
-		(new SolrConfigurationsParser()).parse(child, context);
-		break;
-	    }
-	    }
-	}
+        List<Element> dsChildren = DomUtils.getChildElements(element);
+        for (Element child : dsChildren) {
+            ConnectorConfigurationsElements type = ConnectorConfigurationsElements.getByLocalName(child.getLocalName());
+            if (type == null) {
+                throw new RuntimeException("Unknown connector configurations element: " + child.getLocalName());
+            }
+            switch (type) {
+                case SolrConfigurations: {
+                    (new SolrConfigurationsParser()).parse(child, context);
+                    break;
+                }
+            }
+        }
     }
 }

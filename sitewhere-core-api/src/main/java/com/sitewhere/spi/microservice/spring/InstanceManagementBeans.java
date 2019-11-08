@@ -20,6 +20,9 @@ public interface InstanceManagementBeans {
     /** Bean id base for InfluxDB configurations */
     public static final String BEAN_INFLUX_CONFIGURATION_BASE = "influxdb_";
 
+    /** Bean id base for InfluxDB configurations */
+    public static final String BEAN_WARP10_CONFIGURATION_BASE = "warp10db_";
+
     /** Bean id base for Cassandra configurations */
     public static final String BEAN_CASSANDRA_CONFIGURATION_BASE = "cassandra_";
 

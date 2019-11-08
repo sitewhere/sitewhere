@@ -26,6 +26,12 @@ public enum DatastoreConfigurationType {
     // Reference to global InfluxDB configuration.
     InfluxDBReference,
 
+    // Custom Warp10 configuration.
+    Warp10DB,
+
+    // Reference to global Warp10 configuration.
+    Warp10DBReference,
+
     // Custom Cassandra configuration.
     Cassandra,
 
