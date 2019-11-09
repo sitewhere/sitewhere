@@ -20,35 +20,24 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.Document;
 
-import com.sitewhere.configuration.ConfigurationContentParser;
-import com.sitewhere.configuration.content.ElementContent;
-import com.sitewhere.grpc.client.microservice.MicroserviceManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.IMicroserviceManagementApiChannel;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.scripting.ScriptCloneRequest;
 import com.sitewhere.microservice.scripting.ScriptCreateRequest;
-import com.sitewhere.server.lifecycle.LifecycleProgressContext;
-import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.grpc.GrpcServiceIdentifier;
-import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 import com.sitewhere.spi.microservice.scripting.IScriptManagement;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
 
-import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
 import io.sitewhere.k8s.crd.microservice.SiteWhereMicroservice;
 import io.sitewhere.k8s.crd.microservice.SiteWhereMicroserviceList;
 import io.sitewhere.k8s.crd.tenant.SiteWhereTenant;
 import io.sitewhere.k8s.crd.tenant.SiteWhereTenantList;
-import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -142,13 +131,7 @@ public class Instance {
     public Response getMicroserviceConfigurationModel(
 	    @ApiParam(value = "Service identifier", required = true) @PathParam("identifier") String identifier)
 	    throws SiteWhereException {
-	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
-	try {
-	    return Response.ok(management.getConfigurationModel()).build();
-	} finally {
-	    releaseChannel(management);
-	}
+	return null;
     }
 
     /**
@@ -164,15 +147,7 @@ public class Instance {
     public Response getInstanceConfiguration(
 	    @ApiParam(value = "Service identifier", required = true) @PathParam("identifier") String identifier)
 	    throws SiteWhereException {
-	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
-	try {
-	    SiteWhereInstance instance = getMicroservice().getLastInstanceConfiguration();
-	    return Response.ok(ConfigurationContentParser.parse(instance.getSpec().getConfiguration().getBytes(),
-		    management.getConfigurationModel())).build();
-	} finally {
-	    releaseChannel(management);
-	}
+	return null;
     }
 
     /**
@@ -186,19 +161,8 @@ public class Instance {
     @Path("/microservice/{identifier}/configuration")
     @ApiOperation(value = "Update global configuration based on service identifier.")
     public void updateInstanceConfiguration(
-	    @ApiParam(value = "Service identifier", required = true) @PathParam("identifier") String identifier,
-	    @RequestBody ElementContent content) throws SiteWhereException {
-	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
-	try {
-	    Document xml = ConfigurationContentParser.buildXml(content, management.getConfigurationModel());
-	    String config = ConfigurationContentParser.format(xml);
-	    SiteWhereInstance instance = getMicroservice().getLastInstanceConfiguration();
-	    instance.getSpec().setConfiguration(config);
-	    getMicroservice().updateInstanceConfiguration(instance);
-	} finally {
-	    releaseChannel(management);
-	}
+	    @ApiParam(value = "Service identifier", required = true) @PathParam("identifier") String identifier)
+	    throws SiteWhereException {
     }
 
     /**
@@ -216,20 +180,7 @@ public class Instance {
 	    @ApiParam(value = "Service identifier", required = true) @PathParam("identifier") String identifier,
 	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken)
 	    throws SiteWhereException {
-	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
-	try {
-	    SiteWhereMicroservice microservice = getMicroserviceForIdentifier(msid);
-	    SiteWhereTenant tenant = getTenantForToken(tenantToken);
-	    SiteWhereTenantEngine engine = getMicroservice().getTenantEngineConfiguration(tenant, microservice);
-	    if (engine == null) {
-		throw new SiteWhereException("No tenant engine found for tenant/microservice combination.");
-	    }
-	    return Response.ok(ConfigurationContentParser.parse(engine.getSpec().getConfiguration().getBytes(),
-		    management.getConfigurationModel())).build();
-	} finally {
-	    releaseChannel(management);
-	}
+	return null;
     }
 
     /**
@@ -245,23 +196,8 @@ public class Instance {
     @ApiOperation(value = "Update global configuration based on service identifier.")
     public void updateTenantEngineConfiguration(
 	    @ApiParam(value = "Service identifier", required = true) @PathParam("identifier") String identifier,
-	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
-	    @RequestBody ElementContent content) throws SiteWhereException {
-	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	IMicroserviceManagementApiChannel<?> management = getManagementChannel(msid);
-	try {
-	    SiteWhereMicroservice microservice = getMicroserviceForIdentifier(msid);
-	    SiteWhereTenant tenant = getTenantForToken(tenantToken);
-	    SiteWhereTenantEngine engine = getMicroservice().getTenantEngineConfiguration(tenant, microservice);
-	    Document xml = ConfigurationContentParser.buildXml(content, management.getConfigurationModel());
-	    String config = ConfigurationContentParser.format(xml);
-	    if (engine == null) {
-		throw new SiteWhereException("No tenant engine found for tenant/microservice combination.");
-	    }
-	    getMicroservice().setTenantEngineConfiguration(tenant, microservice, config);
-	} finally {
-	    releaseChannel(management);
-	}
+	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken)
+	    throws SiteWhereException {
     }
 
     /**
@@ -640,42 +576,6 @@ public class Instance {
     }
 
     /**
-     * Find management channel for service that corresponds to identifier.
-     * 
-     * @param target
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IMicroserviceManagementApiChannel<?> getManagementChannel(IFunctionIdentifier target)
-	    throws SiteWhereException {
-	LifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
-		new LifecycleProgressContext(1, "Start management interface."), getMicroservice());
-	MicroserviceManagementApiChannel channel = new MicroserviceManagementApiChannel(
-		getMicroservice().getInstanceSettings(), target, GrpcServiceIdentifier.MicroserviceManagement,
-		IGrpcSettings.DEFAULT_MANAGEMENT_PORT);
-	channel.setMicroservice(getMicroservice());
-	channel.initialize(monitor);
-	channel.start(monitor);
-	return channel;
-    }
-
-    /**
-     * Release an initialized management channel.
-     * 
-     * @param channel
-     */
-    protected void releaseChannel(IMicroserviceManagementApiChannel<?> channel) {
-	try {
-	    LifecycleProgressMonitor monitor = new LifecycleProgressMonitor(
-		    new LifecycleProgressContext(1, "Stop management interface."), getMicroservice());
-	    channel.stop(monitor);
-	    channel.terminate(monitor);
-	} catch (Throwable t) {
-	    LOGGER.error("Unable to shut down management channel.", t);
-	}
-    }
-
-    /**
      * Attempt to look up microservice based on instance id and function identifier.
      * 
      * @param identifier
@@ -728,7 +628,7 @@ public class Instance {
     }
 
     protected ITenantManagement getTenantManagement() {
-	return getMicroservice().getCachedTenantManagement();
+	return getMicroservice().getTenantManagement();
     }
 
     protected IScriptManagement getScriptManagement() {

@@ -8,9 +8,7 @@
 package com.sitewhere.instance.microservice;
 
 import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
-import com.sitewhere.grpc.client.asset.CachedAssetManagementApiChannel;
 import com.sitewhere.grpc.client.batch.BatchManagementApiChannel;
-import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.devicestate.DeviceStateApiChannel;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
@@ -23,7 +21,6 @@ import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceStateApiChannel;
 import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiChannel;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
-import com.sitewhere.instance.configuration.InstanceManagementModelProvider;
 import com.sitewhere.instance.spi.microservice.IInstanceBootstrapper;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.instance.spi.tenant.grpc.ITenantManagementGrpcServer;
@@ -37,10 +34,7 @@ import com.sitewhere.microservice.scripting.InstanceScriptContext;
 import com.sitewhere.microservice.scripting.ScriptSynchronizer;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.microservice.scripting.IScriptContext;
 import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
@@ -81,17 +75,11 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     /** Device management API channel */
     private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
 
-    /** Cached device management implementation */
-    private IDeviceManagement cachedDeviceManagement;
-
     /** Device event management API channel */
     private IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel;
 
     /** Asset management API channel */
     private IAssetManagementApiChannel<?> assetManagementApiChannel;
-
-    /** Cached asset management implementation */
-    private IAssetManagement cachedAssetManagement;
 
     /** Batch management API channel */
     private IBatchManagementApiChannel<?> batchManagementApiChannel;
@@ -129,14 +117,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     @Override
     public boolean isGlobal() {
 	return true;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
-     */
-    @Override
-    public IConfigurationModel buildConfigurationModel() {
-	return new InstanceManagementModelProvider().buildModel();
     }
 
     /*
@@ -183,14 +163,14 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Initialize Groovy configuration.
 	init.addInitializeStep(this, getGroovyConfiguration(), true);
 
-	// Initialize device management API channel + cache.
-	init.addInitializeStep(this, getCachedDeviceManagement(), true);
+	// Initialize device management API channel.
+	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
 
 	// Initialize device event management API channel.
 	init.addInitializeStep(this, getDeviceEventManagementApiChannel(), true);
 
-	// Initialize asset management API channel + cache.
-	init.addInitializeStep(this, getCachedAssetManagement(), true);
+	// Initialize asset management API channel.
+	init.addInitializeStep(this, getAssetManagementApiChannel(), true);
 
 	// Initialize batch management API channel.
 	init.addInitializeStep(this, getBatchManagementApiChannel(), true);
@@ -226,16 +206,12 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
 	// Device management.
 	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
-	this.cachedDeviceManagement = new CachedDeviceManagementApiChannel(deviceManagementApiChannel,
-		new CachedDeviceManagementApiChannel.CacheSettings());
 
 	// Device event management.
 	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(getInstanceSettings());
 
 	// Asset management.
 	this.assetManagementApiChannel = new AssetManagementApiChannel(getInstanceSettings());
-	this.cachedAssetManagement = new CachedAssetManagementApiChannel(assetManagementApiChannel,
-		new CachedAssetManagementApiChannel.CacheSettings());
 
 	// Batch management.
 	this.batchManagementApiChannel = new BatchManagementApiChannel(getInstanceSettings());
@@ -280,14 +256,14 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Start user management GRPC server.
 	start.addStartStep(this, getUserManagementGrpcServer(), true);
 
-	// Start device mangement API channel + cache.
-	start.addStartStep(this, getCachedDeviceManagement(), true);
+	// Start device mangement API channel.
+	start.addStartStep(this, getDeviceManagementApiChannel(), true);
 
 	// Start device event mangement API channel.
 	start.addStartStep(this, getDeviceEventManagementApiChannel(), true);
 
-	// Start asset mangement API channel + cache.
-	start.addStartStep(this, getCachedAssetManagement(), true);
+	// Start asset mangement API channel.
+	start.addStartStep(this, getAssetManagementApiChannel(), true);
 
 	// Start batch mangement API channel.
 	start.addStartStep(this, getBatchManagementApiChannel(), true);
@@ -316,14 +292,14 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
-	// Stop device mangement API channel + cache.
-	stop.addStopStep(this, getCachedDeviceManagement());
+	// Stop device mangement API channel .
+	stop.addStopStep(this, getDeviceManagementApiChannel());
 
 	// Stop device event mangement API channel.
 	stop.addStopStep(this, getDeviceEventManagementApiChannel());
 
-	// Stop asset mangement API channel + cache.
-	stop.addStopStep(this, getCachedAssetManagement());
+	// Stop asset mangement API channel.
+	stop.addStopStep(this, getAssetManagementApiChannel());
 
 	// Stop batch mangement API channel.
 	stop.addStopStep(this, getBatchManagementApiChannel());
@@ -465,19 +441,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
     /*
      * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
-     * getCachedDeviceManagement()
-     */
-    @Override
-    public IDeviceManagement getCachedDeviceManagement() {
-	return cachedDeviceManagement;
-    }
-
-    public void setCachedDeviceManagement(IDeviceManagement cachedDeviceManagement) {
-	this.cachedDeviceManagement = cachedDeviceManagement;
-    }
-
-    /*
-     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
      * getDeviceEventManagementApiChannel()
      */
     @Override
@@ -501,19 +464,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 
     public void setAssetManagementApiChannel(IAssetManagementApiChannel<?> assetManagementApiChannel) {
 	this.assetManagementApiChannel = assetManagementApiChannel;
-    }
-
-    /*
-     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
-     * getCachedAssetManagement()
-     */
-    @Override
-    public IAssetManagement getCachedAssetManagement() {
-	return cachedAssetManagement;
-    }
-
-    public void setCachedAssetManagement(IAssetManagement cachedAssetManagement) {
-	this.cachedAssetManagement = cachedAssetManagement;
     }
 
     /*

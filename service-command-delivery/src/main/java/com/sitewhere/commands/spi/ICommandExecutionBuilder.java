@@ -16,8 +16,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 /**
  * Used to build an {@link IDeviceCommandExecution} from an
  * {@link IDeviceCommand} and a {@link IDeviceCommandInvocation}.
- * 
- * @author Derek
  */
 public interface ICommandExecutionBuilder extends ILifecycleComponent {
 

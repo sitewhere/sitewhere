@@ -81,7 +81,7 @@ public class DeviceTypes {
     @ApiOperation(value = "Create new device type")
     public Response createDeviceType(@RequestBody DeviceTypeCreateRequest request) throws SiteWhereException {
 	IDeviceType result = getDeviceManagement().createDeviceType(request);
-	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getCachedDeviceManagement());
+	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getDeviceManagement());
 	return Response.ok(helper.convert(result)).build();
     }
 
@@ -100,7 +100,7 @@ public class DeviceTypes {
 	    @ApiParam(value = "Include detailed asset information", required = false) @QueryParam("includeAsset") @DefaultValue("true") boolean includeAsset)
 	    throws SiteWhereException {
 	IDeviceType result = assertDeviceTypeByToken(token);
-	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getCachedDeviceManagement());
+	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getDeviceManagement());
 	return Response.ok(helper.convert(result)).build();
     }
 
@@ -156,7 +156,7 @@ public class DeviceTypes {
 	    @RequestBody DeviceTypeCreateRequest request) throws SiteWhereException {
 	IDeviceType deviceType = assertDeviceTypeByToken(token);
 	IDeviceType result = getDeviceManagement().updateDeviceType(deviceType.getId(), request);
-	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getCachedDeviceManagement());
+	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getDeviceManagement());
 	return Response.ok(helper.convert(result)).build();
     }
 
@@ -199,7 +199,7 @@ public class DeviceTypes {
 	    throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<IDeviceType> results = getDeviceManagement().listDeviceTypes(criteria);
-	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getCachedDeviceManagement());
+	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getDeviceManagement());
 	List<IDeviceType> typesConv = new ArrayList<IDeviceType>();
 	for (IDeviceType type : results.getResults()) {
 	    typesConv.add(helper.convert(type));
@@ -391,10 +391,6 @@ public class DeviceTypes {
 
     protected IDeviceManagement getDeviceManagement() {
 	return getMicroservice().getDeviceManagementApiChannel();
-    }
-
-    protected IDeviceManagement getCachedDeviceManagement() {
-	return getMicroservice().getCachedDeviceManagement();
     }
 
     protected ILabelGeneration getLabelGeneration() {

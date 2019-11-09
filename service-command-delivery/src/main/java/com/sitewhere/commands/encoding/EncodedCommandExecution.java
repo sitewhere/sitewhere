@@ -18,8 +18,6 @@ import com.sitewhere.spi.device.command.ISystemCommand;
 
 /**
  * Wraps data sent when executing a command so it can be marshaled to JSON.
- * 
- * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
 public class EncodedCommandExecution {

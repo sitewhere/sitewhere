@@ -81,7 +81,7 @@ public class DeviceStates {
 
 	// Perform search.
 	ISearchResults<IDeviceState> matches = getDeviceStateManagement().searchDeviceStates(criteria);
-	DeviceStateMarshalHelper helper = new DeviceStateMarshalHelper(getCachedDeviceManagement(),
+	DeviceStateMarshalHelper helper = new DeviceStateMarshalHelper(getDeviceManagement(),
 		getDeviceEventManagement());
 	helper.setIncludeDevice(includeDevice);
 	helper.setIncludeDeviceType(includeDeviceType);
@@ -98,8 +98,8 @@ public class DeviceStates {
 	return Response.ok(new SearchResults<IDeviceState>(results, matches.getNumResults())).build();
     }
 
-    protected IDeviceManagement getCachedDeviceManagement() {
-	return getMicroservice().getCachedDeviceManagement();
+    protected IDeviceManagement getDeviceManagement() {
+	return getMicroservice().getDeviceManagementApiChannel();
     }
 
     protected IDeviceEventManagement getDeviceEventManagement() {

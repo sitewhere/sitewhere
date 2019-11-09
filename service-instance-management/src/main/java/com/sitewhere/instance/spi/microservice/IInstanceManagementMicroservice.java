@@ -16,8 +16,6 @@ import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiChannel;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
 import com.sitewhere.instance.spi.tenant.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.instance.spi.user.grpc.IUserManagementGrpcServer;
-import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.IGlobalMicroservice;
 import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
@@ -87,13 +85,6 @@ public interface IInstanceManagementMicroservice<T extends IFunctionIdentifier> 
     public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel();
 
     /**
-     * Caching wrapper around device management API channel.
-     * 
-     * @return
-     */
-    public IDeviceManagement getCachedDeviceManagement();
-
-    /**
      * Device event management API access via GRPC channel.
      * 
      * @return
@@ -106,13 +97,6 @@ public interface IInstanceManagementMicroservice<T extends IFunctionIdentifier> 
      * @return
      */
     public IAssetManagementApiChannel<?> getAssetManagementApiChannel();
-
-    /**
-     * Get wrapper for caching data from the asset management API channel.
-     * 
-     * @return
-     */
-    public IAssetManagement getCachedAssetManagement();
 
     /**
      * Batch management API access via GRPC channel.

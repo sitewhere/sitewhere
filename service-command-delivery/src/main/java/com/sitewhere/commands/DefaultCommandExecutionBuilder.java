@@ -25,8 +25,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * handles the basic task of merging {@link IDeviceCommand} and
  * {@link IDeviceCommandInvocation} information to produce an
  * {@link IDeviceCommandExecution} that can be encoded and sent to a target.
- * 
- * @author Derek
  */
 public class DefaultCommandExecutionBuilder extends LifecycleComponent implements ICommandExecutionBuilder {
 

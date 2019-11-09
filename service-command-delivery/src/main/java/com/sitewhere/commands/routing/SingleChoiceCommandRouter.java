@@ -26,8 +26,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 /**
  * Implementation of {@link IOutboundCommandRouter} that assumes a single
  * {@link ICommandDestination} is available and delivers commands to it.
- * 
- * @author Derek
  */
 public class SingleChoiceCommandRouter extends OutboundCommandRouter {
 

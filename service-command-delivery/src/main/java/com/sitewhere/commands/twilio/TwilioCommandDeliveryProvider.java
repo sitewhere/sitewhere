@@ -30,8 +30,6 @@ import com.twilio.sdk.resource.instance.Account;
 /**
  * Implementation of {@link ICommandDeliveryProvider} that sends an SMS message
  * via Twilio.
- * 
- * @author Derek
  */
 public class TwilioCommandDeliveryProvider extends TenantEngineLifecycleComponent
 	implements ICommandDeliveryProvider<String, SmsParameters> {

@@ -7,13 +7,11 @@
  */
 package com.sitewhere.media.microservice;
 
-import com.sitewhere.media.configuration.StreamingMediaModelProvider;
 import com.sitewhere.media.spi.microservice.IStreamingMediaMicroservice;
 import com.sitewhere.media.spi.microservice.IStreamingMediaTenantEngine;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -50,14 +48,6 @@ public class StreamingMediaMicroservice
     @Override
     public boolean isGlobal() {
 	return false;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
-     */
-    @Override
-    public IConfigurationModel buildConfigurationModel() {
-	return new StreamingMediaModelProvider().buildModel();
     }
 
     /*

@@ -328,7 +328,7 @@ public class MongoDeviceStateManagement extends TenantEngineLifecycleComponent i
      * @return
      */
     public IDeviceManagement getDeviceManagement() {
-	return ((DeviceStateMicroservice) getTenantEngine().getMicroservice()).getCachedDeviceManagement();
+	return ((DeviceStateMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
     }
 
     /**
@@ -337,6 +337,6 @@ public class MongoDeviceStateManagement extends TenantEngineLifecycleComponent i
      * @return
      */
     public IAssetManagement getAssetManagement() {
-	return ((DeviceStateMicroservice) getTenantEngine().getMicroservice()).getCachedAssetManagement();
+	return ((DeviceStateMicroservice) getTenantEngine().getMicroservice()).getAssetManagementApiChannel();
     }
 }

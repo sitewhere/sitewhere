@@ -16,8 +16,6 @@ import com.sitewhere.commands.spi.ICommandDestination;
  * Implementation of {@link ICommandDestination} that encodes and delivers
  * messages that are strings and {@link ICommandDeliveryProvider} requires
  * {@link SmsParameters}.
- * 
- * @author Derek
  */
 public class SmsCommandDestination extends CommandDestination<String, SmsParameters> {
 

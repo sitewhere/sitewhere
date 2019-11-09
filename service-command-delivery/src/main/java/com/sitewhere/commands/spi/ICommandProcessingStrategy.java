@@ -15,8 +15,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Defines the flow executed for processing a command for delivery.
- * 
- * @author Derek
  */
 public interface ICommandProcessingStrategy extends ITenantEngineLifecycleComponent {
 

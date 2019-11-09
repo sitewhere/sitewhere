@@ -17,8 +17,6 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 /**
  * Extends {@link IMicroserviceTenantEngine} with features specific to command
  * delivery.
- * 
- * @author Derek
  */
 public interface ICommandDeliveryTenantEngine extends IMicroserviceTenantEngine {
 

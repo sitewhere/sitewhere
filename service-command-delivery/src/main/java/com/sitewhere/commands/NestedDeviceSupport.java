@@ -17,8 +17,6 @@ import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Provides support logic for handling interactions with nested devices.
- * 
- * @author Derek
  */
 public class NestedDeviceSupport {
 
@@ -63,8 +61,6 @@ public class NestedDeviceSupport {
 
     /**
      * Holds fields passed for addressing nested devices via a gateway.
-     * 
-     * @author Derek
      */
     public static class NestedDeviceInformation implements IDeviceNestingContext {
 

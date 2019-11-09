@@ -93,8 +93,7 @@ public class CommandInvocations {
 	    throw new SiteWhereException("Event with the corresponding id is not a command invocation.");
 	}
 	IDeviceCommandInvocation invocation = (IDeviceCommandInvocation) found;
-	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(
-		getCachedDeviceManagement());
+	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(getDeviceManagement());
 	helper.setIncludeCommand(true);
 	MarshaledDeviceCommandInvocation converted = helper.convert(invocation);
 	ISearchResults<IDeviceCommandResponse> responses = getDeviceEventManagement()
@@ -121,10 +120,6 @@ public class CommandInvocations {
 
     protected IDeviceManagement getDeviceManagement() {
 	return getMicroservice().getDeviceManagementApiChannel();
-    }
-
-    protected IDeviceManagement getCachedDeviceManagement() {
-	return getMicroservice().getCachedDeviceManagement();
     }
 
     protected IDeviceEventManagement getDeviceEventManagement() {

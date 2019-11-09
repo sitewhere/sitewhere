@@ -192,7 +192,7 @@ public class BatchOperations {
 	} else {
 	    // Resolve tokens for devices matching criteria.
 	    List<String> deviceTokens = BatchUtils.resolveDeviceTokensForDeviceCriteria(request, getDeviceManagement(),
-		    getCachedAssetManagement());
+		    getAssetManagement());
 
 	    // Create batch command invocation.
 	    BatchCommandInvocationRequest invoke = new BatchCommandInvocationRequest();
@@ -228,7 +228,7 @@ public class BatchOperations {
 	} else {
 	    // Resolve tokens for devices matching criteria.
 	    List<String> deviceTokens = BatchUtils.resolveDeviceTokensForAssignmentCriteria(request,
-		    getDeviceManagement(), getCachedAssetManagement());
+		    getDeviceManagement(), getAssetManagement());
 
 	    // Create batch command invocation.
 	    BatchCommandInvocationRequest invoke = new BatchCommandInvocationRequest();
@@ -277,8 +277,8 @@ public class BatchOperations {
 	return getMicroservice().getDeviceManagementApiChannel();
     }
 
-    private IAssetManagement getCachedAssetManagement() {
-	return getMicroservice().getCachedAssetManagement();
+    private IAssetManagement getAssetManagement() {
+	return getMicroservice().getAssetManagementApiChannel();
     }
 
     protected IBatchManagement getBatchManagement() {

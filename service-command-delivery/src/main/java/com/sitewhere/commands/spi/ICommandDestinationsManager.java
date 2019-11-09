@@ -13,8 +13,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Manages command invocation logic.
- * 
- * @author Derek
  */
 public interface ICommandDestinationsManager extends ITenantEngineLifecycleComponent {
 

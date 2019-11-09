@@ -7,20 +7,16 @@
  */
 package com.sitewhere.device.microservice;
 
-import com.sitewhere.device.configuration.DeviceManagementModelProvider;
 import com.sitewhere.device.spi.grpc.IDeviceManagementGrpcServer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
 import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
-import com.sitewhere.grpc.client.asset.CachedAssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.microservice.grpc.DeviceManagementGrpcServer;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -42,9 +38,6 @@ public class DeviceManagementMicroservice
 
     /** Asset management API channel */
     private IAssetManagementApiChannel<?> assetManagementApiChannel;
-
-    /** Cached asset management implementation */
-    private IAssetManagement cachedAssetManagement;
 
     /*
      * (non-Javadoc)
@@ -73,14 +66,6 @@ public class DeviceManagementMicroservice
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
-     */
-    @Override
-    public IConfigurationModel buildConfigurationModel() {
-	return new DeviceManagementModelProvider().buildModel();
-    }
-
-    /*
      * (non-Javadoc)
      * 
      * @see com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice#
@@ -105,8 +90,6 @@ public class DeviceManagementMicroservice
 
 	// Asset management microservice connectivity.
 	this.assetManagementApiChannel = new AssetManagementApiChannel(getInstanceSettings());
-	this.cachedAssetManagement = new CachedAssetManagementApiChannel(assetManagementApiChannel,
-		new CachedAssetManagementApiChannel.CacheSettings());
 
 	// Create step that will start components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
@@ -114,8 +97,8 @@ public class DeviceManagementMicroservice
 	// Initialize device management GRPC server.
 	init.addInitializeStep(this, getDeviceManagementGrpcServer(), true);
 
-	// Initialize asset management GRPC channel + cache.
-	init.addInitializeStep(this, getCachedAssetManagement(), true);
+	// Initialize asset management GRPC channel.
+	init.addInitializeStep(this, getAssetManagementApiChannel(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -136,8 +119,8 @@ public class DeviceManagementMicroservice
 	// Start device management GRPC server.
 	start.addStartStep(this, getDeviceManagementGrpcServer(), true);
 
-	// Start asset management API channel + cache.
-	start.addStartStep(this, getCachedAssetManagement(), true);
+	// Start asset management API channel.
+	start.addStartStep(this, getAssetManagementApiChannel(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -158,8 +141,8 @@ public class DeviceManagementMicroservice
 	// Stop device management GRPC server.
 	stop.addStopStep(this, getDeviceManagementGrpcServer());
 
-	// Stop asset management API channel + cache.
-	stop.addStopStep(this, getCachedAssetManagement());
+	// Stop asset management API channel.
+	stop.addStopStep(this, getAssetManagementApiChannel());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -189,18 +172,5 @@ public class DeviceManagementMicroservice
 
     public void setAssetManagementApiChannel(IAssetManagementApiChannel<?> assetManagementApiChannel) {
 	this.assetManagementApiChannel = assetManagementApiChannel;
-    }
-
-    /*
-     * @see com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice#
-     * getCachedAssetManagement()
-     */
-    @Override
-    public IAssetManagement getCachedAssetManagement() {
-	return cachedAssetManagement;
-    }
-
-    public void setCachedAssetManagement(IAssetManagement cachedAssetManagement) {
-	this.cachedAssetManagement = cachedAssetManagement;
     }
 }

@@ -8,7 +8,6 @@
 package com.sitewhere.registration.spi.microservice;
 
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
@@ -26,11 +25,4 @@ public interface IDeviceRegistrationMicroservice
      * @return
      */
     public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel();
-
-    /**
-     * Caching wrapper around device management API channel.
-     * 
-     * @return
-     */
-    public IDeviceManagement getCachedDeviceManagement();
 }

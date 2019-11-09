@@ -21,8 +21,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 /**
  * Implements {@link ICommandDeliveryParameterExtractor} for
  * {@link SmsParameters}.
- * 
- * @author Derek
  */
 public class SmsParameterExtractor extends TenantEngineLifecycleComponent
 	implements ICommandDeliveryParameterExtractor<SmsParameters> {

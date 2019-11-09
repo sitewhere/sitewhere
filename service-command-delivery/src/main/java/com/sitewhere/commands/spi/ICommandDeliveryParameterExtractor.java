@@ -18,8 +18,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 /**
  * Extracts delivery parameters from
  * 
- * @author Derek
- * 
  * @param <T>
  */
 public interface ICommandDeliveryParameterExtractor<T> extends ITenantEngineLifecycleComponent {

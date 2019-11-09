@@ -19,8 +19,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 /**
  * Delivers commands to devices by encoding the commands, finding the list of
  * target devices, then using a delivery provider to send the encoded commands.
- * 
- * @author Derek
  *
  * @param <T>
  * @param <P>

@@ -100,9 +100,9 @@ public class Devices {
     @ApiOperation(value = "Create new device")
     public Response createDevice(@RequestBody DeviceCreateRequest request) throws SiteWhereException {
 	IDevice result = getDeviceManagement().createDevice(request);
-	DeviceMarshalHelper helper = new DeviceMarshalHelper(getCachedDeviceManagement());
+	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAssignment(false);
-	return Response.ok(helper.convert(result, getCachedAssetManagement())).build();
+	return Response.ok(helper.convert(result, getAssetManagement())).build();
     }
 
     /**
@@ -125,11 +125,11 @@ public class Devices {
 	    @ApiParam(value = "Include detailed nested device information", required = false) @QueryParam("includeNested") @DefaultValue("false") boolean includeNested)
 	    throws SiteWhereException {
 	IDevice result = assertDeviceByToken(deviceToken);
-	DeviceMarshalHelper helper = new DeviceMarshalHelper(getCachedDeviceManagement());
+	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeDeviceType(includeDeviceType);
 	helper.setIncludeAssignment(includeAssignment);
 	helper.setIncludeNested(includeNested);
-	return Response.ok(helper.convert(result, getCachedAssetManagement())).build();
+	return Response.ok(helper.convert(result, getAssetManagement())).build();
     }
 
     /**
@@ -148,9 +148,9 @@ public class Devices {
 	    @RequestBody DeviceCreateRequest request) throws SiteWhereException {
 	IDevice existing = assertDeviceByToken(deviceToken);
 	IDevice result = getDeviceManagement().updateDevice(existing.getId(), request);
-	DeviceMarshalHelper helper = new DeviceMarshalHelper(getCachedDeviceManagement());
+	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAssignment(true);
-	return Response.ok(helper.convert(result, getCachedAssetManagement())).build();
+	return Response.ok(helper.convert(result, getAssetManagement())).build();
     }
 
     /**
@@ -192,9 +192,9 @@ public class Devices {
 	    throws SiteWhereException {
 	IDevice existing = assertDeviceByToken(deviceToken);
 	IDevice result = getDeviceManagement().deleteDevice(existing.getId());
-	DeviceMarshalHelper helper = new DeviceMarshalHelper(getCachedDeviceManagement());
+	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAssignment(true);
-	return Response.ok(helper.convert(result, getCachedAssetManagement())).build();
+	return Response.ok(helper.convert(result, getAssetManagement())).build();
     }
 
     /**
@@ -221,7 +221,7 @@ public class Devices {
 	    throws SiteWhereException {
 	IDevice existing = assertDeviceByToken(deviceToken);
 	List<IDeviceAssignment> assignments = getDeviceManagement().getActiveDeviceAssignments(existing.getId());
-	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getCachedDeviceManagement());
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeDevice(includeDevice);
 	helper.setIncludeCustomer(includeCustomer);
 	helper.setIncludeArea(includeArea);
@@ -229,7 +229,7 @@ public class Devices {
 
 	List<MarshaledDeviceAssignment> converted = new ArrayList<>();
 	for (IDeviceAssignment assignment : assignments) {
-	    converted.add(helper.convert(assignment, getCachedAssetManagement()));
+	    converted.add(helper.convert(assignment, getAssetManagement()));
 	}
 
 	return Response.ok(converted).build();
@@ -265,7 +265,7 @@ public class Devices {
 	criteria.setDeviceTokens(Collections.singletonList(deviceToken));
 
 	ISearchResults<IDeviceAssignment> history = getDeviceManagement().listDeviceAssignments(criteria);
-	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getCachedDeviceManagement());
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeDevice(includeDevice);
 	helper.setIncludeCustomer(includeCustomer);
 	helper.setIncludeArea(includeArea);
@@ -273,7 +273,7 @@ public class Devices {
 
 	List<IDeviceAssignment> converted = new ArrayList<IDeviceAssignment>();
 	for (IDeviceAssignment assignment : history.getResults()) {
-	    converted.add(helper.convert(assignment, getCachedAssetManagement()));
+	    converted.add(helper.convert(assignment, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<IDeviceAssignment>(converted, history.getNumResults())).build();
     }
@@ -294,9 +294,9 @@ public class Devices {
 	    @RequestBody DeviceElementMapping request) throws SiteWhereException {
 	IDevice existing = assertDeviceByToken(deviceToken);
 	IDevice updated = getDeviceManagement().createDeviceElementMapping(existing.getId(), request);
-	DeviceMarshalHelper helper = new DeviceMarshalHelper(getCachedDeviceManagement());
+	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAssignment(false);
-	return Response.ok(helper.convert(updated, getCachedAssetManagement())).build();
+	return Response.ok(helper.convert(updated, getAssetManagement())).build();
     }
 
     /**
@@ -316,9 +316,9 @@ public class Devices {
 	    throws SiteWhereException {
 	IDevice existing = assertDeviceByToken(deviceToken);
 	IDevice updated = getDeviceManagement().deleteDeviceElementMapping(existing.getId(), path);
-	DeviceMarshalHelper helper = new DeviceMarshalHelper(getCachedDeviceManagement());
+	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeAssignment(false);
-	return Response.ok(helper.convert(updated, getCachedAssetManagement())).build();
+	return Response.ok(helper.convert(updated, getAssetManagement())).build();
     }
 
     /**
@@ -350,12 +350,12 @@ public class Devices {
 	IDeviceSearchCriteria criteria = new DeviceSearchCriteria(deviceType, excludeAssigned, page, pageSize,
 		Assignments.parseDateOrFail(startDate), Assignments.parseDateOrFail(endDate));
 	ISearchResults<IDevice> results = getDeviceManagement().listDevices(criteria);
-	DeviceMarshalHelper helper = new DeviceMarshalHelper(getCachedDeviceManagement());
+	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeDeviceType(includeDeviceType);
 	helper.setIncludeAssignment(includeAssignment);
 	List<IDevice> devicesConv = new ArrayList<IDevice>();
 	for (IDevice device : results.getResults()) {
-	    devicesConv.add(helper.convert(device, getCachedAssetManagement()));
+	    devicesConv.add(helper.convert(device, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<IDevice>(devicesConv, results.getNumResults())).build();
     }
@@ -395,13 +395,13 @@ public class Devices {
 		Assignments.parseDateOrFail(startDate), Assignments.parseDateOrFail(endDate));
 	IDeviceGroup group = assertDeviceGroup(groupToken);
 	List<IDevice> matches = DeviceGroupUtils.getDevicesInGroup(group, criteria, getDeviceManagement(),
-		getCachedAssetManagement());
-	DeviceMarshalHelper helper = new DeviceMarshalHelper(getCachedDeviceManagement());
+		getAssetManagement());
+	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeDeviceType(includeDeviceType);
 	helper.setIncludeAssignment(includeAssignment);
 	List<IDevice> devicesConv = new ArrayList<IDevice>();
 	for (IDevice device : matches) {
-	    devicesConv.add(helper.convert(device, getCachedAssetManagement()));
+	    devicesConv.add(helper.convert(device, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<IDevice>(devicesConv, matches.size())).build();
     }
@@ -440,13 +440,13 @@ public class Devices {
 	IDeviceSearchCriteria criteria = new DeviceSearchCriteria(deviceType, excludeAssigned, page, pageSize,
 		Assignments.parseDateOrFail(startDate), Assignments.parseDateOrFail(endDate));
 	Collection<IDevice> matches = DeviceGroupUtils.getDevicesInGroupsWithRole(role, criteria, getDeviceManagement(),
-		getCachedAssetManagement());
-	DeviceMarshalHelper helper = new DeviceMarshalHelper(getCachedDeviceManagement());
+		getAssetManagement());
+	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeDeviceType(includeDeviceType);
 	helper.setIncludeAssignment(includeAssignment);
 	List<IDevice> devicesConv = new ArrayList<IDevice>();
 	for (IDevice device : matches) {
-	    devicesConv.add(helper.convert(device, getCachedAssetManagement()));
+	    devicesConv.add(helper.convert(device, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<IDevice>(devicesConv, matches.size())).build();
     }
@@ -548,16 +548,12 @@ public class Devices {
 	return getMicroservice().getDeviceManagementApiChannel();
     }
 
-    protected IDeviceManagement getCachedDeviceManagement() {
-	return getMicroservice().getCachedDeviceManagement();
-    }
-
     protected IDeviceEventManagement getDeviceEventManagement() {
 	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiChannel());
     }
 
-    protected IAssetManagement getCachedAssetManagement() {
-	return getMicroservice().getCachedAssetManagement();
+    protected IAssetManagement getAssetManagement() {
+	return getMicroservice().getAssetManagementApiChannel();
     }
 
     protected ILabelGeneration getLabelGeneration() {

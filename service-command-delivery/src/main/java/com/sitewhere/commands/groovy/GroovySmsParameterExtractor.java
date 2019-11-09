@@ -12,8 +12,6 @@ import com.sitewhere.commands.destination.sms.SmsParameters;
 /**
  * Command extractor that expects an {@link SmsParameters} object to be returned
  * from the Groovy script.
- * 
- * @author Derek
  */
 public class GroovySmsParameterExtractor extends GroovyParameterExtractor<SmsParameters> {
 }

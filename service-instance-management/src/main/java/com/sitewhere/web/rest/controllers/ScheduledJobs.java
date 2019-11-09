@@ -130,7 +130,7 @@ public class ScheduledJobs {
 	} else {
 	    List<IScheduledJob> converted = new ArrayList<IScheduledJob>();
 	    ScheduledJobMarshalHelper helper = new ScheduledJobMarshalHelper(getScheduleManagement(),
-		    getCachedDeviceManagement(), getCachedAssetManagement(), true);
+		    getDeviceManagement(), getAssetManagement(), true);
 	    for (IScheduledJob job : results.getResults()) {
 		converted.add(helper.convert(job));
 	    }
@@ -157,12 +157,12 @@ public class ScheduledJobs {
 	return getMicroservice().getScheduleManagementApiChannel();
     }
 
-    protected IDeviceManagement getCachedDeviceManagement() {
-	return getMicroservice().getCachedDeviceManagement();
+    protected IDeviceManagement getDeviceManagement() {
+	return getMicroservice().getDeviceManagementApiChannel();
     }
 
-    protected IAssetManagement getCachedAssetManagement() {
-	return getMicroservice().getCachedAssetManagement();
+    protected IAssetManagement getAssetManagement() {
+	return getMicroservice().getAssetManagementApiChannel();
     }
 
     protected IInstanceManagementMicroservice<?> getMicroservice() {

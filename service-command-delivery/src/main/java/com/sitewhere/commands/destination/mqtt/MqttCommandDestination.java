@@ -14,8 +14,6 @@ import com.sitewhere.commands.spi.ICommandDestination;
 /**
  * Implementation of {@link ICommandDestination} that encodes and delivers
  * messages that are byte arrays.
- * 
- * @author Derek
  */
 public class MqttCommandDestination extends CommandDestination<byte[], MqttParameters> {
 

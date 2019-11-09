@@ -149,7 +149,7 @@ public class CustomerTypes {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<ICustomerType> matches = getDeviceManagement().listCustomerTypes(criteria);
 
-	CustomerTypeMarshalHelper helper = new CustomerTypeMarshalHelper(getCachedDeviceManagement());
+	CustomerTypeMarshalHelper helper = new CustomerTypeMarshalHelper(getDeviceManagement());
 	helper.setIncludeContainedCustomerTypes(includeContainedCustomerTypes);
 
 	List<ICustomerType> results = new ArrayList<ICustomerType>();
@@ -193,10 +193,6 @@ public class CustomerTypes {
 
     protected IDeviceManagement getDeviceManagement() {
 	return getMicroservice().getDeviceManagementApiChannel();
-    }
-
-    protected IDeviceManagement getCachedDeviceManagement() {
-	return getMicroservice().getCachedDeviceManagement();
     }
 
     protected ILabelGeneration getLabelGeneration() {

@@ -123,8 +123,7 @@ public class Customers {
 	    @ApiParam(value = "Include parent customer information", required = false) @QueryParam("includeParentCustomer") @DefaultValue("true") boolean includeParentCustomer)
 	    throws SiteWhereException {
 	ICustomer existing = assertCustomer(customerToken);
-	CustomerMarshalHelper helper = new CustomerMarshalHelper(getCachedDeviceManagement(),
-		getCachedAssetManagement());
+	CustomerMarshalHelper helper = new CustomerMarshalHelper(getDeviceManagement(), getAssetManagement());
 	helper.setIncludeCustomerType(includeCustomerType);
 	helper.setIncludeParentCustomer(includeParentCustomer);
 	return Response.ok(helper.convert(existing)).build();
@@ -202,8 +201,7 @@ public class Customers {
 
 	// Perform search.
 	ISearchResults<ICustomer> matches = getDeviceManagement().listCustomers(criteria);
-	CustomerMarshalHelper helper = new CustomerMarshalHelper(getCachedDeviceManagement(),
-		getCachedAssetManagement());
+	CustomerMarshalHelper helper = new CustomerMarshalHelper(getDeviceManagement(), getAssetManagement());
 	helper.setIncludeCustomerType(includeCustomerType);
 
 	List<ICustomer> results = new ArrayList<ICustomer>();
@@ -293,7 +291,7 @@ public class Customers {
 
 	List<IDeviceMeasurement> wrapped = new ArrayList<IDeviceMeasurement>();
 	for (IDeviceMeasurement result : results.getResults()) {
-	    wrapped.add(new DeviceMeasurementsWithAsset(result, getCachedAssetManagement()));
+	    wrapped.add(new DeviceMeasurementsWithAsset(result, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<IDeviceMeasurement>(wrapped, results.getNumResults())).build();
     }
@@ -327,7 +325,7 @@ public class Customers {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceLocation> wrapped = new ArrayList<IDeviceLocation>();
 	for (IDeviceLocation result : results.getResults()) {
-	    wrapped.add(new DeviceLocationWithAsset(result, getCachedAssetManagement()));
+	    wrapped.add(new DeviceLocationWithAsset(result, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<IDeviceLocation>(wrapped, results.getNumResults())).build();
     }
@@ -362,7 +360,7 @@ public class Customers {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceAlert> wrapped = new ArrayList<IDeviceAlert>();
 	for (IDeviceAlert result : results.getResults()) {
-	    wrapped.add(new DeviceAlertWithAsset(result, getCachedAssetManagement()));
+	    wrapped.add(new DeviceAlertWithAsset(result, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<IDeviceAlert>(wrapped, results.getNumResults())).build();
     }
@@ -397,7 +395,7 @@ public class Customers {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceCommandInvocation> wrapped = new ArrayList<IDeviceCommandInvocation>();
 	for (IDeviceCommandInvocation result : results.getResults()) {
-	    wrapped.add(new DeviceCommandInvocationWithAsset(result, getCachedAssetManagement()));
+	    wrapped.add(new DeviceCommandInvocationWithAsset(result, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<IDeviceCommandInvocation>(wrapped, results.getNumResults())).build();
     }
@@ -432,7 +430,7 @@ public class Customers {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceCommandResponse> wrapped = new ArrayList<IDeviceCommandResponse>();
 	for (IDeviceCommandResponse result : results.getResults()) {
-	    wrapped.add(new DeviceCommandResponseWithAsset(result, getCachedAssetManagement()));
+	    wrapped.add(new DeviceCommandResponseWithAsset(result, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<IDeviceCommandResponse>(wrapped, results.getNumResults())).build();
     }
@@ -467,7 +465,7 @@ public class Customers {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceStateChange> wrapped = new ArrayList<IDeviceStateChange>();
 	for (IDeviceStateChange result : results.getResults()) {
-	    wrapped.add(new DeviceStateChangeWithAsset(result, getCachedAssetManagement()));
+	    wrapped.add(new DeviceStateChangeWithAsset(result, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<IDeviceStateChange>(wrapped, results.getNumResults())).build();
     }
@@ -508,14 +506,14 @@ public class Customers {
 	criteria.setCustomerTokens(customers);
 
 	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
-	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getCachedDeviceManagement());
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeDevice(includeDevice);
 	helper.setIncludeCustomer(includeCustomer);
 	helper.setIncludeArea(includeArea);
 	helper.setIncludeAsset(includeAsset);
 	List<DeviceAssignment> converted = new ArrayList<DeviceAssignment>();
 	for (IDeviceAssignment assignment : matches.getResults()) {
-	    converted.add(helper.convert(assignment, getCachedAssetManagement()));
+	    converted.add(helper.convert(assignment, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<DeviceAssignment>(converted, matches.getNumResults())).build();
     }
@@ -617,16 +615,12 @@ public class Customers {
 	return getMicroservice().getDeviceManagementApiChannel();
     }
 
-    protected IDeviceManagement getCachedDeviceManagement() {
-	return getMicroservice().getCachedDeviceManagement();
-    }
-
     protected IDeviceEventManagement getDeviceEventManagement() {
 	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiChannel());
     }
 
-    protected IAssetManagement getCachedAssetManagement() {
-	return getMicroservice().getCachedAssetManagement();
+    protected IAssetManagement getAssetManagement() {
+	return getMicroservice().getAssetManagementApiChannel();
     }
 
     protected ILabelGeneration getLabelGeneration() {

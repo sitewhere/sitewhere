@@ -7,18 +7,14 @@
  */
 package com.sitewhere.registration.microservice;
 
-import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
-import com.sitewhere.registration.configuration.DeviceRegistrationModelProvider;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -37,9 +33,6 @@ public class DeviceRegistrationMicroservice
 
     /** Device management API channel */
     private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
-
-    /** Cached device management implementation */
-    private IDeviceManagement cachedDeviceManagement;
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
@@ -66,14 +59,6 @@ public class DeviceRegistrationMicroservice
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
-     */
-    @Override
-    public IConfigurationModel buildConfigurationModel() {
-	return new DeviceRegistrationModelProvider().buildModel();
-    }
-
-    /*
      * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
      * createTenantEngine(com.sitewhere.spi.tenant.ITenant)
      */
@@ -95,8 +80,8 @@ public class DeviceRegistrationMicroservice
 	// Composite step for initializing microservice.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
-	// Initialize device management API channel + cache.
-	init.addInitializeStep(this, getCachedDeviceManagement(), true);
+	// Initialize device management API channel.
+	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -112,8 +97,8 @@ public class DeviceRegistrationMicroservice
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
-	// Start device mangement API channel + cache.
-	start.addStartStep(this, getCachedDeviceManagement(), true);
+	// Start device mangement API channel.
+	start.addStartStep(this, getDeviceManagementApiChannel(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -129,8 +114,8 @@ public class DeviceRegistrationMicroservice
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
-	// Stop device mangement API channel + cache.
-	stop.addStopStep(this, getCachedDeviceManagement());
+	// Stop device mangement API channel.
+	stop.addStopStep(this, getDeviceManagementApiChannel());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -142,8 +127,6 @@ public class DeviceRegistrationMicroservice
     private void createGrpcComponents() {
 	// Device management.
 	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
-	this.cachedDeviceManagement = new CachedDeviceManagementApiChannel(deviceManagementApiChannel,
-		new CachedDeviceManagementApiChannel.CacheSettings());
     }
 
     /*
@@ -158,19 +141,5 @@ public class DeviceRegistrationMicroservice
 
     public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
 	this.deviceManagementApiChannel = deviceManagementApiChannel;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice#
-     * getCachedDeviceManagement()
-     */
-    @Override
-    public IDeviceManagement getCachedDeviceManagement() {
-	return cachedDeviceManagement;
-    }
-
-    public void setCachedDeviceManagement(IDeviceManagement cachedDeviceManagement) {
-	this.cachedDeviceManagement = cachedDeviceManagement;
     }
 }

@@ -318,7 +318,7 @@ public class MongoDeviceEventManagement extends MongoTenantComponent<DeviceEvent
 	List<IDeviceCommandInvocation> result = new ArrayList<>();
 	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
 	for (IDeviceCommandInvocationCreateRequest request : requests) {
-	    IDeviceCommand command = getCachedDeviceManagement().getDeviceCommandByToken(assignment.getDeviceTypeId(),
+	    IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(assignment.getDeviceTypeId(),
 		    request.getCommandToken());
 	    DeviceCommandInvocation ci = DeviceEventManagementPersistence.deviceCommandInvocationCreateLogic(assignment,
 		    command, request);
@@ -452,7 +452,7 @@ public class MongoDeviceEventManagement extends MongoTenantComponent<DeviceEvent
      * @throws SiteWhereException
      */
     protected IDeviceAssignment assertDeviceAssignmentById(UUID id) throws SiteWhereException {
-	IDeviceAssignment assignment = getCachedDeviceManagement().getDeviceAssignment(id);
+	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(id);
 	if (assignment == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentId, ErrorLevel.ERROR);
 	}
@@ -484,8 +484,8 @@ public class MongoDeviceEventManagement extends MongoTenantComponent<DeviceEvent
 	throw new SiteWhereException("Unknown index: " + index.name());
     }
 
-    protected IDeviceManagement getCachedDeviceManagement() {
-	return ((IEventManagementMicroservice) getTenantEngine().getMicroservice()).getCachedDeviceManagement();
+    protected IDeviceManagement getDeviceManagement() {
+	return ((IEventManagementMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
     }
 
     /**

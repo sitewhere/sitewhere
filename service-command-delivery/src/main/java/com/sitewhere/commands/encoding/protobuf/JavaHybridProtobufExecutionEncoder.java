@@ -25,8 +25,6 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
  * values are encoded as serialized Java arrays that can be unpacked on the
  * device side and executed dynamically with the need for compiling protocol
  * buffer stubs.
- * 
- * @author Derek
  */
 public class JavaHybridProtobufExecutionEncoder extends ProtobufExecutionEncoder {
 

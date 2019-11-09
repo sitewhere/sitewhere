@@ -26,8 +26,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * {@link MqttParameters}, allowing expressions to be defined such that the
  * tenant id and device token may be included in the topic name to target a
  * specific device.
- * 
- * @author Derek
  */
 @SuppressWarnings("deprecation")
 public class DefaultMqttParameterExtractor extends TenantEngineLifecycleComponent

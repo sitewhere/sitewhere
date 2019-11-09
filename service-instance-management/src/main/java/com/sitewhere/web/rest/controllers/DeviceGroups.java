@@ -210,7 +210,7 @@ public class DeviceGroups {
 	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
 	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
-	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getCachedDeviceManagement())
+	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getDeviceManagement())
 		.setIncludeDetails(includeDetails);
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 
@@ -219,7 +219,7 @@ public class DeviceGroups {
 		criteria);
 	List<IDeviceGroupElement> elmConv = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElement elm : results.getResults()) {
-	    elmConv.add(helper.convert(elm, getCachedAssetManagement()));
+	    elmConv.add(helper.convert(elm, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<IDeviceGroupElement>(elmConv, results.getNumResults())).build();
     }
@@ -239,7 +239,7 @@ public class DeviceGroups {
     public Response addDeviceGroupElements(
 	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathParam("groupToken") String groupToken,
 	    @RequestBody List<DeviceGroupElementCreateRequest> request) throws SiteWhereException {
-	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getCachedDeviceManagement())
+	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getDeviceManagement())
 		.setIncludeDetails(false);
 	List<IDeviceGroupElementCreateRequest> elements = (List<IDeviceGroupElementCreateRequest>) (List<? extends IDeviceGroupElementCreateRequest>) request;
 
@@ -250,7 +250,7 @@ public class DeviceGroups {
 	List<IDeviceGroupElement> results = getDeviceManagement().addDeviceGroupElements(group.getId(), elements, true);
 	List<IDeviceGroupElement> converted = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElement elm : results) {
-	    converted.add(helper.convert(elm, getCachedAssetManagement()));
+	    converted.add(helper.convert(elm, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<IDeviceGroupElement>(converted)).build();
     }
@@ -314,13 +314,13 @@ public class DeviceGroups {
     public Response deleteDeviceGroupElements(
 	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathParam("groupToken") String groupToken,
 	    @RequestBody List<UUID> elementIds) throws SiteWhereException {
-	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getCachedDeviceManagement())
+	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getDeviceManagement())
 		.setIncludeDetails(false);
 
 	List<IDeviceGroupElement> results = getDeviceManagement().removeDeviceGroupElements(elementIds);
 	List<IDeviceGroupElement> converted = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElement elm : results) {
-	    converted.add(helper.convert(elm, getCachedAssetManagement()));
+	    converted.add(helper.convert(elm, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<IDeviceGroupElement>(converted)).build();
     }
@@ -344,12 +344,8 @@ public class DeviceGroups {
 	return getMicroservice().getDeviceManagementApiChannel();
     }
 
-    protected IDeviceManagement getCachedDeviceManagement() {
-	return getMicroservice().getCachedDeviceManagement();
-    }
-
-    protected IAssetManagement getCachedAssetManagement() {
-	return getMicroservice().getCachedAssetManagement();
+    protected IAssetManagement getAssetManagement() {
+	return getMicroservice().getAssetManagementApiChannel();
     }
 
     protected ILabelGeneration getLabelGeneration() {

@@ -18,8 +18,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Routes commands to one or more {@link ICommandDestination} implementations.
- * 
- * @author Derek
  */
 public interface IOutboundCommandRouter extends ITenantEngineLifecycleComponent {
 

@@ -22,14 +22,6 @@ dependencies {
 	compile group: 'io.swagger', name: 'swagger-annotations', version: '1.5.21'
 }
 
-// Only publish thin jar.
-apply plugin: 'maven-publish'
-publishing {
-    publications {
-	mavenJava(MavenPublication) { from components.java }
-    }
-}
-
 // Create a Dockerfile.
 task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: jar) {
     destFile = project.file('build/docker/Dockerfile')

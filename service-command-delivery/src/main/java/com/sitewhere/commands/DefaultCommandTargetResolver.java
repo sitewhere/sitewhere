@@ -23,8 +23,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * Uses information in an {@link IDeviceCommandInvocation} to determine a list
  * of target {@link IDeviceAssignment} objects. This implementation returns the
  * {@link IDeviceAssignment} associated with the invocation.
- * 
- * @author Derek
  */
 public class DefaultCommandTargetResolver extends TenantEngineLifecycleComponent implements ICommandTargetResolver {
 

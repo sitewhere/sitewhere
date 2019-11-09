@@ -123,7 +123,7 @@ public class Areas {
 	    @ApiParam(value = "Include parent area information", required = false) @QueryParam("includeParentArea") @DefaultValue("true") boolean includeParentArea)
 	    throws SiteWhereException {
 	IArea existing = assertArea(areaToken);
-	AreaMarshalHelper helper = new AreaMarshalHelper(getCachedDeviceManagement(), getCachedAssetManagement());
+	AreaMarshalHelper helper = new AreaMarshalHelper(getDeviceManagement(), getAssetManagement());
 	helper.setIncludeAreaType(includeAreaType);
 	helper.setIncludeParentArea(includeParentArea);
 	return Response.ok(helper.convert(existing)).build();
@@ -202,7 +202,7 @@ public class Areas {
 
 	// Perform search.
 	ISearchResults<IArea> matches = getDeviceManagement().listAreas(criteria);
-	AreaMarshalHelper helper = new AreaMarshalHelper(getCachedDeviceManagement(), getCachedAssetManagement());
+	AreaMarshalHelper helper = new AreaMarshalHelper(getDeviceManagement(), getAssetManagement());
 	helper.setIncludeAreaType(includeAreaType);
 	helper.setIncludeZones(includeZones);
 	helper.setIncludeAssignments(includeAssignments);
@@ -296,7 +296,7 @@ public class Areas {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceMeasurement> wrapped = new ArrayList<IDeviceMeasurement>();
 	for (IDeviceMeasurement result : results.getResults()) {
-	    wrapped.add(new DeviceMeasurementsWithAsset(result, getCachedAssetManagement()));
+	    wrapped.add(new DeviceMeasurementsWithAsset(result, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<IDeviceMeasurement>(wrapped, results.getNumResults())).build();
     }
@@ -331,7 +331,7 @@ public class Areas {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceLocation> wrapped = new ArrayList<IDeviceLocation>();
 	for (IDeviceLocation result : results.getResults()) {
-	    wrapped.add(new DeviceLocationWithAsset(result, getCachedAssetManagement()));
+	    wrapped.add(new DeviceLocationWithAsset(result, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<IDeviceLocation>(wrapped, results.getNumResults())).build();
     }
@@ -367,7 +367,7 @@ public class Areas {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceAlert> wrapped = new ArrayList<IDeviceAlert>();
 	for (IDeviceAlert result : results.getResults()) {
-	    wrapped.add(new DeviceAlertWithAsset(result, getCachedAssetManagement()));
+	    wrapped.add(new DeviceAlertWithAsset(result, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<IDeviceAlert>(wrapped, results.getNumResults())).build();
     }
@@ -402,7 +402,7 @@ public class Areas {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceCommandInvocation> wrapped = new ArrayList<IDeviceCommandInvocation>();
 	for (IDeviceCommandInvocation result : results.getResults()) {
-	    wrapped.add(new DeviceCommandInvocationWithAsset(result, getCachedAssetManagement()));
+	    wrapped.add(new DeviceCommandInvocationWithAsset(result, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<IDeviceCommandInvocation>(wrapped, results.getNumResults())).build();
     }
@@ -438,7 +438,7 @@ public class Areas {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceCommandResponse> wrapped = new ArrayList<IDeviceCommandResponse>();
 	for (IDeviceCommandResponse result : results.getResults()) {
-	    wrapped.add(new DeviceCommandResponseWithAsset(result, getCachedAssetManagement()));
+	    wrapped.add(new DeviceCommandResponseWithAsset(result, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<IDeviceCommandResponse>(wrapped, results.getNumResults())).build();
     }
@@ -473,7 +473,7 @@ public class Areas {
 	// Marshal with asset info since multiple assignments might match.
 	List<IDeviceStateChange> wrapped = new ArrayList<IDeviceStateChange>();
 	for (IDeviceStateChange result : results.getResults()) {
-	    wrapped.add(new DeviceStateChangeWithAsset(result, getCachedAssetManagement()));
+	    wrapped.add(new DeviceStateChangeWithAsset(result, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<IDeviceStateChange>(wrapped, results.getNumResults())).build();
     }
@@ -514,7 +514,7 @@ public class Areas {
 	criteria.setAreaTokens(areas);
 
 	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
-	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getCachedDeviceManagement());
+	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeDevice(includeDevice);
 	helper.setIncludeCustomer(includeCustomer);
 	helper.setIncludeArea(includeArea);
@@ -522,7 +522,7 @@ public class Areas {
 
 	List<DeviceAssignment> converted = new ArrayList<DeviceAssignment>();
 	for (IDeviceAssignment assignment : matches.getResults()) {
-	    converted.add(helper.convert(assignment, getCachedAssetManagement()));
+	    converted.add(helper.convert(assignment, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<DeviceAssignment>(converted, matches.getNumResults())).build();
     }
@@ -624,16 +624,12 @@ public class Areas {
 	return getMicroservice().getDeviceManagementApiChannel();
     }
 
-    protected IDeviceManagement getCachedDeviceManagement() {
-	return getMicroservice().getCachedDeviceManagement();
-    }
-
     protected IDeviceEventManagement getDeviceEventManagement() {
 	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiChannel());
     }
 
-    protected IAssetManagement getCachedAssetManagement() {
-	return getMicroservice().getCachedAssetManagement();
+    protected IAssetManagement getAssetManagement() {
+	return getMicroservice().getAssetManagementApiChannel();
     }
 
     protected ILabelGeneration getLabelGeneration() {

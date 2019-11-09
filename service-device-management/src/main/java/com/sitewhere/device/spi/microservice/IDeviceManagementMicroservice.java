@@ -9,7 +9,6 @@ package com.sitewhere.device.spi.microservice;
 
 import com.sitewhere.device.spi.grpc.IDeviceManagementGrpcServer;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
-import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
@@ -34,11 +33,4 @@ public interface IDeviceManagementMicroservice
      * @return
      */
     public IAssetManagementApiChannel<?> getAssetManagementApiChannel();
-
-    /**
-     * Get wrapper for caching data from the asset management API channel.
-     * 
-     * @return
-     */
-    public IAssetManagement getCachedAssetManagement();
 }

@@ -12,8 +12,6 @@ import com.sitewhere.commands.encoding.json.JsonCommandExecutionEncoder;
 
 /**
  * Command destination that makes a CoAP client request to send command data.
- * 
- * @author Derek
  */
 public class CoapCommandDestination extends CommandDestination<byte[], CoapParameters> {
 

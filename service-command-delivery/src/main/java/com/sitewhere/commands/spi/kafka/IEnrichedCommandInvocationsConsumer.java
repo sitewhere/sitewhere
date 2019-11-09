@@ -11,8 +11,6 @@ import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer;
 
 /**
  * Kafka consumer that receives events for enriched command invocations.
- * 
- * @author Derek
  */
 public interface IEnrichedCommandInvocationsConsumer extends IMicroserviceKafkaConsumer {
 }

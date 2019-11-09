@@ -26,7 +26,6 @@ import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.client.event.EventModelConverter;
 import com.sitewhere.grpc.client.event.EventModelMarshaler;
 import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
-import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.rest.model.device.event.kafka.EnrichedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
@@ -37,8 +36,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 /**
  * Consumes command invocations from a well-known Kafka topic and makes them
  * available to the command destinations manager.
- * 
- * @author Derek
  */
 public class EnrichedCommandInvocationsConsumer extends DirectKafkaConsumer
 	implements IEnrichedCommandInvocationsConsumer {
@@ -137,8 +134,6 @@ public class EnrichedCommandInvocationsConsumer extends DirectKafkaConsumer
     /**
      * Processor that unmarshals a decoded event for a command invocation and hands
      * it off for processing.
-     * 
-     * @author Derek
      */
     protected class CommandInvocationProcessor extends SystemUserRunnable {
 

@@ -9,8 +9,6 @@ package com.sitewhere.commands.destination.mqtt;
 
 /**
  * Parameters that are needed for interacting with MQTT.
- * 
- * @author Derek
  */
 public class MqttParameters {
 

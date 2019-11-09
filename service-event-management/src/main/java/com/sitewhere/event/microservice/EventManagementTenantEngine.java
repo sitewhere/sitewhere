@@ -290,7 +290,7 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 	this.outboundCommandInvocationsProducer = outboundCommandInvocationsProducer;
     }
 
-    protected IDeviceManagement getCachedDeviceManagement() {
-	return ((IEventManagementMicroservice) getMicroservice()).getCachedDeviceManagement();
+    protected IDeviceManagement getDeviceManagement() {
+	return ((IEventManagementMicroservice) getMicroservice()).getDeviceManagementApiChannel();
     }
 }

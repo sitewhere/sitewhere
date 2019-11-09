@@ -149,7 +149,7 @@ public class AreaTypes {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<IAreaType> matches = getDeviceManagement().listAreaTypes(criteria);
 
-	AreaTypeMarshalHelper helper = new AreaTypeMarshalHelper(getCachedDeviceManagement());
+	AreaTypeMarshalHelper helper = new AreaTypeMarshalHelper(getDeviceManagement());
 	helper.setIncludeContainedAreaTypes(includeContainedAreaTypes);
 
 	List<IAreaType> results = new ArrayList<IAreaType>();
@@ -193,10 +193,6 @@ public class AreaTypes {
 
     protected IDeviceManagement getDeviceManagement() {
 	return getMicroservice().getDeviceManagementApiChannel();
-    }
-
-    protected IDeviceManagement getCachedDeviceManagement() {
-	return getMicroservice().getCachedDeviceManagement();
     }
 
     protected ILabelGeneration getLabelGeneration() {

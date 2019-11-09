@@ -13,8 +13,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Abstract base class for {@link IOutboundCommandRouter} implementations.
- * 
- * @author Derek
  */
 public abstract class OutboundCommandRouter extends TenantEngineLifecycleComponent implements IOutboundCommandRouter {
 

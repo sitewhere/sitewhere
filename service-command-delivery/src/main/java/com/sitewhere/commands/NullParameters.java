@@ -21,16 +21,12 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 /**
  * Placeholder object for {@link ICommandDeliveryProvider} that do not require
  * parameters.
- * 
- * @author Derek
  */
 public class NullParameters {
 
     /**
      * Implementation of {@link ICommandDeliveryParameterExtractor} that returns
      * {@link NullParameters}.
-     * 
-     * @author Derek
      */
     public static class Extractor extends TenantEngineLifecycleComponent
 	    implements ICommandDeliveryParameterExtractor<NullParameters> {

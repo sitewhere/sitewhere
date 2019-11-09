@@ -19,8 +19,6 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Default {@link ICommandDestinationsManager} implementation.
- * 
- * @author Derek
  */
 public class CommandDestinationsManager extends TenantEngineLifecycleComponent implements ICommandDestinationsManager {
 

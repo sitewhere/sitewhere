@@ -1,5 +1,6 @@
 pluginManagement {
     repositories {
+        mavenLocal()
         mavenCentral()
         gradlePluginPortal()
     }
@@ -7,6 +8,9 @@ pluginManagement {
         eachPlugin {
             if (requested.id.id == 'io.quarkus') {
                 useModule("io.quarkus:quarkus-gradle-plugin:${requested.version}")
+            }
+            if (requested.id.id == 'com.sitewhere') {
+                useModule("com.sitewhere:sitewhere-gradle-plugin:${requested.version}")
             }
         }
     }

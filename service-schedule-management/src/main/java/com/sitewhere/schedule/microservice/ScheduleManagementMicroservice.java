@@ -9,14 +9,12 @@ package com.sitewhere.schedule.microservice;
 
 import com.sitewhere.microservice.grpc.ScheduleManagementGrpcServer;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
-import com.sitewhere.schedule.configuration.ScheduleManagementModelProvider;
 import com.sitewhere.schedule.spi.grpc.IScheduleManagementGrpcServer;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementTenantEngine;
 import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
@@ -58,14 +56,6 @@ public class ScheduleManagementMicroservice
     @Override
     public boolean isGlobal() {
 	return false;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
-     */
-    @Override
-    public IConfigurationModel buildConfigurationModel() {
-	return new ScheduleManagementModelProvider().buildModel();
     }
 
     /*

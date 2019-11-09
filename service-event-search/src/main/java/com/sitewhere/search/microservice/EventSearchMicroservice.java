@@ -8,12 +8,10 @@
 package com.sitewhere.search.microservice;
 
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
-import com.sitewhere.search.configuration.EventSearchModelProvider;
 import com.sitewhere.search.spi.microservice.IEventSearchMicroservice;
 import com.sitewhere.search.spi.microservice.IEventSearchTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
@@ -49,14 +47,6 @@ public class EventSearchMicroservice extends MultitenantMicroservice<Microservic
     @Override
     public boolean isGlobal() {
 	return false;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
-     */
-    @Override
-    public IConfigurationModel buildConfigurationModel() {
-	return new EventSearchModelProvider().buildModel();
     }
 
     /*
