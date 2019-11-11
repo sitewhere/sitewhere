@@ -34,13 +34,6 @@ include ':service-rule-processing'
 include ':service-schedule-management'
 include ':service-streaming-media'
 
-include ':sitewhere-cassandra'
-include ':sitewhere-communication'
-include ':sitewhere-configuration'
-include ':sitewhere-influxdb'
-include ':sitewhere-mongodb'
-include ':sitewhere-solr'
-
 project(':service-asset-management').projectDir = "$rootDir/service-asset-management" as File
 project(':service-batch-operations').projectDir = "$rootDir/service-batch-operations" as File
 project(':service-command-delivery').projectDir = "$rootDir/service-command-delivery" as File
@@ -57,10 +50,3 @@ project(':service-outbound-connectors').projectDir = "$rootDir/service-outbound-
 project(':service-rule-processing').projectDir = "$rootDir/service-rule-processing" as File
 project(':service-schedule-management').projectDir = "$rootDir/service-schedule-management" as File
 project(':service-streaming-media').projectDir = "$rootDir/service-streaming-media" as File
-
-project(':sitewhere-cassandra').projectDir = "$rootDir/sitewhere-cassandra" as File
-project(':sitewhere-communication').projectDir = "$rootDir/sitewhere-communication" as File
-project(':sitewhere-configuration').projectDir = "$rootDir/sitewhere-configuration" as File
-project(':sitewhere-influxdb').projectDir = "$rootDir/sitewhere-influxdb" as File
-project(':sitewhere-mongodb').projectDir = "$rootDir/sitewhere-mongodb" as File
-project(':sitewhere-solr').projectDir = "$rootDir/sitewhere-solr" as File

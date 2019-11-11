@@ -10,7 +10,7 @@ package com.sitewhere.media.persistence.mongodb;
 import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
-import com.sitewhere.configuration.instance.mongodb.MongoConfiguration;
+import com.sitewhere.mongodb.MongoConfiguration;
 import com.sitewhere.mongodb.MongoDbClient;
 import com.sitewhere.spi.SiteWhereException;
 

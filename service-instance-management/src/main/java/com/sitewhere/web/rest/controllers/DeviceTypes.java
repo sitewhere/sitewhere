@@ -28,7 +28,6 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitewhere.communication.protobuf.DeviceTypeProtoBuilder;
 import com.sitewhere.device.marshaling.DeviceTypeMarshalHelper;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
@@ -102,43 +101,6 @@ public class DeviceTypes {
 	IDeviceType result = assertDeviceTypeByToken(token);
 	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getDeviceManagement());
 	return Response.ok(helper.convert(result)).build();
-    }
-
-    /**
-     * Get default protobuf definition for device type.
-     * 
-     * @param token
-     * @param response
-     * @return
-     * @throws SiteWhereException
-     */
-    @GET
-    @Path("/{token}/proto")
-    @Produces("text/plain")
-    @ApiOperation(value = "Get specification GPB by unique token")
-    public Response getDeviceTypeProtoByToken(
-	    @ApiParam(value = "Token", required = true) @PathParam("token") String token) throws SiteWhereException {
-	IDeviceType deviceType = assertDeviceTypeByToken(token);
-	return Response.ok(DeviceTypeProtoBuilder.getProtoForDeviceType(deviceType, getDeviceManagement())).build();
-    }
-
-    /**
-     * Get default protobuf definition file for device type.
-     * 
-     * @param hardwareId
-     * @return
-     */
-    @GET
-    @Path("/{token}/spec.proto")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    @ApiOperation(value = "Get device type GPB file by unique token")
-    public Response getDeviceTypeProtoFileByToken(
-	    @ApiParam(value = "Token", required = true) @PathParam("token") String token) throws SiteWhereException {
-	IDeviceType deviceType = assertDeviceTypeByToken(token);
-	String proto = DeviceTypeProtoBuilder.getProtoForDeviceType(deviceType, getDeviceManagement());
-
-	return Response.ok(proto)
-		.header("Content-Disposition", "attachment; filename=Spec_" + deviceType.getToken() + ".proto").build();
     }
 
     /**

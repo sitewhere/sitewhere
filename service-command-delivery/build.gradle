@@ -1,114 +1,15 @@
 description = 'SiteWhere Command Delivery Microservice'
 
 dependencies {
-	compile project(':sitewhere-configuration')
-	compile project(':sitewhere-communication')
-
 	// SiteWhere microservice library.	
     compile group: 'com.sitewhere', name: 'sitewhere-microservice', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
+
+	// SiteWhere Communication Protocol integration.	
+    compile group: 'com.sitewhere', name: 'sitewhere-communication', version: "${rootProject.ext['sitewhere.communication.api.version']}"
 	
 	// Commons Lang 3 for utility functions.
 	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
 	
 	// Twilio dependencies.
     compile group: 'com.twilio.sdk', name: 'twilio-java-sdk', version:'3.4.5'
-}
-
-// Create a Dockerfile.
-task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: jar) {
-    destFile = project.file('build/docker/Dockerfile')
-    from "${rootProject.ext['docker.base.image']}"
-	instruction "LABEL maintainer=${rootProject.ext['docker.maintainer']}"
-	instruction "RUN wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.2.2/grpc_health_probe-linux-amd64 && chmod +x /bin/grpc_health_probe"
-	
-	// Copy jar.
-	copyFile("${project.name}-${project.version}.jar", "/")
-	
-	// Copy script templates.
-	copyFile("script-templates", "/script-templates")
-
-	// Run Java command to start application.
-	if(!project.hasProperty("debug")) {
-		defaultCommand 'java', '-Xmx512M', '-Xss384K', '-jar', "/${project.name}-${project.version}.jar"
-	} else {
-		println "Generating DEBUG IMAGE for project ${project.name}"
-
-		def jdwpPort = 8012
-		def jmxPort = 1112
-		
-		// Set Env 
-		environmentVariable('JMX_HOST', '0.0.0.0')
-
-		// Expose ports.
-		exposePort jdwpPort
-		exposePort jmxPort
-
-		defaultCommand 'java', '-server', '-Xdebug', '-Dcom.sun.management.jmxremote.local.only=false', '-Dcom.sun.management.jmxremote.ssl=false', '-Dcom.sun.management.jmxremote.authenticate=false', "-Dcom.sun.management.jmxremote.port=${jmxPort}", "-Dcom.sun.management.jmxremote.rmi.port=${jmxPort}", '-Dcom.sun.management.jmxremote.host=0.0.0.0', '-Djava.rmi.server.hostname=0.0.0.0', "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=${jdwpPort}", '-Xmx512M', '-Xss384K', '-jar', "/${project.name}-${project.version}.jar"
-	}    
-}
-
-// Copy artifact to Docker input folder.
-task copyArtifactsToDocker(type: Copy, dependsOn: dockerFile) {
-    from "${buildDir}/libs/${project.name}-${project.version}.jar"
-	from "${projectDir}/dockerimage" 
-    into 'build/docker'
-}
-
-// Build an image from the Dockerfile.
-task dockerImage(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildImage, dependsOn: copyArtifactsToDocker) {
-    inputDir = project.file('build/docker')
-	if(!project.hasProperty("debug")) {
-	    tags = ["${dockerRepository}/sitewhere/${project.name}:${version}"]
-	} else {
-	    tags = ["${dockerRepository}/sitewhere/${project.name}:debug-${version}"]		
-	}
-}
-
-// Build an image from the Dockerfile with tag latest.
-task dockerImageLatest(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildImage, dependsOn: copyArtifactsToDocker) {
-    inputDir = project.file('build/docker')
-	
-	def primaryTag = ""
-	def secondaryTag = ""
-
-	if(!project.hasProperty("debug")) {
-		primaryTag = "${dockerRepository}/sitewhere/${project.name}:${version}"
-		secondaryTag = "${dockerRepository}/sitewhere/${project.name}:latest"
-	} else {
-		primaryTag = "${dockerRepository}/sitewhere/${project.name}:debug-${version}"
-		secondaryTag = "${dockerRepository}/sitewhere/${project.name}:debug-latest"
-	}
-	tags = [primaryTag, secondaryTag]
-}
-
-// Build an image from the Dockerfile with tag edge.
-task dockerImageEdge(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildImage, dependsOn: copyArtifactsToDocker) {
-    inputDir = project.file('build/docker')
-	
-	def primaryTag = ""
-	def secondaryTag = ""
-
-	if(!project.hasProperty("debug")) {
-		primaryTag = "${dockerRepository}/sitewhere/${project.name}:${version}"
-	} else {
-		primaryTag = "${dockerRepository}/sitewhere/${project.name}:debug-${version}"
-	}
-	secondaryTag = "${dockerRepository}/sitewhere/${project.name}:edge"
-	tags = [primaryTag, secondaryTag]
-}
-
-// Push image to remote repository.
-task dockerPush(type: com.bmuschko.gradle.docker.tasks.image.DockerPushImage, dependsOn: dockerImage) {
-    imageName = "${dockerRepository}/sitewhere/${project.name}".toString()
-    tag = "${version}".toString()
-}
-
-// Push image to remote repository.
-task dockerPushLatest(type: com.bmuschko.gradle.docker.tasks.image.DockerPushImage, dependsOn: dockerImageLatest) {
-    imageName = "${dockerRepository}/sitewhere/${project.name}".toString()
-}
-
-// Push image to remote repository.
-task dockerPushEdge(type: com.bmuschko.gradle.docker.tasks.image.DockerPushImage, dependsOn: dockerImageEdge) {
-    imageName = "${dockerRepository}/sitewhere/${project.name}".toString()
 }

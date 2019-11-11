@@ -25,9 +25,9 @@ import org.apache.solr.common.util.NamedList;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sitewhere.configuration.instance.solr.SolrConfiguration;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.solr.SiteWhereSolrFactory;
+import com.sitewhere.solr.SolrConfiguration;
 import com.sitewhere.solr.SolrConnection;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;

@@ -21,10 +21,10 @@ import org.apache.solr.client.solrj.response.SolrPingResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrInputDocument;
 
-import com.sitewhere.configuration.instance.solr.SolrConfiguration;
 import com.sitewhere.connectors.SerialOutboundConnector;
 import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.solr.SiteWhereSolrFactory;
+import com.sitewhere.solr.SolrConfiguration;
 import com.sitewhere.solr.SolrConnection;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;

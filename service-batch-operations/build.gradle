@@ -1,9 +1,9 @@
 description = 'SiteWhere Batch Operations Microservice'
 
 dependencies {
-	compile project(':sitewhere-configuration')
-	compile project(':sitewhere-mongodb')
-
 	// SiteWhere microservice library.	
     compile group: 'com.sitewhere', name: 'sitewhere-microservice', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
+
+	// SiteWhere MongoDB integration.	
+    compile group: 'com.sitewhere', name: 'sitewhere-mongodb', version: "${rootProject.ext['sitewhere.mongodb.api.version']}"
 }
