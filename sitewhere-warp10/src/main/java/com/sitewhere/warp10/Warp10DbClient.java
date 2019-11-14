@@ -14,14 +14,25 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponentParameter;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.warp10.rest.Warp10RestClient;
 
+/**
+ * Client used for connecting to and interacting with an warp10 server.
+ *
+ * @author Luciano
+ */
 public class Warp10DbClient extends TenantEngineLifecycleComponent implements IDiscoverableTenantLifecycleComponent {
 
-    /** InfluxDB configuration parameters */
+    /** Warp10 configuration parameters */
     private Warp10Configuration configuration;
 
     /** Hostname parameter */
     private ILifecycleComponentParameter<String> hostname;
+
+   /** Port parameter */
+    private ILifecycleComponentParameter<String> port;
+
+    private Warp10RestClient warp10RestClient;
 
     public Warp10DbClient(Warp10Configuration configuration) {
         this.configuration = configuration;
@@ -36,6 +47,11 @@ public class Warp10DbClient extends TenantEngineLifecycleComponent implements ID
         this.hostname = StringComponentParameter.newBuilder(this, "Hostname").value(getConfiguration().getHostname())
          .makeRequired().build();
         getParameters().add(hostname);
+
+         // Add port.
+        this.port = StringComponentParameter.newBuilder(this, "Port").value(String.valueOf(getConfiguration().getHostname()))
+         .makeRequired().build();
+        getParameters().add(port);
     }
 
     /*
@@ -46,7 +62,7 @@ public class Warp10DbClient extends TenantEngineLifecycleComponent implements ID
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
         super.start(monitor);
-        //TODO: aca deberia generar la instancia del cliente de warp 10 que voy a construir!!!
+        this.warp10RestClient = Warp10RestClient.newBuilder().withConnectionTo(getConfiguration().getHostname(), getConfiguration().getPort(), "token-secret", "tenant").build();
     }
 
     @Override
@@ -60,5 +76,13 @@ public class Warp10DbClient extends TenantEngineLifecycleComponent implements ID
 
     public void setConfiguration(Warp10Configuration configuration) {
         this.configuration = configuration;
+    }
+
+    public Warp10RestClient getWarp10RestClient() {
+        return warp10RestClient;
+    }
+
+    public void setWarp10RestClient(Warp10RestClient warp10RestClient) {
+        this.warp10RestClient = warp10RestClient;
     }
 }

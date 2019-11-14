@@ -15,7 +15,7 @@ package com.sitewhere.configuration.instance.warp10db;
 public class Warp10Configuration {
 
     /** Default hostname */
-    private static final String DEFAULT_HOSTNAME = "warp10Host";
+    private static final String DEFAULT_HOSTNAME = "warp10.default.svc.cluster.local";
 
     /** Default port */
     private static final int DEFAULT_PORT = 8080;

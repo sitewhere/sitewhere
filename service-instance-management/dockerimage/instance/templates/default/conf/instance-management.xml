@@ -43,9 +43,9 @@
 			</im:influxdb-configurations>
 
 			<!-- Warp 10 global configuration management -->
-			<im:warp10-configurations>
+			<!--<im:warp10-configurations>
 				<im:warp10-configuration id="tenant" hostname="host" port="8080" tokenSecret="token-secret"/>
-			</im:warp10-configurations>
+			</im:warp10-configurations>-->
 
 			<!-- Apache Cassandra global configuration management -->
 			<im:cassandra-configurations>
