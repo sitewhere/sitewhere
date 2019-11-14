@@ -13,6 +13,7 @@ import okhttp3.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Warp10RestClient {
 
@@ -145,8 +146,8 @@ public class Warp10RestClient {
         tokenRequest.setId("token-escritura");
         tokenRequest.setTokenType(tokenType);
         tokenRequest.setApplication(this.application);
-        tokenRequest.setOwner("f9e4fcaa-b8ab-42fa-bbd8-af2c5394ed1d");
-        tokenRequest.setProducer("f9e4fcaa-b8ab-42fa-bbd8-af2c5394ed1d");
+        tokenRequest.setOwner(UUID.randomUUID().toString());
+        tokenRequest.setProducer(UUID.randomUUID().toString());
         tokenRequest.setIssuance("NOW 1 ms");
         tokenRequest.setExpiry("NOW 30 d + 1 ms");
         tokenRequest.setTtl("300 d 1 ms");
