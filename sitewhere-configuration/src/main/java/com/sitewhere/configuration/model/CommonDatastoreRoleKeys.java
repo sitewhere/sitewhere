@@ -44,6 +44,12 @@ public enum CommonDatastoreRoleKeys implements IRoleKey {
     /** InfluxDB global reference */
     InfluxDBReference("influx_ref"),
 
+    /** InfluxDB datastore */
+    Warp10DBDatastore("warp10_ds"),
+
+    /** InfluxDB global reference */
+    Warp10DBReference("warp10_ref"),
+
     /** Cassandra datastore */
     CassandraDatastore("cassandra_ds"),
 

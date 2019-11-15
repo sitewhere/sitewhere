@@ -52,6 +52,8 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 	addElement(createMongoDbReferenceElement());
 	addElement(createInfluxDbDatastoreElement());
 	addElement(createInfluxDbReferenceElement());
+	addElement(createWarp10DbDatastoreElement());
+	addElement(createWarp10DbReferenceElement());
 	addElement(createCassandraDatastoreElement());
 	addElement(createCassandraReferenceElement());
     }
@@ -184,6 +186,48 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 	return builder.build();
     }
 
+	/**
+	 * Create Warp 10 datastore element.
+	 *
+	 * @return
+	 */
+	protected ElementNode createWarp10DbDatastoreElement() {
+		ElementNode.Builder builder = new ElementNode.Builder(
+		CommonDatastoreRoles.Warp10DBDatastore.getRole().getName(),
+		IDatastoreCommonParser.EventManagementDatastoreElements.Warp10DBDatastore.getLocalName(), "database",
+		CommonDatastoreRoleKeys.Warp10DBDatastore, this);
+
+		builder.description("Use a locally-defined Warp 10 DB datastore.");
+		builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+		builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_BATCH);
+
+		addWarp10DbAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY,
+		ConfigurationModelProvider.ATTR_GROUP_BATCH);
+
+		return builder.build();
+	}
+
+	/**
+	 * Create Warp 10 datastore reference element.
+	 *
+	 * @return
+	 */
+	protected ElementNode createWarp10DbReferenceElement() {
+		ElementNode.Builder builder = new ElementNode.Builder(
+		CommonDatastoreRoles.Warp10DBReference.getRole().getName(),
+		IDatastoreCommonParser.EventManagementDatastoreElements.Warp10DBReference.getLocalName(), "database",
+		CommonDatastoreRoleKeys.Warp10DBReference, this);
+
+		builder.description("Use a globally-defined Warp 10 datastore.");
+		builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+
+		builder.attribute((new AttributeNode.Builder("Configuration Id", "id", AttributeType.String,
+		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY).description("Unique id for global configuration")
+		.makeRequired().build()));
+
+		return builder.build();
+	}
+
     /**
      * Create Cassandra datastore element.
      * 
@@ -306,6 +350,24 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 			batch).description("Maximum amount of time (in ms) to wait before sending a batch.")
 				.defaultValue("100").build()));
     }
+
+	/**
+     * Adds InfluxDB configuration attributes.
+     *
+     * @param builder
+     * @param connectivity
+     * @param batch
+     */
+	public static void addWarp10DbAttributes(ElementNode.Builder builder, IAttributeGroup connectivity,
+																					 IAttributeGroup batch) {
+		// Connectivity attributes.
+		builder.attribute((new AttributeNode.Builder("Hostname", "hostname", AttributeType.String, connectivity)
+		.description("Specifies hostname for Warp 10 instance.").defaultValue("http://warp10.default.svc.cluster.local:8080/api/v0").build()));
+		builder.attribute((new AttributeNode.Builder("Port", "port", AttributeType.Integer, connectivity)
+		.description("Port on which InfluxDB is running").defaultValue("${warp10.port:8080}").build()));
+		builder.attribute((new AttributeNode.Builder("Token secret", "tokenSecret", AttributeType.String, connectivity)
+		.description("Token secret for warp 10 authentication.").defaultValue("token-secret").build()));
+	}
 
     /**
      * Adds Apache Cassandra configuration attributes.

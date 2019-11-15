@@ -74,6 +74,15 @@ public enum CommonDatastoreRoles implements IConfigurationRoleProvider {
     InfluxDBReference(ConfigurationRole.build(CommonDatastoreRoleKeys.InfluxDBReference, "InfluxDB Global Reference",
 	    false, false, false)),
 
+    /** InfluxDB datastore */
+    Warp10DBDatastore(ConfigurationRole.build(CommonDatastoreRoleKeys.Warp10DBDatastore, "Warp 10 DB Datastore", false,
+     false, false)),
+
+    /** InfluxDB global reference */
+    Warp10DBReference(ConfigurationRole.build(CommonDatastoreRoleKeys.Warp10DBReference, "Warp 10 DB Global Reference",
+     false, false, false)),
+
+
     /** Cassandra datastore */
     CassandraDatastore(ConfigurationRole.build(CommonDatastoreRoleKeys.CassandraDatastore, "Cassandra Datastore", false,
 	    false, false)),

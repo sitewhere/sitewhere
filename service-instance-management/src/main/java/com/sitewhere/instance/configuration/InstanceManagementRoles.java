@@ -50,6 +50,27 @@ public enum InstanceManagementRoles implements IConfigurationRoleProvider {
     InfluxDBConfiguration(ConfigurationRole.build(InstanceManagementRoleKeys.InfluxDBConfiguration,
 	    "InfluxDB Configuration", true, true, true)),
 
+
+
+
+    /** Warp 10 persistence configurations. */
+    Warp10DBConfigurations(ConfigurationRole.build(InstanceManagementRoleKeys.Warp10DBConfigurations,
+     "Warp 10 Persistence Configurations", true, false, false,
+     new IRoleKey[] { InstanceManagementRoleKeys.Warp10DBConfiguration })),
+
+    /** Warp 10 datastore configuration. */
+    Warp10DBConfiguration(ConfigurationRole.build(InstanceManagementRoleKeys.Warp10DBConfiguration,
+     "Warp 10 DB Configuration", true, true, true)),
+
+
+
+
+
+
+
+
+
+
     /** Apache Cassandra persistence configurations. */
     CassandraConfigurations(ConfigurationRole.build(InstanceManagementRoleKeys.CassandraConfigurations,
 	    "Apache Cassandra Persistence Configurations", true, false, false,

@@ -18,7 +18,7 @@ import com.sitewhere.spi.microservice.configuration.model.IConfigurationRoleProv
 
 /**
  * Configuration model provider for instance management microservice.
- * 
+ *
  * @author Derek
  */
 public class InstanceManagementModelProvider extends ConfigurationModelProvider {
@@ -29,7 +29,7 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
      */
     @Override
     public String getDefaultXmlNamespace() {
-	return "http://sitewhere.io/schema/sitewhere/microservice/instance-management";
+        return "http://sitewhere.io/schema/sitewhere/microservice/instance-management";
     }
 
     /*
@@ -38,7 +38,7 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
      */
     @Override
     public IConfigurationRoleProvider getRootRole() {
-	return InstanceManagementRoles.InstanceManagement;
+        return InstanceManagementRoles.InstanceManagement;
     }
 
     /*
@@ -47,27 +47,31 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
      */
     @Override
     public void initializeElements() {
-	addElement(createInstanceManagementElement());
+        addElement(createInstanceManagementElement());
 
-	// Persistence configurations.
-	addElement(createPersistenceConfigurationsElement());
+        // Persistence configurations.
+        addElement(createPersistenceConfigurationsElement());
 
-	// MongoDB persistence configurations.
-	addElement(createMongoDBPersistenceConfigurationsElement());
-	addElement(createMongoConfigurationElement());
+        // MongoDB persistence configurations.
+        addElement(createMongoDBPersistenceConfigurationsElement());
+        addElement(createMongoConfigurationElement());
 
-	// InfluxDB persistence configurations.
-	addElement(createInfluxDBPersistenceConfigurationsElement());
-	addElement(createInfluxDBConfigurationElement());
+        // InfluxDB persistence configurations.
+        addElement(createInfluxDBPersistenceConfigurationsElement());
+        addElement(createInfluxDBConfigurationElement());
 
-	// Apache Cassandra persistence configurations.
-	addElement(createCassandraPersistenceConfigurationsElement());
-	addElement(createCassandraConfigurationElement());
+        // Warp 10 DB persistence configurations.
+        addElement(createWarp10DBPersistenceConfigurationsElement());
+        addElement(createWarp10DBConfigurationElement());
 
-	// Connector configurations.
-	addElement(createConnectorConfigurationsElement());
-	addElement(createSolrConnectorConfigurationsElement());
-	addElement(createSolrConfigurationElement());
+        // Apache Cassandra persistence configurations.
+        addElement(createCassandraPersistenceConfigurationsElement());
+        addElement(createCassandraConfigurationElement());
+
+        // Connector configurations.
+        addElement(createConnectorConfigurationsElement());
+        addElement(createSolrConnectorConfigurationsElement());
+        addElement(createSolrConfigurationElement());
     }
 
     /*
@@ -76,210 +80,252 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
      */
     @Override
     public void initializeRoles() {
-	for (InstanceManagementRoles role : InstanceManagementRoles.values()) {
-	    getRolesById().put(role.getRole().getKey().getId(), role.getRole());
-	}
+        for (InstanceManagementRoles role : InstanceManagementRoles.values()) {
+            getRolesById().put(role.getRole().getKey().getId(), role.getRole());
+        }
     }
 
     /**
      * Create instance management element.
-     * 
+     *
      * @return
      */
     protected ElementNode createInstanceManagementElement() {
-	ElementNode.Builder builder = new ElementNode.Builder(
-		InstanceManagementRoles.InstanceManagement.getRole().getName(), IInstanceManagementParser.ROOT, "globe",
-		InstanceManagementRoleKeys.InstanceManagement, this);
+        ElementNode.Builder builder = new ElementNode.Builder(
+         InstanceManagementRoles.InstanceManagement.getRole().getName(), IInstanceManagementParser.ROOT, "globe",
+         InstanceManagementRoleKeys.InstanceManagement, this);
 
-	builder.description("Handles global instance configuration.");
+        builder.description("Handles global instance configuration.");
 
-	return builder.build();
+        return builder.build();
     }
 
     /**
      * Create persistence configurations element.
-     * 
+     *
      * @return
      */
     protected ElementNode createPersistenceConfigurationsElement() {
-	ElementNode.Builder builder = new ElementNode.Builder(
-		InstanceManagementRoles.PersistenceConfigurations.getRole().getName(),
-		IInstanceManagementParser.TopLevelElements.PersistenceConfigurations.getLocalName(), "database",
-		InstanceManagementRoleKeys.PersistenceConfigurations, this);
+        ElementNode.Builder builder = new ElementNode.Builder(
+         InstanceManagementRoles.PersistenceConfigurations.getRole().getName(),
+         IInstanceManagementParser.TopLevelElements.PersistenceConfigurations.getLocalName(), "database",
+         InstanceManagementRoleKeys.PersistenceConfigurations, this);
 
-	builder.description("Provides global persistence configurations that can be reused in tenants.");
+        builder.description("Provides global persistence configurations that can be reused in tenants.");
 
-	return builder.build();
+        return builder.build();
     }
 
     /**
      * Create MongoDB persistence configurations element.
-     * 
+     *
      * @return
      */
     protected ElementNode createMongoDBPersistenceConfigurationsElement() {
-	ElementNode.Builder builder = new ElementNode.Builder(
-		InstanceManagementRoles.MongoDBConfigurations.getRole().getName(),
-		IInstanceManagementParser.PersistenceConfigurationsElements.MongoConfigurations.getLocalName(),
-		"database", InstanceManagementRoleKeys.MongoDBConfigurations, this);
+        ElementNode.Builder builder = new ElementNode.Builder(
+         InstanceManagementRoles.MongoDBConfigurations.getRole().getName(),
+         IInstanceManagementParser.PersistenceConfigurationsElements.MongoConfigurations.getLocalName(),
+         "database", InstanceManagementRoleKeys.MongoDBConfigurations, this);
 
-	builder.description("Provides global MongoDB persistence configurations that can be reused in tenants.");
+        builder.description("Provides global MongoDB persistence configurations that can be reused in tenants.");
 
-	return builder.build();
+        return builder.build();
     }
 
     /**
      * Create element configuration for MongoDB settings.
-     * 
+     *
      * @return
      */
     protected ElementNode createMongoConfigurationElement() {
-	ElementNode.Builder builder = new ElementNode.Builder(
-		InstanceManagementRoles.MongoDBConfiguration.getRole().getName(),
-		IInstanceManagementParser.MongoDbElements.MongoConfiguration.getLocalName(), "database",
-		InstanceManagementRoleKeys.MongoDBConfiguration, this);
+        ElementNode.Builder builder = new ElementNode.Builder(
+         InstanceManagementRoles.MongoDBConfiguration.getRole().getName(),
+         IInstanceManagementParser.MongoDbElements.MongoConfiguration.getLocalName(), "database",
+         InstanceManagementRoleKeys.MongoDBConfiguration, this);
 
-	builder.description("Global configuration for MongoDB data persistence.");
-	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+        builder.description("Global configuration for MongoDB data persistence.");
+        builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String,
-		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
-			.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
-	CommonDatastoreProvider.addMongoDbAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+        builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String,
+         ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+         .description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
+        CommonDatastoreProvider.addMongoDbAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-	return builder.build();
+        return builder.build();
     }
 
     /**
      * Create InfluxDB persistence configurations element.
-     * 
+     *
      * @return
      */
     protected ElementNode createInfluxDBPersistenceConfigurationsElement() {
-	ElementNode.Builder builder = new ElementNode.Builder(
-		InstanceManagementRoles.InfluxDBConfigurations.getRole().getName(),
-		IInstanceManagementParser.PersistenceConfigurationsElements.InfluxConfigurations.getLocalName(),
-		"database", InstanceManagementRoleKeys.InfluxDBConfigurations, this);
+        ElementNode.Builder builder = new ElementNode.Builder(
+         InstanceManagementRoles.InfluxDBConfigurations.getRole().getName(),
+         IInstanceManagementParser.PersistenceConfigurationsElements.InfluxConfigurations.getLocalName(),
+         "database", InstanceManagementRoleKeys.InfluxDBConfigurations, this);
 
-	builder.description("Provides global InfluxDB persistence configurations that can be reused in tenants.");
+        builder.description("Provides global InfluxDB persistence configurations that can be reused in tenants.");
 
-	return builder.build();
+        return builder.build();
     }
 
     /**
      * Create element configuration for InfluxDB settings.
-     * 
+     *
      * @return
      */
     protected ElementNode createInfluxDBConfigurationElement() {
-	ElementNode.Builder builder = new ElementNode.Builder(
-		InstanceManagementRoles.InfluxDBConfiguration.getRole().getName(),
-		IInstanceManagementParser.InfluxDbElements.InfluxConfiguration.getLocalName(), "database",
-		InstanceManagementRoleKeys.InfluxDBConfiguration, this);
+        ElementNode.Builder builder = new ElementNode.Builder(
+         InstanceManagementRoles.InfluxDBConfiguration.getRole().getName(),
+         IInstanceManagementParser.InfluxDbElements.InfluxConfiguration.getLocalName(), "database",
+         InstanceManagementRoleKeys.InfluxDBConfiguration, this);
 
-	builder.description("Global configuration for InfluxDB data persistence.");
-	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
-	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_BATCH);
+        builder.description("Global configuration for InfluxDB data persistence.");
+        builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+        builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_BATCH);
 
-	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String,
-		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
-			.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
-	CommonDatastoreProvider.addInfluxDbAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY,
-		ConfigurationModelProvider.ATTR_GROUP_BATCH);
+        builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String,
+         ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+         .description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
+        CommonDatastoreProvider.addInfluxDbAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY,
+         ConfigurationModelProvider.ATTR_GROUP_BATCH);
 
-	return builder.build();
+        return builder.build();
+    }
+
+
+    /**
+     * Create Warp 10 DB persistence configurations element.
+     *
+     * @return
+     */
+    protected ElementNode createWarp10DBPersistenceConfigurationsElement() {
+        ElementNode.Builder builder = new ElementNode.Builder(
+         InstanceManagementRoles.Warp10DBConfigurations.getRole().getName(),
+         IInstanceManagementParser.PersistenceConfigurationsElements.Warp10Configurations.getLocalName(),
+         "database", InstanceManagementRoleKeys.Warp10DBConfigurations, this);
+
+        builder.description("Provides global Warp 10 DB persistence configurations that can be reused in tenants.");
+
+        return builder.build();
     }
 
     /**
+     * Create element configuration for Warp 10 settings.
+     *
+     * @return
+     */
+    protected ElementNode createWarp10DBConfigurationElement() {
+        ElementNode.Builder builder = new ElementNode.Builder(
+         InstanceManagementRoles.Warp10DBConfiguration.getRole().getName(),
+         IInstanceManagementParser.Warp10DbElements.Warp10Configuration.getLocalName(), "database",
+         InstanceManagementRoleKeys.Warp10DBConfiguration, this);
+
+        builder.description("Global configuration for Warp 10 DB data persistence.");
+        builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+        builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_BATCH);
+
+        builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String,
+         ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+         .description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
+        CommonDatastoreProvider.addInfluxDbAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY,
+         ConfigurationModelProvider.ATTR_GROUP_BATCH);
+
+        return builder.build();
+    }
+
+
+    /**
      * Create Apache Cassandra persistence configurations element.
-     * 
+     *
      * @return
      */
     protected ElementNode createCassandraPersistenceConfigurationsElement() {
-	ElementNode.Builder builder = new ElementNode.Builder(
-		InstanceManagementRoles.CassandraConfigurations.getRole().getName(),
-		IInstanceManagementParser.PersistenceConfigurationsElements.CassandraConfigurations.getLocalName(),
-		"database", InstanceManagementRoleKeys.CassandraConfigurations, this);
+        ElementNode.Builder builder = new ElementNode.Builder(
+         InstanceManagementRoles.CassandraConfigurations.getRole().getName(),
+         IInstanceManagementParser.PersistenceConfigurationsElements.CassandraConfigurations.getLocalName(),
+         "database", InstanceManagementRoleKeys.CassandraConfigurations, this);
 
-	builder.description(
-		"Provides global Apache Cassandra persistence configurations that can be reused in tenants.");
+        builder.description(
+         "Provides global Apache Cassandra persistence configurations that can be reused in tenants.");
 
-	return builder.build();
+        return builder.build();
     }
 
     /**
      * Create element configuration for Apache Cassandra settings.
-     * 
+     *
      * @return
      */
     protected ElementNode createCassandraConfigurationElement() {
-	ElementNode.Builder builder = new ElementNode.Builder(
-		InstanceManagementRoles.CassandraConfiguration.getRole().getName(),
-		IInstanceManagementParser.CassandraElements.CassandraConfiguration.getLocalName(), "database",
-		InstanceManagementRoleKeys.CassandraConfiguration, this);
+        ElementNode.Builder builder = new ElementNode.Builder(
+         InstanceManagementRoles.CassandraConfiguration.getRole().getName(),
+         IInstanceManagementParser.CassandraElements.CassandraConfiguration.getLocalName(), "database",
+         InstanceManagementRoleKeys.CassandraConfiguration, this);
 
-	builder.description("Global configuration for Apache Cassandra data persistence.");
-	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+        builder.description("Global configuration for Apache Cassandra data persistence.");
+        builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String,
-		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
-			.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
-	CommonDatastoreProvider.addCassandraAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+        builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String,
+         ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+         .description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
+        CommonDatastoreProvider.addCassandraAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-	return builder.build();
+        return builder.build();
     }
 
     /**
      * Create connector configurations element.
-     * 
+     *
      * @return
      */
     protected ElementNode createConnectorConfigurationsElement() {
-	ElementNode.Builder builder = new ElementNode.Builder(
-		InstanceManagementRoles.ConnectorConfigurations.getRole().getName(),
-		IInstanceManagementParser.TopLevelElements.ConnectorConfigurations.getLocalName(), "plug",
-		InstanceManagementRoleKeys.ConnectorConfigurations, this);
+        ElementNode.Builder builder = new ElementNode.Builder(
+         InstanceManagementRoles.ConnectorConfigurations.getRole().getName(),
+         IInstanceManagementParser.TopLevelElements.ConnectorConfigurations.getLocalName(), "plug",
+         InstanceManagementRoleKeys.ConnectorConfigurations, this);
 
-	builder.description("Provides global connector configurations that can be reused in tenants.");
+        builder.description("Provides global connector configurations that can be reused in tenants.");
 
-	return builder.build();
+        return builder.build();
     }
 
     /**
      * Create Solr connector configurations element.
-     * 
+     *
      * @return
      */
     protected ElementNode createSolrConnectorConfigurationsElement() {
-	ElementNode.Builder builder = new ElementNode.Builder(
-		InstanceManagementRoles.SolrConfigurations.getRole().getName(),
-		IInstanceManagementParser.ConnectorConfigurationsElements.SolrConfigurations.getLocalName(),
-		"search-plus", InstanceManagementRoleKeys.SolrConfigurations, this);
+        ElementNode.Builder builder = new ElementNode.Builder(
+         InstanceManagementRoles.SolrConfigurations.getRole().getName(),
+         IInstanceManagementParser.ConnectorConfigurationsElements.SolrConfigurations.getLocalName(),
+         "search-plus", InstanceManagementRoleKeys.SolrConfigurations, this);
 
-	builder.description("Provides Solr configurations that can be reused in tenants.");
+        builder.description("Provides Solr configurations that can be reused in tenants.");
 
-	return builder.build();
+        return builder.build();
     }
 
     /**
      * Create element which defines an Apache Solr configuration.
-     * 
+     *
      * @return
      */
     protected ElementNode createSolrConfigurationElement() {
-	ElementNode.Builder builder = new ElementNode.Builder(
-		InstanceManagementRoles.SolrConfiguration.getRole().getName(),
-		IInstanceManagementParser.SolrElements.SolrConfiguration.getLocalName(), "search-plus",
-		InstanceManagementRoleKeys.SolrConfiguration, this);
+        ElementNode.Builder builder = new ElementNode.Builder(
+         InstanceManagementRoles.SolrConfiguration.getRole().getName(),
+         IInstanceManagementParser.SolrElements.SolrConfiguration.getLocalName(), "search-plus",
+         InstanceManagementRoleKeys.SolrConfiguration, this);
 
-	builder.description("Provides Solr configuration that may be referenced in Solr connectors.");
-	builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+        builder.description("Provides Solr configuration that may be referenced in Solr connectors.");
+        builder.attributeGroup(ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-	builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String,
-		ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
-			.description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
-	CommonConnectorModel.addSolrConnectivityAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
+        builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String,
+         ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
+         .description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
+        CommonConnectorModel.addSolrConnectivityAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY);
 
-	return builder.build();
+        return builder.build();
     }
 }
