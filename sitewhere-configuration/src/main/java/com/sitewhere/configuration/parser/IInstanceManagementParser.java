@@ -152,8 +152,8 @@ public interface IInstanceManagementParser {
 
     public static enum Warp10DbElements {
 
-	/** InfluxDB configuration */
-	Warp10Configuration("warp10db-configuration");
+	/** Warp 10 configuration */
+	Warp10Configuration("warp10-configuration");
 
 	/** Event code */
 	private String localName;
