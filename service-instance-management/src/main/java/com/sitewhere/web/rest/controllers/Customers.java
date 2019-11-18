@@ -32,40 +32,40 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitewhere.device.marshaling.CustomerMarshalHelper;
-import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
+import com.sitewhere.microservice.api.asset.IAssetManagement;
+import com.sitewhere.microservice.api.device.CustomerMarshalHelper;
+import com.sitewhere.microservice.api.device.DeviceAssignmentMarshalHelper;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.device.asset.DeviceAlertWithAsset;
+import com.sitewhere.microservice.api.device.asset.DeviceCommandInvocationWithAsset;
+import com.sitewhere.microservice.api.device.asset.DeviceCommandResponseWithAsset;
+import com.sitewhere.microservice.api.device.asset.DeviceLocationWithAsset;
+import com.sitewhere.microservice.api.device.asset.DeviceMeasurementsWithAsset;
+import com.sitewhere.microservice.api.device.asset.DeviceStateChangeWithAsset;
+import com.sitewhere.microservice.api.event.IDeviceEventManagement;
+import com.sitewhere.microservice.api.label.ILabelGeneration;
 import com.sitewhere.rest.model.customer.request.CustomerCreateRequest;
 import com.sitewhere.rest.model.device.DeviceAssignment;
-import com.sitewhere.rest.model.device.asset.DeviceAlertWithAsset;
-import com.sitewhere.rest.model.device.asset.DeviceCommandInvocationWithAsset;
-import com.sitewhere.rest.model.device.asset.DeviceCommandResponseWithAsset;
-import com.sitewhere.rest.model.device.asset.DeviceLocationWithAsset;
-import com.sitewhere.rest.model.device.asset.DeviceMeasurementsWithAsset;
-import com.sitewhere.rest.model.device.asset.DeviceStateChangeWithAsset;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.customer.CustomerSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.customer.ICustomer;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.DeviceEventIndex;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.label.ILabel;
-import com.sitewhere.spi.label.ILabelGeneration;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 
@@ -76,8 +76,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for customer operations.
- * 
- * @author Derek Adams
  */
 @Path("/customers")
 @Produces(MediaType.APPLICATION_JSON)

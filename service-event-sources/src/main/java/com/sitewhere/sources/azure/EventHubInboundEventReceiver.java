@@ -21,16 +21,14 @@ import com.microsoft.azure.eventprocessorhost.EventProcessorOptions;
 import com.microsoft.azure.eventprocessorhost.ExceptionReceivedEventArgs;
 import com.microsoft.azure.eventprocessorhost.IEventProcessor;
 import com.microsoft.azure.eventprocessorhost.PartitionContext;
-import com.sitewhere.server.lifecycle.parameters.StringComponentParameter;
+import com.sitewhere.microservice.lifecycle.parameters.StringComponentParameter;
 import com.sitewhere.sources.InboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponentParameter;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleComponentParameter;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Inbound event receiver that acts as a client for an Azure Event Hub.
- * 
- * @author Derek
  */
 public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
@@ -191,8 +189,6 @@ public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
     /**
      * Event processor implementation.
-     * 
-     * @author Derek
      */
     public static class EventProcessor implements IEventProcessor {
 

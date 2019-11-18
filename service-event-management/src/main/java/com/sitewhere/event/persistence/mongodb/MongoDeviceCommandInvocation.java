@@ -21,8 +21,6 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 
 /**
  * Used to load or save device command invocation data to MongoDB.
- * 
- * @author dadams
  */
 public class MongoDeviceCommandInvocation implements MongoConverter<IDeviceCommandInvocation> {
 

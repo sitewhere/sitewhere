@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.geospatial.GeoUtils;
+import com.sitewhere.microservice.api.event.GeoUtils;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rules.spi.IRuleProcessor;
 import com.sitewhere.spi.SiteWhereException;
@@ -27,8 +27,6 @@ import com.vividsolutions.jts.geom.Polygon;
  * Implementation of {@link IRuleProcessor} that performs a series of tests for
  * whether a location is inside or outside of zones, firing alerts if the
  * criteria is met.
- * 
- * @author Derek
  */
 public class ZoneTestRuleProcessor extends RuleProcessor {
 

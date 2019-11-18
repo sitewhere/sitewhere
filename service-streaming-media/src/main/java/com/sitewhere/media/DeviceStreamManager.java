@@ -9,30 +9,28 @@ package com.sitewhere.media;
 
 import java.util.List;
 
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.stream.IDeviceStreamDataManagement;
+import com.sitewhere.microservice.api.stream.IDeviceStreamManagement;
+import com.sitewhere.microservice.api.stream.IDeviceStreamManager;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.rest.model.device.command.DeviceStreamAckCommand;
 import com.sitewhere.rest.model.device.command.SendDeviceStreamDataCommand;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.command.DeviceStreamStatus;
-import com.sitewhere.spi.device.communication.IDeviceStreamManager;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStreamData;
-import com.sitewhere.spi.device.streaming.IDeviceStreamDataManagement;
-import com.sitewhere.spi.device.streaming.IDeviceStreamManagement;
 import com.sitewhere.spi.device.streaming.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
  * Default {@link IDeviceStreamManager} implementation.
- * 
- * @author Derek
  */
 public class DeviceStreamManager extends TenantEngineLifecycleComponent implements IDeviceStreamManager {
 

@@ -13,29 +13,27 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitewhere.device.marshaling.CommandHtmlHelper;
-import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
-import com.sitewhere.device.marshaling.DeviceTypeMarshalHelper;
+import com.sitewhere.microservice.api.asset.IAssetManagement;
+import com.sitewhere.microservice.api.device.CommandHtmlHelper;
+import com.sitewhere.microservice.api.device.DeviceAssignmentMarshalHelper;
+import com.sitewhere.microservice.api.device.DeviceTypeMarshalHelper;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.schedule.IScheduleManagement;
 import com.sitewhere.rest.model.common.PersistentEntity;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceCommandInvocation;
 import com.sitewhere.rest.model.scheduling.ScheduledJob;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.scheduling.ISchedule;
-import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.scheduling.JobConstants;
 
 /**
  * Configurable helper class that allows {@link ScheduledJob} model objects to
  * be created from {@link IScheduledJob} SPI objects.
- * 
- * @author dadams
  */
 public class ScheduledJobMarshalHelper {
 

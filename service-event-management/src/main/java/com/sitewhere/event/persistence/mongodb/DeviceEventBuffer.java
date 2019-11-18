@@ -28,8 +28,6 @@ import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Buffers {@link Document} for bulk inserts.
- * 
- * @author Derek
  */
 public class DeviceEventBuffer implements IDeviceEventBuffer {
 
@@ -93,8 +91,6 @@ public class DeviceEventBuffer implements IDeviceEventBuffer {
 
     /**
      * Thread that sends {@link Document} inserts to MongoDB in batches.
-     * 
-     * @author Derek
      */
     private class EventSender implements Runnable {
 

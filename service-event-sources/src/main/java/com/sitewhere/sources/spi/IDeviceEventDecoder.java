@@ -10,12 +10,10 @@ package com.sitewhere.sources.spi;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Decodes inbound device event messages.
- * 
- * @author Derek
  */
 public interface IDeviceEventDecoder<T> extends ITenantEngineLifecycleComponent {
 
@@ -29,12 +27,12 @@ public interface IDeviceEventDecoder<T> extends ITenantEngineLifecycleComponent 
      * Decodes a payload into one or more {@link IDecodedDeviceRequest} objects.
      * 
      * @param payload
-     *            the payload that will be decoded
+     *                     the payload that will be decoded
      * @param metadata
-     *            extra information associated with the payload
+     *                     extra information associated with the payload
      * @return a list of decoded device requests to be processed
      * @throws EventDecodeException
-     *             if the payload can not be decoded
+     *                                  if the payload can not be decoded
      */
     public List<IDecodedDeviceRequest<?>> decode(T payload, Map<String, Object> metadata) throws EventDecodeException;
 }

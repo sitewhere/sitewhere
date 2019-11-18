@@ -18,14 +18,14 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import com.sitewhere.batch.BatchUtils;
+import com.sitewhere.microservice.api.asset.IAssetManagement;
+import com.sitewhere.microservice.api.batch.BatchUtils;
+import com.sitewhere.microservice.api.batch.IBatchManagement;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.schedule.BatchCommandInvocationJobParser;
 import com.sitewhere.rest.model.batch.request.BatchCommandInvocationRequest;
-import com.sitewhere.schedule.BatchCommandInvocationJobParser;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.batch.request.IInvocationByDeviceCriteriaRequest;
-import com.sitewhere.spi.device.IDeviceManagement;
 
 /**
  * Creates a batch command invocation (based on devices matching criteria) as

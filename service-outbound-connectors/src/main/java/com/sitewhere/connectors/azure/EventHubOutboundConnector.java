@@ -26,13 +26,11 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Implementation of {@link IOutboundConnector} that sends events to an EventHub
  * running on Azure.
- * 
- * @author Derek
  */
 public class EventHubOutboundConnector extends SerialOutboundConnector {
 
@@ -56,11 +54,9 @@ public class EventHubOutboundConnector extends SerialOutboundConnector {
     // private MessageProducer sender;
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#start
-     * (com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.connectors.FilteredOutboundConnector#start(com.sitewhere.spi.
+     * microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -101,11 +97,9 @@ public class EventHubOutboundConnector extends SerialOutboundConnector {
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#stop(
-     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.connectors.FilteredOutboundConnector#stop(com.sitewhere.spi.
+     * microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {

@@ -10,8 +10,8 @@ package com.sitewhere.media.microservice;
 import com.sitewhere.media.spi.microservice.IStreamingMediaTenantEngine;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
 import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
@@ -19,8 +19,6 @@ import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 /**
  * Implementation of {@link IMicroserviceTenantEngine} that implements streaming
  * media functionality.
- * 
- * @author Derek
  */
 public class StreamingMediaTenantEngine extends MicroserviceTenantEngine implements IStreamingMediaTenantEngine {
 
@@ -30,7 +28,7 @@ public class StreamingMediaTenantEngine extends MicroserviceTenantEngine impleme
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * tenantInitialize(com.sitewhere.spi.server.lifecycle.
+     * tenantInitialize(com.sitewhere.spi.microservice.lifecycle.
      * ILifecycleProgressMonitor)
      */
     @Override
@@ -39,7 +37,8 @@ public class StreamingMediaTenantEngine extends MicroserviceTenantEngine impleme
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * tenantStart(com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * tenantStart(com.sitewhere.spi.microservice.lifecycle.
+     * ILifecycleProgressMonitor)
      */
     @Override
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -49,7 +48,7 @@ public class StreamingMediaTenantEngine extends MicroserviceTenantEngine impleme
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
      * tenantBootstrap(io.sitewhere.k8s.crd.tenant.engine.dataset.
      * TenantEngineDatasetTemplate,
-     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void tenantBootstrap(TenantEngineDatasetTemplate template, ILifecycleProgressMonitor monitor)
@@ -58,7 +57,8 @@ public class StreamingMediaTenantEngine extends MicroserviceTenantEngine impleme
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * tenantStop(com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * tenantStop(com.sitewhere.spi.microservice.lifecycle.
+     * ILifecycleProgressMonitor)
      */
     @Override
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {

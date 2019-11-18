@@ -32,8 +32,8 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.microservice.tenant.ITenantManagement;
 import com.sitewhere.spi.tenant.ITenant;
-import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.user.SiteWhereAuthority;
 
 import io.swagger.annotations.Api;
@@ -43,8 +43,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for tenant operations.
- * 
- * @author Derek Adams
  */
 @Path("/tenants")
 @Produces(MediaType.APPLICATION_JSON)

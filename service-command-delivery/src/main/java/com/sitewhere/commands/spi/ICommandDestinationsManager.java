@@ -9,7 +9,7 @@ package com.sitewhere.commands.spi;
 
 import java.util.Map;
 
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Manages command invocation logic.

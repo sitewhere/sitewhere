@@ -12,8 +12,6 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
  * Microservice that provides event search functionality.
- * 
- * @author Derek
  */
 public interface IEventSearchMicroservice
 	extends IMultitenantMicroservice<MicroserviceIdentifier, IEventSearchTenantEngine> {

@@ -11,8 +11,6 @@ import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 
 /**
  * Default implementation of {@link IDecodedDeviceRequest}.
- * 
- * @author Derek
  */
 public class DecodedDeviceRequest<T> implements IDecodedDeviceRequest<T> {
 

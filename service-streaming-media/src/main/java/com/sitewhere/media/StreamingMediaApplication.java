@@ -12,8 +12,6 @@ import com.sitewhere.microservice.MicroserviceApplication;
 
 /**
  * Spring Boot application for streaming media microservice.
- * 
- * @author Derek
  */
 public class StreamingMediaApplication extends MicroserviceApplication<IStreamingMediaMicroservice> {
 

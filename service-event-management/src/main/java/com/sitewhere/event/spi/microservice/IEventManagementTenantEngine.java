@@ -11,14 +11,12 @@ import com.sitewhere.event.spi.kafka.IInboundEventsConsumer;
 import com.sitewhere.event.spi.kafka.IOutboundCommandInvocationsProducer;
 import com.sitewhere.event.spi.kafka.IOutboundEventsProducer;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
+import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
  * Extends {@link IMicroserviceTenantEngine} with features specific to device
  * event management.
- * 
- * @author Derek
  */
 public interface IEventManagementTenantEngine extends IMicroserviceTenantEngine {
 

@@ -13,17 +13,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.sitewhere.connectors.spi.multicast.IDeviceEventMulticaster;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.microservice.groovy.GroovyConfiguration;
 import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEvent;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.tenant.ITenant;
 
 import groovy.lang.Binding;
@@ -131,8 +131,6 @@ public abstract class AllWithSpecificationMulticaster<T> extends GroovyComponent
 
     /**
      * Thread that updates the list of devices with specification.
-     * 
-     * @author Derek
      */
     private class UpdateThread implements Runnable {
 

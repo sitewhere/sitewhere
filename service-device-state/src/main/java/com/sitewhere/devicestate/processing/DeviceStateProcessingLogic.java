@@ -12,15 +12,16 @@ import java.util.List;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
 import com.sitewhere.devicestate.spi.processing.IDeviceStateProcessingLogic;
 import com.sitewhere.grpc.client.event.EventModelConverter;
 import com.sitewhere.grpc.client.event.EventModelMarshaler;
 import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
+import com.sitewhere.microservice.api.state.IDeviceStateManagement;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.rest.model.device.event.kafka.EnrichedEventPayload;
 import com.sitewhere.rest.model.device.state.request.DeviceStateCreateRequest;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEvent;
@@ -28,15 +29,12 @@ import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.state.IDeviceState;
-import com.sitewhere.spi.device.state.IDeviceStateManagement;
 
 import io.prometheus.client.Counter;
 
 /**
  * Processing logic applied to enriched inbound event payloads in order to
  * capture device state.
- * 
- * @author Derek
  */
 public class DeviceStateProcessingLogic extends TenantEngineLifecycleComponent implements IDeviceStateProcessingLogic {
 

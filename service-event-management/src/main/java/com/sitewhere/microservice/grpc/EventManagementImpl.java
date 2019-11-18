@@ -53,13 +53,13 @@ import com.sitewhere.grpc.service.GListMeasurementsForIndexRequest;
 import com.sitewhere.grpc.service.GListMeasurementsForIndexResponse;
 import com.sitewhere.grpc.service.GListStateChangesForIndexRequest;
 import com.sitewhere.grpc.service.GListStateChangesForIndexResponse;
+import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
@@ -76,8 +76,6 @@ import io.grpc.stub.StreamObserver;
 
 /**
  * Implements server logic for device event management GRPC requests.
- * 
- * @author Derek
  */
 public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventManagementImplBase
 	implements IGrpcApiImplementation {

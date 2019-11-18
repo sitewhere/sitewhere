@@ -10,26 +10,24 @@ package com.sitewhere.connectors.groovy.filter;
 import com.sitewhere.connectors.filter.DeviceEventFilter;
 import com.sitewhere.connectors.microservice.OutboundConnectorsMicroservice;
 import com.sitewhere.connectors.spi.IDeviceEventFilter;
-import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.microservice.api.device.DeviceManagementRequestBuilder;
 import com.sitewhere.microservice.groovy.GroovyComponent;
-import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequestBuilder;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.groovy.IGroovyVariables;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 import groovy.lang.Binding;
 
 /**
- * Implementatoin of {@link IDeviceEventFilter} that uses a Groovy script to
+ * Implementation of {@link IDeviceEventFilter} that uses a Groovy script to
  * determine whether events should be included or filtered. If the script
  * returns true, the event is excluded. If the script return false, the event is
  * included.
- * 
- * @author Derek
  */
 public class GroovyFilter extends DeviceEventFilter {
 

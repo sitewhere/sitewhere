@@ -9,14 +9,14 @@ package com.sitewhere.connectors.groovy.common;
 
 import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.connectors.spi.common.IPayloadBuilder;
-import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.groovy.IGroovyVariables;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 import groovy.lang.Binding;
 

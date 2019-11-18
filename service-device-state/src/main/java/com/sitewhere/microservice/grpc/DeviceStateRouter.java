@@ -12,7 +12,6 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
-import com.sitewhere.grpc.client.GrpcContextKeys;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.server.IGrpcRouter;
 import com.sitewhere.grpc.service.DeviceStateGrpc;
@@ -34,8 +33,6 @@ import io.grpc.stub.StreamObserver;
 
 /**
  * Routes GRPC calls to service implementations in tenants.
- * 
- * @author Derek
  */
 public class DeviceStateRouter extends DeviceStateGrpc.DeviceStateImplBase
 	implements IGrpcRouter<DeviceStateGrpc.DeviceStateImplBase> {
@@ -56,7 +53,7 @@ public class DeviceStateRouter extends DeviceStateGrpc.DeviceStateImplBase
      */
     @Override
     public DeviceStateGrpc.DeviceStateImplBase getTenantImplementation(StreamObserver<?> observer) {
-	String token = GrpcContextKeys.TENANT_TOKEN_KEY.get();
+	String token = GrpcKeys.TENANT_CONTEXT_KEY.get();
 	if (token == null) {
 	    throw new RuntimeException("Tenant token not found in request.");
 	}

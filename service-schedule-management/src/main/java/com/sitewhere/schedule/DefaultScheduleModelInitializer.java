@@ -10,16 +10,14 @@ package com.sitewhere.schedule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sitewhere.microservice.api.schedule.IScheduleManagement;
+import com.sitewhere.microservice.model.ModelInitializer;
 import com.sitewhere.schedule.spi.initializer.IScheduleModelInitializer;
-import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.scheduling.IScheduleManagement;
 
 /**
  * Used to load default schedule data into the datastore. The server only offers
  * this functionality if no schedules already exist.
- * 
- * @author Derek
  */
 public class DefaultScheduleModelInitializer extends ModelInitializer implements IScheduleModelInitializer {
 
@@ -36,11 +34,9 @@ public class DefaultScheduleModelInitializer extends ModelInitializer implements
     private boolean initializeIfNoConsole = false;
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.server.scheduling.IScheduleModelInitializer#initialize(
-     * com.sitewhere .spi.scheduling.IScheduleManagement)
+     * com.sitewhere.schedule.spi.initializer.IScheduleModelInitializer#initialize(
+     * com.sitewhere.microservice.api.schedule.IScheduleManagement)
      */
     @Override
     public void initialize(IScheduleManagement scheduleManagement) throws SiteWhereException {
@@ -73,11 +69,6 @@ public class DefaultScheduleModelInitializer extends ModelInitializer implements
 		"On the hour", null, null, "0 0 0/1 1/1 * ? *"));
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.IModelInitializer#isInitializeIfNoConsole()
-     */
     public boolean isInitializeIfNoConsole() {
 	return initializeIfNoConsole;
     }

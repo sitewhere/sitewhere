@@ -18,8 +18,6 @@ import com.sitewhere.spi.area.IZone;
 
 /**
  * Used to load or save zone data to MongoDB.
- * 
- * @author dadams
  */
 public class MongoZone implements MongoConverter<IZone> {
 

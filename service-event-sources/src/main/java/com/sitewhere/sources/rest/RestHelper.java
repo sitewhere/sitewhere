@@ -22,8 +22,6 @@ import com.sitewhere.spi.SiteWhereSystemException;
 
 /**
  * Helper class that simplifies use of Spring for scripting.
- * 
- * @author Derek
  */
 public class RestHelper {
 

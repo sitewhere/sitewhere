@@ -7,10 +7,10 @@
  */
 package com.sitewhere.schedule;
 
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponentDecorator;
+import com.sitewhere.microservice.api.schedule.IScheduleManagement;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponentDecorator;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.ISchedule;
-import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
@@ -20,8 +20,6 @@ import com.sitewhere.spi.search.ISearchResults;
 /**
  * Wraps an schedule management implementation. Subclasses can implement only
  * the methods they need to override.
- * 
- * @author Derek
  */
 public class ScheduleManagementDecorator extends TenantEngineLifecycleComponentDecorator<IScheduleManagement>
 	implements IScheduleManagement {

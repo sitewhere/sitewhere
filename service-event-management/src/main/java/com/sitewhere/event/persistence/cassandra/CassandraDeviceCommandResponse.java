@@ -17,8 +17,6 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 
 /**
  * Handles mapping of device command response event fields to Cassandra records.
- * 
- * @author Derek
  */
 public class CassandraDeviceCommandResponse implements ICassandraEventBinder<IDeviceCommandResponse> {
 

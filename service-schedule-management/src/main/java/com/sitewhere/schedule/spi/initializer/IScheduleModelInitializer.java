@@ -7,15 +7,13 @@
  */
 package com.sitewhere.schedule.spi.initializer;
 
+import com.sitewhere.microservice.api.schedule.IScheduleManagement;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.scheduling.IScheduleManagement;
-import com.sitewhere.spi.server.IModelInitializer;
+import com.sitewhere.spi.microservice.model.IModelInitializer;
 
 /**
  * Class that initializes the schedule model with data needed to bootstrap the
  * system.
- * 
- * @author Derek
  */
 public interface IScheduleModelInitializer extends IModelInitializer {
 

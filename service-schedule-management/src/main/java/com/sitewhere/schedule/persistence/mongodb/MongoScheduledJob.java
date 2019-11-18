@@ -20,8 +20,6 @@ import com.sitewhere.spi.scheduling.ScheduledJobType;
 
 /**
  * Used to load or save scheduled job data to MongoDB.
- * 
- * @author dadams
  */
 public class MongoScheduledJob implements MongoConverter<IScheduledJob> {
 

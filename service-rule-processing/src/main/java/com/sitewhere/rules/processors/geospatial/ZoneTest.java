@@ -13,8 +13,6 @@ import com.sitewhere.spi.geospatial.ZoneContainment;
 /**
  * A single zone test condition that, if met, results in the firing of an alert
  * event.
- * 
- * @author Derek
  */
 public class ZoneTest {
 

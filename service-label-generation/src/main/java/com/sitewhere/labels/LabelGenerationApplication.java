@@ -12,8 +12,6 @@ import com.sitewhere.microservice.MicroserviceApplication;
 
 /**
  * Spring Boot application for label generation microservice.
- * 
- * @author Derek
  */
 public class LabelGenerationApplication extends MicroserviceApplication<ILabelGenerationMicroservice> {
 

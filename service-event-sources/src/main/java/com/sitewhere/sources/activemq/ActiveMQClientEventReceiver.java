@@ -29,13 +29,11 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import com.sitewhere.sources.InboundEventReceiver;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that creates multiple
  * ActiveMQ consumer threads to ingest remote data.
- * 
- * @author Derek
  */
 public class ActiveMQClientEventReceiver extends InboundEventReceiver<byte[]> {
 
@@ -132,8 +130,6 @@ public class ActiveMQClientEventReceiver extends InboundEventReceiver<byte[]> {
     /**
      * Reads messages from the ActiveMQ queue and puts the binary content on a queue
      * for SiteWhere to use.
-     * 
-     * @author Derek
      */
     private class Consumer implements Runnable, ExceptionListener {
 

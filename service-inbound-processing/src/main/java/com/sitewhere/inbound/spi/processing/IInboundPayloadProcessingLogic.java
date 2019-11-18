@@ -13,12 +13,10 @@ import org.apache.kafka.common.TopicPartition;
 
 import com.sitewhere.grpc.model.DeviceEventModel.GDecodedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Logic applied to decoded inbound event payloads.
- * 
- * @author Derek
  */
 public interface IInboundPayloadProcessingLogic extends ITenantEngineLifecycleComponent {
 

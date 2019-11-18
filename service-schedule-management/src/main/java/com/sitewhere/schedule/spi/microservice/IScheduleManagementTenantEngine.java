@@ -8,14 +8,12 @@
 package com.sitewhere.schedule.spi.microservice;
 
 import com.sitewhere.grpc.service.ScheduleManagementGrpc;
+import com.sitewhere.microservice.api.schedule.IScheduleManagement;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.scheduling.IScheduleManagement;
 
 /**
  * Extends {@link IMicroserviceTenantEngine} with features specific to schedule
  * management.
- * 
- * @author Derek
  */
 public interface IScheduleManagementTenantEngine extends IMicroserviceTenantEngine {
 

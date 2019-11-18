@@ -24,8 +24,6 @@ import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Take care of all SiteWhere message handling.
- * 
- * @author Derek
  */
 public class CoapMessageDeliverer implements MessageDeliverer {
 

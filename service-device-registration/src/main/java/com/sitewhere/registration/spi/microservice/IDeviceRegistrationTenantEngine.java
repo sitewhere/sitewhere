@@ -15,8 +15,6 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 /**
  * Extends {@link IMicroserviceTenantEngine} with features specific to device
  * registration.
- * 
- * @author Derek
  */
 public interface IDeviceRegistrationTenantEngine extends IMicroserviceTenantEngine {
 

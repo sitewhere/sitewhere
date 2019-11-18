@@ -13,12 +13,10 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceEvent;
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Adds ability to send events to multiple desinations.
- * 
- * @author Derek
  */
 public interface IDeviceEventMulticaster<T> extends ITenantEngineLifecycleComponent {
 

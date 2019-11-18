@@ -31,8 +31,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for search operations.
- * 
- * @author Derek
  */
 @Path("/search")
 @Produces(MediaType.APPLICATION_JSON)

@@ -9,23 +9,22 @@ package com.sitewhere.media.persistence.mongodb;
 
 import java.util.UUID;
 
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.api.stream.IDeviceStreamDataManagement;
+import com.sitewhere.microservice.api.stream.IDeviceStreamManagement;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.streaming.IDeviceStreamData;
-import com.sitewhere.spi.device.streaming.IDeviceStreamDataManagement;
-import com.sitewhere.spi.device.streaming.IDeviceStreamManagement;
 import com.sitewhere.spi.device.streaming.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IDeviceStreamManagement} that stores data in
  * MongoDB.
- * 
- * @author Derek
  */
-public class MongoDeviceStreamDataManagement extends TenantEngineLifecycleComponent implements IDeviceStreamDataManagement {
+public class MongoDeviceStreamDataManagement extends TenantEngineLifecycleComponent
+	implements IDeviceStreamDataManagement {
 
     /** Injected with Mongo client */
     private IDeviceStreamManagementMongoClient mongoClient;

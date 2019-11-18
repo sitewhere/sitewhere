@@ -23,11 +23,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.rest.model.device.command.DeviceCommandNamespace;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.DeviceCommandSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.command.IDeviceCommandNamespace;
 
@@ -37,8 +37,6 @@ import io.swagger.annotations.ApiParam;
 
 /**
  * Controller for device command operations.
- * 
- * @author Derek Adams
  */
 @Path("/commands")
 @Produces(MediaType.APPLICATION_JSON)

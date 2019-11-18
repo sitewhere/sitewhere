@@ -17,13 +17,13 @@ import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
 
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.communication.mqtt.IMqttComponent;
 import com.sitewhere.communication.mqtt.MqttLifecycleComponent;
 import com.sitewhere.connectors.SerialOutboundConnector;
 import com.sitewhere.connectors.spi.IMulticastingOutboundConnector;
 import com.sitewhere.connectors.spi.multicast.IDeviceEventMulticaster;
 import com.sitewhere.connectors.spi.routing.IRouteBuilder;
+import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -34,12 +34,10 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Outbound connector that sends events to an MQTT topic.
- * 
- * @author Derek
  */
 public class MqttOutboundConnector extends SerialOutboundConnector
 	implements IMulticastingOutboundConnector<String>, IMqttComponent {

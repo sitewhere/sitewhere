@@ -24,8 +24,8 @@ import org.influxdb.dto.QueryResult.Result;
 import org.influxdb.dto.QueryResult.Series;
 import org.joda.time.format.ISODateTimeFormat;
 
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.influxdb.InfluxDbClient;
+import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
@@ -37,8 +37,6 @@ import com.sitewhere.spi.search.ISearchCriteria;
 
 /**
  * Common base class for saving device event data to InfluxDB.
- * 
- * @author Derek
  */
 public class InfluxDbDeviceEvent {
 

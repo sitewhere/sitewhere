@@ -17,8 +17,6 @@ import com.sitewhere.spi.device.event.DeviceEventType;
 
 /**
  * Class for saving device location data to InfluxDB.
- * 
- * @author Derek
  */
 public class InfluxDbDeviceLocation {
 

@@ -15,7 +15,7 @@ import java.util.UUID;
 
 import com.sitewhere.connectors.SerialOutboundConnector;
 import com.sitewhere.connectors.spi.IOutboundConnector;
-import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
+import com.sitewhere.microservice.api.device.DeviceAssignmentMarshalHelper;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.marshaling.MarshaledDeviceAssignment;
 import com.sitewhere.spi.SiteWhereException;
@@ -24,13 +24,11 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Implmentation of {@link IOutboundConnector} that sends events to the cloud
  * provider at InitialState.com.
- * 
- * @author Derek
  */
 @SuppressWarnings("unused")
 public class InitialStateOutboundConnector extends SerialOutboundConnector {
@@ -54,11 +52,9 @@ public class InitialStateOutboundConnector extends SerialOutboundConnector {
     private Map<UUID, DeviceAssignment> assignmentsById = new HashMap<UUID, DeviceAssignment>();
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#start
-     * (com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.connectors.FilteredOutboundConnector#start(com.sitewhere.spi.
+     * microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {

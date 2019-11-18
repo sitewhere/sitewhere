@@ -9,12 +9,10 @@ package com.sitewhere.rules.spi;
 
 import java.util.List;
 
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Manages the list of rule processors configured for a tenant.
- * 
- * @author Derek
  */
 public interface IRuleProcessorsManager extends ITenantEngineLifecycleComponent {
 

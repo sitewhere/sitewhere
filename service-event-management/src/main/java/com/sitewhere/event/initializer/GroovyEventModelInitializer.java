@@ -14,14 +14,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.event.spi.initializer.IEventModelInitializer;
-import com.sitewhere.groovy.IGroovyVariables;
-import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
-import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequestBuilder;
-import com.sitewhere.server.ModelInitializer;
+import com.sitewhere.microservice.api.device.DeviceManagementRequestBuilder;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.event.DeviceEventRequestBuilder;
+import com.sitewhere.microservice.api.event.IDeviceEventManagement;
+import com.sitewhere.microservice.model.ModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
+import com.sitewhere.spi.microservice.groovy.IGroovyVariables;
 import com.sitewhere.spi.microservice.scripting.ScriptType;
 
 import groovy.lang.Binding;

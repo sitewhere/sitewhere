@@ -25,19 +25,19 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.sitewhere.device.marshaling.CustomerTypeMarshalHelper;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
+import com.sitewhere.microservice.api.device.CustomerTypeMarshalHelper;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.label.ILabelGeneration;
 import com.sitewhere.rest.model.customer.request.CustomerTypeCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.customer.ICustomerType;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.label.ILabel;
-import com.sitewhere.spi.label.ILabelGeneration;
 import com.sitewhere.spi.search.ISearchResults;
 
 import io.swagger.annotations.Api;
@@ -47,8 +47,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for customer type operations.
- * 
- * @author Derek Adams
  */
 @Path("/customertypes")
 @Produces(MediaType.APPLICATION_JSON)

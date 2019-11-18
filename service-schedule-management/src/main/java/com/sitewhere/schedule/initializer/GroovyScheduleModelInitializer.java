@@ -13,13 +13,13 @@ import java.nio.file.Path;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitewhere.rest.model.scheduling.request.scripting.ScheduleManagementRequestBuilder;
+import com.sitewhere.microservice.api.schedule.IScheduleManagement;
+import com.sitewhere.microservice.api.schedule.ScheduleManagementRequestBuilder;
+import com.sitewhere.microservice.model.ModelInitializer;
 import com.sitewhere.schedule.spi.initializer.IScheduleModelInitializer;
-import com.sitewhere.server.ModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.microservice.scripting.ScriptType;
-import com.sitewhere.spi.scheduling.IScheduleManagement;
 
 import groovy.lang.Binding;
 
@@ -44,11 +44,9 @@ public class GroovyScheduleModelInitializer extends ModelInitializer implements 
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.server.scheduling.IScheduleModelInitializer#initialize(
-     * com.sitewhere.spi.scheduling.IScheduleManagement)
+     * com.sitewhere.schedule.spi.initializer.IScheduleModelInitializer#initialize(
+     * com.sitewhere.microservice.api.schedule.IScheduleManagement)
      */
     @Override
     public void initialize(IScheduleManagement scheduleManagement) throws SiteWhereException {

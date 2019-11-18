@@ -8,14 +8,12 @@
 package com.sitewhere.instance.spi.tenant;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.IModelInitializer;
-import com.sitewhere.spi.tenant.ITenantManagement;
+import com.sitewhere.spi.microservice.model.IModelInitializer;
+import com.sitewhere.spi.microservice.tenant.ITenantManagement;
 
 /**
  * Class that initializes the tenant model with data needed to bootstrap the
  * system.
- * 
- * @author Derek
  */
 public interface ITenantModelInitializer extends IModelInitializer {
 

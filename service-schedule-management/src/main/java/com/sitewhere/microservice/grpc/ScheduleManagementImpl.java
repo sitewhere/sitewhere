@@ -33,10 +33,10 @@ import com.sitewhere.grpc.service.GUpdateScheduleResponse;
 import com.sitewhere.grpc.service.GUpdateScheduledJobRequest;
 import com.sitewhere.grpc.service.GUpdateScheduledJobResponse;
 import com.sitewhere.grpc.service.ScheduleManagementGrpc;
+import com.sitewhere.microservice.api.schedule.IScheduleManagement;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.scheduling.ISchedule;
-import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
@@ -46,8 +46,6 @@ import io.grpc.stub.StreamObserver;
 
 /**
  * Implements server logic for schedule management GRPC requests.
- * 
- * @author Derek
  */
 public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManagementImplBase
 	implements IGrpcApiImplementation {

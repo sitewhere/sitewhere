@@ -19,8 +19,6 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 
 /**
  * Used to load or save device event data to MongoDB.
- * 
- * @author dadams
  */
 public class MongoDeviceEvent {
 

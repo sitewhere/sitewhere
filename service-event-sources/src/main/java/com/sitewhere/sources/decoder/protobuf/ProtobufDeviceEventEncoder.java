@@ -28,8 +28,6 @@ import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 /**
  * Implementation of {@link IDeviceEventEncoder} that encodes device events into
  * binary using the SiteWhere Google Protocol Buffers format.
- * 
- * @author Derek
  */
 public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 
@@ -74,10 +72,10 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 	    if (measurements.getMetadata() != null) {
 		payloadBuilder.putAllMetadata(measurements.getMetadata());
 	    }
-	    
+
 	    payloadBuilder.setMeasurementName(GOptionalString.newBuilder().setValue(measurements.getName()));
 	    payloadBuilder.setMeasurementValue(GOptionalDouble.newBuilder().setValue(measurements.getValue()));
-	    
+
 	    // Write to byte-stream
 	    ByteArrayOutputStream out = new ByteArrayOutputStream();
 	    headerBuilder.build().writeDelimitedTo(out);

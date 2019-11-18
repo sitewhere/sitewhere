@@ -13,8 +13,6 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 /**
  * Extends {@link IMicroserviceTenantEngine} with features specific to rule
  * processing.
- * 
- * @author Derek
  */
 public interface IRuleProcessingTenantEngine extends IMicroserviceTenantEngine {
 

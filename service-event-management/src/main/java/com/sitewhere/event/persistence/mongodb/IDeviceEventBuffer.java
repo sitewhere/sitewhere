@@ -13,8 +13,6 @@ import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Interface for buffer used for saving device events.
- * 
- * @author Derek
  */
 public interface IDeviceEventBuffer {
 

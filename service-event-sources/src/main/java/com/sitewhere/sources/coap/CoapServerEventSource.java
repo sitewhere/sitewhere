@@ -13,8 +13,6 @@ import com.sitewhere.sources.decoder.coap.CoapJsonDecoder;
 /**
  * Event source that starts a CoAP server and processes messages that are sent
  * to it.
- * 
- * @author Derek
  */
 public class CoapServerEventSource extends InboundEventSource<byte[]> {
 

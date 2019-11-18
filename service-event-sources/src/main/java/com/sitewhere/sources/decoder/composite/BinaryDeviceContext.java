@@ -13,8 +13,6 @@ import com.sitewhere.spi.device.IDeviceType;
 
 /**
  * Device context with a binary payload.
- * 
- * @author Derek
  */
 public class BinaryDeviceContext implements IDeviceContext<byte[]> {
 

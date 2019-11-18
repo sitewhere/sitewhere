@@ -7,15 +7,12 @@
  */
 package com.sitewhere.microservice.grpc;
 
-import com.sitewhere.microservice.grpc.MultitenantGrpcServer;
 import com.sitewhere.schedule.spi.grpc.IScheduleManagementGrpcServer;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 
 /**
  * Hosts a GRPC server that handles schedule management requests.
- * 
- * @author Derek
  */
 public class ScheduleManagementGrpcServer extends MultitenantGrpcServer implements IScheduleManagementGrpcServer {
 

@@ -1,8 +1,8 @@
 description = 'SiteWhere Device Management Microservice'
 
 dependencies {
-	// SiteWhere microservice library.	
-    compile group: 'com.sitewhere', name: 'sitewhere-microservice', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
+	// SiteWhere microservice library including gRPC support.	
+    compile group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
 
 	// SiteWhere MongoDB integration.	
     compile group: 'com.sitewhere', name: 'sitewhere-mongodb', version: "${rootProject.ext['sitewhere.mongodb.api.version']}"

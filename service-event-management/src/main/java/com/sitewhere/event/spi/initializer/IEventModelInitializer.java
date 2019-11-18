@@ -7,10 +7,10 @@
  */
 package com.sitewhere.event.spi.initializer;
 
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
-import com.sitewhere.spi.server.IModelInitializer;
+import com.sitewhere.spi.microservice.model.IModelInitializer;
 
 /**
  * Initializes the event model with data needed to bootstrap the system.

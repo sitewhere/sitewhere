@@ -10,7 +10,8 @@ package com.sitewhere.event;
 import java.util.List;
 import java.util.UUID;
 
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponentDecorator;
+import com.sitewhere.microservice.api.event.IDeviceEventManagement;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponentDecorator;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.DeviceEventIndex;
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -19,7 +20,6 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
@@ -36,8 +36,6 @@ import com.sitewhere.spi.search.ISearchResults;
  * Allows classes to inject themselves as a facade around an existing device
  * event management implementation. By default all methods just pass calls to
  * the underlying delegate.
- * 
- * @author Derek
  */
 public class DeviceEventManagementDecorator extends TenantEngineLifecycleComponentDecorator<IDeviceEventManagement>
 	implements IDeviceEventManagement {

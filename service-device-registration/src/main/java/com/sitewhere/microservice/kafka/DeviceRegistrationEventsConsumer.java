@@ -19,24 +19,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
 
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.client.device.DeviceModelConverter;
 import com.sitewhere.grpc.client.device.DeviceModelMarshaler;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceRegistationPayload;
-import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
+import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.registration.spi.kafka.IDeviceRegistrationEventsConsumer;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationTenantEngine;
 import com.sitewhere.rest.model.device.event.kafka.DeviceRegistrationPayload;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Listens on Kafka topic for device registration events, forwarding them to the
  * registration manager.
- * 
- * @author Derek
  */
 public class DeviceRegistrationEventsConsumer extends DirectKafkaConsumer implements IDeviceRegistrationEventsConsumer {
 
@@ -134,8 +131,6 @@ public class DeviceRegistrationEventsConsumer extends DirectKafkaConsumer implem
     /**
      * Processor that unmarshals a device registration payload and hands it off to
      * the registration manager.
-     * 
-     * @author Derek
      */
     protected class DeviceRegistrationProcessor extends SystemUserRunnable {
 

@@ -14,12 +14,10 @@ import com.sitewhere.connectors.spi.IDeviceEventFilter;
 import com.sitewhere.connectors.spi.IFilteredOutboundConnector;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.kafka.IEnrichedEventPayload;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Extends {@link OutboundConnector} with filtering functionality.
- * 
- * @author Derek
  */
 public abstract class FilteredOutboundConnector extends OutboundConnector implements IFilteredOutboundConnector {
 

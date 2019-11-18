@@ -9,7 +9,9 @@ package com.sitewhere.labels.symbology;
 
 import java.net.URI;
 
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.api.label.IEntityUriProvider;
+import com.sitewhere.microservice.api.label.ILabelGenerator;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IAreaType;
@@ -21,9 +23,7 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.group.IDeviceGroup;
-import com.sitewhere.spi.label.IEntityUriProvider;
-import com.sitewhere.spi.label.ILabelGenerator;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 import net.glxn.qrgen.core.image.ImageType;
 import net.glxn.qrgen.javase.QRCode;
@@ -31,8 +31,6 @@ import net.glxn.qrgen.javase.QRCode;
 /**
  * Implementation of {@link ILabelGenerator} that generates QR-Codes for
  * SiteWhere entities.
- * 
- * @author Derek
  */
 public class QrCodeGenerator extends TenantEngineLifecycleComponent implements ILabelGenerator {
 

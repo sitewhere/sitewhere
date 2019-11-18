@@ -20,19 +20,16 @@ import org.apache.kafka.common.TopicPartition;
 import com.sitewhere.devicestate.processing.DeviceStateProcessingLogic;
 import com.sitewhere.devicestate.spi.kafka.IDeviceStateEnrichedEventsConsumer;
 import com.sitewhere.devicestate.spi.processing.IDeviceStateProcessingLogic;
-import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
+import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.security.SystemUserRunnable;
-import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Kafka consumer that consumes records from the inbound enriched events topic
  * and applies device state management logic to the events.
- * 
- * @author Derek
  */
 public class DeviceStateEnrichedEventsConsumer extends MicroserviceKafkaConsumer
 	implements IDeviceStateEnrichedEventsConsumer {
@@ -163,8 +160,6 @@ public class DeviceStateEnrichedEventsConsumer extends MicroserviceKafkaConsumer
     /**
      * Processor that unmarshals an enriched event and forwards it to outbound
      * connector implementation.
-     * 
-     * @author Derek
      */
     protected class DeviceStateProcessor extends SystemUserRunnable {
 

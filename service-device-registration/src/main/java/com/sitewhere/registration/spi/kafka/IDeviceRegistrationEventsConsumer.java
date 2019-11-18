@@ -11,8 +11,6 @@ import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer;
 
 /**
  * Kafka consumer that receives events for new device registrations.
- * 
- * @author Derek
  */
 public interface IDeviceRegistrationEventsConsumer extends IMicroserviceKafkaConsumer {
 }

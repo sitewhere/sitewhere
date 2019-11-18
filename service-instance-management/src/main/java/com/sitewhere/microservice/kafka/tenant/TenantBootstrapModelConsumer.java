@@ -25,7 +25,7 @@ import com.sitewhere.grpc.model.TenantModel.GTenantModelUpdateType;
 import com.sitewhere.instance.spi.tenant.kafka.ITenantBootstrapModelConsumer;
 import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**

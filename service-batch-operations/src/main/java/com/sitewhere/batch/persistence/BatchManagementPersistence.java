@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.sitewhere.batch.BatchOperationTypes;
-import com.sitewhere.persistence.Persistence;
+import com.sitewhere.microservice.persistence.Persistence;
 import com.sitewhere.rest.model.batch.BatchElement;
 import com.sitewhere.rest.model.batch.BatchOperation;
 import com.sitewhere.rest.model.batch.request.BatchOperationCreateRequest;

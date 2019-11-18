@@ -12,8 +12,6 @@ import com.sitewhere.rules.spi.microservice.IRuleProcessingMicroservice;
 
 /**
  * Spring Boot application for rule processing microservice.
- * 
- * @author Derek
  */
 public class RuleProcessingApplication extends MicroserviceApplication<IRuleProcessingMicroservice> {
 

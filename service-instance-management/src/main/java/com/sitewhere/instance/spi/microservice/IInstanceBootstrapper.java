@@ -7,7 +7,7 @@
  */
 package com.sitewhere.instance.spi.microservice;
 
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleComponent;
 
 /**
  * Checks whether an instance is bootstrapped with initial data and, if not,

@@ -17,8 +17,6 @@ import com.sitewhere.spi.device.state.request.IDeviceStateCreateRequest;
 
 /**
  * Common methods needed by device state management implementations.
- * 
- * @author Derek
  */
 public class DeviceStatePersistence {
 

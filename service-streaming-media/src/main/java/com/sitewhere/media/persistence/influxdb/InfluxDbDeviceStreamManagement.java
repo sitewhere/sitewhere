@@ -10,20 +10,18 @@ package com.sitewhere.media.persistence.influxdb;
 import java.util.UUID;
 
 import com.sitewhere.influxdb.InfluxDbClient;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.api.stream.IDeviceStreamDataManagement;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.streaming.IDeviceStreamData;
-import com.sitewhere.spi.device.streaming.IDeviceStreamDataManagement;
 import com.sitewhere.spi.device.streaming.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IDeviceStreamDataManagement} that stores data in
  * InfluxDB.
- * 
- * @author Derek
  */
 public class InfluxDbDeviceStreamManagement extends TenantEngineLifecycleComponent
 	implements IDeviceStreamDataManagement {

@@ -25,24 +25,22 @@ import org.apache.solr.common.util.NamedList;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.microservice.api.search.IDeviceEventSearchProvider;
+import com.sitewhere.microservice.api.search.ISearchProvider;
+import com.sitewhere.microservice.lifecycle.LifecycleComponent;
 import com.sitewhere.solr.SiteWhereSolrFactory;
 import com.sitewhere.solr.SolrConfiguration;
 import com.sitewhere.solr.SolrConnection;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
-import com.sitewhere.spi.search.IDeviceEventSearchProvider;
-import com.sitewhere.spi.search.ISearchProvider;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link ISearchProvider} that executes queries against a
  * Solr server.
- * 
- * @author Derek
  */
 public class SolrSearchProvider extends LifecycleComponent implements IDeviceEventSearchProvider {
 

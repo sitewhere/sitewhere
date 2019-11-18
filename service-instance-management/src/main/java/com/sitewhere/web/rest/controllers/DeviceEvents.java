@@ -23,8 +23,8 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
+import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,8 +32,6 @@ import io.swagger.annotations.ApiParam;
 
 /**
  * Controller for event operations.
- * 
- * @author Derek Adams
  */
 @Path("/events")
 @Produces(MediaType.APPLICATION_JSON)

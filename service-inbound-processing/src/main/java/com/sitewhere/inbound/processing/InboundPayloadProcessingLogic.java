@@ -21,13 +21,13 @@ import com.sitewhere.inbound.spi.kafka.IUnregisteredEventsProducer;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.inbound.spi.processing.IInboundPayloadProcessingLogic;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.microservice.security.SystemUserRunnable;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 import io.prometheus.client.Histogram;
 
@@ -210,8 +210,6 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
     /**
      * Processor that unmarshals a decoded event and forwards it for registration
      * verification.
-     * 
-     * @author Derek
      */
     protected class InboundEventPayloadProcessor extends SystemUserRunnable {
 

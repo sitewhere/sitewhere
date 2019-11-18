@@ -14,8 +14,6 @@ import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Mongo client that provides device event management collections.
- * 
- * @author Derek
  */
 public interface IDeviceStreamManagementMongoClient {
 

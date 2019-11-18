@@ -17,8 +17,6 @@ import javax.websocket.server.ServerEndpointConfig;
 
 /**
  * Configuration for endpoint that serves Strings.
- * 
- * @author Derek
  */
 public class WebSocketConfiguration implements ServerApplicationConfig {
 
@@ -36,8 +34,7 @@ public class WebSocketConfiguration implements ServerApplicationConfig {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * javax.websocket.server.ServerApplicationConfig#getEndpointConfigs(java.
+     * @see javax.websocket.server.ServerApplicationConfig#getEndpointConfigs(java.
      * util .Set)
      */
     @Override

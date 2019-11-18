@@ -18,9 +18,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.rest.model.search.device.DeviceStatusSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceManagement;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,8 +28,6 @@ import io.swagger.annotations.ApiParam;
 
 /**
  * Controller for device status operations.
- * 
- * @author Derek Adams
  */
 @Path("/statuses")
 @Produces(MediaType.APPLICATION_JSON)

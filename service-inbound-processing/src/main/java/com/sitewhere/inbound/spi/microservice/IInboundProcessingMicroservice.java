@@ -14,8 +14,6 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
  * Microservice that provides inbound event processing functionality.
- * 
- * @author Derek
  */
 public interface IInboundProcessingMicroservice
 	extends IMultitenantMicroservice<MicroserviceIdentifier, IInboundProcessingTenantEngine> {

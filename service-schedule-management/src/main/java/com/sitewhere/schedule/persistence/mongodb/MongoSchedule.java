@@ -20,8 +20,6 @@ import com.sitewhere.spi.scheduling.TriggerType;
 
 /**
  * Used to load or save schedule data to MongoDB.
- * 
- * @author dadams
  */
 public class MongoSchedule implements MongoConverter<ISchedule> {
 

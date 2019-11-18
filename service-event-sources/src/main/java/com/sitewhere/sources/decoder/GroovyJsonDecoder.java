@@ -1,4 +1,5 @@
 /*
+
  * Copyright (c) SiteWhere, LLC. All rights reserved. http://www.sitewhere.com
  *
  * The software in this package is published under the terms of the CPAL v1.0
@@ -12,22 +13,19 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IDeviceEventDecoder;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.groovy.IGroovyVariables;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 import groovy.lang.Binding;
 
 /**
  * Implementation of {@link IDeviceEventDecoder} that delegates parsing of a
  * JsonNode payload to a Groovy script.
- * 
- * @author Derek
  */
 public class GroovyJsonDecoder extends GroovyComponent implements IDeviceEventDecoder<JsonNode> {
 
@@ -56,26 +54,5 @@ public class GroovyJsonDecoder extends GroovyComponent implements IDeviceEventDe
 	} catch (SiteWhereException e) {
 	    throw new EventDecodeException("Unable to run JSON decoder script.", e);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
-     * .spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
     }
 }

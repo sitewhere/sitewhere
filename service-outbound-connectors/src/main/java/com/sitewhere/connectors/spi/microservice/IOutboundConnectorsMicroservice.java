@@ -14,8 +14,6 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
  * Microservice that provides outbound event connectors functionality.
- * 
- * @author Derek
  */
 public interface IOutboundConnectorsMicroservice
 	extends IMultitenantMicroservice<MicroserviceIdentifier, IOutboundConnectorsTenantEngine> {

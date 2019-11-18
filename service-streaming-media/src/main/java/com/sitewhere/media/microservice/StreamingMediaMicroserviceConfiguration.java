@@ -13,8 +13,6 @@ import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Spring bean configuration for microservice.
- * 
- * @author Derek
  */
 public class StreamingMediaMicroserviceConfiguration {
 

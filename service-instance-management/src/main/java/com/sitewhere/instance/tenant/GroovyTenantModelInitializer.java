@@ -10,14 +10,14 @@ package com.sitewhere.instance.tenant;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.instance.spi.tenant.ITenantModelInitializer;
-import com.sitewhere.rest.model.tenant.request.scripting.TenantManagementRequestBuilder;
-import com.sitewhere.server.ModelInitializer;
+import com.sitewhere.microservice.model.ModelInitializer;
+import com.sitewhere.microservice.tenant.TenantManagementRequestBuilder;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
+import com.sitewhere.spi.microservice.groovy.IGroovyVariables;
 import com.sitewhere.spi.microservice.scripting.ScriptType;
-import com.sitewhere.spi.tenant.ITenantManagement;
+import com.sitewhere.spi.microservice.tenant.ITenantManagement;
 
 import groovy.lang.Binding;
 
@@ -41,11 +41,6 @@ public class GroovyTenantModelInitializer extends ModelInitializer implements IT
 	this.scriptName = scriptName;
     }
 
-    /*
-     * @see
-     * com.sitewhere.instance.spi.tenant.ITenantModelInitializer#initialize(com.
-     * sitewhere.spi.tenant.ITenantManagement)
-     */
     @Override
     public void initialize(ITenantManagement tenantManagement) throws SiteWhereException {
 	// Skip if not enabled.

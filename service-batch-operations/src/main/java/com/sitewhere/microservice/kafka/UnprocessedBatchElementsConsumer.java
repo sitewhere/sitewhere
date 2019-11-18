@@ -17,11 +17,10 @@ import org.apache.kafka.common.TopicPartition;
 import com.sitewhere.batch.spi.IBatchOperationManager;
 import com.sitewhere.batch.spi.kafka.IUnprocessedBatchElementsConsumer;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.client.batch.BatchModelConverter;
 import com.sitewhere.grpc.client.batch.BatchModelMarshaler;
 import com.sitewhere.grpc.model.BatchModel.GUnprocessedBatchElement;
-import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
+import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.rest.model.batch.kafka.UnprocessedBatchElement;
 import com.sitewhere.spi.SiteWhereException;
 

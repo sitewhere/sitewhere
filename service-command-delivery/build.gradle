@@ -1,8 +1,8 @@
 description = 'SiteWhere Command Delivery Microservice'
 
 dependencies {
-	// SiteWhere microservice library.	
-    compile group: 'com.sitewhere', name: 'sitewhere-microservice', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
+	// SiteWhere microservice library including gRPC support.	
+    compile group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
 
 	// SiteWhere Communication Protocol integration.	
     compile group: 'com.sitewhere', name: 'sitewhere-communication', version: "${rootProject.ext['sitewhere.communication.api.version']}"

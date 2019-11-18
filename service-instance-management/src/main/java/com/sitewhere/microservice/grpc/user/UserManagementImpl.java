@@ -44,21 +44,19 @@ import com.sitewhere.grpc.service.GUpdateUserRequest;
 import com.sitewhere.grpc.service.GUpdateUserResponse;
 import com.sitewhere.grpc.service.UserManagementGrpc;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
+import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.rest.model.search.user.UserSearchCriteria;
 import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
-import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
 
 import io.grpc.stub.StreamObserver;
 
 /**
  * Implements server logic for user management GRPC requests.
- * 
- * @author Derek
  */
 public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBase implements IGrpcApiImplementation {
 

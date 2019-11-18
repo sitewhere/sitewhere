@@ -23,8 +23,6 @@ import com.sitewhere.spi.device.command.ParameterType;
 
 /**
  * Used to load or save device command data to MongoDB.
- * 
- * @author dadams
  */
 public class MongoDeviceCommand implements MongoConverter<IDeviceCommand> {
 

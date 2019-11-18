@@ -13,15 +13,13 @@ import java.util.List;
 import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.connectors.spi.IOutboundConnectorsManager;
 import com.sitewhere.microservice.kafka.KafkaOutboundConnectorHost;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Manages lifecycle of the list of outbound event connectors configured for a
  * tenant.
- * 
- * @author Derek
  */
 public class OutboundConnectorsManager extends TenantEngineLifecycleComponent implements IOutboundConnectorsManager {
 

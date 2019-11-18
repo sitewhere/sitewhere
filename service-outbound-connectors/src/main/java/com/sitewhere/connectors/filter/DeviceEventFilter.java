@@ -11,13 +11,11 @@ import com.sitewhere.connectors.spi.IDeviceEventFilter;
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsMicroservice;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
  * Abstract base class for common filtering functionality.
- * 
- * @author Derek
  */
 public abstract class DeviceEventFilter extends TenantEngineLifecycleComponent implements IDeviceEventFilter {
 

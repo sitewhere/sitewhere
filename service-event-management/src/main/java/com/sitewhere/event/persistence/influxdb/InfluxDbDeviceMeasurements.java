@@ -16,8 +16,6 @@ import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Class for saving device measurements data to InfluxDB.
- * 
- * @author Derek
  */
 public class InfluxDbDeviceMeasurements {
 

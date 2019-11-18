@@ -16,8 +16,6 @@ import com.sitewhere.spi.device.state.IDeviceState;
 
 /**
  * Manages classes used to convert between Mongo and SPI objects.
- * 
- * @author Derek
  */
 public class MongoConverters implements IMongoConverterLookup {
 

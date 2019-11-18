@@ -20,17 +20,17 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.sitewhere.device.marshaling.DeviceStateMarshalHelper;
 import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
+import com.sitewhere.microservice.api.asset.IAssetManagement;
+import com.sitewhere.microservice.api.device.DeviceStateMarshalHelper;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.event.IDeviceEventManagement;
+import com.sitewhere.microservice.api.state.IDeviceStateManagement;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.DeviceStateSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.state.IDeviceState;
-import com.sitewhere.spi.device.state.IDeviceStateManagement;
 import com.sitewhere.spi.search.ISearchResults;
 
 import io.swagger.annotations.Api;
@@ -40,8 +40,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /*
  * Controller for device state operations.
- * 
- * @author Derek Adams
  */
 @Path("/devicestates")
 @Produces(MediaType.APPLICATION_JSON)

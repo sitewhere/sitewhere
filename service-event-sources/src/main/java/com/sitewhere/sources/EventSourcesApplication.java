@@ -12,8 +12,6 @@ import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
 
 /**
  * Spring Boot application for event sources microservice.
- * 
- * @author Derek
  */
 public class EventSourcesApplication extends MicroserviceApplication<IEventSourcesMicroservice> {
 

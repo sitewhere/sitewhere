@@ -10,6 +10,7 @@ package com.sitewhere.labels.symbology;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import com.sitewhere.microservice.api.label.IEntityUriProvider;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IAreaType;
@@ -21,12 +22,9 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.group.IDeviceGroup;
-import com.sitewhere.spi.label.IEntityUriProvider;
 
 /**
  * Default implementation of {@link IEntityUriProvider}.
- * 
- * @author Derek
  */
 public class DefaultEntityUriProvider implements IEntityUriProvider {
 

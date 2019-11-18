@@ -22,8 +22,6 @@ import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Used to load or save device group data to MongoDB.
- * 
- * @author dadams
  */
 public class MongoDeviceGroup implements MongoConverter<IDeviceGroup> {
 

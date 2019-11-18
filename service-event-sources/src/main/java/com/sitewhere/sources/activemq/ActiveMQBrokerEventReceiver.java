@@ -32,13 +32,11 @@ import org.apache.activemq.broker.TransportConnector;
 import com.sitewhere.sources.InboundEventReceiver;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that uses an ActiveMQ broker
  * to listen on a transport for messages.
- * 
- * @author Derek
  */
 public class ActiveMQBrokerEventReceiver extends InboundEventReceiver<byte[]> {
 
@@ -181,8 +179,6 @@ public class ActiveMQBrokerEventReceiver extends InboundEventReceiver<byte[]> {
     /**
      * Reads messages from the ActiveMQ queue and puts the binary content on a queue
      * for SiteWhere to use.
-     * 
-     * @author Derek
      */
     private class Consumer implements Runnable, ExceptionListener {
 

@@ -14,8 +14,6 @@ import com.sitewhere.spi.device.event.IDeviceEventContext;
 
 /**
  * Includes or excludes events for devices using a given device type.
- * 
- * @author Derek
  */
 public class DeviceTypeFilter extends DeviceEventFilter {
 

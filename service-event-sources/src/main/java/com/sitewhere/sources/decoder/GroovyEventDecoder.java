@@ -11,27 +11,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
+import com.sitewhere.microservice.api.device.DeviceManagementRequestBuilder;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.event.DeviceEventRequestBuilder;
+import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.microservice.groovy.GroovyComponent;
-import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
-import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequestBuilder;
 import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IDeviceEventDecoder;
 import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.groovy.IGroovyVariables;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 import groovy.lang.Binding;
 
 /**
  * Implementation of {@link IDeviceEventDecoder} that uses a Groovy script to
  * decode a binary payload.
- * 
- * @author Derek
  */
 public class GroovyEventDecoder extends GroovyComponent implements IDeviceEventDecoder<byte[]> {
 

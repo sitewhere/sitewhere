@@ -9,15 +9,13 @@ package com.sitewhere.sources;
 
 import java.util.Map;
 
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.sources.spi.IInboundEventSource;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
  * Common base class for creating {@link IInboundEventReceiver} implementations.
- * 
- * @author Derek
  *
  * @param <T>
  */

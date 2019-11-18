@@ -11,8 +11,6 @@ import com.sitewhere.spi.SiteWhereException;
 
 /**
  * {@link AllWithSpecificationMulticaster} that uses String routes.
- * 
- * @author Derek
  */
 public class AllWithSpecificationStringMulticaster extends AllWithSpecificationMulticaster<String> {
 

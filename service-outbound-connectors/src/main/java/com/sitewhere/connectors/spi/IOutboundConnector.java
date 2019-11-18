@@ -9,16 +9,14 @@ package com.sitewhere.connectors.spi;
 
 import java.util.List;
 
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.kafka.IEnrichedEventPayload;
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Connects processed events to an external entity for further processing.
- * 
- * @author Derek
  */
 public interface IOutboundConnector extends ITenantEngineLifecycleComponent {
 

@@ -12,8 +12,6 @@ import com.sitewhere.sources.spi.IInboundEventSource;
 
 /**
  * Implementation of {@link IInboundEventSource} that deals with binary data.
- * 
- * @author Derek
  */
 public class BinaryInboundEventSource extends InboundEventSource<byte[]> {
 

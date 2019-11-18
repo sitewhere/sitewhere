@@ -17,8 +17,6 @@ import com.sitewhere.spi.device.event.IDeviceMeasurement;
 
 /**
  * Handles mapping of device measurements event fields to Cassandra records.
- * 
- * @author Derek
  */
 public class CassandraDeviceMeasurement implements ICassandraEventBinder<IDeviceMeasurement> {
 

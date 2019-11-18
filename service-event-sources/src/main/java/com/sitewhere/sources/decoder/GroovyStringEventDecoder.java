@@ -11,22 +11,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IDeviceEventDecoder;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.groovy.IGroovyVariables;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 import groovy.lang.Binding;
 
 /**
  * Implementation of {@link IDeviceEventDecoder} that delegates parsing of a
  * String payload to a Groovy script.
- * 
- * @author Derek
  */
 public class GroovyStringEventDecoder extends GroovyComponent implements IDeviceEventDecoder<String> {
 
@@ -55,26 +52,5 @@ public class GroovyStringEventDecoder extends GroovyComponent implements IDevice
 	} catch (SiteWhereException e) {
 	    throw new EventDecodeException("Unable to run decoder script.", e);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
-     * .spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
     }
 }

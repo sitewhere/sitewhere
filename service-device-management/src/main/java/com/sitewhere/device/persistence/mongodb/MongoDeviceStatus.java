@@ -18,8 +18,6 @@ import com.sitewhere.spi.device.IDeviceStatus;
 
 /**
  * Used to load or save device status data to MongoDB.
- * 
- * @author dadams
  */
 public class MongoDeviceStatus implements MongoConverter<IDeviceStatus> {
 

@@ -13,8 +13,6 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 /**
  * Extends {@link IMicroserviceTenantEngine} with features specific to event
  * search.
- * 
- * @author Derek
  */
 public interface IEventSearchTenantEngine extends IMicroserviceTenantEngine {
 

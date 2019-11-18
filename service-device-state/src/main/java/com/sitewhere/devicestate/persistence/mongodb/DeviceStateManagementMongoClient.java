@@ -16,8 +16,6 @@ import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Mongo client for interacting with device state object model.
- * 
- * @author Derek
  */
 public class DeviceStateManagementMongoClient extends MongoDbClient implements IDeviceStateManagementMongoClient {
 

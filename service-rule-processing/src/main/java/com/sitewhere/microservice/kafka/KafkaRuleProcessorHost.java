@@ -19,12 +19,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
 
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.client.event.EventModelConverter;
 import com.sitewhere.grpc.client.event.EventModelMarshaler;
 import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
-import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
+import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.rest.model.device.event.kafka.EnrichedEventPayload;
 import com.sitewhere.rules.spi.IRuleProcessor;
 import com.sitewhere.spi.SiteWhereException;
@@ -36,13 +35,11 @@ import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Kafka host container that reads from the enriched events topic and forwards
  * the messages to a wrapped rule processor.
- * 
- * @author Derek
  */
 public class KafkaRuleProcessorHost extends DirectKafkaConsumer {
 
@@ -162,8 +159,6 @@ public class KafkaRuleProcessorHost extends DirectKafkaConsumer {
     /**
      * Processor that unmarshals an enriched event and forwards it to a rule
      * processor implementation.
-     * 
-     * @author Derek
      */
     protected class EventPayloadProcessor extends SystemUserRunnable {
 

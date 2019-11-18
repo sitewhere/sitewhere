@@ -15,8 +15,6 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
  * Microservice that provides label generation functionality.
- * 
- * @author Derek
  */
 public interface ILabelGenerationMicroservice
 	extends IMultitenantMicroservice<MicroserviceIdentifier, ILabelGenerationTenantEngine> {

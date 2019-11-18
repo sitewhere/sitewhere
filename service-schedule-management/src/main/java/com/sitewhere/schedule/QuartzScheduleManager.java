@@ -19,24 +19,22 @@ import org.quartz.impl.DirectSchedulerFactory;
 import org.quartz.simpl.RAMJobStore;
 import org.quartz.simpl.SimpleThreadPool;
 
+import com.sitewhere.microservice.api.schedule.IScheduleManagement;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.schedule.jobs.QuartzBuilder;
 import com.sitewhere.schedule.spi.IScheduleManager;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.scheduling.ISchedule;
-import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IScheduleManager} that uses Quartz to handle
  * schedule management.
- * 
- * @author Derek
  */
 public class QuartzScheduleManager extends TenantEngineLifecycleComponent implements IScheduleManager {
 

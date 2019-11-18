@@ -9,14 +9,14 @@ package com.sitewhere.sources.decoder.composite;
 
 import java.util.Map;
 
-import com.sitewhere.groovy.IGroovyVariables;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.groovy.GroovyComponent;
 import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder.IMessageMetadata;
 import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder.IMessageMetadataExtractor;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.groovy.IGroovyVariables;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.tenant.ITenant;
 
 import groovy.lang.Binding;
@@ -24,8 +24,6 @@ import groovy.lang.Binding;
 /**
  * Implements {@link IMessageMetadataExtractor} by using a Groovy script to
  * extract message metadata from a binary payload.
- * 
- * @author Derek
  */
 public class GroovyMessageMetadataExtractor extends GroovyComponent implements IMessageMetadataExtractor<byte[]> {
 

@@ -23,8 +23,6 @@ import com.sitewhere.sources.spi.IInboundEventReceiver;
 /**
  * Implementation of {@link WebSocketEventReceiver} that operates on binary
  * payloads.
- * 
- * @author Derek
  */
 public class BinaryWebSocketEventReceiver extends WebSocketEventReceiver<byte[]> {
 
@@ -44,8 +42,6 @@ public class BinaryWebSocketEventReceiver extends WebSocketEventReceiver<byte[]>
 
     /**
      * Implementation of {@link Endpoint} that operates on byte[] payloads.
-     * 
-     * @author Derek
      */
     public static class BinaryWebSocketClient extends Endpoint {
 

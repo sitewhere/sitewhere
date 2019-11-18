@@ -14,8 +14,6 @@ import com.sitewhere.spi.device.event.kafka.IEnrichedEventPayload;
 
 /**
  * Adds concept of filtering to outbound connectors.
- * 
- * @author Derek
  */
 public interface IFilteredOutboundConnector extends IOutboundConnector {
 

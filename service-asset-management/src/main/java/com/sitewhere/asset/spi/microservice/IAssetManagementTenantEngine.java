@@ -8,7 +8,7 @@
 package com.sitewhere.asset.spi.microservice;
 
 import com.sitewhere.grpc.service.AssetManagementGrpc;
-import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**

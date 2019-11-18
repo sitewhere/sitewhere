@@ -7,9 +7,9 @@
  */
 package com.sitewhere.asset.spi;
 
+import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.server.IModelInitializer;
+import com.sitewhere.spi.microservice.model.IModelInitializer;
 
 /**
  * Class that initializes the asset model with data needed to bootstrap the

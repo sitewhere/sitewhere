@@ -8,8 +8,8 @@
 package com.sitewhere.commands;
 
 import com.sitewhere.commands.spi.ICommandExecutionBuilder;
+import com.sitewhere.microservice.lifecycle.LifecycleComponent;
 import com.sitewhere.rest.model.device.command.DeviceCommandExecution;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.command.ICommandParameter;
@@ -18,7 +18,7 @@ import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
  * Default implementation of the {@link ICommandExecutionBuilder} interface that

@@ -12,17 +12,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.api.label.ILabelGenerator;
+import com.sitewhere.microservice.api.label.ILabelGeneratorManager;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.label.ILabelGenerator;
-import com.sitewhere.spi.label.ILabelGeneratorManager;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
  * Manages a list of {@link ILabelGenerator} implementations.
- * 
- * @author Derek
  */
 public class LabelGeneratorManager extends TenantEngineLifecycleComponent implements ILabelGeneratorManager {
 

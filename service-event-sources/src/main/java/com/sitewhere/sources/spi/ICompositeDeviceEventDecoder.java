@@ -12,12 +12,10 @@ import java.util.Map;
 
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Device event decoder that delegates to one or more nested decoders.
- * 
- * @author Derek
  */
 public interface ICompositeDeviceEventDecoder<T> extends IDeviceEventDecoder<T> {
 
@@ -37,8 +35,6 @@ public interface ICompositeDeviceEventDecoder<T> extends IDeviceEventDecoder<T> 
 
     /**
      * Represents a potential choice for decoding a payload.
-     * 
-     * @author Derek
      */
     public static interface IDecoderChoice<T> extends ITenantEngineLifecycleComponent {
 
@@ -61,8 +57,6 @@ public interface ICompositeDeviceEventDecoder<T> extends IDeviceEventDecoder<T> 
     /**
      * Provides metadata about a message, which is used to decide which decoder to
      * use.
-     * 
-     * @author Derek
      */
     public static interface IMessageMetadata<T> {
 
@@ -107,8 +101,6 @@ public interface ICompositeDeviceEventDecoder<T> extends IDeviceEventDecoder<T> 
 
     /**
      * Extracts device criteria from payload.
-     * 
-     * @author Derek
      *
      * @param <T>
      */

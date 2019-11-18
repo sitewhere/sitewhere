@@ -11,8 +11,6 @@ import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Exception thrown when an event payload can not be decoded.
- * 
- * @author Derek
  */
 public class EventDecodeException extends SiteWhereException {
 

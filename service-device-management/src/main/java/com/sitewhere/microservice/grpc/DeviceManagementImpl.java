@@ -28,6 +28,7 @@ import com.sitewhere.grpc.model.DeviceModel.GDeviceStatusSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceTypeSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GZoneSearchResults;
 import com.sitewhere.grpc.service.*;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.area.IZone;
@@ -42,7 +43,6 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAlarm;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.IDeviceCommand;
@@ -65,8 +65,6 @@ import io.grpc.stub.StreamObserver;
 
 /**
  * Implements server logic for device management GRPC requests.
- * 
- * @author Derek
  */
 public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementImplBase
 	implements IGrpcApiImplementation {

@@ -15,8 +15,6 @@ import com.sitewhere.spi.device.event.IDeviceMeasurement;
 
 /**
  * Used to load or save device measurement data to MongoDB.
- * 
- * @author dadams
  */
 public class MongoDeviceMeasurement implements MongoConverter<IDeviceMeasurement> {
 

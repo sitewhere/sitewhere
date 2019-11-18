@@ -26,8 +26,6 @@ import io.swagger.annotations.ApiOperation;
 
 /**
  * Controller for system operations.
- * 
- * @author Derek Adams
  */
 @Path("/system")
 @Produces(MediaType.APPLICATION_JSON)

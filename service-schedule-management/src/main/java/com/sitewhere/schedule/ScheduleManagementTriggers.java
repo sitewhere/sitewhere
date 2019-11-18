@@ -7,18 +7,16 @@
  */
 package com.sitewhere.schedule;
 
+import com.sitewhere.microservice.api.schedule.IScheduleManagement;
 import com.sitewhere.schedule.spi.IScheduleManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.ISchedule;
-import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 
 /**
  * Trigger actions based on schedule management API calls.
- * 
- * @author Derek
  */
 public class ScheduleManagementTriggers extends ScheduleManagementDecorator {
 

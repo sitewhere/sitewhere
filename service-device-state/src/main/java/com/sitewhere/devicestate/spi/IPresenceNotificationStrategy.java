@@ -13,8 +13,6 @@ import com.sitewhere.spi.device.state.IDeviceState;
 
 /**
  * Indicates how often events should be generated for non-present devices.
- * 
- * @author Derek
  */
 public interface IPresenceNotificationStrategy {
 

@@ -16,8 +16,6 @@ import com.sitewhere.spi.user.IGrantedAuthority;
 
 /**
  * Converts a list of granted authorities into a hierarchical structure.
- * 
- * @author Derek
  */
 public class GrantedAuthorityHierarchyBuilder {
 

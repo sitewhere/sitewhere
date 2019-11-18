@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.geospatial.GeoUtils;
+import com.sitewhere.microservice.api.event.GeoUtils;
 import com.sitewhere.spi.area.IZone;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.geospatial.IZoneMatcher;
@@ -21,8 +21,6 @@ import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * Matches a list of zones against a location and stores the results.
- * 
- * @author Derek
  */
 public class ZoneMatcher implements IZoneMatcher {
 
@@ -37,7 +35,8 @@ public class ZoneMatcher implements IZoneMatcher {
 	for (IZone zone : zones) {
 	    Polygon zonePoly = GeoUtils.createPolygonForZone(zone);
 	    ZoneContainment containment = (zonePoly.contains(GeoUtils.createPointForLocation(location)))
-		    ? ZoneContainment.Inside : ZoneContainment.Outside;
+		    ? ZoneContainment.Inside
+		    : ZoneContainment.Outside;
 	    ZoneRelationship relationship = new ZoneRelationship(location, zone, containment);
 	    relationships.put(zone.getToken(), relationship);
 	}

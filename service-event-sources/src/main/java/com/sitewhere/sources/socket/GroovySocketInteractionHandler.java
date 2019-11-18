@@ -10,21 +10,18 @@ package com.sitewhere.sources.socket;
 import java.net.Socket;
 
 import com.sitewhere.microservice.groovy.GroovyComponent;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.sources.spi.socket.ISocketInteractionHandler;
 import com.sitewhere.sources.spi.socket.ISocketInteractionHandlerFactory;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 import groovy.lang.Binding;
 
 /**
  * Implementation of {@link ISocketInteractionHandler} that defers processing
  * logic to a Groovy script.
- * 
- * @author Derek
  */
 public class GroovySocketInteractionHandler extends TenantEngineLifecycleComponent
 	implements ISocketInteractionHandler<byte[]> {
@@ -64,33 +61,11 @@ public class GroovySocketInteractionHandler extends TenantEngineLifecycleCompone
 
     /**
      * Factory that produces {@link GroovySocketInteractionHandler} instances.
-     * 
-     * @author Derek
      */
     public static class Factory extends GroovyComponent implements ISocketInteractionHandlerFactory<byte[]> {
 
 	public Factory() {
 	    super(LifecycleComponentType.Other);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
-	 * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
-	 */
-	@Override
-	public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.
-	 * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
-	 */
-	@Override
-	public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	}
 
 	/*

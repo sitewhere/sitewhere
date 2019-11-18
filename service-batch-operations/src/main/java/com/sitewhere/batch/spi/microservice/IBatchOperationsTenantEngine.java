@@ -12,7 +12,7 @@ import com.sitewhere.batch.spi.kafka.IFailedBatchElementsProducer;
 import com.sitewhere.batch.spi.kafka.IUnprocessedBatchElementsProducer;
 import com.sitewhere.batch.spi.kafka.IUnprocessedBatchOperationsProducer;
 import com.sitewhere.grpc.service.BatchManagementGrpc;
-import com.sitewhere.spi.batch.IBatchManagement;
+import com.sitewhere.microservice.api.batch.IBatchManagement;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**

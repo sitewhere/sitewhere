@@ -13,8 +13,6 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
  * Microservice that provides event management functionality.
- * 
- * @author Derek
  */
 public interface IEventManagementMicroservice
 	extends IMultitenantMicroservice<MicroserviceIdentifier, IEventManagementTenantEngine> {

@@ -18,8 +18,6 @@ import com.sitewhere.spi.area.IArea;
 
 /**
  * Used to load or save area data to MongoDB.
- * 
- * @author dadams
  */
 public class MongoArea implements MongoConverter<IArea> {
 

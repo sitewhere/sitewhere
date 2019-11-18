@@ -13,8 +13,6 @@ import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer;
 /**
  * Consumer that pulls enriched device events from a Kafka topic and processes
  * them to store device state.
- * 
- * @author Derek
  */
 public interface IDeviceStateEnrichedEventsConsumer extends IMicroserviceKafkaConsumer {
 

@@ -15,8 +15,6 @@ import com.sitewhere.spi.device.event.IDeviceStateChange;
 
 /**
  * Used to load or save device state change data to MongoDB.
- * 
- * @author dadams
  */
 public class MongoDeviceStateChange implements MongoConverter<IDeviceStateChange> {
 

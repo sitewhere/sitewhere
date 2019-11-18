@@ -11,8 +11,6 @@ import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer;
 
 /**
  * Kafka consumer that receives events for unregistered devices.
- * 
- * @author Derek
  */
 public interface IUnregisteredEventsConsumer extends IMicroserviceKafkaConsumer {
 }

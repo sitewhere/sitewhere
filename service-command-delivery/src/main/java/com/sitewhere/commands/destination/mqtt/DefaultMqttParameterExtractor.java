@@ -14,12 +14,12 @@ import java.util.Map;
 import org.apache.commons.lang3.text.StrSubstitutor;
 
 import com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
  * Implements {@link ICommandDeliveryParameterExtractor} for

@@ -22,21 +22,19 @@ import org.fusesource.mqtt.client.QoS;
 import org.fusesource.mqtt.client.Topic;
 
 import com.sitewhere.communication.mqtt.MqttLifecycleComponent;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.messages.EventSourcesMessages;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.sources.spi.IInboundEventSource;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 import io.prometheus.client.Counter;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that subscribes to an MQTT
  * topic and pulls the message contents into SiteWhere for processing.
- * 
- * @author Derek
  */
 public class MqttInboundEventReceiver extends MqttLifecycleComponent implements IInboundEventReceiver<byte[]> {
 
@@ -160,8 +158,6 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
     /**
      * Pulls messages from the MQTT topic and puts them on the queue for this
      * receiver.
-     * 
-     * @author Derek
      */
     private class MqttSubscriptionProcessor implements Runnable {
 
@@ -188,8 +184,6 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 
     /**
      * Processes MQTT message payloads in a separate thread.
-     * 
-     * @author Derek
      */
     private class MqttPayloadProcessor implements Runnable {
 

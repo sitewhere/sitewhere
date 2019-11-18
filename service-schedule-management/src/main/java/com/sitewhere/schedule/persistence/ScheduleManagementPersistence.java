@@ -7,7 +7,7 @@
  */
 package com.sitewhere.schedule.persistence;
 
-import com.sitewhere.persistence.Persistence;
+import com.sitewhere.microservice.persistence.Persistence;
 import com.sitewhere.rest.model.scheduling.Schedule;
 import com.sitewhere.rest.model.scheduling.ScheduledJob;
 import com.sitewhere.spi.SiteWhereException;
@@ -20,8 +20,6 @@ import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 
 /**
  * Persistence logic for schedule components.
- * 
- * @author Derek
  */
 public class ScheduleManagementPersistence extends Persistence {
 

@@ -7,10 +7,10 @@
  */
 package com.sitewhere.commands;
 
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceElementMapping;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.util.DeviceUtils;
 import com.sitewhere.spi.tenant.ITenant;

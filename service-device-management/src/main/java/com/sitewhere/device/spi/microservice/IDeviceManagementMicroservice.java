@@ -14,8 +14,6 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
  * Microservice that provides device management functionality.
- * 
- * @author Derek
  */
 public interface IDeviceManagementMicroservice
 	extends IMultitenantMicroservice<MicroserviceIdentifier, IDeviceManagementTenantEngine> {

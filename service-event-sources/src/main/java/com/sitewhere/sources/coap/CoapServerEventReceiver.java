@@ -13,13 +13,11 @@ import org.eclipse.californium.core.network.config.NetworkConfig;
 import com.sitewhere.sources.InboundEventReceiver;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that starts a CoAP server
  * using the Eclipse Californium implementation.
- * 
- * @author Derek
  */
 public class CoapServerEventReceiver extends InboundEventReceiver<byte[]> {
 

@@ -8,19 +8,17 @@
 package com.sitewhere.sources.spi;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Provides support for filtering events that are duplicates of events already
  * in the system. The deduplication logic is implemented in subclasses.
- * 
- * @author Derek
  */
 public interface IDeviceEventDeduplicator extends ITenantEngineLifecycleComponent {
 
     /**
-     * Detects whether the given device event is a duplicate of another event in
-     * the system.
+     * Detects whether the given device event is a duplicate of another event in the
+     * system.
      * 
      * @param request
      * @return

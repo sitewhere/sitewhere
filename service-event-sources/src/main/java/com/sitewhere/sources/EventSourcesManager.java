@@ -15,24 +15,22 @@ import com.sitewhere.grpc.client.event.EventModelMarshaler;
 import com.sitewhere.microservice.kafka.DecodedEventsProducer;
 import com.sitewhere.microservice.kafka.DeviceRegistrationEventsProducer;
 import com.sitewhere.microservice.kafka.FailedDecodeEventsProducer;
+import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.rest.model.device.event.kafka.DecodedEventPayload;
 import com.sitewhere.rest.model.device.event.kafka.DeviceRegistrationPayload;
-import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IEventSourcesManager;
 import com.sitewhere.sources.spi.IInboundEventSource;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
-import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
+import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleStatus;
 
 /**
  * Manages lifecycle of the list of event sources configured for a tenant.
- * 
- * @author Derek
  */
 public class EventSourcesManager extends TenantEngineLifecycleComponent implements IEventSourcesManager {
 

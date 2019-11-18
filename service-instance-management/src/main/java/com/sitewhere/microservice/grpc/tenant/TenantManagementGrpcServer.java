@@ -11,7 +11,7 @@ import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.instance.spi.tenant.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.microservice.grpc.GrpcServer;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
-import com.sitewhere.spi.tenant.ITenantManagement;
+import com.sitewhere.spi.microservice.tenant.ITenantManagement;
 
 /**
  * Hosts a GRPC server that handles tenant management requests.

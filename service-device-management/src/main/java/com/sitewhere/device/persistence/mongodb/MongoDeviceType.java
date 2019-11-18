@@ -23,8 +23,6 @@ import com.sitewhere.spi.device.IDeviceType;
 
 /**
  * Used to load or save device specification data to MongoDB.
- * 
- * @author dadams
  */
 public class MongoDeviceType implements MongoConverter<IDeviceType> {
 

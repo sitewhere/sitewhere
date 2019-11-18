@@ -28,8 +28,6 @@ import com.sitewhere.spi.device.group.IDeviceGroupElement;
 
 /**
  * Manages classes used to convert between Mongo and SPI objects.
- * 
- * @author Derek
  */
 public class MongoConverters implements IMongoConverterLookup {
 

@@ -9,14 +9,12 @@ package com.sitewhere.device.spi.microservice;
 
 import com.sitewhere.device.spi.kafka.IDeviceInteractionEventsProducer;
 import com.sitewhere.grpc.service.DeviceManagementGrpc;
-import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
  * Extends {@link IMicroserviceTenantEngine} with features specific to device
  * management.
- * 
- * @author Derek
  */
 public interface IDeviceManagementTenantEngine extends IMicroserviceTenantEngine {
 

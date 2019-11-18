@@ -19,24 +19,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
 
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.client.event.EventModelConverter;
 import com.sitewhere.grpc.client.event.EventModelMarshaler;
 import com.sitewhere.grpc.model.DeviceEventModel.GDecodedEventPayload;
-import com.sitewhere.microservice.kafka.DirectKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
+import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.registration.spi.kafka.IUnregisteredEventsConsumer;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationTenantEngine;
 import com.sitewhere.rest.model.device.event.kafka.DecodedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Listens on Kafka topic for decoded events, making them available for inbound
  * processing.
- * 
- * @author Derek
  */
 public class UnregisteredEventsConsumer extends DirectKafkaConsumer implements IUnregisteredEventsConsumer {
 
@@ -134,8 +131,6 @@ public class UnregisteredEventsConsumer extends DirectKafkaConsumer implements I
     /**
      * Processor that unmarshals a decoded event for an unregistered device and
      * hands it off to the registration manager.
-     * 
-     * @author Derek
      */
     protected class UnregisteredDeviceEventProcessor extends SystemUserRunnable {
 

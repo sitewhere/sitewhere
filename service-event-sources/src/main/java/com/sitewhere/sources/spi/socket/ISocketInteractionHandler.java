@@ -11,12 +11,10 @@ import java.net.Socket;
 
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Interface for handling socket communication with a remote device.
- * 
- * @author Derek
  * 
  * @param <T>
  */

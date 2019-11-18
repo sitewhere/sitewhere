@@ -11,20 +11,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.core.DataUtils;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.util.DataUtils;
 import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IDeviceEventDecoder;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IDeviceEventDecoder} that logs the event payload but
  * does not actually produce any events. This is useful for debugging when
  * implementing decoders for hardware sending human-readable commands across the
  * wire.
- * 
- * @author Derek
  */
 public class PayloadLoggerEventDecoder extends TenantEngineLifecycleComponent implements IDeviceEventDecoder<byte[]> {
 

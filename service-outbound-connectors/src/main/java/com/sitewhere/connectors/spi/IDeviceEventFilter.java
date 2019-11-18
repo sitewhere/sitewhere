@@ -10,12 +10,10 @@ package com.sitewhere.connectors.spi;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Simple interface to support event filtering.
- * 
- * @author Derek
  */
 public interface IDeviceEventFilter extends ITenantEngineLifecycleComponent {
 

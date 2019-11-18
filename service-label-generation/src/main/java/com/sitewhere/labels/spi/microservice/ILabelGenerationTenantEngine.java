@@ -8,14 +8,12 @@
 package com.sitewhere.labels.spi.microservice;
 
 import com.sitewhere.grpc.service.LabelGenerationGrpc;
-import com.sitewhere.spi.label.ILabelGeneratorManager;
+import com.sitewhere.microservice.api.label.ILabelGeneratorManager;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
  * Extends {@link IMicroserviceTenantEngine} with features specific to label
  * generation.
- * 
- * @author Derek
  */
 public interface ILabelGenerationTenantEngine extends IMicroserviceTenantEngine {
 

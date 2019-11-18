@@ -12,8 +12,6 @@ import com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservi
 
 /**
  * Spring Boot application for device registration microservice.
- * 
- * @author Derek
  */
 public class DeviceRegistrationApplication extends MicroserviceApplication<IDeviceRegistrationMicroservice> {
 

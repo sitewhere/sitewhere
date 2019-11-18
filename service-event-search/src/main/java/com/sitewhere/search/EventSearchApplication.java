@@ -12,8 +12,6 @@ import com.sitewhere.search.spi.microservice.IEventSearchMicroservice;
 
 /**
  * Spring Boot application for event search microservice.
- * 
- * @author Derek
  */
 public class EventSearchApplication extends MicroserviceApplication<IEventSearchMicroservice> {
 

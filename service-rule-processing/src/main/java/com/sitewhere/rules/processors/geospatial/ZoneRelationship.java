@@ -14,8 +14,6 @@ import com.sitewhere.spi.geospatial.ZoneContainment;
 
 /**
  * Specifies relationship between a location and a zone.
- * 
- * @author Derek
  */
 public class ZoneRelationship implements IZoneRelationship {
 

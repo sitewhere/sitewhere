@@ -8,10 +8,9 @@
 package com.sitewhere.connectors.groovy;
 
 import com.sitewhere.connectors.SerialOutboundConnector;
-import com.sitewhere.groovy.IGroovyVariables;
+import com.sitewhere.microservice.api.device.DeviceManagementRequestBuilder;
+import com.sitewhere.microservice.api.event.DeviceEventRequestBuilder;
 import com.sitewhere.microservice.groovy.GroovyComponent;
-import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
-import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequestBuilder;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -23,14 +22,13 @@ import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.groovy.IGroovyVariables;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 import groovy.lang.Binding;
 
 /**
  * Outbound event processor that uses a Groovy script to process events.
- * 
- * @author Derek
  */
 public class GroovyOutboundConnector extends SerialOutboundConnector {
 
@@ -67,11 +65,9 @@ public class GroovyOutboundConnector extends SerialOutboundConnector {
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#start
-     * (com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.connectors.FilteredOutboundConnector#start(com.sitewhere.spi.
+     * microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {

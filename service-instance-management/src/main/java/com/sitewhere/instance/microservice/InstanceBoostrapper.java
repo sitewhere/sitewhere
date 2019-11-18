@@ -10,16 +10,16 @@ package com.sitewhere.instance.microservice;
 import com.sitewhere.instance.spi.microservice.IInstanceBootstrapper;
 import com.sitewhere.instance.tenant.GroovyTenantModelInitializer;
 import com.sitewhere.instance.user.GroovyUserModelInitializer;
+import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.microservice.exception.ConcurrentK8sUpdateException;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.microservice.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.microservice.scripting.IScriptContext;
 import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
 import com.sitewhere.spi.microservice.scripting.ScriptType;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.user.IUserManagement;
 
 import io.sitewhere.k8s.crd.common.BootstrapState;
 import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
@@ -42,11 +42,6 @@ public class InstanceBoostrapper extends LifecycleComponent implements IInstance
 	super(LifecycleComponentType.Other);
     }
 
-    /*
-     * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
-     * server.lifecycle.ILifecycleProgressMonitor)
-     */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Load latest instance configuration from k8s.

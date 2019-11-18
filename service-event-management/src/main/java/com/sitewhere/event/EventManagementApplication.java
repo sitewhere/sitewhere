@@ -12,8 +12,6 @@ import com.sitewhere.microservice.MicroserviceApplication;
 
 /**
  * Spring Boot application for device event management microservice.
- * 
- * @author Derek
  */
 public class EventManagementApplication extends MicroserviceApplication<IEventManagementMicroservice> {
 

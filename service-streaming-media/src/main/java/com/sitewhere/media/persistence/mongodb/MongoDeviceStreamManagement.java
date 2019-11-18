@@ -14,26 +14,21 @@ import org.bson.Document;
 import com.mongodb.MongoClientException;
 import com.mongodb.client.MongoCollection;
 import com.sitewhere.media.persistence.DeviceStreamPersistence;
+import com.sitewhere.microservice.api.stream.IDeviceStreamManagement;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.mongodb.IMongoConverterLookup;
 import com.sitewhere.mongodb.MongoPersistence;
 import com.sitewhere.mongodb.common.MongoPersistentEntity;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
-import com.sitewhere.spi.device.streaming.IDeviceStreamManagement;
 import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
-/**
- * 
- * @author Derek
- *
- */
 public class MongoDeviceStreamManagement extends TenantEngineLifecycleComponent implements IDeviceStreamManagement {
 
     /** Converter lookup */

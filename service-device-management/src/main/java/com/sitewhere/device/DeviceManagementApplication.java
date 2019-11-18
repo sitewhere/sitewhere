@@ -12,8 +12,6 @@ import com.sitewhere.microservice.MicroserviceApplication;
 
 /**
  * Spring Boot application for device management microservice.
- * 
- * @author Derek
  */
 public class DeviceManagementApplication extends MicroserviceApplication<IDeviceManagementMicroservice> {
 

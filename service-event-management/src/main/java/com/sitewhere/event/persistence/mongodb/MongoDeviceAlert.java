@@ -17,8 +17,6 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
 
 /**
  * Used to load or save device alert data to MongoDB.
- * 
- * @author dadams
  */
 public class MongoDeviceAlert implements MongoConverter<IDeviceAlert> {
 

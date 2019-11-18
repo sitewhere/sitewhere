@@ -14,17 +14,12 @@ import com.sitewhere.spi.device.state.IDeviceState;
 
 /**
  * Various implementations of {@link IPresenceNotificationStrategy}.
- * 
- * @author Derek
  */
 public class PresenceNotificationStrategies {
 
     /**
      * Only stores/sends a single presence missing notification and keeps state. If
      * presence is regained, the state will be reset.
-     * 
-     * @author Derek
-     *
      */
     public static class SendOnceNotificationStrategy implements IPresenceNotificationStrategy {
 

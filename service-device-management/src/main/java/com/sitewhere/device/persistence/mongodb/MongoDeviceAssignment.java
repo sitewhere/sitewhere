@@ -20,8 +20,6 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 
 /**
  * Used to load or save device assignment data to MongoDB.
- * 
- * @author dadams
  */
 public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> {
 

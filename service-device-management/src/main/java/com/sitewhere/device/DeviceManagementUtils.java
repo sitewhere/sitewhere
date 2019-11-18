@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.customer.ICustomer;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceType;
 
 /**

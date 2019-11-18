@@ -7,15 +7,13 @@
  */
 package com.sitewhere.instance.spi.user;
 
+import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.IModelInitializer;
-import com.sitewhere.spi.user.IUserManagement;
+import com.sitewhere.spi.microservice.model.IModelInitializer;
 
 /**
  * Class that initializes the user model with data needed to bootstrap the
  * system.
- * 
- * @author Derek
  */
 public interface IUserModelInitializer extends IModelInitializer {
 

@@ -12,20 +12,19 @@ import java.util.UUID;
 import com.sitewhere.device.spi.kafka.IDeviceInteractionEventsProducer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
 import com.sitewhere.grpc.client.event.EventModelMarshaler;
+import com.sitewhere.microservice.api.device.DeviceManagementDecorator;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.rest.model.device.event.kafka.DecodedEventPayload;
 import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 
 /**
  * Adds triggers for processing related to device management API calls.
- * 
- * @author Derek
  */
 public class DeviceManagementTriggers extends DeviceManagementDecorator {
 

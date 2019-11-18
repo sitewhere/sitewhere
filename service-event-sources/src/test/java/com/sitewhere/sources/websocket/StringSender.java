@@ -18,8 +18,6 @@ import javax.websocket.Session;
 
 /**
  * Endpoint that sends a String every second.
- * 
- * @author Derek
  */
 public class StringSender extends Endpoint {
 

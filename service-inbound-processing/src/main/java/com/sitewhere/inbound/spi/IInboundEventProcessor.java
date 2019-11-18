@@ -23,13 +23,11 @@ import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.device.streaming.IDeviceStreamData;
 import com.sitewhere.spi.device.streaming.request.IDeviceStreamDataCreateRequest;
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Allows interested entities to interact with SiteWhere inbound event
  * processing.
- * 
- * @author Derek
  */
 public interface IInboundEventProcessor extends ITenantEngineLifecycleComponent {
 

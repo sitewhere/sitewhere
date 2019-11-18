@@ -20,8 +20,6 @@ import com.sitewhere.spi.device.IDeviceAlarm;
 
 /**
  * Used to load or save device alarm data to MongoDB.
- * 
- * @author dadams
  */
 public class MongoDeviceAlarm implements MongoConverter<IDeviceAlarm> {
 

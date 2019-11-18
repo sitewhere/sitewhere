@@ -14,8 +14,6 @@ import com.sitewhere.spi.device.event.IDeviceEventContext;
 
 /**
  * Includes or excludes events for devices associated with a given area.
- * 
- * @author Derek
  */
 public class AreaFilter extends DeviceEventFilter {
 

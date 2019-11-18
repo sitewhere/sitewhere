@@ -12,8 +12,6 @@ import com.sitewhere.sources.spi.IInboundEventSource;
 
 /**
  * Implementation of {@link IInboundEventSource} that deals with String data.
- * 
- * @author Derek
  */
 public class StringInboundEventSource extends InboundEventSource<String> {
 

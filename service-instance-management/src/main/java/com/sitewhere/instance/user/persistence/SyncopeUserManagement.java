@@ -47,24 +47,24 @@ import com.evanlennick.retry4j.Status;
 import com.evanlennick.retry4j.config.RetryConfig;
 import com.evanlennick.retry4j.config.RetryConfigBuilder;
 import com.evanlennick.retry4j.listener.RetryListener;
-import com.sitewhere.common.MarshalUtils;
+import com.sitewhere.microservice.api.user.IUserManagement;
+import com.sitewhere.microservice.lifecycle.LifecycleComponent;
+import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
 import com.sitewhere.rest.model.user.User;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
 import com.sitewhere.spi.user.IUser;
-import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.IUserSearchCriteria;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
@@ -129,11 +129,6 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 	super(LifecycleComponentType.DataStore);
     }
 
-    /*
-     * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
-     * spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Wait for connection in background thread.
@@ -146,11 +141,6 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 		TOKEN_REFRESH_IN_MINUTES, TimeUnit.MINUTES);
     }
 
-    /*
-     * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
-     * server.lifecycle.ILifecycleProgressMonitor)
-     */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Block until Syncope is available.
@@ -225,11 +215,6 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 	}
     }
 
-    /*
-     * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#stop(com.sitewhere.spi.
-     * server.lifecycle.ILifecycleProgressMonitor)
-     */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (this.waiter != null) {
@@ -240,11 +225,6 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 	}
     }
 
-    /*
-     * @see
-     * com.sitewhere.spi.user.IUserManagement#createUser(com.sitewhere.spi.user.
-     * request.IUserCreateRequest, java.lang.Boolean)
-     */
     @Override
     public IUser createUser(IUserCreateRequest request, Boolean encodePassword) throws SiteWhereException {
 	User swuser = UserManagementPersistenceLogic.userCreateLogic(request, encodePassword);
@@ -278,20 +258,11 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 	return attr.schema(name).value(value).build();
     }
 
-    /*
-     * @see
-     * com.sitewhere.spi.user.IUserManagement#importUser(com.sitewhere.spi.user.
-     * IUser, boolean)
-     */
     @Override
     public IUser importUser(IUser user, boolean overwrite) throws SiteWhereException {
 	throw new RuntimeException("Not implemented.");
     }
 
-    /*
-     * @see com.sitewhere.spi.user.IUserManagement#authenticate(java.lang.String,
-     * java.lang.String, boolean)
-     */
     @Override
     public IUser authenticate(String username, String password, boolean updateLastLogin) throws SiteWhereException {
 	if (password == null) {
@@ -305,42 +276,43 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 	return match;
     }
 
-    /*
-     * @see com.sitewhere.spi.user.IUserManagement#updateUser(java.lang.String,
-     * com.sitewhere.spi.user.request.IUserCreateRequest, boolean)
-     */
     @Override
     public IUser updateUser(String username, IUserCreateRequest request, boolean encodePassword)
 	    throws SiteWhereException {
 	UserTO user = getUserService().read(username);
 	if (user == null) {
-		throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR);
+	    throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR);
 	}
 	User swuser = User.copy(convertUser(user));
 	UserManagementPersistenceLogic.userUpdateLogic(request, swuser, encodePassword);
 	UserPatch userPatch = new UserPatch();
 	userPatch.setKey(user.getKey());
-	if(request.getPassword()!=null){
-		userPatch.setPassword(new PasswordPatch.Builder().value(request.getPassword()).build());
+	if (request.getPassword() != null) {
+	    userPatch.setPassword(new PasswordPatch.Builder().value(request.getPassword()).build());
 	}
-	if(request.getFirstName()!=null){
-		userPatch.getPlainAttrs().add(new AttrPatch.Builder().attrTO(createAttribute(ATTR_FIRST_NAME, request.getFirstName())).build());
+	if (request.getFirstName() != null) {
+	    userPatch.getPlainAttrs().add(
+		    new AttrPatch.Builder().attrTO(createAttribute(ATTR_FIRST_NAME, request.getFirstName())).build());
 	}
-	if(request.getLastName()!=null){
-		userPatch.getPlainAttrs().add(new AttrPatch.Builder().attrTO(createAttribute(ATTR_LAST_NAME, request.getLastName())).build());
+	if (request.getLastName() != null) {
+	    userPatch.getPlainAttrs().add(
+		    new AttrPatch.Builder().attrTO(createAttribute(ATTR_LAST_NAME, request.getLastName())).build());
 
 	}
-	userPatch.getPlainAttrs().add(new AttrPatch.Builder().attrTO(createAttribute(ATTR_JSON,
-			Base64.encodeBase64String(MarshalUtils.marshalJsonAsString(swuser).getBytes()))).build());
+	userPatch.getPlainAttrs()
+		.add(new AttrPatch.Builder()
+			.attrTO(createAttribute(ATTR_JSON,
+				Base64.encodeBase64String(MarshalUtils.marshalJsonAsString(swuser).getBytes())))
+			.build());
 
 	swuser.getAuthorities().forEach(auth -> {
-		user.getPrivileges().add(auth);
+	    user.getPrivileges().add(auth);
 	});
 
 	try {
-		getUserService().update(userPatch);
+	    getUserService().update(userPatch);
 	} catch (Throwable t) {
-		throw new SiteWhereException("Unable to update user.", t);
+	    throw new SiteWhereException("Unable to update user.", t);
 	}
 	return swuser;
     }

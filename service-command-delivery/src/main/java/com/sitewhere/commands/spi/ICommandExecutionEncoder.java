@@ -14,15 +14,16 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.command.ISystemCommand;
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Encodes an {@link IDeviceCommandExecution} into a format that can be
  * transmitted.
  * 
  * @param <T>
- *            format for encoded command. Must be compatible with the
- *            {@link ICommandDeliveryProvider} that will deliver the command.
+ *                format for encoded command. Must be compatible with the
+ *                {@link ICommandDeliveryProvider} that will deliver the
+ *                command.
  */
 public interface ICommandExecutionEncoder<T> extends ITenantEngineLifecycleComponent {
 

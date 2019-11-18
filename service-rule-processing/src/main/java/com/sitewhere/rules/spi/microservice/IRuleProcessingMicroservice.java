@@ -14,8 +14,6 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
  * Microservice that provides rule processing functionality.
- * 
- * @author Derek
  */
 public interface IRuleProcessingMicroservice
 	extends IMultitenantMicroservice<MicroserviceIdentifier, IRuleProcessingTenantEngine> {

@@ -11,8 +11,6 @@ import com.sitewhere.inbound.spi.processing.IInboundProcessingConfiguration;
 
 /**
  * Model object for inbound processing configuration.
- * 
- * @author Derek
  */
 public class InboundProcessingConfiguration implements IInboundProcessingConfiguration {
 

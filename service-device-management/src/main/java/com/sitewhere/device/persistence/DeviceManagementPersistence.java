@@ -16,7 +16,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.sitewhere.persistence.Persistence;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.persistence.Persistence;
 import com.sitewhere.rest.model.area.Area;
 import com.sitewhere.rest.model.area.AreaType;
 import com.sitewhere.rest.model.area.Zone;
@@ -56,7 +57,6 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAlarm;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.ICommandParameter;
@@ -78,8 +78,6 @@ import com.sitewhere.spi.search.ISearchResults;
 
 /**
  * Common methods needed by device management implementations.
- * 
- * @author Derek
  */
 public class DeviceManagementPersistence extends Persistence {
 

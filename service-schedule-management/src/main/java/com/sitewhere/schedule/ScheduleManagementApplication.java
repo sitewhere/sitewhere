@@ -12,8 +12,6 @@ import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
 
 /**
  * Spring Boot application for schedule management microservice.
- * 
- * @author Derek
  */
 public class ScheduleManagementApplication extends MicroserviceApplication<IScheduleManagementMicroservice> {
 

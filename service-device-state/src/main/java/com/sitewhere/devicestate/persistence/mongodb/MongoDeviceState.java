@@ -22,8 +22,6 @@ import com.sitewhere.spi.device.state.IDeviceState;
 
 /**
  * Used to load or save assignment state to MongoDB.
- * 
- * @author dadams
  */
 public class MongoDeviceState implements MongoConverter<IDeviceState> {
 

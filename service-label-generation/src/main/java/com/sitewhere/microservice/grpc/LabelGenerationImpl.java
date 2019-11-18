@@ -35,33 +35,31 @@ import com.sitewhere.grpc.service.LabelGenerationGrpc;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationMicroservice;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationTenantEngine;
 import com.sitewhere.labels.symbology.DefaultEntityUriProvider;
+import com.sitewhere.microservice.api.asset.IAssetManagement;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.label.IEntityUriProvider;
+import com.sitewhere.microservice.api.label.ILabelGenerator;
 import com.sitewhere.rest.model.label.Label;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IAreaType;
 import com.sitewhere.spi.asset.IAsset;
-import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.customer.ICustomer;
 import com.sitewhere.spi.customer.ICustomerType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.label.IEntityUriProvider;
-import com.sitewhere.spi.label.ILabelGenerator;
 import com.sitewhere.spi.microservice.IMicroservice;
 
 import io.grpc.stub.StreamObserver;
 
 /**
  * Implements server logic for label generation GRPC requests.
- * 
- * @author Derek
  */
 public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImplBase implements IGrpcApiImplementation {
 

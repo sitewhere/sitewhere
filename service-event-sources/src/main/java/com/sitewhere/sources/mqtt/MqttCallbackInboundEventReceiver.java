@@ -21,13 +21,11 @@ import org.fusesource.mqtt.client.Topic;
 import com.sitewhere.sources.InboundEventReceiver;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that uses the Fuse MQTT
  * callback APIs. This implementation is not working yet.
- * 
- * @author Derek
  */
 @SuppressWarnings("deprecation")
 public class MqttCallbackInboundEventReceiver extends InboundEventReceiver<byte[]> {

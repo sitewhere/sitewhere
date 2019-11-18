@@ -18,8 +18,6 @@ import com.sitewhere.spi.customer.ICustomer;
 
 /**
  * Used to load or save customer data to MongoDB.
- * 
- * @author dadams
  */
 public class MongoCustomer implements MongoConverter<ICustomer> {
 

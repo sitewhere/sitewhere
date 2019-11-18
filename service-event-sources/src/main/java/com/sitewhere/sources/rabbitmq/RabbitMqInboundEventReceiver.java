@@ -25,12 +25,10 @@ import com.rabbitmq.client.ShutdownListener;
 import com.rabbitmq.client.ShutdownSignalException;
 import com.sitewhere.sources.InboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Binary inbound event source that consumes messages from a RabbitMQ broker.
- * 
- * @author Derek
  */
 public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
 

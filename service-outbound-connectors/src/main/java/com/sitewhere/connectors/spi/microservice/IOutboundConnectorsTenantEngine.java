@@ -13,8 +13,6 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 /**
  * Extends {@link IMicroserviceTenantEngine} with features specific to
  * management of outbound connectors.
- * 
- * @author Derek
  */
 public interface IOutboundConnectorsTenantEngine extends IMicroserviceTenantEngine {
 

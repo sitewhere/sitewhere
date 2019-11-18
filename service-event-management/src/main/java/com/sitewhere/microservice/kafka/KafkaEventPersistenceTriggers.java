@@ -13,12 +13,12 @@ import java.util.UUID;
 import com.sitewhere.event.DeviceEventManagementDecorator;
 import com.sitewhere.event.processing.OutboundPayloadEnrichmentLogic;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
+import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
@@ -32,8 +32,6 @@ import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 /**
  * Adds triggers to event persistence methods to push the new events into a
  * Kafka topic.
- * 
- * @author Derek
  */
 public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorator {
 

@@ -13,8 +13,6 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 /**
  * Extends {@link IMicroserviceTenantEngine} with features specific to device
  * management.
- * 
- * @author Derek
  */
 public interface IEventSourcesTenantEngine extends IMicroserviceTenantEngine {
 

@@ -12,7 +12,6 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
-import com.sitewhere.grpc.client.GrpcContextKeys;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.server.IGrpcRouter;
 import com.sitewhere.grpc.service.BatchManagementGrpc;
@@ -62,7 +61,7 @@ public class BatchManagementRouter extends BatchManagementGrpc.BatchManagementIm
      */
     @Override
     public BatchManagementGrpc.BatchManagementImplBase getTenantImplementation(StreamObserver<?> observer) {
-	String token = GrpcContextKeys.TENANT_TOKEN_KEY.get();
+	String token = GrpcKeys.TENANT_CONTEXT_KEY.get();
 	if (token == null) {
 	    throw new RuntimeException("Tenant token not found in request.");
 	}

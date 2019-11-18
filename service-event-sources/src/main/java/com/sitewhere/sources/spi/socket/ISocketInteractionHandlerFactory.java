@@ -7,12 +7,10 @@
  */
 package com.sitewhere.sources.spi.socket;
 
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleComponent;
 
 /**
  * Factory that produces {@link ISocketInteractionHandler} instances.
- * 
- * @author Derek
  *
  * @param <T>
  */

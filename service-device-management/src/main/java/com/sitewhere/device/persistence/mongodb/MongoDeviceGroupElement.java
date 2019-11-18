@@ -18,8 +18,6 @@ import com.sitewhere.spi.device.group.IDeviceGroupElement;
 
 /**
  * Used to load or save device group element data to MongoDB.
- * 
- * @author Derek
  */
 public class MongoDeviceGroupElement implements MongoConverter<IDeviceGroupElement> {
 

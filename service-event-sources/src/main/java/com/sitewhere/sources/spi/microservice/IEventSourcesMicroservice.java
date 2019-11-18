@@ -14,8 +14,6 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
  * Microservice that provides event sources functionality.
- * 
- * @author Derek
  */
 public interface IEventSourcesMicroservice
 	extends IMultitenantMicroservice<MicroserviceIdentifier, IEventSourcesTenantEngine> {

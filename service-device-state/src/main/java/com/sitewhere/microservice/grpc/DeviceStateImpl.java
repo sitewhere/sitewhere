@@ -26,8 +26,8 @@ import com.sitewhere.grpc.service.GSearchDeviceStatesRequest;
 import com.sitewhere.grpc.service.GSearchDeviceStatesResponse;
 import com.sitewhere.grpc.service.GUpdateDeviceStateRequest;
 import com.sitewhere.grpc.service.GUpdateDeviceStateResponse;
+import com.sitewhere.microservice.api.state.IDeviceStateManagement;
 import com.sitewhere.spi.device.state.IDeviceState;
-import com.sitewhere.spi.device.state.IDeviceStateManagement;
 import com.sitewhere.spi.device.state.request.IDeviceStateCreateRequest;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.ISearchResults;
@@ -36,8 +36,6 @@ import io.grpc.stub.StreamObserver;
 
 /**
  * Implements server logic for device state GRPC requests.
- * 
- * @author Derek
  */
 public class DeviceStateImpl extends DeviceStateGrpc.DeviceStateImplBase implements IGrpcApiImplementation {
 

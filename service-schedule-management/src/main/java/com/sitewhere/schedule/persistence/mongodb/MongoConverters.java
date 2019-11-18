@@ -17,8 +17,6 @@ import com.sitewhere.spi.scheduling.IScheduledJob;
 
 /**
  * Manages classes used to convert between Mongo and SPI objects.
- * 
- * @author Derek
  */
 public class MongoConverters implements IMongoConverterLookup {
 
@@ -35,8 +33,7 @@ public class MongoConverters implements IMongoConverterLookup {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.sitewhere.mongodb.IMongoConverterLookup#getConverterFor(java.lang.
+     * @see com.sitewhere.mongodb.IMongoConverterLookup#getConverterFor(java.lang.
      * Class)
      */
     @SuppressWarnings("unchecked")

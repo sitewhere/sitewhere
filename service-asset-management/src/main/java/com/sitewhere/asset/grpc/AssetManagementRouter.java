@@ -12,7 +12,6 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
-import com.sitewhere.grpc.client.GrpcContextKeys;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.server.IGrpcRouter;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
@@ -40,6 +39,7 @@ import com.sitewhere.grpc.service.GUpdateAssetRequest;
 import com.sitewhere.grpc.service.GUpdateAssetResponse;
 import com.sitewhere.grpc.service.GUpdateAssetTypeRequest;
 import com.sitewhere.grpc.service.GUpdateAssetTypeResponse;
+import com.sitewhere.microservice.grpc.GrpcKeys;
 import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
 
 import io.grpc.stub.StreamObserver;
@@ -66,7 +66,7 @@ public class AssetManagementRouter extends AssetManagementGrpc.AssetManagementIm
      */
     @Override
     public AssetManagementGrpc.AssetManagementImplBase getTenantImplementation(StreamObserver<?> observer) {
-	String token = GrpcContextKeys.TENANT_TOKEN_KEY.get();
+	String token = GrpcKeys.TENANT_CONTEXT_KEY.get();
 	if (token == null) {
 	    throw new RuntimeException("Tenant token not found in request.");
 	}

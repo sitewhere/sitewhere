@@ -12,8 +12,6 @@ import java.util.List;
 
 /**
  * Request for history on one or more assignments for a period of time.
- * 
- * @author Derek Adams
  */
 public class AssignmentHistoryRequest {
 

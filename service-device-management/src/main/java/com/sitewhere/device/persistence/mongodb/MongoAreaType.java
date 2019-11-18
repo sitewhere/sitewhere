@@ -19,8 +19,6 @@ import com.sitewhere.spi.area.IAreaType;
 
 /**
  * Used to load or save area type data to MongoDB.
- * 
- * @author dadams
  */
 public class MongoAreaType implements MongoConverter<IAreaType> {
 

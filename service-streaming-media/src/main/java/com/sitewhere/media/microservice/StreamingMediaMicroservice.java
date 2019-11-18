@@ -16,8 +16,6 @@ import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Microservice that provides streaming media functionality.
- * 
- * @author Derek
  */
 public class StreamingMediaMicroservice
 	extends MultitenantMicroservice<MicroserviceIdentifier, IStreamingMediaTenantEngine>

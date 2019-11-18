@@ -8,8 +8,8 @@
 package com.sitewhere.commands.routing;
 
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
  * Abstract base class for {@link IOutboundCommandRouter} implementations.

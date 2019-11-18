@@ -19,13 +19,13 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
+import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
 import com.sitewhere.rest.model.user.request.GrantedAuthorityCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.IGrantedAuthority;
-import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.web.rest.model.GrantedAuthorityHierarchyBuilder;
 
 import io.swagger.annotations.Api;
@@ -35,8 +35,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for user operations.
- * 
- * @author Derek Adams
  */
 @Path("/authorities")
 @Produces(MediaType.APPLICATION_JSON)

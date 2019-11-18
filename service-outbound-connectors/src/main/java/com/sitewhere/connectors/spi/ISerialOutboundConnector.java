@@ -19,8 +19,6 @@ import com.sitewhere.spi.device.event.kafka.IEnrichedEventPayload;
 
 /**
  * Outbound connector that processes each batch event individually.
- * 
- * @author Derek
  */
 public interface ISerialOutboundConnector extends IOutboundConnector {
 

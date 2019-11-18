@@ -11,7 +11,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
-import com.sitewhere.persistence.Persistence;
+import com.sitewhere.microservice.api.event.IDeviceEventManagement;
+import com.sitewhere.microservice.persistence.Persistence;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
@@ -29,7 +30,6 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
@@ -41,8 +41,6 @@ import com.sitewhere.spi.device.streaming.request.IDeviceStreamDataCreateRequest
 
 /**
  * Common methods needed by device service provider implementations.
- * 
- * @author Derek
  */
 public class DeviceEventManagementPersistence extends Persistence {
 

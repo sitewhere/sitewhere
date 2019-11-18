@@ -9,13 +9,10 @@ package com.sitewhere.microservice.grpc;
 
 import com.sitewhere.labels.spi.grpc.ILabelGenerationGrpcServer;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationMicroservice;
-import com.sitewhere.microservice.grpc.MultitenantGrpcServer;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
 
 /**
  * Hosts a GRPC server that handles label generation requests.
- * 
- * @author Derek
  */
 public class LabelGenerationGrpcServer extends MultitenantGrpcServer implements ILabelGenerationGrpcServer {
 

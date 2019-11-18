@@ -11,12 +11,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.instance.spi.user.IUserModelInitializer;
-import com.sitewhere.rest.model.user.request.UserManagementRequestBuilder;
-import com.sitewhere.server.ModelInitializer;
+import com.sitewhere.microservice.api.user.IUserManagement;
+import com.sitewhere.microservice.api.user.UserManagementRequestBuilder;
+import com.sitewhere.microservice.model.ModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.microservice.scripting.ScriptType;
-import com.sitewhere.spi.user.IUserManagement;
 
 import groovy.lang.Binding;
 

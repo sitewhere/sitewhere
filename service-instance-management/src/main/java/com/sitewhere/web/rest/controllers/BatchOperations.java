@@ -26,28 +26,28 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitewhere.batch.BatchUtils;
-import com.sitewhere.batch.marshaling.BatchElementMarshalHelper;
-import com.sitewhere.batch.marshaling.BatchOperationMarshalHelper;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
+import com.sitewhere.microservice.api.asset.IAssetManagement;
+import com.sitewhere.microservice.api.batch.BatchElementMarshalHelper;
+import com.sitewhere.microservice.api.batch.BatchOperationMarshalHelper;
+import com.sitewhere.microservice.api.batch.BatchUtils;
+import com.sitewhere.microservice.api.batch.IBatchManagement;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.schedule.IScheduleManagement;
+import com.sitewhere.microservice.api.schedule.ScheduledJobHelper;
 import com.sitewhere.rest.model.batch.request.BatchCommandInvocationRequest;
 import com.sitewhere.rest.model.batch.request.InvocationByAssignmentCriteriaRequest;
 import com.sitewhere.rest.model.batch.request.InvocationByDeviceCriteriaRequest;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.batch.BatchOperationSearchCriteria;
 import com.sitewhere.rest.model.search.device.BatchElementSearchCriteria;
-import com.sitewhere.schedule.ScheduledJobHelper;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.batch.IBatchElement;
-import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.batch.IBatchOperation;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 import com.sitewhere.spi.search.ISearchResults;
 
@@ -58,8 +58,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for batch operations.
- * 
- * @author Derek Adams
  */
 @Path("/batch")
 @Produces(MediaType.APPLICATION_JSON)

@@ -12,8 +12,6 @@ import java.util.List;
 
 /**
  * Summarizes instance topology for sending via REST.
- * 
- * @author Derek
  */
 public class InstanceTopologySummary {
 

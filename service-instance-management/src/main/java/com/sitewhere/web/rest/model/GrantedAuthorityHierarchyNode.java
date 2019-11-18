@@ -12,8 +12,6 @@ import java.util.List;
 
 /**
  * Used by REST service to marshal the hierarchy of granted authorities.
- * 
- * @author Derek
  */
 public class GrantedAuthorityHierarchyNode implements Comparable<GrantedAuthorityHierarchyNode> {
 

@@ -17,8 +17,6 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
 
 /**
  * Handles mapping of device location event fields to Cassandra records.
- * 
- * @author Derek
  */
 public class CassandraDeviceLocation implements ICassandraEventBinder<IDeviceLocation> {
 

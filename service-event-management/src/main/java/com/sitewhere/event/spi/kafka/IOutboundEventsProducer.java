@@ -12,8 +12,6 @@ import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer;
 /**
  * Kafka producer that sends sends enriched events to a topic for further
  * processing.
- * 
- * @author Derek
  */
 public interface IOutboundEventsProducer extends IMicroserviceKafkaProducer {
 }

@@ -36,8 +36,6 @@ import com.sitewhere.spi.device.streaming.request.IDeviceStreamDataCreateRequest
 /**
  * Custom marshaler for converting JSON payloads to {@link DecodedDeviceRequest}
  * objects.
- * 
- * @author Derek
  */
 public class JsonDeviceRequestMarshaler extends JsonDeserializer<DecodedDeviceRequest<?>> {
 

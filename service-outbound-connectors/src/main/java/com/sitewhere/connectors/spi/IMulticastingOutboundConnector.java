@@ -12,8 +12,6 @@ import com.sitewhere.connectors.spi.routing.IRouteBuilder;
 
 /**
  * Extends {@link IOutboundConnector} with routing capabilities.
- * 
- * @author Derek
  */
 public interface IMulticastingOutboundConnector<T> extends IOutboundConnector {
 

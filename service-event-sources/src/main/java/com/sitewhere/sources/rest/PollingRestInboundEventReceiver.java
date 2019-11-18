@@ -13,18 +13,16 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitewhere.groovy.IGroovyVariables;
 import com.sitewhere.sources.PollingInboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.groovy.IGroovyVariables;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 
 import groovy.lang.Binding;
 
 /**
  * Performs polling on a REST endpoint at a given interval.
- * 
- * @author Derek
  */
 public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver<byte[]> {
 

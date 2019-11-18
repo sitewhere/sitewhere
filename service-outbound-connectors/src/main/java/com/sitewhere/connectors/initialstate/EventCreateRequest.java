@@ -9,8 +9,6 @@ package com.sitewhere.connectors.initialstate;
 
 /**
  * Object used for JSON marshaling of bucket request data.
- * 
- * @author Derek
  */
 public class EventCreateRequest {
 

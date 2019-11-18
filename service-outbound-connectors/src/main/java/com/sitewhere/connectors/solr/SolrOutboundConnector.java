@@ -31,13 +31,11 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * {@link IOutboundConnector} implementation that takes saved events and indexes
  * them in Apache Solr for advanced analytics processing.
- * 
- * @author Derek
  */
 public class SolrOutboundConnector extends SerialOutboundConnector {
 
@@ -148,8 +146,6 @@ public class SolrOutboundConnector extends SerialOutboundConnector {
 
     /**
      * Class that processes documents in the queue asynchronously.
-     * 
-     * @author Derek
      */
     private class SolrDocumentQueueProcessor implements Runnable {
 

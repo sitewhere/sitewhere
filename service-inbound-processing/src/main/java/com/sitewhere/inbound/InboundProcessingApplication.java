@@ -12,8 +12,6 @@ import com.sitewhere.microservice.MicroserviceApplication;
 
 /**
  * Spring Boot application for inbound processing microservice.
- * 
- * @author Derek
  */
 public class InboundProcessingApplication extends MicroserviceApplication<IInboundProcessingMicroservice> {
 

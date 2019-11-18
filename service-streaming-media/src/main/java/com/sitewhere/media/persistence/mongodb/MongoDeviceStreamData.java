@@ -16,8 +16,6 @@ import com.sitewhere.spi.device.streaming.IDeviceStreamData;
 /**
  * Handles loading/saving {@link DeviceStreamData} objects to a MongoDB
  * datastore.
- * 
- * @author Derek
  */
 public class MongoDeviceStreamData implements MongoConverter<IDeviceStreamData> {
 

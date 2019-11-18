@@ -17,8 +17,6 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 
 /**
  * Used to load or save device command response data to MongoDB.
- * 
- * @author dadams
  */
 public class MongoDeviceCommandResponse implements MongoConverter<IDeviceCommandResponse> {
 

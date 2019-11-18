@@ -13,8 +13,6 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
  * Microservice that provides schedule management functionality.
- * 
- * @author Derek
  */
 public interface IScheduleManagementMicroservice
 	extends IMultitenantMicroservice<MicroserviceIdentifier, IScheduleManagementTenantEngine> {

@@ -16,8 +16,6 @@ import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Mongo client for interacting with schedule management object model.
- * 
- * @author Derek
  */
 public class ScheduleManagementMongoClient extends MongoDbClient implements IScheduleManagementMongoClient {
 

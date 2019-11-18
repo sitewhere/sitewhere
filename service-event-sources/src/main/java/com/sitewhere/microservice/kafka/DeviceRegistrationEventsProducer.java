@@ -7,15 +7,11 @@
  */
 package com.sitewhere.microservice.kafka;
 
-import com.sitewhere.microservice.kafka.AckPolicy;
-import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Kafka producer for a stream of decoded device registration events produced by
  * all event sources for a tenant.
- * 
- * @author Derek
  */
 public class DeviceRegistrationEventsProducer extends MicroserviceKafkaProducer {
 

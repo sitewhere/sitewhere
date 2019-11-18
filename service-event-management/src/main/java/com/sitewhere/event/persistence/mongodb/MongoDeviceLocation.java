@@ -15,8 +15,6 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
 
 /**
  * Used to load or save device location data to MongoDB.
- * 
- * @author dadams
  */
 public class MongoDeviceLocation implements MongoConverter<IDeviceLocation> {
 

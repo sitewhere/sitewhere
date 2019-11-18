@@ -8,7 +8,6 @@
 package com.sitewhere.microservice.grpc;
 
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.batch.BatchModelConverter;
 import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
@@ -36,8 +35,9 @@ import com.sitewhere.grpc.service.GUpdateBatchElementRequest;
 import com.sitewhere.grpc.service.GUpdateBatchElementResponse;
 import com.sitewhere.grpc.service.GUpdateBatchOperationRequest;
 import com.sitewhere.grpc.service.GUpdateBatchOperationResponse;
+import com.sitewhere.microservice.api.batch.IBatchManagement;
+import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.spi.batch.IBatchElement;
-import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.batch.IBatchOperation;
 import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.batch.request.IBatchElementCreateRequest;

@@ -12,8 +12,6 @@ import com.sitewhere.microservice.MicroserviceApplication;
 
 /**
  * Spring Boot application for outbound connectors microservice.
- * 
- * @author Derek
  */
 public class OutboundConnectorsApplication extends MicroserviceApplication<IOutboundConnectorsMicroservice> {
 

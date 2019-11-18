@@ -13,8 +13,6 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
  * Microservice that provides device registration functionality.
- * 
- * @author Derek
  */
 public interface IDeviceRegistrationMicroservice
 	extends IMultitenantMicroservice<MicroserviceIdentifier, IDeviceRegistrationTenantEngine> {

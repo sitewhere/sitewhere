@@ -8,15 +8,11 @@
 package com.sitewhere.microservice.kafka;
 
 import com.sitewhere.event.spi.kafka.IOutboundEventsProducer;
-import com.sitewhere.microservice.kafka.AckPolicy;
-import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Kafka producer that sends sends enriched events to a topic for further
  * processing.
- * 
- * @author Derek
  */
 public class OutboundEventsProducer extends MicroserviceKafkaProducer implements IOutboundEventsProducer {
 

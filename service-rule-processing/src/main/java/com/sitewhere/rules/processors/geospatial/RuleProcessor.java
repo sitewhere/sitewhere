@@ -8,16 +8,16 @@
 package com.sitewhere.rules.processors.geospatial;
 
 import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.event.IDeviceEventManagement;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.rules.spi.IRuleProcessor;
 import com.sitewhere.rules.spi.microservice.IRuleProcessingMicroservice;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
@@ -25,8 +25,6 @@ import com.sitewhere.spi.device.event.IDeviceStateChange;
 /**
  * Default implementation of {@link IRuleProcessor} that acts as a common base
  * class for other rule processors.
- * 
- * @author Derek
  */
 public class RuleProcessor extends TenantEngineLifecycleComponent implements IRuleProcessor {
 

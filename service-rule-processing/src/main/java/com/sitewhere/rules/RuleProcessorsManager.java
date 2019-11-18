@@ -11,16 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sitewhere.microservice.kafka.KafkaRuleProcessorHost;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.rules.spi.IRuleProcessor;
 import com.sitewhere.rules.spi.IRuleProcessorsManager;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Manages the list of rule processors configured for a tenant.
- * 
- * @author Derek
  */
 public class RuleProcessorsManager extends TenantEngineLifecycleComponent implements IRuleProcessorsManager {
 

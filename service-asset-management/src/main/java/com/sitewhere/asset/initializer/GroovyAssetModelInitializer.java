@@ -14,10 +14,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.asset.spi.IAssetModelInitializer;
-import com.sitewhere.rest.model.asset.request.scripting.AssetManagementRequestBuilder;
-import com.sitewhere.server.ModelInitializer;
+import com.sitewhere.microservice.api.asset.AssetManagementRequestBuilder;
+import com.sitewhere.microservice.api.asset.IAssetManagement;
+import com.sitewhere.microservice.model.ModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.microservice.scripting.ScriptType;
 

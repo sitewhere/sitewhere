@@ -9,8 +9,6 @@ package com.sitewhere.inbound.spi.processing;
 
 /**
  * Settings that control inbound processing.
- * 
- * @author Derek
  */
 public interface IInboundProcessingConfiguration {
 

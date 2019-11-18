@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'checkstyle'
     id 'distribution'
     id 'com.sitewhere' version '3.0.0.alpha1' apply false
     id 'io.quarkus' version '0.26.1' 
@@ -20,12 +21,12 @@ ext['git.revision.abbrev'] = ext.git.head().abbreviatedId
 ext['docker.base.image'] = 'openjdk:8-jre-alpine'
 ext['docker.maintainer'] = 'admin@sitewhere.com'
 
-ext['sitewhere.microservice.api.version'] = '3.0.0.alpha3'
-ext['sitewhere.communication.api.version'] = '3.0.0.alpha1'
-ext['sitewhere.mongodb.api.version'] = '3.0.0.alpha1'
-ext['sitewhere.influxdb.api.version'] = '3.0.0.alpha1'
-ext['sitewhere.cassandra.api.version'] = '3.0.0.alpha1'
-ext['sitewhere.solr.api.version'] = '3.0.0.alpha1'
+ext['sitewhere.microservice.api.version'] = '3.0.0.alpha5'
+ext['sitewhere.communication.api.version'] = '3.0.0.alpha2'
+ext['sitewhere.mongodb.api.version'] = '3.0.0.alpha2'
+ext['sitewhere.influxdb.api.version'] = '3.0.0.alpha2'
+ext['sitewhere.cassandra.api.version'] = '3.0.0.alpha2'
+ext['sitewhere.solr.api.version'] = '3.0.0.alpha2'
 ext['kafka.version'] = '2.0.0'
 ext['protobuf.version'] = '3.5.1'
 ext['grpc.version'] = '1.25.0'
@@ -65,6 +66,9 @@ subprojects {
 	// Apply SiteWhere.
 	apply plugin: 'com.sitewhere'
 	sitewhere {
+		standardImage {
+			jvmImage = "oracle/graalvm-ce:19.2.1"
+		}
 		nativeImage {
 			graalImage = "sitewhere/graalvm-gradle:19.2.1"
 			dockerRepository = dockerRepository

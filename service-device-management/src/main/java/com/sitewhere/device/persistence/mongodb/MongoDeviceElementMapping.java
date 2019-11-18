@@ -15,8 +15,6 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
 
 /**
  * Used to load or save device element mapping data to MongoDB.
- * 
- * @author dadams
  */
 public class MongoDeviceElementMapping implements MongoConverter<IDeviceElementMapping> {
 

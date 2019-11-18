@@ -18,8 +18,6 @@ import com.sitewhere.spi.common.ILocation;
 
 /**
  * Common functionality for entities with geospatial boundaries.
- * 
- * @author Derek
  */
 public class MongoBoundedEntity {
 

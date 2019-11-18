@@ -10,14 +10,12 @@ package com.sitewhere.event.persistence.cassandra;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.UserType;
 import com.sitewhere.cassandra.CassandraClient;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Adds support for device event management model using Cassandra for storage.
- * 
- * @author Derek
  */
 public class CassandraEventManagementClient extends TenantEngineLifecycleComponent {
 

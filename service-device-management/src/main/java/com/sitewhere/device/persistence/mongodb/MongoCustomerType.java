@@ -19,8 +19,6 @@ import com.sitewhere.spi.customer.ICustomerType;
 
 /**
  * Used to load or save customer type data to MongoDB.
- * 
- * @author dadams
  */
 public class MongoCustomerType implements MongoConverter<ICustomerType> {
 

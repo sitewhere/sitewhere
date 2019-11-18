@@ -19,8 +19,6 @@ import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
 /**
  * Helper class for building {@link IScheduleCreateRequest} instances based on
  * schedule types.
- * 
- * @author Derek
  */
 public class ScheduleHelper {
 

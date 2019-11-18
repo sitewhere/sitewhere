@@ -22,24 +22,21 @@ import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.consumer.OffsetCommitCallback;
 import org.apache.kafka.common.TopicPartition;
 
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.grpc.client.event.EventModelConverter;
 import com.sitewhere.grpc.client.event.EventModelMarshaler;
 import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
-import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
+import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.rest.model.device.event.kafka.EnrichedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.kafka.IEnrichedEventPayload;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleStatus;
 
 /**
  * Kafka host container that reads from the enriched events topic and forwards
  * the messages to a wrapped outbound connector.
- * 
- * @author Derek
  */
 public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
 
@@ -178,8 +175,6 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
     /**
      * Processor that unmarshals an enriched event and forwards it to outbound
      * connector implementation.
-     * 
-     * @author Derek
      */
     protected class TopicBatchProcessor extends SystemUserRunnable {
 
