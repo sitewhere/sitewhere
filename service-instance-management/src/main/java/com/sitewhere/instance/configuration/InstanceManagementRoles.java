@@ -30,6 +30,7 @@ public enum InstanceManagementRoles implements IConfigurationRoleProvider {
 	    "Persistence Configurations", false, false, false,
 	    new IRoleKey[] { InstanceManagementRoleKeys.MongoDBConfigurations,
 		    InstanceManagementRoleKeys.InfluxDBConfigurations,
+        InstanceManagementRoleKeys.Warp10DBConfigurations,
 		    InstanceManagementRoleKeys.CassandraConfigurations })),
 
     /** MongoDB persistence configurations. */
