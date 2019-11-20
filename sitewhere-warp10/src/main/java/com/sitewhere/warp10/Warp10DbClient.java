@@ -62,6 +62,7 @@ public class Warp10DbClient extends TenantEngineLifecycleComponent implements ID
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
         super.start(monitor);
+        //TODO: replace token secret with parameter!!!!
         this.warp10RestClient = Warp10RestClient.newBuilder().withConnectionTo(getConfiguration().getHostname(), getConfiguration().getPort(), "token-secret", "tenant").build();
     }
 

@@ -41,7 +41,12 @@ public class GTSInput {
      * @return new GTSInput instance
      */
     public static GTSInput builder() {
-        return new GTSInput();
+
+        GTSInput gtsInput = new GTSInput();
+        gtsInput.setElev(0L);
+        gtsInput.setLon(0D);
+        gtsInput.setLat(0D);
+        return gtsInput;
     }
 
     /**
@@ -53,78 +58,70 @@ public class GTSInput {
      */
     public static GTSInput from(GTSInput otherPoint) {
         GTSInput newPoint = new GTSInput();
-
-        return newPoint.ts(otherPoint.ts)
-         .lat(otherPoint.lat)
-         .lon(otherPoint.lon)
-         .elev(otherPoint.elev)
-         .name(otherPoint.name)
-         .labels(otherPoint.labels);
+        newPoint.setTs(otherPoint.ts);
+        newPoint.setLat(otherPoint.lat);
+        newPoint.setLon(otherPoint.lon);
+        newPoint.setElev(otherPoint.elev);
+        newPoint.setName(otherPoint.name);
+        newPoint.setLabels(otherPoint.labels);
+        return newPoint;
     }
 
-    public GTSInput ts(Long timestampMicro) {
+    public void setTs(Long timestampMicro) {
         this.ts = timestampMicro;
-        return this;
     }
 
-    public GTSInput ts(ZonedDateTime timeStamp) {
+    public void setTs(ZonedDateTime timeStamp) {
         this.ts = TimeUnit.MILLISECONDS.toMicros(timeStamp.toInstant().toEpochMilli());
-        return this;
     }
 
-    public GTSInput lat(Double lat) {
+    public void setLat(Double lat) {
         this.lat = lat;
-        return this;
     }
 
-    public GTSInput lon(Double lon) {
+    public void setLon(Double lon) {
         this.lon = lon;
-        return this;
     }
 
-    public GTSInput elev(Long elev) {
+    public void setElev(Long elev) {
         this.elev = elev;
-        return this;
     }
 
-    public GTSInput name(String name)  {
+    public void setName(String name)  {
         this.name = name;
-        return this;
     }
 
-    public GTSInput labels(Map<String, String> labels) {
+    public void setLabels(Map<String, String> labels) {
         this.labels.putAll(labels);
-        return this;
     }
 
-    public GTSInput label(String key, String value) throws UnsupportedEncodingException {
+    public void setLabel(String key, String value) throws UnsupportedEncodingException {
         this.labels.put(URLEncoder.encode(key, String.valueOf(StandardCharsets.UTF_8)), URLEncoder.encode(value, String.valueOf(StandardCharsets.UTF_8)));
-        return this;
     }
 
-    public GTSInput value(String value) {
+    public void setValue(String value) {
         this.stringValue = value;
-        return this;
     }
 
-    public GTSInput value(Double value) {
+    public void setValue(Double value) {
         this.doubleValue = value;
-        return this;
     }
 
-    public GTSInput value(Boolean value) {
+    public void setValue(Boolean value) {
         this.booleanValue = value;
-        return this;
     }
 
-    public GTSInput value(Long value) {
+    public void setValue(Long value) {
         this.longValue = value;
-        return this;
     }
+
+
 
     public String getLabel(String key) {
         return labels.getOrDefault(key, "");
     }
+
+
 
     public String toInputFormat() throws SiteWhereException {
 
@@ -140,6 +137,46 @@ public class GTSInput {
         }
 
         return null;
+    }
+
+    public Long getTs() {
+        return ts;
+    }
+
+    public Double getLat() {
+        return lat;
+    }
+
+    public Double getLon() {
+        return lon;
+    }
+
+    public Long getElev() {
+        return elev;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Map<String, String> getLabels() {
+        return labels;
+    }
+
+    public String getStringValue() {
+        return stringValue;
+    }
+
+    public Long getLongValue() {
+        return longValue;
+    }
+
+    public Double getDoubleValue() {
+        return doubleValue;
+    }
+
+    public Boolean getBooleanValue() {
+        return booleanValue;
     }
 
     private String formatMandatoryFieldName() throws SiteWhereException {
