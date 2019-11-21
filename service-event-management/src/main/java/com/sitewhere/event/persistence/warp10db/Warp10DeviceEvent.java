@@ -58,15 +58,20 @@ public class Warp10DeviceEvent {
      */
     public static void toGTS(IDeviceEvent source, GTSInput target) {
         Map labels = new HashMap<String, String>();
-        labels.put(PROP_ID, source.getId());
-        labels.put(PROP_ALTERNATE_ID, source.getAlternateId());
         labels.put(PROP_EVENT_TYPE, source.getEventType().name());
-        labels.put(PROP_DEVICE_ID, source.getDeviceId());
-        labels.put(PROP_DEVICE_ASSIGNMENT_ID, source.getDeviceAssignmentId());
-        labels.put(PROP_CUSTOMER_ID, source.getCustomerId());
-        labels.put(PROP_AREA_ID, source.getAreaId());
-        labels.put(PROP_RECEIVED_DATE, source.getReceivedDate());
+        labels.put(PROP_DEVICE_ASSIGNMENT_ID, source.getDeviceAssignmentId().toString());
+        labels.put(PROP_ALTERNATE_ID, source.getAlternateId() != null ? source.getAlternateId().toString() : "");
+        labels.put(PROP_DEVICE_ID, source.getDeviceId().toString());
+        labels.put(PROP_CUSTOMER_ID, source.getCustomerId() != null ? source.getCustomerId() : "");
+        labels.put(PROP_AREA_ID, source.getAreaId().toString());
+        labels.put(PROP_RECEIVED_DATE, String.valueOf(source.getReceivedDate().getTime()));
+        labels.put(PROP_EVENT_DATE, String.valueOf(source.getEventDate().getTime()));
         target.setLabels(labels);
+
+        Map attributes = new HashMap<String, String>();
+        attributes.put(PROP_ID, source.getId().toString());
+        target.setAttributes(attributes);
+
     }
 
     /**
@@ -77,7 +82,10 @@ public class Warp10DeviceEvent {
      */
     public static void fromGTS(GTSOutput source, DeviceEvent target) {
         Map<String, String> labels = source.getLabels();
-        target.setId(UUID.fromString(labels.get(PROP_ID)));
+        Map<String, String> attributes = source.getAttributes();
+
+        target.setId(UUID.fromString(attributes.get(PROP_ID)));
+
         target.setAlternateId(labels.get(PROP_ALTERNATE_ID));
         target.setEventType(DeviceEventType.valueOf(labels.get(PROP_EVENT_TYPE)));
         target.setDeviceId(UUID.fromString(labels.get(PROP_DEVICE_ID)));

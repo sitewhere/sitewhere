@@ -78,13 +78,13 @@ public class Warp10RestClient {
         return 500;
     }
 
-    public List<GTSOutput> fetch(String query) {
+    public List<GTSOutput> fetch(QueryParams queryParams) {
         if (readToken == null) {
             readToken = getToken(TokenType.READ);
         }
         try {
             Request request = new Request.Builder()
-             .url(url + "/fetch?" + query)
+             .url(url + "/fetch?now=1435091737000000&timespan=-10&selector=~.*" + queryParams.toString())
              .header(X_WARP_10_TOKEN, readToken.getToken()).get()
              .build();
             Response response = client.newCall(request).execute();

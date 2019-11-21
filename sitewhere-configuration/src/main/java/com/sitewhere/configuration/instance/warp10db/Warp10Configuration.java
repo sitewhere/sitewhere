@@ -21,7 +21,7 @@ public class Warp10Configuration {
     private static final int DEFAULT_PORT = 8080;
 
     /** Default token.secret */
-    private static final String DEFAULT_TOKEN_SECRET = "token-secret";
+    private static final String DEFAULT_TOKEN_SECRET = "sitewhere-1";
 
     /** Default application */
     private static final String APPLICATION = "default-application";

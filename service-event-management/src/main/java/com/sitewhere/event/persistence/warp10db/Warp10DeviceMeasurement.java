@@ -10,6 +10,7 @@ package com.sitewhere.event.persistence.warp10db;
 import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.warp10.Warp10Converter;
+import com.sitewhere.warp10.common.Warp10MetadataProvider;
 import com.sitewhere.warp10.rest.GTSInput;
 import com.sitewhere.warp10.rest.GTSOutput;
 
@@ -32,6 +33,7 @@ public class Warp10DeviceMeasurement implements Warp10Converter<IDeviceMeasureme
         gtsInput.setName(source.getName());
         gtsInput.setTs(source.getEventDate().getTime());
         Warp10DeviceEvent.toGTS(source, gtsInput);
+        Warp10MetadataProvider.toGTS(source, gtsInput);
         return gtsInput;
     }
 
@@ -39,6 +41,7 @@ public class Warp10DeviceMeasurement implements Warp10Converter<IDeviceMeasureme
     public IDeviceMeasurement convert(GTSOutput source) {
         DeviceMeasurement deviceMeasurement = new DeviceMeasurement();
         Warp10DeviceEvent.fromGTS(source, deviceMeasurement);
+        Warp10MetadataProvider.fromGTS(source, deviceMeasurement);
         return deviceMeasurement;
     }
 }

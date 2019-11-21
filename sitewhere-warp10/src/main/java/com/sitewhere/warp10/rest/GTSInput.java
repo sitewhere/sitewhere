@@ -26,6 +26,7 @@ public class GTSInput {
     private Long elev;
     private String name;
     private Map<String, String> labels;
+    private Map<String, String> attributes;
     private String stringValue;
     private Long longValue;
     private Double doubleValue;
@@ -115,17 +116,17 @@ public class GTSInput {
         this.longValue = value;
     }
 
-
+    public void setAttributes(Map<String, String> attributes) {
+        this.attributes = attributes;
+    }
 
     public String getLabel(String key) {
         return labels.getOrDefault(key, "");
     }
 
-
-
     public String toInputFormat() throws SiteWhereException {
 
-        return formatOptionalLongValue(ts) + "/" + formatOptionalLatLon() + "/" + formatOptionalLongValue(elev) + " " + formatMandatoryFieldName() + "{" + formatLabels() + "} " + formatValue();
+        return formatOptionalLongValue(ts) + "/" + formatOptionalLatLon() + "/" + formatOptionalLongValue(elev) + " " + formatMandatoryFieldName() + "{" + formatLabels() + "}" + formatAttributes() + formatValue();
     }
 
     @Override
@@ -179,6 +180,10 @@ public class GTSInput {
         return booleanValue;
     }
 
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
+
     private String formatMandatoryFieldName() throws SiteWhereException {
         if (name == null) {
             throw new SiteWhereException("name");
@@ -201,6 +206,14 @@ public class GTSInput {
         }
         throw new SiteWhereException("labels");
     }
+
+    private String formatAttributes() throws SiteWhereException {
+        if (attributes != null && !attributes.isEmpty()) {
+            return "{" + attributes.entrySet().stream().map(entry -> entry.getKey() + '=' + entry.getValue()).collect(Collectors.joining(",")) + "}";
+        }
+        throw new SiteWhereException("labels");
+    }
+
 
     private String formatOptionalLongValue(Long possibleNullValue) {
         if (possibleNullValue == null) {

@@ -26,6 +26,8 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.warp10.Warp10DbClient;
 import com.sitewhere.warp10.rest.GTSInput;
 import com.sitewhere.warp10.rest.GTSOutput;
+import com.sitewhere.warp10.rest.QueryParams;
+import okhttp3.Response;
 
 import java.util.*;
 
@@ -71,7 +73,7 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
 
         gtsInput.setLabels(labels);
         getClient().getWarp10RestClient().ingress(gtsInput);
-        List<GTSOutput> outputs = getClient().getWarp10RestClient().fetch("now=1435091737000000&timespan=-10&selector=~.*{}&format=json");
+        //List<GTSOutput> outputs = getClient().getWarp10RestClient().fetch("now=1435091737000000&timespan=-10&selector=~.*{}&format=json");
 
 
         return null;
@@ -89,8 +91,6 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
 
     /**
      * Assert that a device assignment exists and throw an exception if not.
-     *
-     * @param token
      * @return
      * @throws SiteWhereException
      */
@@ -104,7 +104,6 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
 
     @Override
     public List<IDeviceMeasurement> addDeviceMeasurements(UUID deviceAssignmentId, IDeviceMeasurementCreateRequest... requests) throws SiteWhereException {
-
         List<IDeviceMeasurement> result = new ArrayList<>();
         IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
         Warp10DeviceMeasurement warp10DeviceMeasurement = new Warp10DeviceMeasurement();
@@ -112,17 +111,20 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
         for (IDeviceMeasurementCreateRequest request : requests) {
             DeviceMeasurement measurements = DeviceEventManagementPersistence.deviceMeasurementCreateLogic(request, assignment);
             GTSInput gtsMeasurement = warp10DeviceMeasurement.convert(measurements);
-            getClient().getWarp10RestClient().ingress(gtsMeasurement);
+            int ingress = getClient().getWarp10RestClient().ingress(gtsMeasurement);
+            if(ingress == 200) {
+                result.add(measurements);
+            }
         }
-
-        //TODO: change selector
-        List<GTSOutput> out = getClient().getWarp10RestClient().fetch("now=1435091737000000&timespan=-10&selector=~.*{}&format=json");
-
         return result;
     }
 
     @Override
     public ISearchResults<IDeviceMeasurement> listDeviceMeasurementsForIndex(DeviceEventIndex index, List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
+        QueryParams queryParams = QueryParams.builder();
+        queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Measurement.name());
+        queryParams.addParameter(getFieldForIndex(index), entityIds.get(0).toString());
+        List<GTSOutput> fetch = getClient().getWarp10RestClient().fetch(queryParams);
         return null;
     }
 
@@ -191,5 +193,23 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
 
     protected IDeviceManagement getCachedDeviceManagement() {
         return ((IEventManagementMicroservice) getTenantEngine().getMicroservice()).getCachedDeviceManagement();
+    }
+
+    protected static String getFieldForIndex(DeviceEventIndex index) throws SiteWhereException {
+        switch (index) {
+            case Area: {
+                return Warp10DeviceEvent.PROP_AREA_ID;
+            }
+            case Asset: {
+                return Warp10DeviceEvent.PROP_ASSET_ID;
+            }
+            case Assignment: {
+                return Warp10DeviceEvent.PROP_DEVICE_ASSIGNMENT_ID;
+            }
+            case Customer: {
+                return Warp10DeviceEvent.PROP_CUSTOMER_ID;
+            }
+        }
+        throw new SiteWhereException("Unknown index: " + index.name());
     }
 }
