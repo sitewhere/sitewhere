@@ -10,8 +10,10 @@ package com.sitewhere.event.persistence.warp10db;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceEvent;
+import com.sitewhere.warp10.common.Warp10MetadataProvider;
 import com.sitewhere.warp10.rest.GTSInput;
 import com.sitewhere.warp10.rest.GTSOutput;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -66,12 +68,8 @@ public class Warp10DeviceEvent {
         labels.put(PROP_AREA_ID, source.getAreaId().toString());
         labels.put(PROP_RECEIVED_DATE, String.valueOf(source.getReceivedDate().getTime()));
         labels.put(PROP_EVENT_DATE, String.valueOf(source.getEventDate().getTime()));
+        labels.put(PROP_ID, source.getId().toString());
         target.setLabels(labels);
-
-        Map attributes = new HashMap<String, String>();
-        attributes.put(PROP_ID, source.getId().toString());
-        target.setAttributes(attributes);
-
     }
 
     /**
@@ -82,17 +80,17 @@ public class Warp10DeviceEvent {
      */
     public static void fromGTS(GTSOutput source, DeviceEvent target) {
         Map<String, String> labels = source.getLabels();
-        Map<String, String> attributes = source.getAttributes();
 
-        target.setId(UUID.fromString(attributes.get(PROP_ID)));
-
+        target.setId(UUID.fromString(labels.get(PROP_ID)));
         target.setAlternateId(labels.get(PROP_ALTERNATE_ID));
         target.setEventType(DeviceEventType.valueOf(labels.get(PROP_EVENT_TYPE)));
-        target.setDeviceId(UUID.fromString(labels.get(PROP_DEVICE_ID)));
-        target.setDeviceAssignmentId(UUID.fromString(labels.get(PROP_DEVICE_ASSIGNMENT_ID)));
-        target.setCustomerId(UUID.fromString(labels.get(PROP_CUSTOMER_ID)));
-        target.setAreaId(UUID.fromString(labels.get(PROP_AREA_ID)));
-        target.setReceivedDate(new Date(labels.get(PROP_RECEIVED_DATE)));
-    }
+        target.setDeviceId(!StringUtils.isBlank(labels.get(PROP_DEVICE_ID)) ? UUID.fromString(labels.get(PROP_DEVICE_ID)) : null);
+        target.setDeviceAssignmentId(!StringUtils.isBlank(labels.get(PROP_DEVICE_ASSIGNMENT_ID)) ? UUID.fromString(labels.get(PROP_DEVICE_ASSIGNMENT_ID)) : null);
+        target.setCustomerId(!StringUtils.isBlank(labels.get(PROP_CUSTOMER_ID)) ? UUID.fromString(labels.get(PROP_CUSTOMER_ID)) : null);
+        target.setAreaId(!StringUtils.isBlank(labels.get(PROP_AREA_ID)) ? UUID.fromString(labels.get(PROP_AREA_ID)) : null);
+        target.setReceivedDate(new Date(Long.valueOf(labels.get(PROP_RECEIVED_DATE))));
+        target.setEventDate(new Date(Long.valueOf(labels.get(PROP_EVENT_DATE))));
 
+        Warp10MetadataProvider.fromGTS(source, target);
+    }
 }

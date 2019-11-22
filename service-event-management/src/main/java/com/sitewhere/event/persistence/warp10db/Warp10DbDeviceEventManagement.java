@@ -10,6 +10,7 @@ package com.sitewhere.event.persistence.warp10db;
 import com.sitewhere.event.persistence.DeviceEventManagementPersistence;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.rest.model.device.event.DeviceMeasurement;
+import com.sitewhere.rest.model.search.DeviceMeasurementsSearchResults;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -125,7 +126,14 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
         queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Measurement.name());
         queryParams.addParameter(getFieldForIndex(index), entityIds.get(0).toString());
         List<GTSOutput> fetch = getClient().getWarp10RestClient().fetch(queryParams);
-        return null;
+
+        Warp10DeviceMeasurement warp10DeviceMeasurement = new Warp10DeviceMeasurement();
+        List<IDeviceMeasurement> results = new ArrayList();
+        for (GTSOutput gtsOutput : fetch) {
+            DeviceMeasurement deviceMeasurement = (DeviceMeasurement) warp10DeviceMeasurement.convert(gtsOutput);
+            results.add(deviceMeasurement);
+        }
+        return new DeviceMeasurementsSearchResults(results);
     }
 
     @Override

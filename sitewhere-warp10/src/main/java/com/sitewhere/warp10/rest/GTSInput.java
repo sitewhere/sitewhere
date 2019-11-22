@@ -211,7 +211,7 @@ public class GTSInput {
         if (attributes != null && !attributes.isEmpty()) {
             return "{" + attributes.entrySet().stream().map(entry -> entry.getKey() + '=' + entry.getValue()).collect(Collectors.joining(",")) + "}";
         }
-        throw new SiteWhereException("labels");
+        return "";
     }
 
 

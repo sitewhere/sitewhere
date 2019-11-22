@@ -40,8 +40,9 @@ public class Warp10DeviceMeasurement implements Warp10Converter<IDeviceMeasureme
     @Override
     public IDeviceMeasurement convert(GTSOutput source) {
         DeviceMeasurement deviceMeasurement = new DeviceMeasurement();
+        deviceMeasurement.setName(source.getClassName());
+        deviceMeasurement.setValue(Double.valueOf(source.getPoints().get(0).getValue()));
         Warp10DeviceEvent.fromGTS(source, deviceMeasurement);
-        Warp10MetadataProvider.fromGTS(source, deviceMeasurement);
         return deviceMeasurement;
     }
 }
