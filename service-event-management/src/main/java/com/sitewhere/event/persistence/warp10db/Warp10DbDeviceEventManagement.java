@@ -28,7 +28,6 @@ import com.sitewhere.warp10.Warp10DbClient;
 import com.sitewhere.warp10.rest.GTSInput;
 import com.sitewhere.warp10.rest.GTSOutput;
 import com.sitewhere.warp10.rest.QueryParams;
-import okhttp3.Response;
 
 import java.util.*;
 
@@ -58,35 +57,30 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
 
     @Override
     public IDeviceEventBatchResponse addDeviceEventBatch(UUID deviceAssignmentId, IDeviceEventBatch batch) throws SiteWhereException {
-
-        GTSInput gtsInput = GTSInput.builder();
-        gtsInput.setTs(1382441207762000L);
-        gtsInput.setLat(51.501988);
-        gtsInput.setLon(0.005953);
-        gtsInput.setElev(1L);
-        gtsInput.setValue(79.16);
-        gtsInput.setName("some.sensor.model.humidity");
-
-        Map labels = new HashMap<String, String>();
-        labels.put("xbeeId", "XBee_40670F0D");
-        labels.put("moteId", "53");
-        labels.put("area", "8");
-
-        gtsInput.setLabels(labels);
-        getClient().getWarp10RestClient().ingress(gtsInput);
-        //List<GTSOutput> outputs = getClient().getWarp10RestClient().fetch("now=1435091737000000&timespan=-10&selector=~.*{}&format=json");
-
-
         return null;
     }
 
     @Override
     public IDeviceEvent getDeviceEventById(UUID eventId) throws SiteWhereException {
+        QueryParams queryParams = QueryParams.builder();
+        queryParams.addParameter(Warp10DeviceEvent.PROP_ID, eventId.toString());
+        List<GTSOutput> founds = getClient().findGTS(queryParams);
+
+        if(founds != null && founds.size() > 0) {
+            return  Warp10DeviceEventManagementPersistence.unmarshalEvent(founds.get(0));
+        }
         return null;
     }
 
     @Override
     public IDeviceEvent getDeviceEventByAlternateId(String alternateId) throws SiteWhereException {
+        QueryParams queryParams = QueryParams.builder();
+        queryParams.addParameter(Warp10DeviceEvent.PROP_ALTERNATE_ID, alternateId);
+        List<GTSOutput> founds = getClient().findGTS(queryParams);
+
+        if(founds != null && founds.size() > 0) {
+            return  Warp10DeviceEventManagementPersistence.unmarshalEvent(founds.get(0));
+        }
         return null;
     }
 
@@ -107,12 +101,11 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
     public List<IDeviceMeasurement> addDeviceMeasurements(UUID deviceAssignmentId, IDeviceMeasurementCreateRequest... requests) throws SiteWhereException {
         List<IDeviceMeasurement> result = new ArrayList<>();
         IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
-        Warp10DeviceMeasurement warp10DeviceMeasurement = new Warp10DeviceMeasurement();
 
         for (IDeviceMeasurementCreateRequest request : requests) {
             DeviceMeasurement measurements = DeviceEventManagementPersistence.deviceMeasurementCreateLogic(request, assignment);
-            GTSInput gtsMeasurement = warp10DeviceMeasurement.convert(measurements);
-            int ingress = getClient().getWarp10RestClient().ingress(gtsMeasurement);
+            GTSInput gtsMeasurement = Warp10DeviceMeasurement.toGTS(measurements);
+            int ingress = getClient().insertGTS(gtsMeasurement);
             if(ingress == 200) {
                 result.add(measurements);
             }
@@ -125,12 +118,11 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
         QueryParams queryParams = QueryParams.builder();
         queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Measurement.name());
         queryParams.addParameter(getFieldForIndex(index), entityIds.get(0).toString());
-        List<GTSOutput> fetch = getClient().getWarp10RestClient().fetch(queryParams);
+        List<GTSOutput> fetch = getClient().findGTS(queryParams);
 
-        Warp10DeviceMeasurement warp10DeviceMeasurement = new Warp10DeviceMeasurement();
         List<IDeviceMeasurement> results = new ArrayList();
         for (GTSOutput gtsOutput : fetch) {
-            DeviceMeasurement deviceMeasurement = (DeviceMeasurement) warp10DeviceMeasurement.convert(gtsOutput);
+            DeviceMeasurement deviceMeasurement = Warp10DeviceMeasurement.fromGTS(gtsOutput);
             results.add(deviceMeasurement);
         }
         return new DeviceMeasurementsSearchResults(results);

@@ -14,7 +14,12 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponentParameter;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.warp10.rest.GTSInput;
+import com.sitewhere.warp10.rest.GTSOutput;
+import com.sitewhere.warp10.rest.QueryParams;
 import com.sitewhere.warp10.rest.Warp10RestClient;
+
+import java.util.List;
 
 /**
  * Client used for connecting to and interacting with an warp10 server.
@@ -65,6 +70,14 @@ public class Warp10DbClient extends TenantEngineLifecycleComponent implements ID
         this.warp10RestClient = Warp10RestClient.newBuilder().withConnectionTo(getConfiguration().getHostname(), getConfiguration().getPort(), configuration.getTokenSecret(), getTenantEngine().getTenant().getName()).build();
     }
 
+    public int insertGTS(GTSInput gtsInput) {
+        return warp10RestClient.ingress(gtsInput);
+    }
+
+    public List<GTSOutput> findGTS(QueryParams queryParams) {
+        return warp10RestClient.fetch(queryParams);
+    }
+
     @Override
     public boolean isRequired() {
         return false;
@@ -78,11 +91,11 @@ public class Warp10DbClient extends TenantEngineLifecycleComponent implements ID
         this.configuration = configuration;
     }
 
-    public Warp10RestClient getWarp10RestClient() {
+   /* public Warp10RestClient getWarp10RestClient() {
         return warp10RestClient;
     }
 
     public void setWarp10RestClient(Warp10RestClient warp10RestClient) {
         this.warp10RestClient = warp10RestClient;
-    }
+    }*/
 }

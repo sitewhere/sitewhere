@@ -28,6 +28,15 @@ public class Warp10DeviceMeasurement implements Warp10Converter<IDeviceMeasureme
 
     @Override
     public GTSInput convert(IDeviceMeasurement source) {
+       return Warp10DeviceMeasurement.toGTS(source);
+    }
+
+    @Override
+    public IDeviceMeasurement convert(GTSOutput source) {
+        return Warp10DeviceMeasurement.fromGTS(source);
+    }
+
+    public static GTSInput toGTS(IDeviceMeasurement source) {
         GTSInput gtsInput = GTSInput.builder();
         gtsInput.setValue(source.getValue());
         gtsInput.setName(source.getName());
@@ -37,8 +46,7 @@ public class Warp10DeviceMeasurement implements Warp10Converter<IDeviceMeasureme
         return gtsInput;
     }
 
-    @Override
-    public IDeviceMeasurement convert(GTSOutput source) {
+    public static DeviceMeasurement fromGTS(GTSOutput source){
         DeviceMeasurement deviceMeasurement = new DeviceMeasurement();
         deviceMeasurement.setName(source.getClassName());
         deviceMeasurement.setValue(Double.valueOf(source.getPoints().get(0).getValue()));
