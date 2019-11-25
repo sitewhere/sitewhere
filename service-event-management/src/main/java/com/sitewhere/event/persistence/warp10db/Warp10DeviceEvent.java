@@ -58,17 +58,18 @@ public class Warp10DeviceEvent {
      * @param source
      * @param target
      */
-    public static void toGTS(IDeviceEvent source, GTSInput target) {
+    public static void toGTS(IDeviceEvent source, GTSInput target, boolean isNested) {
         Map labels = new HashMap<String, String>();
         labels.put(PROP_EVENT_TYPE, source.getEventType().name());
         labels.put(PROP_DEVICE_ASSIGNMENT_ID, source.getDeviceAssignmentId().toString());
         labels.put(PROP_ALTERNATE_ID, source.getAlternateId() != null ? source.getAlternateId().toString() : "");
+        labels.put(PROP_ASSET_ID, source.getAssetId() != null ? source.getAssetId().toString() : "");
         labels.put(PROP_DEVICE_ID, source.getDeviceId().toString());
         labels.put(PROP_CUSTOMER_ID, source.getCustomerId() != null ? source.getCustomerId() : "");
         labels.put(PROP_AREA_ID, source.getAreaId().toString());
         labels.put(PROP_RECEIVED_DATE, String.valueOf(source.getReceivedDate().getTime()));
         labels.put(PROP_EVENT_DATE, String.valueOf(source.getEventDate().getTime()));
-        labels.put(PROP_ID, source.getId().toString());
+        labels.put(PROP_ID, source.getId().toString()); // TODO: ver con jorge, esta propiedad hace que sea un registro por evento !!!!!
         target.setLabels(labels);
     }
 
@@ -78,7 +79,7 @@ public class Warp10DeviceEvent {
      * @param source
      * @param target
      */
-    public static void fromGTS(GTSOutput source, DeviceEvent target) {
+    public static void fromGTS(GTSOutput source, DeviceEvent target, boolean isNested) {
         Map<String, String> labels = source.getLabels();
 
         target.setId(UUID.fromString(labels.get(PROP_ID)));

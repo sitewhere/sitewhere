@@ -7,6 +7,7 @@
  */
 package com.sitewhere.warp10.rest;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -14,6 +15,12 @@ import java.util.stream.Collectors;
 public class QueryParams {
 
     private Map<String, String> parameters = new HashMap<String, String>();
+
+    private String className;
+
+    private Date startDate;
+
+    private Date endDate;
 
     public static QueryParams builder() {
         QueryParams queryParams = new QueryParams();
@@ -27,5 +34,29 @@ public class QueryParams {
     @Override
     public String toString() {
         return "{" + parameters.entrySet().stream().map(entry -> entry.getKey() + '=' + entry.getValue()).collect(Collectors.joining(",")) + "}&format=json&showattr=true&dedup=true";
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 }

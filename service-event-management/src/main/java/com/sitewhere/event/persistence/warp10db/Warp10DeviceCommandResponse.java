@@ -13,7 +13,19 @@ import com.sitewhere.warp10.Warp10Converter;
 import com.sitewhere.warp10.rest.GTSInput;
 import com.sitewhere.warp10.rest.GTSOutput;
 
+import java.util.UUID;
+
 public class Warp10DeviceCommandResponse implements Warp10Converter<IDeviceCommandResponse> {
+
+    /** Property for originating event id */
+    public static final String PROP_ORIGINATING_EVENT_ID = "orig";
+
+    /** Property for response event id */
+    public static final String PROP_RESPONSE_EVENT_ID = "rsid";
+
+    /** Property for response */
+    public static final String PROP_RESPONSE = "resp";
+
     @Override
     public GTSInput convert(IDeviceCommandResponse source) {
         return Warp10DeviceCommandResponse.toGTS(source);
@@ -26,11 +38,34 @@ public class Warp10DeviceCommandResponse implements Warp10Converter<IDeviceComma
 
     public static GTSInput toGTS(IDeviceCommandResponse source) {
         GTSInput gtsInput = GTSInput.builder();
+        Warp10DeviceCommandResponse.toGTS(source, gtsInput);
         return gtsInput;
+    }
+
+    public static void toGTS(IDeviceCommandResponse source, GTSInput target) {
+        Warp10DeviceEvent.toGTS(source, target, false);
+        target.setName(source.getDeviceAssignmentId().toString());
+        target.getLabels().put(PROP_ORIGINATING_EVENT_ID, source.getOriginatingEventId().toString());
+        target.getLabels().put(PROP_RESPONSE_EVENT_ID, source.getResponseEventId().toString());
+        target.getLabels().put(PROP_RESPONSE, source.getResponse());
     }
 
     public static DeviceCommandResponse fromGTS(GTSOutput source){
         DeviceCommandResponse deviceCommandResponse = new DeviceCommandResponse();
+        Warp10DeviceCommandResponse.fromGTS(source, deviceCommandResponse);
         return deviceCommandResponse;
     }
+
+    public static void fromGTS(GTSOutput source, DeviceCommandResponse target){
+        Warp10DeviceEvent.fromGTS(source, target, false);
+
+        UUID originator = UUID.fromString(source.getLabels().get(PROP_ORIGINATING_EVENT_ID));
+        UUID responder =  UUID.fromString(source.getLabels().get(PROP_RESPONSE_EVENT_ID));
+        String response = source.getLabels().get(PROP_RESPONSE);
+
+        target.setOriginatingEventId(originator);
+        target.setResponseEventId(responder);
+        target.setResponse(response);
+    }
+
 }

@@ -15,10 +15,10 @@ public class DataPoint {
     private Long msTimestamp;
     private Double latitude;
     private Double longitude;
-    private Long elevation;
+    private Double elevation;
     private String value;
 
-    public DataPoint(Long msTimestamp, Double latitude, Double longitude, Long elevation, String value) {
+    public DataPoint(Long msTimestamp, Double latitude, Double longitude, Double elevation, String value) {
         this.msTimestamp = msTimestamp;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -57,7 +57,7 @@ public class DataPoint {
         return this;
     }
 
-    public DataPoint atElevation(Long elev) {
+    public DataPoint atElevation(Double elev) {
         elevation = elev;
         return this;
     }
@@ -78,7 +78,7 @@ public class DataPoint {
         return longitude;
     }
 
-    public Long getElevation() {
+    public Double getElevation() {
         return elevation;
     }
 
@@ -100,7 +100,7 @@ public class DataPoint {
 
                 } else if (data.length == 3) {
                     dp = DataPoint.of(stripExtraQuotes(data[2]), msTimestamp)
-                     .atElevation(Long.parseLong(data[1]));
+                     .atElevation(Double.parseDouble(data[1]));
 
                 } else if (data.length == 4) {
                     dp = DataPoint.of(stripExtraQuotes(data[3]), msTimestamp)
@@ -111,7 +111,7 @@ public class DataPoint {
                     dp = DataPoint.of(stripExtraQuotes(data[4]), msTimestamp)
                      .atLatitude(Double.parseDouble(data[1]))
                      .atLongitude(Double.parseDouble(data[2]))
-                     .atElevation(Long.parseLong(data[3]));
+                     .atElevation(Double.parseDouble(data[3]));
 
                 }
                 allPoints.add(dp);

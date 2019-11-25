@@ -35,24 +35,21 @@ public class Warp10DeviceEventManagementPersistence extends Warp10Persistence {
 
         switch (eventType) {
             case Measurement: {
-                return Warp10DeviceMeasurement.fromGTS(found);
+                return Warp10DeviceMeasurement.fromGTS(found, false);
             }
             case Location: {
-                return Warp10DeviceLocation.fromGTS(found);
+                return Warp10DeviceLocation.fromGTS(found, false);
             }
             case Alert: {
-                return Warp10DeviceAlert.fromGTS(found);
+                return Warp10DeviceAlert.fromGTS(found, false);
             }
 
             case CommandInvocation: {
                 return Warp10DeviceCommandInvocation.fromGTS(found);
             }
-
-
             case CommandResponse: {
                 return Warp10DeviceCommandResponse.fromGTS(found);
             }
-
 
             case StateChange: {
                 return Warp10DeviceStateChange.fromGTS(found);

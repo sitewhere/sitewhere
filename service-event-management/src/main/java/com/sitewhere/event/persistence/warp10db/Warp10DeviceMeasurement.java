@@ -28,29 +28,33 @@ public class Warp10DeviceMeasurement implements Warp10Converter<IDeviceMeasureme
 
     @Override
     public GTSInput convert(IDeviceMeasurement source) {
-       return Warp10DeviceMeasurement.toGTS(source);
+       return Warp10DeviceMeasurement.toGTS(source, false);
     }
 
     @Override
     public IDeviceMeasurement convert(GTSOutput source) {
-        return Warp10DeviceMeasurement.fromGTS(source);
+        return Warp10DeviceMeasurement.fromGTS(source, false);
     }
 
-    public static GTSInput toGTS(IDeviceMeasurement source) {
+    public static GTSInput toGTS(IDeviceMeasurement source, boolean isNested) {
         GTSInput gtsInput = GTSInput.builder();
-        gtsInput.setValue(source.getValue());
-        gtsInput.setName(source.getName());
-        gtsInput.setTs(source.getEventDate().getTime());
-        Warp10DeviceEvent.toGTS(source, gtsInput);
-        Warp10MetadataProvider.toGTS(source, gtsInput);
+        Warp10DeviceMeasurement.toGTS(source, gtsInput, isNested);
         return gtsInput;
     }
 
-    public static DeviceMeasurement fromGTS(GTSOutput source){
+    public static void toGTS(IDeviceMeasurement source, GTSInput target, boolean isNested) {
+        target.setValue(source.getValue());
+        target.setName(source.getName());
+        target.setTs(source.getEventDate().getTime());
+        Warp10DeviceEvent.toGTS(source, target, isNested);
+        Warp10MetadataProvider.toGTS(source, target);
+    }
+
+    public static DeviceMeasurement fromGTS(GTSOutput source,  boolean isNested){
         DeviceMeasurement deviceMeasurement = new DeviceMeasurement();
         deviceMeasurement.setName(source.getClassName());
         deviceMeasurement.setValue(Double.valueOf(source.getPoints().get(0).getValue()));
-        Warp10DeviceEvent.fromGTS(source, deviceMeasurement);
+        Warp10DeviceEvent.fromGTS(source, deviceMeasurement, isNested);
         return deviceMeasurement;
     }
 }
