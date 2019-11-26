@@ -227,17 +227,19 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
 
         QueryParams queryParams = QueryParams.builder();
         queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandInvocation.name());
-        queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_DATE, "-1"); //TODO REVISAR
+        //queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_DATE, "-1");
         queryParams.setStartDate(criteria.getStartDate());
         queryParams.setEndDate(criteria.getEndDate());
 
         List<IDeviceCommandInvocation> results = new ArrayList();
-        List<GTSOutput> fetch = getClient().findGTS(queryParams);
-        for (GTSOutput gtsOutput : fetch) {
-            DeviceCommandInvocation deviceCommandInvocation = Warp10DeviceCommandInvocation.fromGTS(gtsOutput);
-            results.add(deviceCommandInvocation);
+        for (UUID uuid: entityIds) {
+            queryParams.addParameter(getFieldForIndex(index), uuid.toString());
+            List<GTSOutput> fetch = getClient().findGTS(queryParams);
+            for (GTSOutput gtsOutput : fetch) {
+                DeviceCommandInvocation deviceCommandInvocation = Warp10DeviceCommandInvocation.fromGTS(gtsOutput);
+                results.add(deviceCommandInvocation);
+            }
         }
-
         return new SearchResults<IDeviceCommandInvocation>(results);
     }
 
@@ -263,7 +265,7 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
         QueryParams queryParams = QueryParams.builder();
         queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandResponse.name());
         queryParams.addParameter(Warp10DeviceCommandResponse.PROP_ORIGINATING_EVENT_ID, DeviceEventType.CommandResponse.name());
-        queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_DATE, "-1"); //TODO REVISAR
+        //queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_DATE, "-1");
 
         List<IDeviceCommandResponse> results = new ArrayList();
         List<GTSOutput> fetch = getClient().findGTS(queryParams);

@@ -77,7 +77,7 @@ public class Warp10DeviceCommandInvocation implements Warp10Converter<IDeviceCom
         labels.put(PROP_INITIATOR_ID, source.getInitiatorId());
         labels.put(PROP_TARGET, source.getTarget().name());
         labels.put(PROP_TARGET_ID, source.getTargetId());
-        labels.put(PROP_COMMAND_ID, source.getDeviceCommandId());
+        labels.put(PROP_COMMAND_ID, source.getDeviceCommandId().toString());
         target.setLabels(labels);
 
         Map attributes = new HashMap<String, String>();
