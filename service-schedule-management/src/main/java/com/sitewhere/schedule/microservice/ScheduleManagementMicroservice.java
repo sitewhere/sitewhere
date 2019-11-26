@@ -7,9 +7,10 @@
  */
 package com.sitewhere.schedule.microservice;
 
-import com.sitewhere.microservice.grpc.ScheduleManagementGrpcServer;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
+import com.sitewhere.schedule.configuration.ScheduleManagementConfiguration;
+import com.sitewhere.schedule.grpc.ScheduleManagementGrpcServer;
 import com.sitewhere.schedule.spi.grpc.IScheduleManagementGrpcServer;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementTenantEngine;
@@ -22,12 +23,9 @@ import com.sitewhere.spi.tenant.ITenant;
 /**
  * Microservice that provides schedule management functionality.
  */
-public class ScheduleManagementMicroservice
-	extends MultitenantMicroservice<MicroserviceIdentifier, IScheduleManagementTenantEngine>
+public class ScheduleManagementMicroservice extends
+	MultitenantMicroservice<MicroserviceIdentifier, ScheduleManagementConfiguration, IScheduleManagementTenantEngine>
 	implements IScheduleManagementMicroservice {
-
-    /** Microservice name */
-    private static final String NAME = "Schedule Management";
 
     /** Provides server for schedule management GRPC requests */
     private IScheduleManagementGrpcServer scheduleManagementGrpcServer;
@@ -37,7 +35,7 @@ public class ScheduleManagementMicroservice
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Schedule Management";
     }
 
     /*
@@ -49,11 +47,12 @@ public class ScheduleManagementMicroservice
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<ScheduleManagementConfiguration> getConfigurationClass() {
+	return ScheduleManagementConfiguration.class;
     }
 
     /*

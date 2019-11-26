@@ -9,6 +9,7 @@ package com.sitewhere.rules.microservice;
 
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
+import com.sitewhere.rules.configuration.RuleProcessingTenantConfiguration;
 import com.sitewhere.rules.spi.IRuleProcessorsManager;
 import com.sitewhere.rules.spi.microservice.IRuleProcessingTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
@@ -23,7 +24,8 @@ import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
  * Implementation of {@link IMicroserviceTenantEngine} that implements rule
  * processing functionality.
  */
-public class RuleProcessingTenantEngine extends MicroserviceTenantEngine implements IRuleProcessingTenantEngine {
+public class RuleProcessingTenantEngine extends MicroserviceTenantEngine<RuleProcessingTenantConfiguration>
+	implements IRuleProcessingTenantEngine {
 
     /** Rule processors manager */
     private IRuleProcessorsManager ruleProcessorsManager;

@@ -7,6 +7,7 @@
  */
 package com.sitewhere.batch.spi.microservice;
 
+import com.sitewhere.batch.configuration.BatchOperationsConfiguration;
 import com.sitewhere.batch.spi.grpc.IBatchManagementGrpcServer;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
@@ -16,8 +17,8 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 /**
  * Microservice that provides batch operations functionality.
  */
-public interface IBatchOperationsMicroservice
-	extends IMultitenantMicroservice<MicroserviceIdentifier, IBatchOperationsTenantEngine> {
+public interface IBatchOperationsMicroservice extends
+	IMultitenantMicroservice<MicroserviceIdentifier, BatchOperationsConfiguration, IBatchOperationsTenantEngine> {
 
     /**
      * Get batch management GRPC server.

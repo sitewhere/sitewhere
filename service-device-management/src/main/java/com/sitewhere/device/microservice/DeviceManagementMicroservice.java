@@ -7,12 +7,13 @@
  */
 package com.sitewhere.device.microservice;
 
+import com.sitewhere.device.configuration.DeviceManagementConfiguration;
+import com.sitewhere.device.grpc.DeviceManagementGrpcServer;
 import com.sitewhere.device.spi.grpc.IDeviceManagementGrpcServer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
 import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
-import com.sitewhere.microservice.grpc.DeviceManagementGrpcServer;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
@@ -24,12 +25,9 @@ import com.sitewhere.spi.tenant.ITenant;
 /**
  * Microservice that provides device management functionality.
  */
-public class DeviceManagementMicroservice
-	extends MultitenantMicroservice<MicroserviceIdentifier, IDeviceManagementTenantEngine>
+public class DeviceManagementMicroservice extends
+	MultitenantMicroservice<MicroserviceIdentifier, DeviceManagementConfiguration, IDeviceManagementTenantEngine>
 	implements IDeviceManagementMicroservice {
-
-    /** Microservice name */
-    private static final String NAME = "Device Management";
 
     /** Provides server for device management GRPC requests */
     private IDeviceManagementGrpcServer deviceManagementGrpcServer;
@@ -44,7 +42,7 @@ public class DeviceManagementMicroservice
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Device Management";
     }
 
     /*
@@ -56,11 +54,12 @@ public class DeviceManagementMicroservice
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<DeviceManagementConfiguration> getConfigurationClass() {
+	return DeviceManagementConfiguration.class;
     }
 
     /*

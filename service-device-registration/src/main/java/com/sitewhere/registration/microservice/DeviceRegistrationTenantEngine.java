@@ -7,10 +7,11 @@
  */
 package com.sitewhere.registration.microservice;
 
-import com.sitewhere.microservice.kafka.DeviceRegistrationEventsConsumer;
-import com.sitewhere.microservice.kafka.UnregisteredEventsConsumer;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
+import com.sitewhere.registration.configuration.DeviceRegistrationTenantConfiguration;
+import com.sitewhere.registration.kafka.DeviceRegistrationEventsConsumer;
+import com.sitewhere.registration.kafka.UnregisteredEventsConsumer;
 import com.sitewhere.registration.spi.IRegistrationManager;
 import com.sitewhere.registration.spi.kafka.IDeviceRegistrationEventsConsumer;
 import com.sitewhere.registration.spi.kafka.IUnregisteredEventsConsumer;
@@ -27,7 +28,7 @@ import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
  * Implementation of {@link IMicroserviceTenantEngine} that implements device
  * registration functionality.
  */
-public class DeviceRegistrationTenantEngine extends MicroserviceTenantEngine
+public class DeviceRegistrationTenantEngine extends MicroserviceTenantEngine<DeviceRegistrationTenantConfiguration>
 	implements IDeviceRegistrationTenantEngine {
 
     /** Kafka consumer for unregistered device events */

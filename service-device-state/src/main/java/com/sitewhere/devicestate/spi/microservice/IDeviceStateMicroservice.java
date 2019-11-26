@@ -7,6 +7,7 @@
  */
 package com.sitewhere.devicestate.spi.microservice;
 
+import com.sitewhere.devicestate.configuration.DeviceStateConfiguration;
 import com.sitewhere.devicestate.spi.grpc.IDeviceStateGrpcServer;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
@@ -18,7 +19,7 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
  * Microservice that provides device state management functionality.
  */
 public interface IDeviceStateMicroservice
-	extends IMultitenantMicroservice<MicroserviceIdentifier, IDeviceStateTenantEngine> {
+	extends IMultitenantMicroservice<MicroserviceIdentifier, DeviceStateConfiguration, IDeviceStateTenantEngine> {
 
     /**
      * Get device state GRPC server.

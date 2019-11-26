@@ -7,19 +7,13 @@
  */
 package com.sitewhere.sources.rest;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.sources.PollingInboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.groovy.IGroovyVariables;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
-
-import groovy.lang.Binding;
 
 /**
  * Performs polling on a REST endpoint at a given interval.
@@ -27,6 +21,7 @@ import groovy.lang.Binding;
 public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver<byte[]> {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Log LOGGER = LogFactory.getLog(PollingRestInboundEventReceiver.class);
 
     /** Script metadata */
@@ -45,6 +40,7 @@ public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver
     private String password;
 
     /** Helper class for REST operations */
+    @SuppressWarnings("unused")
     private RestHelper rest;
 
     /*
@@ -88,27 +84,27 @@ public class PollingRestInboundEventReceiver extends PollingInboundEventReceiver
      * @see com.sitewhere.device.communication.PollingInboundEventReceiver#doPoll()
      */
     @Override
-    @SuppressWarnings("unchecked")
     public void doPoll() throws SiteWhereException {
-	Binding binding = new Binding();
-	List<byte[]> payloads = new ArrayList<byte[]>();
-	binding.setVariable(IGroovyVariables.VAR_REST_CLIENT, rest);
-	binding.setVariable(IGroovyVariables.VAR_EVENT_PAYLOADS, payloads);
-	binding.setVariable(IGroovyVariables.VAR_LOGGER, LOGGER);
-
-	try {
-	    getTenantEngine().getGroovyConfiguration().run(getScriptMetadata(), binding);
-	    payloads = (List<byte[]>) binding.getVariable(IGroovyVariables.VAR_EVENT_PAYLOADS);
-
-	    // Process each payload individually.
-	    for (byte[] payload : payloads) {
-		onEventPayloadReceived(payload, null);
-	    }
-	} catch (SiteWhereException e) {
-	    throw e;
-	} catch (Exception e) {
-	    throw new SiteWhereException("Unhandled exception in Groovy script.", e);
-	}
+	// Binding binding = new Binding();
+	// List<byte[]> payloads = new ArrayList<byte[]>();
+	// binding.setVariable(IScriptVariables.VAR_REST_CLIENT, rest);
+	// binding.setVariable(IScriptVariables.VAR_EVENT_PAYLOADS, payloads);
+	// binding.setVariable(IScriptVariables.VAR_LOGGER, LOGGER);
+	//
+	// try {
+	// getTenantEngine().getGroovyConfiguration().run(getScriptMetadata(), binding);
+	// payloads = (List<byte[]>)
+	// binding.getVariable(IGroovyVariables.VAR_EVENT_PAYLOADS);
+	//
+	// // Process each payload individually.
+	// for (byte[] payload : payloads) {
+	// onEventPayloadReceived(payload, null);
+	// }
+	// } catch (SiteWhereException e) {
+	// throw e;
+	// } catch (Exception e) {
+	// throw new SiteWhereException("Unhandled exception in Groovy script.", e);
+	// }
     }
 
     protected IScriptMetadata getScriptMetadata() {

@@ -7,6 +7,7 @@
  */
 package com.sitewhere.asset.microservice;
 
+import com.sitewhere.asset.configuration.AssetManagementTenantConfiguration;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
@@ -24,7 +25,8 @@ import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
  * Implementation of {@link IMicroserviceTenantEngine} that implements asset
  * management functionality.
  */
-public class AssetManagementTenantEngine extends MicroserviceTenantEngine implements IAssetManagementTenantEngine {
+public class AssetManagementTenantEngine extends MicroserviceTenantEngine<AssetManagementTenantConfiguration>
+	implements IAssetManagementTenantEngine {
 
     /** Asset management persistence API */
     private IAssetManagement assetManagement;

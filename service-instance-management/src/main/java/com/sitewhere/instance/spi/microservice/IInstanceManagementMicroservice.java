@@ -14,33 +14,18 @@ import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceStateApiChannel;
 import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiChannel;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
+import com.sitewhere.instance.configuration.InstanceManagementConfiguration;
 import com.sitewhere.instance.spi.tenant.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.instance.spi.user.grpc.IUserManagementGrpcServer;
 import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
-import com.sitewhere.spi.microservice.IGlobalMicroservice;
-import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
-import com.sitewhere.spi.microservice.scripting.IScriptContext;
-import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
+import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 
 /**
  * Microservice that provides web/REST functionality.
  */
-public interface IInstanceManagementMicroservice<T extends IFunctionIdentifier> extends IGlobalMicroservice<T> {
-
-    /**
-     * Get instance script synchronizer.
-     * 
-     * @return
-     */
-    public IScriptSynchronizer getScriptSynchronizer();
-
-    /**
-     * Get script context for instance.
-     * 
-     * @return
-     */
-    public IScriptContext getScriptContext();
+public interface IInstanceManagementMicroservice<F extends IFunctionIdentifier>
+	extends IConfigurableMicroservice<F, InstanceManagementConfiguration> {
 
     /**
      * Get component which bootstraps instance with data.
@@ -48,13 +33,6 @@ public interface IInstanceManagementMicroservice<T extends IFunctionIdentifier> 
      * @return
      */
     public IInstanceBootstrapper getInstanceBootstrapper();
-
-    /**
-     * Get Groovy configuration for instance-scoped operations.
-     * 
-     * @return
-     */
-    public IGroovyConfiguration getGroovyConfiguration();
 
     /**
      * Get user management implementation.

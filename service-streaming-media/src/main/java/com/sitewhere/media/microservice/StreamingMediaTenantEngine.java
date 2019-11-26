@@ -7,6 +7,7 @@
  */
 package com.sitewhere.media.microservice;
 
+import com.sitewhere.media.configuration.StreamingMediaTenantConfiguration;
 import com.sitewhere.media.spi.microservice.IStreamingMediaTenantEngine;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
@@ -20,7 +21,8 @@ import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
  * Implementation of {@link IMicroserviceTenantEngine} that implements streaming
  * media functionality.
  */
-public class StreamingMediaTenantEngine extends MicroserviceTenantEngine implements IStreamingMediaTenantEngine {
+public class StreamingMediaTenantEngine extends MicroserviceTenantEngine<StreamingMediaTenantConfiguration>
+	implements IStreamingMediaTenantEngine {
 
     public StreamingMediaTenantEngine(ITenant tenant) {
 	super(tenant);

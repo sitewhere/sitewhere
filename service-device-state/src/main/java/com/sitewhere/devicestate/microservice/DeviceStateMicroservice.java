@@ -7,6 +7,8 @@
  */
 package com.sitewhere.devicestate.microservice;
 
+import com.sitewhere.devicestate.configuration.DeviceStateConfiguration;
+import com.sitewhere.devicestate.grpc.DeviceStateGrpcServer;
 import com.sitewhere.devicestate.spi.grpc.IDeviceStateGrpcServer;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
@@ -16,7 +18,6 @@ import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
-import com.sitewhere.microservice.grpc.DeviceStateGrpcServer;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
@@ -28,11 +29,9 @@ import com.sitewhere.spi.tenant.ITenant;
 /**
  * Microservice that provides device state mangagement functionality.
  */
-public class DeviceStateMicroservice extends MultitenantMicroservice<MicroserviceIdentifier, IDeviceStateTenantEngine>
+public class DeviceStateMicroservice
+	extends MultitenantMicroservice<MicroserviceIdentifier, DeviceStateConfiguration, IDeviceStateTenantEngine>
 	implements IDeviceStateMicroservice {
-
-    /** Microservice name */
-    private static final String NAME = "Presence Management";
 
     /** Provides server for device management GRPC requests */
     private IDeviceStateGrpcServer deviceStateGrpcServer;
@@ -51,7 +50,7 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
      */
     @Override
     public String getName() {
-	return NAME;
+	return "State Management";
     }
 
     /*
@@ -63,11 +62,12 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<DeviceStateConfiguration> getConfigurationClass() {
+	return DeviceStateConfiguration.class;
     }
 
     /*

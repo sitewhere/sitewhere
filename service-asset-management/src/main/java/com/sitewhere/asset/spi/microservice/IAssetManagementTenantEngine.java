@@ -7,15 +7,15 @@
  */
 package com.sitewhere.asset.spi.microservice;
 
+import com.sitewhere.asset.configuration.AssetManagementTenantConfiguration;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
- * Extends {@link IMicroserviceTenantEngine} with features specific to asset
- * management.
+ * Tenant engine which implements asset management functionality.
  */
-public interface IAssetManagementTenantEngine extends IMicroserviceTenantEngine {
+public interface IAssetManagementTenantEngine extends IMicroserviceTenantEngine<AssetManagementTenantConfiguration> {
 
     /**
      * Get associated asset management implementation.

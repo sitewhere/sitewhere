@@ -102,7 +102,7 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
      */
     private class PresenceChecker extends SystemUserRunnable {
 
-	public PresenceChecker(IMicroservice<?> microservice, ITenant tenant) {
+	public PresenceChecker(IMicroservice<?, ?> microservice, ITenant tenant) {
 	    super(microservice, tenant);
 	}
 

@@ -9,6 +9,7 @@ package com.sitewhere.search.microservice;
 
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
+import com.sitewhere.search.configuration.EventSearchTenantConfiguration;
 import com.sitewhere.search.spi.ISearchProvidersManager;
 import com.sitewhere.search.spi.microservice.IEventSearchTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
@@ -23,7 +24,8 @@ import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
  * Implementation of {@link IMicroserviceTenantEngine} that implements event
  * search functionality.
  */
-public class EventSearchTenantEngine extends MicroserviceTenantEngine implements IEventSearchTenantEngine {
+public class EventSearchTenantEngine extends MicroserviceTenantEngine<EventSearchTenantConfiguration>
+	implements IEventSearchTenantEngine {
 
     /** Manages the outbound connectors for this tenant */
     private ISearchProvidersManager searchProvidersManager;

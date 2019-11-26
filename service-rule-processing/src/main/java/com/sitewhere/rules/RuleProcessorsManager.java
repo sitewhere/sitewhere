@@ -10,8 +10,8 @@ package com.sitewhere.rules;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sitewhere.microservice.kafka.KafkaRuleProcessorHost;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.rules.kafka.KafkaRuleProcessorHost;
 import com.sitewhere.rules.spi.IRuleProcessor;
 import com.sitewhere.rules.spi.IRuleProcessorsManager;
 import com.sitewhere.spi.SiteWhereException;

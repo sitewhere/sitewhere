@@ -8,14 +8,15 @@
 package com.sitewhere.registration.spi.microservice;
 
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.registration.configuration.DeviceRegistrationConfiguration;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
  * Microservice that provides device registration functionality.
  */
-public interface IDeviceRegistrationMicroservice
-	extends IMultitenantMicroservice<MicroserviceIdentifier, IDeviceRegistrationTenantEngine> {
+public interface IDeviceRegistrationMicroservice extends
+	IMultitenantMicroservice<MicroserviceIdentifier, DeviceRegistrationConfiguration, IDeviceRegistrationTenantEngine> {
 
     /**
      * Get device management API access via GRPC channel.

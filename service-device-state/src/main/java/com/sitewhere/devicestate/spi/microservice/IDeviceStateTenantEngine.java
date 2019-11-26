@@ -7,6 +7,7 @@
  */
 package com.sitewhere.devicestate.spi.microservice;
 
+import com.sitewhere.devicestate.configuration.DeviceStateTenantConfiguration;
 import com.sitewhere.devicestate.spi.IDevicePresenceManager;
 import com.sitewhere.devicestate.spi.kafka.IDeviceStateEnrichedEventsConsumer;
 import com.sitewhere.grpc.service.DeviceStateGrpc;
@@ -17,7 +18,7 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
  * Extends {@link IMicroserviceTenantEngine} with features specific to device
  * state management.
  */
-public interface IDeviceStateTenantEngine extends IMicroserviceTenantEngine {
+public interface IDeviceStateTenantEngine extends IMicroserviceTenantEngine<DeviceStateTenantConfiguration> {
 
     /**
      * Get associated device state management implementation.

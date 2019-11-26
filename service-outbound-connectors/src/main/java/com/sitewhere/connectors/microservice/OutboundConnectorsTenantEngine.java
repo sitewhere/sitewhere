@@ -7,6 +7,7 @@
  */
 package com.sitewhere.connectors.microservice;
 
+import com.sitewhere.connectors.configuration.OutboundConnectorsTenantConfiguration;
 import com.sitewhere.connectors.spi.IOutboundConnectorsManager;
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsTenantEngine;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
@@ -23,7 +24,7 @@ import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
  * Implementation of {@link IMicroserviceTenantEngine} that implements outbound
  * connector management.
  */
-public class OutboundConnectorsTenantEngine extends MicroserviceTenantEngine
+public class OutboundConnectorsTenantEngine extends MicroserviceTenantEngine<OutboundConnectorsTenantConfiguration>
 	implements IOutboundConnectorsTenantEngine {
 
     /** Manages the outbound connectors for this tenant */

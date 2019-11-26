@@ -11,6 +11,7 @@ import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
+import com.sitewhere.registration.configuration.DeviceRegistrationConfiguration;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
@@ -22,12 +23,9 @@ import com.sitewhere.spi.tenant.ITenant;
 /**
  * Microservice that provides device registration functionality.
  */
-public class DeviceRegistrationMicroservice
-	extends MultitenantMicroservice<MicroserviceIdentifier, IDeviceRegistrationTenantEngine>
+public class DeviceRegistrationMicroservice extends
+	MultitenantMicroservice<MicroserviceIdentifier, DeviceRegistrationConfiguration, IDeviceRegistrationTenantEngine>
 	implements IDeviceRegistrationMicroservice {
-
-    /** Microservice name */
-    private static final String NAME = "Device Registration";
 
     /** Device management API channel */
     private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
@@ -37,7 +35,7 @@ public class DeviceRegistrationMicroservice
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Device Registration";
     }
 
     /*
@@ -49,11 +47,12 @@ public class DeviceRegistrationMicroservice
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<DeviceRegistrationConfiguration> getConfigurationClass() {
+	return DeviceRegistrationConfiguration.class;
     }
 
     /*

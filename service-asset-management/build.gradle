@@ -8,4 +8,6 @@ dependencies {
     compile group: 'com.sitewhere', name: 'sitewhere-mongodb', version: "${rootProject.ext['sitewhere.mongodb.api.version']}"
 
     compile group: 'org.apache.httpcomponents', name: 'httpclient'
+    
+    compile group: 'org.graalvm.sdk', name: 'graal-sdk', version: '19.2.1'
 }

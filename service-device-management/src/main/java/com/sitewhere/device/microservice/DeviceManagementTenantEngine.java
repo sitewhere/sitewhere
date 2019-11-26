@@ -7,13 +7,14 @@
  */
 package com.sitewhere.device.microservice;
 
+import com.sitewhere.device.configuration.DeviceManagementTenantConfiguration;
+import com.sitewhere.device.kafka.DeviceInteractionEventsProducer;
 import com.sitewhere.device.spi.kafka.IDeviceInteractionEventsProducer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
 import com.sitewhere.grpc.service.DeviceManagementGrpc;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
-import com.sitewhere.microservice.kafka.DeviceInteractionEventsProducer;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
@@ -30,7 +31,8 @@ import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
  * Implementation of {@link IMicroserviceTenantEngine} that implements device
  * management functionality.
  */
-public class DeviceManagementTenantEngine extends MicroserviceTenantEngine implements IDeviceManagementTenantEngine {
+public class DeviceManagementTenantEngine extends MicroserviceTenantEngine<DeviceManagementTenantConfiguration>
+	implements IDeviceManagementTenantEngine {
 
     /** Device management persistence API */
     private IDeviceManagement deviceManagement;

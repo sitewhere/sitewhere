@@ -9,6 +9,7 @@ package com.sitewhere.labels.spi.microservice;
 
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.labels.configuration.LabelGenerationConfiguration;
 import com.sitewhere.labels.spi.grpc.ILabelGenerationGrpcServer;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
@@ -16,8 +17,8 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 /**
  * Microservice that provides label generation functionality.
  */
-public interface ILabelGenerationMicroservice
-	extends IMultitenantMicroservice<MicroserviceIdentifier, ILabelGenerationTenantEngine> {
+public interface ILabelGenerationMicroservice extends
+	IMultitenantMicroservice<MicroserviceIdentifier, LabelGenerationConfiguration, ILabelGenerationTenantEngine> {
 
     /**
      * Get label generation GRPC server.

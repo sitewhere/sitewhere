@@ -17,6 +17,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.sitewhere.batch.handler.BatchCommandInvocationHandler;
+import com.sitewhere.batch.kafka.UnprocessedBatchElementsConsumer;
+import com.sitewhere.batch.kafka.UnprocessedBatchOperationsConsumer;
 import com.sitewhere.batch.spi.IBatchOperationHandler;
 import com.sitewhere.batch.spi.IBatchOperationManager;
 import com.sitewhere.batch.spi.kafka.IFailedBatchElementsProducer;
@@ -28,8 +30,6 @@ import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
 import com.sitewhere.grpc.client.batch.BatchModelConverter;
 import com.sitewhere.grpc.client.batch.BatchModelMarshaler;
 import com.sitewhere.microservice.api.batch.IBatchManagement;
-import com.sitewhere.microservice.kafka.UnprocessedBatchElementsConsumer;
-import com.sitewhere.microservice.kafka.UnprocessedBatchOperationsConsumer;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;

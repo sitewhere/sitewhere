@@ -7,6 +7,7 @@
  */
 package com.sitewhere.asset.spi.microservice;
 
+import com.sitewhere.asset.configuration.AssetManagementConfiguration;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
@@ -14,8 +15,8 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 /**
  * Microservice that provides asset management functionality.
  */
-public interface IAssetManagementMicroservice
-	extends IMultitenantMicroservice<MicroserviceIdentifier, IAssetManagementTenantEngine> {
+public interface IAssetManagementMicroservice extends
+	IMultitenantMicroservice<MicroserviceIdentifier, AssetManagementConfiguration, IAssetManagementTenantEngine> {
 
     /**
      * Get device management API access via GRPC channel.

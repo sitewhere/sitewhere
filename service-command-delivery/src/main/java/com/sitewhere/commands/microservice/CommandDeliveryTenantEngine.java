@@ -8,14 +8,15 @@
 package com.sitewhere.commands.microservice;
 
 import com.sitewhere.commands.DefaultCommandProcessingStrategy;
+import com.sitewhere.commands.configuration.CommandDeliveryTenantConfiguration;
+import com.sitewhere.commands.kafka.EnrichedCommandInvocationsConsumer;
+import com.sitewhere.commands.kafka.UndeliveredCommandInvocationsProducer;
 import com.sitewhere.commands.spi.ICommandDestinationsManager;
 import com.sitewhere.commands.spi.ICommandProcessingStrategy;
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
 import com.sitewhere.commands.spi.kafka.IEnrichedCommandInvocationsConsumer;
 import com.sitewhere.commands.spi.kafka.IUndeliveredCommandInvocationsProducer;
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine;
-import com.sitewhere.microservice.kafka.EnrichedCommandInvocationsConsumer;
-import com.sitewhere.microservice.kafka.UndeliveredCommandInvocationsProducer;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
@@ -30,7 +31,8 @@ import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
  * Implementation of {@link IMicroserviceTenantEngine} that implements command
  * delivery functionality.
  */
-public class CommandDeliveryTenantEngine extends MicroserviceTenantEngine implements ICommandDeliveryTenantEngine {
+public class CommandDeliveryTenantEngine extends MicroserviceTenantEngine<CommandDeliveryTenantConfiguration>
+	implements ICommandDeliveryTenantEngine {
 
     /** Configured command processing strategy */
     private ICommandProcessingStrategy commandProcessingStrategy = new DefaultCommandProcessingStrategy();

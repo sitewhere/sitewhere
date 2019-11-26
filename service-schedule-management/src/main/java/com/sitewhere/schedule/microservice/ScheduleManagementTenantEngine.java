@@ -11,6 +11,7 @@ import com.sitewhere.grpc.service.ScheduleManagementGrpc;
 import com.sitewhere.microservice.api.schedule.IScheduleManagement;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
+import com.sitewhere.schedule.configuration.ScheduleManagementTenantConfiguration;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
@@ -24,7 +25,7 @@ import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
  * Implementation of {@link IMicroserviceTenantEngine} that implements schedule
  * management functionality.
  */
-public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine
+public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine<ScheduleManagementTenantConfiguration>
 	implements IScheduleManagementTenantEngine {
 
     /** Schedule management persistence API */

@@ -8,18 +8,14 @@
 package com.sitewhere.instance.microservice;
 
 import com.sitewhere.instance.spi.microservice.IInstanceBootstrapper;
-import com.sitewhere.instance.tenant.GroovyTenantModelInitializer;
-import com.sitewhere.instance.user.GroovyUserModelInitializer;
+import com.sitewhere.instance.tenant.ScriptedTenantModelInitializer;
+import com.sitewhere.instance.user.ScriptedUserModelInitializer;
 import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.microservice.exception.ConcurrentK8sUpdateException;
 import com.sitewhere.microservice.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.groovy.IGroovyConfiguration;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.microservice.scripting.IScriptContext;
-import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
-import com.sitewhere.spi.microservice.scripting.ScriptType;
 
 import io.sitewhere.k8s.crd.common.BootstrapState;
 import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
@@ -120,11 +116,11 @@ public class InstanceBoostrapper extends LifecycleComponent implements IInstance
 	if (tenantManagement != null) {
 	    getLogger().info(String.format("Initializing tenant management from template '%s'.",
 		    template.getMetadata().getName()));
-	    String scriptName = getFileNameForFunctionalArea(FA_TENANT_MANGEMENT);
-	    getScriptSynchronizer().add(getScriptContext(), ScriptType.Initializer, scriptName,
-		    tenantManagement.getBytes());
-	    GroovyTenantModelInitializer initializer = new GroovyTenantModelInitializer(getGroovyConfiguration(),
-		    scriptName);
+	    // String scriptName = getFileNameForFunctionalArea(FA_TENANT_MANGEMENT);
+	    // getScriptSynchronizer().add(getScriptContext(), ScriptType.Initializer,
+	    // scriptName,
+	    // tenantManagement.getBytes());
+	    ScriptedTenantModelInitializer initializer = new ScriptedTenantModelInitializer();
 	    initializer.initialize(getMicroservice().getTenantManagement());
 	    getLogger().info(String.format("Completed execution of tenant management template '%s'.",
 		    template.getMetadata().getName()));
@@ -142,11 +138,11 @@ public class InstanceBoostrapper extends LifecycleComponent implements IInstance
 	if (userManagement != null) {
 	    getLogger().info(String.format("Initializing user management from template '%s'.",
 		    template.getMetadata().getName()));
-	    String scriptName = getFileNameForFunctionalArea(FA_USER_MANGEMENT);
-	    getScriptSynchronizer().add(getScriptContext(), ScriptType.Initializer, scriptName,
-		    userManagement.getBytes());
-	    GroovyUserModelInitializer initializer = new GroovyUserModelInitializer(getGroovyConfiguration(),
-		    scriptName);
+	    // String scriptName = getFileNameForFunctionalArea(FA_USER_MANGEMENT);
+	    // getScriptSynchronizer().add(getScriptContext(), ScriptType.Initializer,
+	    // scriptName,
+	    // userManagement.getBytes());
+	    ScriptedUserModelInitializer initializer = new ScriptedUserModelInitializer();
 	    initializer.initialize(getUserManagement());
 	    getLogger().info(String.format("Completed execution of user management template '%s'.",
 		    template.getMetadata().getName()));
@@ -179,18 +175,6 @@ public class InstanceBoostrapper extends LifecycleComponent implements IInstance
 		throw new SiteWhereException("Failed to lock instance for bootstrap due to interrupt.");
 	    }
 	}
-    }
-
-    protected IScriptSynchronizer getScriptSynchronizer() {
-	return ((InstanceManagementMicroservice) getMicroservice()).getScriptSynchronizer();
-    }
-
-    protected IScriptContext getScriptContext() {
-	return ((InstanceManagementMicroservice) getMicroservice()).getScriptContext();
-    }
-
-    protected IGroovyConfiguration getGroovyConfiguration() {
-	return ((InstanceManagementMicroservice) getMicroservice()).getGroovyConfiguration();
     }
 
     protected IUserManagement getUserManagement() {

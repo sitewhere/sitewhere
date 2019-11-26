@@ -11,6 +11,7 @@ import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.inbound.configuration.InboundProcessingConfiguration;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
@@ -24,12 +25,9 @@ import com.sitewhere.spi.tenant.ITenant;
 /**
  * Microservice that provides inbound event processing functionality.
  */
-public class InboundProcessingMicroservice
-	extends MultitenantMicroservice<MicroserviceIdentifier, IInboundProcessingTenantEngine>
+public class InboundProcessingMicroservice extends
+	MultitenantMicroservice<MicroserviceIdentifier, InboundProcessingConfiguration, IInboundProcessingTenantEngine>
 	implements IInboundProcessingMicroservice {
-
-    /** Microservice name */
-    private static final String NAME = "Inbound Processing";
 
     /** Device management API demux */
     private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
@@ -42,7 +40,7 @@ public class InboundProcessingMicroservice
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Inbound Processing";
     }
 
     /*
@@ -54,11 +52,12 @@ public class InboundProcessingMicroservice
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<InboundProcessingConfiguration> getConfigurationClass() {
+	return InboundProcessingConfiguration.class;
     }
 
     /*

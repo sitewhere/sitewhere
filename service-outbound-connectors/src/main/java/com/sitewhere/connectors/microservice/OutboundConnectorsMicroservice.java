@@ -7,6 +7,7 @@
  */
 package com.sitewhere.connectors.microservice;
 
+import com.sitewhere.connectors.configuration.OutboundConnectorsConfiguration;
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsMicroservice;
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsTenantEngine;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
@@ -24,12 +25,9 @@ import com.sitewhere.spi.tenant.ITenant;
 /**
  * Microservice that provides outbound connector management.
  */
-public class OutboundConnectorsMicroservice
-	extends MultitenantMicroservice<MicroserviceIdentifier, IOutboundConnectorsTenantEngine>
+public class OutboundConnectorsMicroservice extends
+	MultitenantMicroservice<MicroserviceIdentifier, OutboundConnectorsConfiguration, IOutboundConnectorsTenantEngine>
 	implements IOutboundConnectorsMicroservice {
-
-    /** Microservice name */
-    private static final String NAME = "Outbound Connectors";
 
     /** Device management API demux */
     private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
@@ -42,7 +40,7 @@ public class OutboundConnectorsMicroservice
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Outbound Connectors";
     }
 
     /*
@@ -54,11 +52,12 @@ public class OutboundConnectorsMicroservice
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<OutboundConnectorsConfiguration> getConfigurationClass() {
+	return OutboundConnectorsConfiguration.class;
     }
 
     /*

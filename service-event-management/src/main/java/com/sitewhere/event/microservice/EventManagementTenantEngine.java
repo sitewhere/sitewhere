@@ -7,6 +7,10 @@
  */
 package com.sitewhere.event.microservice;
 
+import com.sitewhere.event.configuration.EventManagementTenantConfiguration;
+import com.sitewhere.event.grpc.EventManagementImpl;
+import com.sitewhere.event.kafka.OutboundCommandInvocationsProducer;
+import com.sitewhere.event.kafka.OutboundEventsProducer;
 import com.sitewhere.event.spi.kafka.IInboundEventsConsumer;
 import com.sitewhere.event.spi.kafka.IOutboundCommandInvocationsProducer;
 import com.sitewhere.event.spi.kafka.IOutboundEventsProducer;
@@ -15,9 +19,6 @@ import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.api.event.IDeviceEventManagement;
-import com.sitewhere.microservice.grpc.EventManagementImpl;
-import com.sitewhere.microservice.kafka.OutboundCommandInvocationsProducer;
-import com.sitewhere.microservice.kafka.OutboundEventsProducer;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
@@ -34,7 +35,8 @@ import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
  * Implementation of {@link IMicroserviceTenantEngine} that implements event
  * management functionality.
  */
-public class EventManagementTenantEngine extends MicroserviceTenantEngine implements IEventManagementTenantEngine {
+public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventManagementTenantConfiguration>
+	implements IEventManagementTenantEngine {
 
     /** Event management persistence API */
     private IDeviceEventManagement eventManagement;

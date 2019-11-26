@@ -9,6 +9,10 @@ package com.sitewhere.asset.microservice;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.Value;
+
+import com.sitewhere.asset.configuration.AssetManagementConfiguration;
 import com.sitewhere.asset.grpc.AssetManagementGrpcServer;
 import com.sitewhere.asset.spi.grpc.IAssetManagementGrpcServer;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
@@ -27,12 +31,9 @@ import com.sitewhere.spi.tenant.ITenant;
  * Microservice that provides asset management functionality.
  */
 @ApplicationScoped
-public class AssetManagementMicroservice
-	extends MultitenantMicroservice<MicroserviceIdentifier, IAssetManagementTenantEngine>
+public class AssetManagementMicroservice extends
+	MultitenantMicroservice<MicroserviceIdentifier, AssetManagementConfiguration, IAssetManagementTenantEngine>
 	implements IAssetManagementMicroservice {
-
-    /** Microservice name */
-    private static final String NAME = "Asset Management";
 
     /** Provides server for asset management GRPC requests */
     private IAssetManagementGrpcServer assetManagementGrpcServer;
@@ -47,7 +48,7 @@ public class AssetManagementMicroservice
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Asset Management";
     }
 
     /*
@@ -59,11 +60,12 @@ public class AssetManagementMicroservice
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<AssetManagementConfiguration> getConfigurationClass() {
+	return AssetManagementConfiguration.class;
     }
 
     /*
@@ -84,6 +86,8 @@ public class AssetManagementMicroservice
      */
     @Override
     public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	tryPolyglot();
+
 	// Create GRPC components.
 	createGrpcComponents();
 
@@ -98,6 +102,18 @@ public class AssetManagementMicroservice
 
 	// Execute initialization steps.
 	init.execute(monitor);
+    }
+
+    /**
+     * Attempt polygot execution.
+     */
+    protected void tryPolyglot() {
+	try (Context context = Context.create()) {
+	    Value result = context.eval("js", "({ " + "id   : 42, " + "text : '42', " + "arr  : [1,42,3] " + "})");
+	    int id = result.getMember("id").asInt();
+	    String text = result.getMember("text").asString();
+	    getLogger().info(String.format("JavaScript got %s %s", String.valueOf(id), text));
+	}
     }
 
     /*

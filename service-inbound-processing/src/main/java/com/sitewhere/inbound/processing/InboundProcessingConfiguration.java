@@ -10,7 +10,7 @@ package com.sitewhere.inbound.processing;
 import com.sitewhere.inbound.spi.processing.IInboundProcessingConfiguration;
 
 /**
- * Model object for inbound processing configuration.
+ * Model object for inbound processing configuration. TODO: This goes away.
  */
 public class InboundProcessingConfiguration implements IInboundProcessingConfiguration {
 

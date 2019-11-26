@@ -7,6 +7,7 @@
  */
 package com.sitewhere.devicestate.microservice;
 
+import com.sitewhere.devicestate.configuration.DeviceStateTenantConfiguration;
 import com.sitewhere.devicestate.spi.IDevicePresenceManager;
 import com.sitewhere.devicestate.spi.kafka.IDeviceStateEnrichedEventsConsumer;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
@@ -26,7 +27,8 @@ import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
  * Implementation of {@link IMicroserviceTenantEngine} that implements device
  * state management functionality.
  */
-public class DeviceStateTenantEngine extends MicroserviceTenantEngine implements IDeviceStateTenantEngine {
+public class DeviceStateTenantEngine extends MicroserviceTenantEngine<DeviceStateTenantConfiguration>
+	implements IDeviceStateTenantEngine {
 
     /** Device state management persistence API */
     private IDeviceStateManagement deviceStateManagement;

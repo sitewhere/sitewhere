@@ -9,14 +9,15 @@ package com.sitewhere.rules.spi.microservice;
 
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.rules.configuration.RuleProcessingConfiguration;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
  * Microservice that provides rule processing functionality.
  */
-public interface IRuleProcessingMicroservice
-	extends IMultitenantMicroservice<MicroserviceIdentifier, IRuleProcessingTenantEngine> {
+public interface IRuleProcessingMicroservice extends
+	IMultitenantMicroservice<MicroserviceIdentifier, RuleProcessingConfiguration, IRuleProcessingTenantEngine> {
 
     /**
      * Get device management API channel.

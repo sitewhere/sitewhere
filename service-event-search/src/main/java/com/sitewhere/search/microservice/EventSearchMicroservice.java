@@ -8,6 +8,7 @@
 package com.sitewhere.search.microservice;
 
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
+import com.sitewhere.search.configuration.EventSearchConfiguration;
 import com.sitewhere.search.spi.microservice.IEventSearchMicroservice;
 import com.sitewhere.search.spi.microservice.IEventSearchTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
@@ -17,18 +18,16 @@ import com.sitewhere.spi.tenant.ITenant;
 /**
  * Microservice that provides event search functionality.
  */
-public class EventSearchMicroservice extends MultitenantMicroservice<MicroserviceIdentifier, IEventSearchTenantEngine>
+public class EventSearchMicroservice
+	extends MultitenantMicroservice<MicroserviceIdentifier, EventSearchConfiguration, IEventSearchTenantEngine>
 	implements IEventSearchMicroservice {
-
-    /** Microservice name */
-    private static final String NAME = "Event Search";
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Event Search";
     }
 
     /*
@@ -40,11 +39,12 @@ public class EventSearchMicroservice extends MultitenantMicroservice<Microservic
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<EventSearchConfiguration> getConfigurationClass() {
+	return EventSearchConfiguration.class;
     }
 
     /*

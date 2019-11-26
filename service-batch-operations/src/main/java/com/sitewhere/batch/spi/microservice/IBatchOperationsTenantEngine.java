@@ -7,6 +7,7 @@
  */
 package com.sitewhere.batch.spi.microservice;
 
+import com.sitewhere.batch.configuration.BatchOperationsTenantConfiguration;
 import com.sitewhere.batch.spi.IBatchOperationManager;
 import com.sitewhere.batch.spi.kafka.IFailedBatchElementsProducer;
 import com.sitewhere.batch.spi.kafka.IUnprocessedBatchElementsProducer;
@@ -19,7 +20,7 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
  * Extends {@link IMicroserviceTenantEngine} with features specific to batch
  * operations.
  */
-public interface IBatchOperationsTenantEngine extends IMicroserviceTenantEngine {
+public interface IBatchOperationsTenantEngine extends IMicroserviceTenantEngine<BatchOperationsTenantConfiguration> {
 
     /**
      * Get batch management implementation.

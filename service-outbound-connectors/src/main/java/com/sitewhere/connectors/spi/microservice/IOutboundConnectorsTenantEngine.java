@@ -7,6 +7,7 @@
  */
 package com.sitewhere.connectors.spi.microservice;
 
+import com.sitewhere.connectors.configuration.OutboundConnectorsTenantConfiguration;
 import com.sitewhere.connectors.spi.IOutboundConnectorsManager;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
@@ -14,7 +15,7 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
  * Extends {@link IMicroserviceTenantEngine} with features specific to
  * management of outbound connectors.
  */
-public interface IOutboundConnectorsTenantEngine extends IMicroserviceTenantEngine {
+public interface IOutboundConnectorsTenantEngine extends IMicroserviceTenantEngine<OutboundConnectorsTenantConfiguration> {
 
     /**
      * Get manager for outbound connectors.

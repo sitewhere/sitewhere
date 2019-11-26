@@ -7,12 +7,13 @@
  */
 package com.sitewhere.event.microservice;
 
+import com.sitewhere.event.configuration.EventManagementConfiguration;
+import com.sitewhere.event.grpc.EventManagementGrpcServer;
 import com.sitewhere.event.spi.grpc.IEventManagementGrpcServer;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
-import com.sitewhere.microservice.grpc.EventManagementGrpcServer;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
@@ -24,12 +25,9 @@ import com.sitewhere.spi.tenant.ITenant;
 /**
  * Microservice that provides device event management functionality.
  */
-public class EventManagementMicroservice
-	extends MultitenantMicroservice<MicroserviceIdentifier, IEventManagementTenantEngine>
+public class EventManagementMicroservice extends
+	MultitenantMicroservice<MicroserviceIdentifier, EventManagementConfiguration, IEventManagementTenantEngine>
 	implements IEventManagementMicroservice {
-
-    /** Microservice name */
-    private static final String NAME = "Event Management";
 
     /** Provides server for event management GRPC requests */
     private IEventManagementGrpcServer eventManagementGrpcServer;
@@ -44,7 +42,7 @@ public class EventManagementMicroservice
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Event Management";
     }
 
     /*
@@ -56,11 +54,12 @@ public class EventManagementMicroservice
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<EventManagementConfiguration> getConfigurationClass() {
+	return EventManagementConfiguration.class;
     }
 
     /*

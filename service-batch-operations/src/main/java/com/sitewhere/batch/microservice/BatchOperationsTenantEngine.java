@@ -7,6 +7,10 @@
  */
 package com.sitewhere.batch.microservice;
 
+import com.sitewhere.batch.configuration.BatchOperationsTenantConfiguration;
+import com.sitewhere.batch.kafka.FailedBatchElementsProducer;
+import com.sitewhere.batch.kafka.UnprocessedBatchElementsProducer;
+import com.sitewhere.batch.kafka.UnprocessedBatchOperationsProducer;
 import com.sitewhere.batch.spi.IBatchOperationManager;
 import com.sitewhere.batch.spi.kafka.IFailedBatchElementsProducer;
 import com.sitewhere.batch.spi.kafka.IUnprocessedBatchElementsProducer;
@@ -14,9 +18,6 @@ import com.sitewhere.batch.spi.kafka.IUnprocessedBatchOperationsProducer;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
 import com.sitewhere.grpc.service.BatchManagementGrpc;
 import com.sitewhere.microservice.api.batch.IBatchManagement;
-import com.sitewhere.microservice.kafka.FailedBatchElementsProducer;
-import com.sitewhere.microservice.kafka.UnprocessedBatchElementsProducer;
-import com.sitewhere.microservice.kafka.UnprocessedBatchOperationsProducer;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
@@ -31,7 +32,8 @@ import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
  * Implementation of {@link IMicroserviceTenantEngine} that implements batch
  * operations functionality.
  */
-public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implements IBatchOperationsTenantEngine {
+public class BatchOperationsTenantEngine extends MicroserviceTenantEngine<BatchOperationsTenantConfiguration>
+	implements IBatchOperationsTenantEngine {
 
     /** Batch management persistence implementation */
     private IBatchManagement batchManagement;

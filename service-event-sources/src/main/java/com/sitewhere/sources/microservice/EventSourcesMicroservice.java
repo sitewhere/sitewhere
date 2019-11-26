@@ -13,6 +13,7 @@ import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
+import com.sitewhere.sources.configuration.EventSourcesConfiguration;
 import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
 import com.sitewhere.sources.spi.microservice.IEventSourcesTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
@@ -24,11 +25,9 @@ import com.sitewhere.spi.tenant.ITenant;
 /**
  * Microservice that provides event sources functionality.
  */
-public class EventSourcesMicroservice extends MultitenantMicroservice<MicroserviceIdentifier, IEventSourcesTenantEngine>
+public class EventSourcesMicroservice
+	extends MultitenantMicroservice<MicroserviceIdentifier, EventSourcesConfiguration, IEventSourcesTenantEngine>
 	implements IEventSourcesMicroservice {
-
-    /** Microservice name */
-    public static final String NAME = "Event Sources";
 
     /** Device management API channel */
     private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
@@ -43,7 +42,7 @@ public class EventSourcesMicroservice extends MultitenantMicroservice<Microservi
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Event Sources";
     }
 
     /*
@@ -55,11 +54,12 @@ public class EventSourcesMicroservice extends MultitenantMicroservice<Microservi
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<EventSourcesConfiguration> getConfigurationClass() {
+	return EventSourcesConfiguration.class;
     }
 
     /*

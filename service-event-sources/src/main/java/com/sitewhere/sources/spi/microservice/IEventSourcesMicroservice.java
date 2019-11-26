@@ -9,6 +9,7 @@ package com.sitewhere.sources.spi.microservice;
 
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.sources.configuration.EventSourcesConfiguration;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
@@ -16,7 +17,7 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
  * Microservice that provides event sources functionality.
  */
 public interface IEventSourcesMicroservice
-	extends IMultitenantMicroservice<MicroserviceIdentifier, IEventSourcesTenantEngine> {
+	extends IMultitenantMicroservice<MicroserviceIdentifier, EventSourcesConfiguration, IEventSourcesTenantEngine> {
 
     /**
      * Get device management API access via GRPC channel.

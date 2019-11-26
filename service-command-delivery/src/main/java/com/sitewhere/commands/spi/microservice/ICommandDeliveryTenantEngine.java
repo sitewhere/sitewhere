@@ -7,6 +7,7 @@
  */
 package com.sitewhere.commands.spi.microservice;
 
+import com.sitewhere.commands.configuration.CommandDeliveryTenantConfiguration;
 import com.sitewhere.commands.spi.ICommandDestinationsManager;
 import com.sitewhere.commands.spi.ICommandProcessingStrategy;
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
@@ -18,7 +19,7 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
  * Extends {@link IMicroserviceTenantEngine} with features specific to command
  * delivery.
  */
-public interface ICommandDeliveryTenantEngine extends IMicroserviceTenantEngine {
+public interface ICommandDeliveryTenantEngine extends IMicroserviceTenantEngine<CommandDeliveryTenantConfiguration> {
 
     /**
      * Get command processing strategy.

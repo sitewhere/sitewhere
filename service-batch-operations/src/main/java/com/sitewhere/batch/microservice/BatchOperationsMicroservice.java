@@ -9,6 +9,8 @@ package com.sitewhere.batch.microservice;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import com.sitewhere.batch.configuration.BatchOperationsConfiguration;
+import com.sitewhere.batch.grpc.BatchManagementGrpcServer;
 import com.sitewhere.batch.spi.grpc.IBatchManagementGrpcServer;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
@@ -16,7 +18,6 @@ import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
-import com.sitewhere.microservice.grpc.BatchManagementGrpcServer;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
@@ -29,12 +30,9 @@ import com.sitewhere.spi.tenant.ITenant;
  * Microservice that provides batch operations functionality.
  */
 @ApplicationScoped
-public class BatchOperationsMicroservice
-	extends MultitenantMicroservice<MicroserviceIdentifier, IBatchOperationsTenantEngine>
+public class BatchOperationsMicroservice extends
+	MultitenantMicroservice<MicroserviceIdentifier, BatchOperationsConfiguration, IBatchOperationsTenantEngine>
 	implements IBatchOperationsMicroservice {
-
-    /** Microservice name */
-    private static final String NAME = "Batch Operations";
 
     /** Provides server for batch management GRPC requests */
     private IBatchManagementGrpcServer batchManagementGrpcServer;
@@ -50,7 +48,7 @@ public class BatchOperationsMicroservice
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Batch Operations";
     }
 
     /*
@@ -62,11 +60,12 @@ public class BatchOperationsMicroservice
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<BatchOperationsConfiguration> getConfigurationClass() {
+	return BatchOperationsConfiguration.class;
     }
 
     /*

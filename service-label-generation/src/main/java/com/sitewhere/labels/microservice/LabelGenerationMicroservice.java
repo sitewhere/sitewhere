@@ -11,10 +11,11 @@ import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.labels.configuration.LabelGenerationConfiguration;
+import com.sitewhere.labels.grpc.LabelGenerationGrpcServer;
 import com.sitewhere.labels.spi.grpc.ILabelGenerationGrpcServer;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationMicroservice;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationTenantEngine;
-import com.sitewhere.microservice.grpc.LabelGenerationGrpcServer;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
@@ -26,12 +27,9 @@ import com.sitewhere.spi.tenant.ITenant;
 /**
  * Microservice that provides label generation functionality.
  */
-public class LabelGenerationMicroservice
-	extends MultitenantMicroservice<MicroserviceIdentifier, ILabelGenerationTenantEngine>
+public class LabelGenerationMicroservice extends
+	MultitenantMicroservice<MicroserviceIdentifier, LabelGenerationConfiguration, ILabelGenerationTenantEngine>
 	implements ILabelGenerationMicroservice {
-
-    /** Microservice name */
-    private static final String NAME = "Label Generation";
 
     /** Device management API channel */
     private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
@@ -47,7 +45,7 @@ public class LabelGenerationMicroservice
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Label Generation";
     }
 
     /*
@@ -59,11 +57,12 @@ public class LabelGenerationMicroservice
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<LabelGenerationConfiguration> getConfigurationClass() {
+	return LabelGenerationConfiguration.class;
     }
 
     /*

@@ -7,6 +7,7 @@
  */
 package com.sitewhere.event.spi.microservice;
 
+import com.sitewhere.event.configuration.EventManagementTenantConfiguration;
 import com.sitewhere.event.spi.kafka.IInboundEventsConsumer;
 import com.sitewhere.event.spi.kafka.IOutboundCommandInvocationsProducer;
 import com.sitewhere.event.spi.kafka.IOutboundEventsProducer;
@@ -18,7 +19,7 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
  * Extends {@link IMicroserviceTenantEngine} with features specific to device
  * event management.
  */
-public interface IEventManagementTenantEngine extends IMicroserviceTenantEngine {
+public interface IEventManagementTenantEngine extends IMicroserviceTenantEngine<EventManagementTenantConfiguration> {
 
     /**
      * Get associated event management implementation.

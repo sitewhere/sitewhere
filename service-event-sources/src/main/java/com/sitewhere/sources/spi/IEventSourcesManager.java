@@ -10,9 +10,9 @@ package com.sitewhere.sources.spi;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.microservice.kafka.DecodedEventsProducer;
-import com.sitewhere.microservice.kafka.DeviceRegistrationEventsProducer;
-import com.sitewhere.microservice.kafka.FailedDecodeEventsProducer;
+import com.sitewhere.sources.kafka.DecodedEventsProducer;
+import com.sitewhere.sources.kafka.DeviceRegistrationEventsProducer;
+import com.sitewhere.sources.kafka.FailedDecodeEventsProducer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 

@@ -9,6 +9,7 @@ package com.sitewhere.sources.microservice;
 
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
+import com.sitewhere.sources.configuration.EventSourcesTenantConfiguration;
 import com.sitewhere.sources.spi.IEventSourcesManager;
 import com.sitewhere.sources.spi.microservice.IEventSourcesTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
@@ -23,7 +24,8 @@ import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
  * Implementation of {@link IMicroserviceTenantEngine} that implements event
  * sources functionality.
  */
-public class EventSourcesTenantEngine extends MicroserviceTenantEngine implements IEventSourcesTenantEngine {
+public class EventSourcesTenantEngine extends MicroserviceTenantEngine<EventSourcesTenantConfiguration>
+	implements IEventSourcesTenantEngine {
 
     /** Event sources manager */
     private IEventSourcesManager eventSourcesManager;

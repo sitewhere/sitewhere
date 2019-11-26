@@ -7,6 +7,7 @@
  */
 package com.sitewhere.connectors.spi.microservice;
 
+import com.sitewhere.connectors.configuration.OutboundConnectorsConfiguration;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
@@ -15,8 +16,8 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 /**
  * Microservice that provides outbound event connectors functionality.
  */
-public interface IOutboundConnectorsMicroservice
-	extends IMultitenantMicroservice<MicroserviceIdentifier, IOutboundConnectorsTenantEngine> {
+public interface IOutboundConnectorsMicroservice extends
+	IMultitenantMicroservice<MicroserviceIdentifier, OutboundConnectorsConfiguration, IOutboundConnectorsTenantEngine> {
 
     /**
      * Get device management API demux.

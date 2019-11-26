@@ -7,6 +7,7 @@
  */
 package com.sitewhere.media.microservice;
 
+import com.sitewhere.media.configuration.StreamingMediaConfiguration;
 import com.sitewhere.media.spi.microservice.IStreamingMediaMicroservice;
 import com.sitewhere.media.spi.microservice.IStreamingMediaTenantEngine;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
@@ -17,19 +18,16 @@ import com.sitewhere.spi.tenant.ITenant;
 /**
  * Microservice that provides streaming media functionality.
  */
-public class StreamingMediaMicroservice
-	extends MultitenantMicroservice<MicroserviceIdentifier, IStreamingMediaTenantEngine>
+public class StreamingMediaMicroservice extends
+	MultitenantMicroservice<MicroserviceIdentifier, StreamingMediaConfiguration, IStreamingMediaTenantEngine>
 	implements IStreamingMediaMicroservice {
-
-    /** Microservice name */
-    private static final String NAME = "Streaming Media";
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Streaming Media";
     }
 
     /*
@@ -41,11 +39,12 @@ public class StreamingMediaMicroservice
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<StreamingMediaConfiguration> getConfigurationClass() {
+	return StreamingMediaConfiguration.class;
     }
 
     /*

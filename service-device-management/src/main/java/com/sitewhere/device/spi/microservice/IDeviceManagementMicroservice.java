@@ -7,6 +7,7 @@
  */
 package com.sitewhere.device.spi.microservice;
 
+import com.sitewhere.device.configuration.DeviceManagementConfiguration;
 import com.sitewhere.device.spi.grpc.IDeviceManagementGrpcServer;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
@@ -15,8 +16,8 @@ import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 /**
  * Microservice that provides device management functionality.
  */
-public interface IDeviceManagementMicroservice
-	extends IMultitenantMicroservice<MicroserviceIdentifier, IDeviceManagementTenantEngine> {
+public interface IDeviceManagementMicroservice extends
+	IMultitenantMicroservice<MicroserviceIdentifier, DeviceManagementConfiguration, IDeviceManagementTenantEngine> {
 
     /**
      * Get device management GRPC server.

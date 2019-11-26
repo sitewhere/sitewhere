@@ -42,11 +42,6 @@ public class DefaultScheduleModelInitializer extends ModelInitializer implements
     public void initialize(IScheduleManagement scheduleManagement) throws SiteWhereException {
 	this.scheduleManagement = scheduleManagement;
 
-	// Skip if not enabled.
-	if (!isEnabled()) {
-	    return;
-	}
-
 	createDefaultSchedules();
     }
 

@@ -13,6 +13,7 @@ import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
+import com.sitewhere.rules.configuration.RuleProcessingConfiguration;
 import com.sitewhere.rules.spi.microservice.IRuleProcessingMicroservice;
 import com.sitewhere.rules.spi.microservice.IRuleProcessingTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
@@ -24,12 +25,9 @@ import com.sitewhere.spi.tenant.ITenant;
 /**
  * Microservice that provides rule processing functionality.
  */
-public class RuleProcessingMicroservice
-	extends MultitenantMicroservice<MicroserviceIdentifier, IRuleProcessingTenantEngine>
+public class RuleProcessingMicroservice extends
+	MultitenantMicroservice<MicroserviceIdentifier, RuleProcessingConfiguration, IRuleProcessingTenantEngine>
 	implements IRuleProcessingMicroservice {
-
-    /** Microservice name */
-    private static final String NAME = "Rule Processing";
 
     /** Device management API demux */
     private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
@@ -42,7 +40,7 @@ public class RuleProcessingMicroservice
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Rule Processing";
     }
 
     /*
@@ -54,11 +52,12 @@ public class RuleProcessingMicroservice
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<RuleProcessingConfiguration> getConfigurationClass() {
+	return RuleProcessingConfiguration.class;
     }
 
     /*

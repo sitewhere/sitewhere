@@ -7,6 +7,7 @@
  */
 package com.sitewhere.commands.microservice;
 
+import com.sitewhere.commands.configuration.CommandDeliveryConfiguration;
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryMicroservice;
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
@@ -22,12 +23,9 @@ import com.sitewhere.spi.tenant.ITenant;
 /**
  * Microservice that provides command delivery functionality.
  */
-public class CommandDeliveryMicroservice
-	extends MultitenantMicroservice<MicroserviceIdentifier, ICommandDeliveryTenantEngine>
+public class CommandDeliveryMicroservice extends
+	MultitenantMicroservice<MicroserviceIdentifier, CommandDeliveryConfiguration, ICommandDeliveryTenantEngine>
 	implements ICommandDeliveryMicroservice {
-
-    /** Microservice name */
-    private static final String NAME = "Command Delivery";
 
     /** Device management API channel */
     private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
@@ -37,7 +35,7 @@ public class CommandDeliveryMicroservice
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Command Delivery";
     }
 
     /*
@@ -49,11 +47,12 @@ public class CommandDeliveryMicroservice
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<CommandDeliveryConfiguration> getConfigurationClass() {
+	return CommandDeliveryConfiguration.class;
     }
 
     /*

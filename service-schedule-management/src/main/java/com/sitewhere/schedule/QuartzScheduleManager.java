@@ -64,7 +64,7 @@ public class QuartzScheduleManager extends TenantEngineLifecycleComponent implem
      * (com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine)
      */
     @Override
-    public void setTenantEngine(IMicroserviceTenantEngine tenantEngine) {
+    public void setTenantEngine(IMicroserviceTenantEngine<?> tenantEngine) {
 	super.setTenantEngine(tenantEngine);
 	try {
 	    DirectSchedulerFactory.getInstance().createScheduler(tenantEngine.getTenant().getToken(), INSTANCE_ID,

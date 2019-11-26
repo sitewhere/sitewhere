@@ -21,12 +21,12 @@ ext['git.revision.abbrev'] = ext.git.head().abbreviatedId
 ext['docker.base.image'] = 'openjdk:8-jre-alpine'
 ext['docker.maintainer'] = 'admin@sitewhere.com'
 
-ext['sitewhere.microservice.api.version'] = '3.0.0.alpha5'
-ext['sitewhere.communication.api.version'] = '3.0.0.alpha2'
-ext['sitewhere.mongodb.api.version'] = '3.0.0.alpha2'
-ext['sitewhere.influxdb.api.version'] = '3.0.0.alpha2'
-ext['sitewhere.cassandra.api.version'] = '3.0.0.alpha2'
-ext['sitewhere.solr.api.version'] = '3.0.0.alpha2'
+ext['sitewhere.microservice.api.version'] = '3.0.0.alpha7'
+ext['sitewhere.communication.api.version'] = '3.0.0.alpha3'
+ext['sitewhere.mongodb.api.version'] = '3.0.0.alpha3'
+ext['sitewhere.influxdb.api.version'] = '3.0.0.alpha3'
+ext['sitewhere.cassandra.api.version'] = '3.0.0.alpha3'
+ext['sitewhere.solr.api.version'] = '3.0.0.alpha3'
 ext['kafka.version'] = '2.0.0'
 ext['protobuf.version'] = '3.5.1'
 ext['grpc.version'] = '1.25.0'
@@ -40,13 +40,13 @@ allprojects {
 	version = '3.0.0.alpha1'
 	
     repositories {
+		mavenLocal()
         maven { url "http://repo.maven.apache.org/maven2" }
         maven { url 'http://maven.restlet.org' }
         maven { url "https://jitpack.io" }
         maven { url "http://oss.jfrog.org/artifactory/oss-release-local/" }
         maven { url "http://maven.wso2.org/nexus/content/repositories/releases/" }
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-		mavenLocal()
     }
 }
 
@@ -92,6 +92,13 @@ subprojects {
 	
 	// Apply Quarkus.
 	apply plugin: 'io.quarkus'
+	buildNative {
+		additionalBuildArgs = [
+			'-H:EnableURLProtocols=http,https',
+			'--enable-all-security-services',
+			'-H:+JNI'
+		]
+	}
  	
  	// Choose Java settings.
     apply plugin: 'java'

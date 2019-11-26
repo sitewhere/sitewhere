@@ -10,9 +10,9 @@ package com.sitewhere.connectors;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sitewhere.connectors.kafka.KafkaOutboundConnectorHost;
 import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.connectors.spi.IOutboundConnectorsManager;
-import com.sitewhere.microservice.kafka.KafkaOutboundConnectorHost;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
