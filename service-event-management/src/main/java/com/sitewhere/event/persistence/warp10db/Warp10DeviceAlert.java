@@ -51,6 +51,7 @@ public class Warp10DeviceAlert implements Warp10Converter<IDeviceAlert> {
     public static void toGTS(IDeviceAlert source, GTSInput target, boolean isNested) {
         Warp10DeviceEvent.toGTS(source, target, isNested);
         target.setName(source.getDeviceAssignmentId().toString());
+        target.setTs(source.getReceivedDate().getTime());
 
         Map labels = new HashMap<String, String>();
         labels.put(PROP_SOURCE, source.getSource().name());

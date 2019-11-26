@@ -60,6 +60,7 @@ public class Warp10DeviceStateChange implements Warp10Converter<IDeviceStateChan
     public static void toGTS(IDeviceStateChange source, GTSInput target) {
         Warp10DeviceEvent.toGTS(source, target, false);
         target.setName(source.getDeviceAssignmentId().toString());
+        target.setTs(source.getReceivedDate().getTime());
         target.getLabels().put(PROP_ATTRIBUTE, source.getAttribute());
         target.getLabels().put(PROP_TYPE, source.getType());
         target.getLabels().put(PROP_PREVIOUS_STATE, source.getPreviousState());

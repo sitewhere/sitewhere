@@ -70,6 +70,7 @@ public class Warp10DeviceCommandInvocation implements Warp10Converter<IDeviceCom
     public static void toGTS(IDeviceCommandInvocation source, GTSInput target) {
         Warp10DeviceEvent.toGTS(source, target, false);
         target.setName(source.getDeviceAssignmentId().toString());
+        target.setTs(source.getReceivedDate().getTime());
 
         Map labels = new HashMap<String, String>();
         labels.put(PROP_INITIATOR, source.getInitiator().name());

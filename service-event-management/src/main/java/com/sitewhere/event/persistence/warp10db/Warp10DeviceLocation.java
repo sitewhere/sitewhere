@@ -14,6 +14,8 @@ import com.sitewhere.warp10.common.Warp10MetadataProvider;
 import com.sitewhere.warp10.rest.GTSInput;
 import com.sitewhere.warp10.rest.GTSOutput;
 
+import java.util.Date;
+
 public class Warp10DeviceLocation implements Warp10Converter<IDeviceLocation> {
 
     @Override
@@ -34,12 +36,13 @@ public class Warp10DeviceLocation implements Warp10Converter<IDeviceLocation> {
 
     public static void toGTS(IDeviceLocation source, GTSInput target, boolean isNested) {
         Warp10DeviceEvent.toGTS(source, target, isNested);
+        target.setTs(source.getReceivedDate().getTime());
         target.setLat(source.getLatitude());
         target.setLon(source.getLongitude());
         target.setName(source.getDeviceAssignmentId().toString());
 
         if (source.getElevation() != null) {
-            target.setElev(source.getElevation());
+            target.setElev(source.getElevation().longValue());
         }
         Warp10MetadataProvider.toGTS(source, target);
     }
@@ -47,7 +50,7 @@ public class Warp10DeviceLocation implements Warp10Converter<IDeviceLocation> {
     public static DeviceLocation fromGTS(GTSOutput source, boolean isNested) {
         DeviceLocation deviceLocation = new DeviceLocation();
         Warp10DeviceEvent.fromGTS(source, deviceLocation, isNested);
-        deviceLocation.setElevation(source.getPoints().get(0).getElevation());
+        deviceLocation.setElevation(source.getPoints().get(0).getElevation().doubleValue());
         deviceLocation.setLongitude(source.getPoints().get(0).getLongitude());
         deviceLocation.setLatitude(source.getPoints().get(0).getLatitude());
         return deviceLocation;

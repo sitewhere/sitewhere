@@ -45,6 +45,7 @@ public class Warp10DeviceCommandResponse implements Warp10Converter<IDeviceComma
     public static void toGTS(IDeviceCommandResponse source, GTSInput target) {
         Warp10DeviceEvent.toGTS(source, target, false);
         target.setName(source.getDeviceAssignmentId().toString());
+        target.setTs(source.getReceivedDate().getTime());
         target.getLabels().put(PROP_ORIGINATING_EVENT_ID, source.getOriginatingEventId().toString());
         target.getLabels().put(PROP_RESPONSE_EVENT_ID, source.getResponseEventId().toString());
         target.getLabels().put(PROP_RESPONSE, source.getResponse());

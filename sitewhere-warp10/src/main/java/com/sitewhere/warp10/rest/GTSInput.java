@@ -23,7 +23,7 @@ public class GTSInput {
     private Long ts;
     private Double lat;
     private Double lon;
-    private Double elev;
+    private long elev;
     private String name;
     private Map<String, String> labels;
     private Map<String, String> attributes;
@@ -44,7 +44,7 @@ public class GTSInput {
     public static GTSInput builder() {
 
         GTSInput gtsInput = new GTSInput();
-        gtsInput.setElev(0D);
+        gtsInput.setElev(0L);
         gtsInput.setLon(0D);
         gtsInput.setLat(0D);
         gtsInput.setValue(0L);
@@ -85,7 +85,7 @@ public class GTSInput {
         this.lon = lon;
     }
 
-    public void setElev(Double elev) {
+    public void setElev(Long elev) {
         this.elev = elev;
     }
 
@@ -127,7 +127,7 @@ public class GTSInput {
 
     public String toInputFormat() throws SiteWhereException {
 
-        return formatOptionalLongValue(ts) + "/" + formatOptionalLatLon() + "/" + formatOptionalDoubleValue(elev) + " " + formatMandatoryFieldName() + "{" + formatLabels() + "} " + formatValue();
+        return formatOptionalLongValue(ts) + "/" + formatOptionalLatLon() + "/" + formatOptionalLongValue(elev) + " " + formatMandatoryFieldName() + "{" + formatLabels() + "} " + formatValue();
     }
 
     @Override
@@ -153,7 +153,7 @@ public class GTSInput {
         return lon;
     }
 
-    public Double getElev() {
+    public Long getElev() {
         return elev;
     }
 
