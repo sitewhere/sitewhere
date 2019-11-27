@@ -227,7 +227,6 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
 
         QueryParams queryParams = QueryParams.builder();
         queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandInvocation.name());
-        //queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_DATE, "-1");
         queryParams.setStartDate(criteria.getStartDate());
         queryParams.setEndDate(criteria.getEndDate());
 
@@ -265,7 +264,6 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
         QueryParams queryParams = QueryParams.builder();
         queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandResponse.name());
         queryParams.addParameter(Warp10DeviceCommandResponse.PROP_ORIGINATING_EVENT_ID, DeviceEventType.CommandResponse.name());
-        //queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_DATE, "-1");
 
         List<IDeviceCommandResponse> results = new ArrayList();
         List<GTSOutput> fetch = getClient().findGTS(queryParams);

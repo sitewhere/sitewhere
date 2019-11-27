@@ -32,23 +32,11 @@ public enum InstanceManagementRoleKeys implements IRoleKey {
     /** InfluxDB configuration element */
     InfluxDBConfiguration("influx_conf"),
 
-
-
-
-    /** Warp 10 DB persistence configurations */
+    /** Warp 10 persistence configurations */
     Warp10DBConfigurations("warp10_confs"),
 
-    /** InfluxDB configuration element */
+    /** Warp 10 configuration element */
     Warp10DBConfiguration("warp10_conf"),
-
-
-
-
-
-
-
-
-
 
     /** Apache Cassandra persistence configurations */
     CassandraConfigurations("cassandra_confs"),

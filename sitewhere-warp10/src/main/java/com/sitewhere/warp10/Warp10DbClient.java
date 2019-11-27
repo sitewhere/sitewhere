@@ -67,7 +67,7 @@ public class Warp10DbClient extends TenantEngineLifecycleComponent implements ID
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
         super.start(monitor);
-        this.warp10RestClient = Warp10RestClient.newBuilder().withConnectionTo(getConfiguration().getHostname(), getConfiguration().getPort(), configuration.getTokenSecret(), getTenantEngine().getTenant().getName()).build();
+        this.warp10RestClient = Warp10RestClient.newBuilder().withConnectionTo(getConfiguration().getHostname(), configuration.getTokenSecret(), getTenantEngine().getTenant().getToken()).build();
     }
 
     public int insertGTS(GTSInput gtsInput) {

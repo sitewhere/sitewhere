@@ -363,8 +363,6 @@ public class CommonDatastoreProvider extends ConfigurationModelProvider {
 		// Connectivity attributes.
 		builder.attribute((new AttributeNode.Builder("Hostname", "hostname", AttributeType.String, connectivity)
 		.description("Specifies hostname for Warp 10 instance.").defaultValue("http://warp10.default.svc.cluster.local:8080/api/v0").build()));
-		builder.attribute((new AttributeNode.Builder("Port", "port", AttributeType.Integer, connectivity)
-		.description("Port on which InfluxDB is running").defaultValue("${warp10.port:8080}").build()));
 		builder.attribute((new AttributeNode.Builder("Token secret", "tokenSecret", AttributeType.String, connectivity)
 		.description("Token secret for warp 10 authentication.").defaultValue("token-secret").build()));
 	}

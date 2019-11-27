@@ -14,29 +14,17 @@ package com.sitewhere.configuration.instance.warp10db;
  */
 public class Warp10Configuration {
 
-    /** Default hostname */
-    private static final String DEFAULT_HOSTNAME = "http://warp10.default.svc.cluster.local:8080/api/v0";
-
-    /** Default port */
-    private static final int DEFAULT_PORT = 8080;
-
     /** Default token.secret */
-    private static final String DEFAULT_TOKEN_SECRET = "sitewhere-1";
-
-    /** Default application */
-    private static final String APPLICATION = "default-application";
+    private static final String DEFAULT_TOKEN_SECRET = "sitewhere";
 
     /** Host */
-    private String hostname = DEFAULT_HOSTNAME;
+    private String hostname;
 
     /** Token secret */
     private String tokenSecret = DEFAULT_TOKEN_SECRET;
 
     /** Application */
-    private String application = APPLICATION;
-
-    /** Port */
-    private int port = DEFAULT_PORT;
+    private String application;
 
     public String getHostname() {
         return hostname;
@@ -52,14 +40,6 @@ public class Warp10Configuration {
 
     public void setTokenSecret(String tokenSecret) {
         this.tokenSecret = tokenSecret;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
     }
 
     public String getApplication() {

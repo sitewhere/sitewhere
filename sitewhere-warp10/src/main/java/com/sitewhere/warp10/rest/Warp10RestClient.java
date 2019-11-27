@@ -48,9 +48,8 @@ public class Warp10RestClient {
             return client;
         }
 
-        public Builder withConnectionTo(String url, int port, String tokenSecret, String application) {
+        public Builder withConnectionTo(String url, String tokenSecret, String application) {
             client.setUrl(url);
-            client.setPort(port);
             client.setTokenSecret(tokenSecret);
             client.setApplication(application);
             return this;
@@ -143,7 +142,7 @@ public class Warp10RestClient {
 
     private TokenRequest createTokenRequest(TokenType tokenType) {
         TokenRequest tokenRequest = new TokenRequest();
-        tokenRequest.setId("token-escritura");
+        tokenRequest.setId(UUID.randomUUID().toString());
         tokenRequest.setTokenType(tokenType);
         tokenRequest.setApplication(this.application);
         tokenRequest.setOwner(UUID.randomUUID().toString());

@@ -44,7 +44,7 @@ public enum CommonDatastoreRoles implements IConfigurationRoleProvider {
     EventManagementDatastoreElement(ConfigurationRole.build(CommonDatastoreRoleKeys.EventManagementDatastoreElement,
 	    "Datastore", false, false, false, new IRoleKey[0],
 	    new IRoleKey[] { CommonDatastoreRoleKeys.MongoDBDatastore, CommonDatastoreRoleKeys.MongoDBReference,
-		    CommonDatastoreRoleKeys.InfluxDBDatastore, CommonDatastoreRoleKeys.InfluxDBReference,
+		    CommonDatastoreRoleKeys.InfluxDBDatastore, CommonDatastoreRoleKeys.InfluxDBReference, CommonDatastoreRoleKeys.Warp10DBDatastore, CommonDatastoreRoleKeys.Warp10DBReference,
 		    CommonDatastoreRoleKeys.CassandraDatastore, CommonDatastoreRoleKeys.CassandraReference })),
 
     /** Device state management datastore */
@@ -75,13 +75,12 @@ public enum CommonDatastoreRoles implements IConfigurationRoleProvider {
 	    false, false, false)),
 
     /** InfluxDB datastore */
-    Warp10DBDatastore(ConfigurationRole.build(CommonDatastoreRoleKeys.Warp10DBDatastore, "Warp 10 DB Datastore", false,
+    Warp10DBDatastore(ConfigurationRole.build(CommonDatastoreRoleKeys.Warp10DBDatastore, "Warp 10 Datastore", false,
      false, false)),
 
     /** InfluxDB global reference */
-    Warp10DBReference(ConfigurationRole.build(CommonDatastoreRoleKeys.Warp10DBReference, "Warp 10 DB Global Reference",
+    Warp10DBReference(ConfigurationRole.build(CommonDatastoreRoleKeys.Warp10DBReference, "Warp 10 Global Reference",
      false, false, false)),
-
 
     /** Cassandra datastore */
     CassandraDatastore(ConfigurationRole.build(CommonDatastoreRoleKeys.CassandraDatastore, "Cassandra Datastore", false,
