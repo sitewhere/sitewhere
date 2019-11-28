@@ -67,8 +67,14 @@ public class Warp10RestClient {
              .header("Content-Type", "text/plain")
              .header(X_WARP_10_TOKEN, writeToken.getToken()).post(RequestBody.create(textPlainMT, data.toInputFormat()))
              .build();
+
             Response response = client.newCall(request).execute();
-            return response.code();
+            int responseCode = response.code();
+            if( responseCode == 500 && response.peekBody(Long.MAX_VALUE).string().contains("Token Expired")) {
+                writeToken = null;
+                responseCode = ingress(data);
+            }
+            return responseCode;
         } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -86,9 +92,14 @@ public class Warp10RestClient {
              .url(url + "/fetch?now=1435091737000000&timespan=-10&selector=~.*" + queryParams.toString())
              .header(X_WARP_10_TOKEN, readToken.getToken()).get()
              .build();
+
             Response response = client.newCall(request).execute();
             String respuestas = response.peekBody(Long.MAX_VALUE).string();
             List<GTSOutput> gtsOutputs = GTSOutput.fromOutputFormat(respuestas);
+            if(response.code() == 500 && respuestas.contains("Token Expired")) {
+                readToken = null;
+                gtsOutputs = fetch(queryParams);
+            }
             return gtsOutputs;
         } catch (IOException e) {
             e.printStackTrace();
@@ -109,7 +120,13 @@ public class Warp10RestClient {
              .header(X_WARP_10_TOKEN, writeToken.getToken()).get()
              .build();
             Response response = client.newCall(request).execute();
-            response.code();
+
+            int responseCode = response.code();
+            if( responseCode == 500 && response.peekBody(Long.MAX_VALUE).string().contains("Token Expired")) {
+                writeToken = null;
+                responseCode = delete(query);
+            }
+            return responseCode;
         } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
