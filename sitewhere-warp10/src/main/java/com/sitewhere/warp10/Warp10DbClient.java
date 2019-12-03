@@ -35,7 +35,7 @@ public class Warp10DbClient extends TenantEngineLifecycleComponent implements ID
     private ILifecycleComponentParameter<String> hostname;
 
    /** Port parameter */
-    private ILifecycleComponentParameter<String> port;
+    private ILifecycleComponentParameter<String> tokenSecret;
 
     private Warp10RestClient warp10RestClient;
 
@@ -53,10 +53,10 @@ public class Warp10DbClient extends TenantEngineLifecycleComponent implements ID
          .makeRequired().build();
         getParameters().add(hostname);
 
-         // Add port.
-        this.port = StringComponentParameter.newBuilder(this, "Port").value(String.valueOf(getConfiguration().getHostname()))
+        // Add token secret.
+        this.tokenSecret = StringComponentParameter.newBuilder(this, "Token secret").value(getConfiguration().getTokenSecret())
          .makeRequired().build();
-        getParameters().add(port);
+        getParameters().add(tokenSecret);
     }
 
     /*
@@ -67,7 +67,7 @@ public class Warp10DbClient extends TenantEngineLifecycleComponent implements ID
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
         super.start(monitor);
-        this.warp10RestClient = Warp10RestClient.newBuilder().withConnectionTo(getConfiguration().getHostname(), configuration.getTokenSecret(), getTenantEngine().getTenant().getToken()).build();
+        this.warp10RestClient = Warp10RestClient.newBuilder().withConnectionTo(configuration.getHostname(), configuration.getTokenSecret(), getTenantEngine().getTenant().getToken()).build();
     }
 
     public int insertGTS(GTSInput gtsInput) {
@@ -90,12 +90,4 @@ public class Warp10DbClient extends TenantEngineLifecycleComponent implements ID
     public void setConfiguration(Warp10Configuration configuration) {
         this.configuration = configuration;
     }
-
-   /* public Warp10RestClient getWarp10RestClient() {
-        return warp10RestClient;
-    }
-
-    public void setWarp10RestClient(Warp10RestClient warp10RestClient) {
-        this.warp10RestClient = warp10RestClient;
-    }*/
 }

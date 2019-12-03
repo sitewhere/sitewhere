@@ -30,7 +30,7 @@ public class Warp10DeviceLocation implements Warp10Converter<IDeviceLocation> {
 
     public static GTSInput toGTS(IDeviceLocation source, boolean isNested) {
         GTSInput gtsInput = GTSInput.builder();
-       Warp10DeviceLocation.toGTS(source, gtsInput, isNested);
+        Warp10DeviceLocation.toGTS(source, gtsInput, isNested);
         return gtsInput;
     }
 

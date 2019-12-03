@@ -60,6 +60,8 @@ public class Warp10RestClient {
         if (writeToken == null) {
             writeToken = getToken(TokenType.WRITE);
         }
+
+        Response response = null;
         try {
             MediaType textPlainMT = MediaType.parse("text/plain; charset=utf-8");
             Request request = new Request.Builder()
@@ -68,7 +70,7 @@ public class Warp10RestClient {
              .header(X_WARP_10_TOKEN, writeToken.getToken()).post(RequestBody.create(textPlainMT, data.toInputFormat()))
              .build();
 
-            Response response = client.newCall(request).execute();
+            response = client.newCall(request).execute();
             int responseCode = response.code();
             if( responseCode == 500 && response.peekBody(Long.MAX_VALUE).string().contains("Token Expired")) {
                 writeToken = null;
@@ -79,6 +81,10 @@ public class Warp10RestClient {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if(response != null) {
+                response.body().close();
+            }
         }
         return 500;
     }
@@ -87,13 +93,16 @@ public class Warp10RestClient {
         if (readToken == null) {
             readToken = getToken(TokenType.READ);
         }
+
+        Response response = null;
+
         try {
             Request request = new Request.Builder()
-             .url(url + "/fetch?now=1435091737000000&timespan=-10&selector=~.*" + queryParams.toString())
+             .url(url + "/fetch?" + queryParams.toString())
              .header(X_WARP_10_TOKEN, readToken.getToken()).get()
              .build();
 
-            Response response = client.newCall(request).execute();
+            response = client.newCall(request).execute();
             String respuestas = response.peekBody(Long.MAX_VALUE).string();
             List<GTSOutput> gtsOutputs = GTSOutput.fromOutputFormat(respuestas);
             if(response.code() == 500 && respuestas.contains("Token Expired")) {
@@ -105,6 +114,10 @@ public class Warp10RestClient {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if(response != null) {
+                response.body().close();
+            }
         }
         return null;
     }
@@ -114,12 +127,15 @@ public class Warp10RestClient {
         if (writeToken == null) {
             writeToken = getToken(TokenType.WRITE);
         }
+
+        Request request = null;
+        Response response = null;
         try {
-            Request request = new Request.Builder()
+            request = new Request.Builder()
              .url(url + "/delete?" + query)
              .header(X_WARP_10_TOKEN, writeToken.getToken()).get()
              .build();
-            Response response = client.newCall(request).execute();
+            response = client.newCall(request).execute();
 
             int responseCode = response.code();
             if( responseCode == 500 && response.peekBody(Long.MAX_VALUE).string().contains("Token Expired")) {
@@ -131,6 +147,10 @@ public class Warp10RestClient {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if(response != null) {
+                response.body().close();
+            }
         }
         return 564;
     }

@@ -229,7 +229,7 @@ public class InstanceManagementModelProvider extends ConfigurationModelProvider 
         builder.attribute((new AttributeNode.Builder("Id", "id", AttributeType.String,
          ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY)
          .description("Unique id for referencing configuration.").makeIndex().makeRequired().build()));
-        CommonDatastoreProvider.addInfluxDbAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY,
+        CommonDatastoreProvider.addWarp10DbAttributes(builder, ConfigurationModelProvider.ATTR_GROUP_CONNECTIVITY,
          ConfigurationModelProvider.ATTR_GROUP_BATCH);
 
         return builder.build();

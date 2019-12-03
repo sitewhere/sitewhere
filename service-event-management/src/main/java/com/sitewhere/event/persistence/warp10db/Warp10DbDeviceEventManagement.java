@@ -32,10 +32,13 @@ import com.sitewhere.warp10.rest.GTSOutput;
 import com.sitewhere.warp10.rest.QueryParams;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponent implements IDeviceEventManagement {
 
-    /** Client */
+    /**
+     * Client
+     */
     private Warp10DbClient client;
 
     public Warp10DbDeviceEventManagement() {
@@ -69,8 +72,8 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
         queryParams.addParameter(Warp10DeviceEvent.PROP_ID, eventId.toString());
         List<GTSOutput> founds = getClient().findGTS(queryParams);
 
-        if(founds != null && founds.size() > 0) {
-            return  Warp10DeviceEventManagementPersistence.unmarshalEvent(founds.get(0));
+        if (founds != null && founds.size() > 0) {
+            return Warp10DeviceEventManagementPersistence.unmarshalEvent(founds.get(0));
         }
         return null;
     }
@@ -81,14 +84,15 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
         queryParams.addParameter(Warp10DeviceEvent.PROP_ALTERNATE_ID, alternateId);
         List<GTSOutput> founds = getClient().findGTS(queryParams);
 
-        if(founds != null && founds.size() > 0) {
-            return  Warp10DeviceEventManagementPersistence.unmarshalEvent(founds.get(0));
+        if (founds != null && founds.size() > 0) {
+            return Warp10DeviceEventManagementPersistence.unmarshalEvent(founds.get(0));
         }
         return null;
     }
 
     /**
      * Assert that a device assignment exists and throw an exception if not.
+     *
      * @return
      * @throws SiteWhereException
      */
@@ -109,7 +113,7 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
             DeviceMeasurement measurements = DeviceEventManagementPersistence.deviceMeasurementCreateLogic(request, assignment);
             GTSInput gtsMeasurement = Warp10DeviceMeasurement.toGTS(measurements, false);
             int ingress = getClient().insertGTS(gtsMeasurement);
-            if(ingress == 200) {
+            if (ingress == 200) {
                 result.add(measurements);
             }
         }
@@ -120,17 +124,15 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
     public ISearchResults<IDeviceMeasurement> listDeviceMeasurementsForIndex(DeviceEventIndex index, List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
         QueryParams queryParams = QueryParams.builder();
         queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Measurement.name());
+        queryParams.addParameter(getFieldForIndex(index), entityIds.stream().map(Object::toString).collect(Collectors.joining("|")));
 
         List<IDeviceMeasurement> results = new ArrayList();
-        for (UUID uuid: entityIds) {
-            queryParams.addParameter(getFieldForIndex(index), uuid.toString());
-            List<GTSOutput> fetch = getClient().findGTS(queryParams);
-
-            for (GTSOutput gtsOutput : fetch) {
-                DeviceMeasurement deviceMeasurement = Warp10DeviceMeasurement.fromGTS(gtsOutput, false);
-                results.add(deviceMeasurement);
-            }
+        List<GTSOutput> fetch = getClient().findGTS(queryParams);
+        for (GTSOutput gtsOutput : fetch) {
+            DeviceMeasurement deviceMeasurement = Warp10DeviceMeasurement.fromGTS(gtsOutput, false);
+            results.add(deviceMeasurement);
         }
+
         return new DeviceMeasurementsSearchResults(results);
     }
 
@@ -144,7 +146,7 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
             GTSInput gtsLocations = Warp10DeviceLocation.toGTS(location, false);
 
             int ingress = getClient().insertGTS(gtsLocations);
-            if(ingress == 200) {
+            if (ingress == 200) {
                 result.add(location);
             }
         }
@@ -155,15 +157,13 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
     public ISearchResults<IDeviceLocation> listDeviceLocationsForIndex(DeviceEventIndex index, List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
         QueryParams queryParams = QueryParams.builder();
         queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Location.name());
+        queryParams.addParameter(getFieldForIndex(index), entityIds.stream().map(Object::toString).collect(Collectors.joining("|")));
 
         List<IDeviceLocation> results = new ArrayList();
-        for (UUID uuid: entityIds) {
-            queryParams.addParameter(getFieldForIndex(index), uuid.toString());
-            List<GTSOutput> fetch = getClient().findGTS(queryParams);
-            for (GTSOutput gtsOutput : fetch) {
-                DeviceLocation deviceLocation = Warp10DeviceLocation.fromGTS(gtsOutput, false);
-                results.add(deviceLocation);
-            }
+        List<GTSOutput> fetch = getClient().findGTS(queryParams);
+        for (GTSOutput gtsOutput : fetch) {
+            DeviceLocation deviceLocation = Warp10DeviceLocation.fromGTS(gtsOutput, false);
+            results.add(deviceLocation);
         }
         return new SearchResults<IDeviceLocation>(results);
     }
@@ -177,7 +177,7 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
             DeviceAlert alert = DeviceEventManagementPersistence.deviceAlertCreateLogic(assignment, request);
             GTSInput gtsAlert = Warp10DeviceAlert.toGTS(alert, false);
             int ingress = getClient().insertGTS(gtsAlert);
-            if(ingress == 200) {
+            if (ingress == 200) {
                 result.add(alert);
             }
         }
@@ -188,15 +188,13 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
     public ISearchResults<IDeviceAlert> listDeviceAlertsForIndex(DeviceEventIndex index, List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
         QueryParams queryParams = QueryParams.builder();
         queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Alert.name());
+        queryParams.addParameter(getFieldForIndex(index), entityIds.stream().map(Object::toString).collect(Collectors.joining("|")));
 
         List<IDeviceAlert> results = new ArrayList();
-        for (UUID uuid: entityIds) {
-            queryParams.addParameter(getFieldForIndex(index), uuid.toString());
-            List<GTSOutput> fetch = getClient().findGTS(queryParams);
-            for (GTSOutput gtsOutput : fetch) {
-                DeviceAlert deviceAlert = Warp10DeviceAlert.fromGTS(gtsOutput, false);
-                results.add(deviceAlert);
-            }
+        List<GTSOutput> fetch = getClient().findGTS(queryParams);
+        for (GTSOutput gtsOutput : fetch) {
+            DeviceAlert deviceAlert = Warp10DeviceAlert.fromGTS(gtsOutput, false);
+            results.add(deviceAlert);
         }
         return new SearchResults<IDeviceAlert>(results);
     }
@@ -215,7 +213,7 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
             GTSInput gtsCi = Warp10DeviceCommandInvocation.toGTS(ci);
 
             int ingress = getClient().insertGTS(gtsCi);
-            if(ingress == 200) {
+            if (ingress == 200) {
                 result.add(ci);
             }
         }
@@ -229,15 +227,13 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
         queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandInvocation.name());
         queryParams.setStartDate(criteria.getStartDate());
         queryParams.setEndDate(criteria.getEndDate());
+        queryParams.addParameter(getFieldForIndex(index), entityIds.stream().map(Object::toString).collect(Collectors.joining("|")));
 
         List<IDeviceCommandInvocation> results = new ArrayList();
-        for (UUID uuid: entityIds) {
-            queryParams.addParameter(getFieldForIndex(index), uuid.toString());
-            List<GTSOutput> fetch = getClient().findGTS(queryParams);
-            for (GTSOutput gtsOutput : fetch) {
-                DeviceCommandInvocation deviceCommandInvocation = Warp10DeviceCommandInvocation.fromGTS(gtsOutput);
-                results.add(deviceCommandInvocation);
-            }
+        List<GTSOutput> fetch = getClient().findGTS(queryParams);
+        for (GTSOutput gtsOutput : fetch) {
+            DeviceCommandInvocation deviceCommandInvocation = Warp10DeviceCommandInvocation.fromGTS(gtsOutput);
+            results.add(deviceCommandInvocation);
         }
         return new SearchResults<IDeviceCommandInvocation>(results);
     }
@@ -252,7 +248,7 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
             GTSInput gtsResponse = Warp10DeviceCommandResponse.toGTS(response);
             int ingress = getClient().insertGTS(gtsResponse);
 
-            if(ingress == 200) {
+            if (ingress == 200) {
                 result.add(response);
             }
         }
@@ -278,17 +274,13 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
     public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForIndex(DeviceEventIndex index, List<UUID> entityIds, IDateRangeSearchCriteria criteria) throws SiteWhereException {
         QueryParams queryParams = QueryParams.builder();
         queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandResponse.name());
-        queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_DATE, "-1"); //TODO REVISAR
+        queryParams.addParameter(getFieldForIndex(index), entityIds.stream().map(Object::toString).collect(Collectors.joining("|")));
 
         List<IDeviceCommandResponse> results = new ArrayList();
-        for (UUID uuid: entityIds) {
-            queryParams.addParameter(getFieldForIndex(index), uuid.toString());
-            List<GTSOutput> fetch = getClient().findGTS(queryParams);
-
-            for (GTSOutput gtsOutput : fetch) {
-                DeviceCommandResponse deviceCommandResponse = Warp10DeviceCommandResponse.fromGTS(gtsOutput);
-                results.add(deviceCommandResponse);
-            }
+        List<GTSOutput> fetch = getClient().findGTS(queryParams);
+        for (GTSOutput gtsOutput : fetch) {
+            DeviceCommandResponse deviceCommandResponse = Warp10DeviceCommandResponse.fromGTS(gtsOutput);
+            results.add(deviceCommandResponse);
         }
         return new SearchResults<IDeviceCommandResponse>(results);
     }
@@ -297,12 +289,11 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
     public List<IDeviceStateChange> addDeviceStateChanges(UUID deviceAssignmentId, IDeviceStateChangeCreateRequest... requests) throws SiteWhereException {
         List<IDeviceStateChange> result = new ArrayList<>();
         IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
-
         for (IDeviceStateChangeCreateRequest request : requests) {
             DeviceStateChange state = DeviceEventManagementPersistence.deviceStateChangeCreateLogic(assignment, request);
             GTSInput gtsState = Warp10DeviceStateChange.toGTS(state);
             int ingress = getClient().insertGTS(gtsState);
-            if(ingress == 200) {
+            if (ingress == 200) {
                 result.add(state);
             }
         }
@@ -314,20 +305,18 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
 
         QueryParams queryParams = QueryParams.builder();
         queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_TYPE, DeviceEventType.StateChange.name());
-        queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_DATE, "-1"); //TODO REVISAR
         queryParams.setStartDate(criteria.getStartDate());
         queryParams.setEndDate(criteria.getEndDate());
+        queryParams.addParameter(getFieldForIndex(index), entityIds.stream().map(Object::toString).collect(Collectors.joining("|")));
 
         List<IDeviceStateChange> results = new ArrayList();
-        for (UUID uuid: entityIds) {
-            queryParams.addParameter(getFieldForIndex(index), uuid.toString());
-            List<GTSOutput> fetch = getClient().findGTS(queryParams);
+        List<GTSOutput> fetch = getClient().findGTS(queryParams);
 
-            for (GTSOutput gtsOutput : fetch) {
-                DeviceStateChange deviceStateChange = Warp10DeviceStateChange.fromGTS(gtsOutput);
-                results.add(deviceStateChange);
-            }
+        for (GTSOutput gtsOutput : fetch) {
+            DeviceStateChange deviceStateChange = Warp10DeviceStateChange.fromGTS(gtsOutput);
+            results.add(deviceStateChange);
         }
+
         return new SearchResults<IDeviceStateChange>(results);
     }
 
