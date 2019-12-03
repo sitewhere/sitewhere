@@ -19,6 +19,8 @@ import com.sitewhere.microservice.model.ScriptedModelInitializer;
 import com.sitewhere.microservice.scripting.Binding;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.scripting.IScriptVariables;
+import com.sitewhere.spi.microservice.scripting.ScriptScope;
+import com.sitewhere.spi.microservice.scripting.ScriptType;
 
 /**
  * Implementation of {@link IDeviceModelInitializer} that delegates creation
@@ -44,6 +46,6 @@ public class ScriptedDeviceModelInitializer extends ScriptedModelInitializer<Voi
 		new DeviceManagementRequestBuilder(deviceManagement));
 	binding.setVariable(IScriptVariables.VAR_ASSET_MANAGEMENT_BUILDER,
 		new AssetManagementRequestBuilder(assetManagement));
-	run(binding);
+	run(ScriptScope.TenantEngine, ScriptType.Bootstrap, binding);
     }
 }

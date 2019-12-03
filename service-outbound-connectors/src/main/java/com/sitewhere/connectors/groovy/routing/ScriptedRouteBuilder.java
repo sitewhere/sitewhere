@@ -16,6 +16,8 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.microservice.scripting.IScriptVariables;
+import com.sitewhere.spi.microservice.scripting.ScriptScope;
+import com.sitewhere.spi.microservice.scripting.ScriptType;
 
 /**
  * Uses script to build routes for event processor routing.
@@ -40,7 +42,7 @@ public class ScriptedRouteBuilder extends ScriptingComponent<String> implements 
 	binding.setVariable("device", device);
 	binding.setVariable("assignment", assignment);
 	try {
-	    Object result = run(binding);
+	    Object result = run(ScriptScope.TenantEngine, ScriptType.Managed, binding);
 	    if (!(result instanceof String)) {
 		throw new SiteWhereException("Groovy route builder expected script to return a String.");
 	    }

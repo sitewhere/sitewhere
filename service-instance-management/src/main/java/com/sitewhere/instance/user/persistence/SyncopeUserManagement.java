@@ -530,6 +530,8 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void run() {
 	    IInstanceSettings settings = getMicroservice().getInstanceSettings();
+	    getLogger().info(String.format("Instance Settings:\n\n%s\n",
+		    MarshalUtils.marshalJsonAsPrettyString(getMicroservice().getInstanceSettings())));
 	    String syncopeUrl = String.format("http://%s:%d/syncope/rest", settings.getSyncopeHost(),
 		    settings.getSyncopePort());
 	    SyncopeClientFactoryBean clientFactory = new SyncopeClientFactoryBean().setAddress(syncopeUrl);

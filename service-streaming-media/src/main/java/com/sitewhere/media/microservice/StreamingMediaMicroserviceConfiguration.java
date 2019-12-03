@@ -8,8 +8,6 @@
 package com.sitewhere.media.microservice;
 
 import com.sitewhere.media.spi.microservice.IStreamingMediaMicroservice;
-import com.sitewhere.microservice.instance.InstanceSettings;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Spring bean configuration for microservice.
@@ -18,9 +16,5 @@ public class StreamingMediaMicroserviceConfiguration {
 
     public IStreamingMediaMicroservice eventSearchMicroservice() {
 	return new StreamingMediaMicroservice();
-    }
-
-    public IInstanceSettings instanceSettings() {
-	return new InstanceSettings();
     }
 }

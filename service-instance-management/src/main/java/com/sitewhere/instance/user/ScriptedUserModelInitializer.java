@@ -17,6 +17,8 @@ import com.sitewhere.microservice.model.ScriptedModelInitializer;
 import com.sitewhere.microservice.scripting.Binding;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.scripting.IScriptVariables;
+import com.sitewhere.spi.microservice.scripting.ScriptScope;
+import com.sitewhere.spi.microservice.scripting.ScriptType;
 
 /**
  * Implementation of {@link IUserModelInitializer} that delegates creation logic
@@ -36,6 +38,6 @@ public class ScriptedUserModelInitializer extends ScriptedModelInitializer<Void>
 	Binding binding = new Binding();
 	binding.setVariable(IScriptVariables.VAR_LOGGER, LOGGER);
 	binding.setVariable("userBuilder", new UserManagementRequestBuilder(userManagement));
-	run(binding);
+	run(ScriptScope.Microservice, ScriptType.Bootstrap, binding);
     }
 }

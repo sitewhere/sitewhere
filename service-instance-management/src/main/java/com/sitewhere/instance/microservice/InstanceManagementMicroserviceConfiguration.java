@@ -8,16 +8,10 @@
 package com.sitewhere.instance.microservice;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
-import com.sitewhere.microservice.instance.InstanceSettings;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 public class InstanceManagementMicroserviceConfiguration {
 
     public IInstanceManagementMicroservice<?> instanceManagementMicroservice() {
 	return new InstanceManagementMicroservice();
-    }
-
-    public IInstanceSettings instanceSettings() {
-	return new InstanceSettings();
     }
 }

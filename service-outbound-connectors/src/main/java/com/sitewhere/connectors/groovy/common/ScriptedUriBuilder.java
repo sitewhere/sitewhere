@@ -18,6 +18,8 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.microservice.scripting.IScriptVariables;
+import com.sitewhere.spi.microservice.scripting.ScriptScope;
+import com.sitewhere.spi.microservice.scripting.ScriptType;
 
 /**
  * Implementation of {@link IUriBuilder} that uses a script to build the URI.
@@ -48,6 +50,6 @@ public class ScriptedUriBuilder extends ScriptingComponent<String> implements IU
 	binding.setVariable(IScriptVariables.VAR_EVENT, event);
 	binding.setVariable(IScriptVariables.VAR_ASSIGNMENT, assignment);
 	binding.setVariable(IScriptVariables.VAR_DEVICE, device);
-	return (String) run(binding);
+	return (String) run(ScriptScope.TenantEngine, ScriptType.Managed, binding);
     }
 }

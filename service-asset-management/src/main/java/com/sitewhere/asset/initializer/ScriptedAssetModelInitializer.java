@@ -16,6 +16,8 @@ import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.model.ScriptedModelInitializer;
 import com.sitewhere.microservice.scripting.Binding;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.scripting.ScriptScope;
+import com.sitewhere.spi.microservice.scripting.ScriptType;
 
 /**
  * Implementation of {@link IAssetModelInitializer} that delegates creation
@@ -35,6 +37,6 @@ public class ScriptedAssetModelInitializer extends ScriptedModelInitializer<Void
 	Binding binding = new Binding();
 	binding.setVariable("logger", LOGGER);
 	binding.setVariable("assetBuilder", new AssetManagementRequestBuilder(assetManagement));
-	run(binding);
+	run(ScriptScope.TenantEngine, ScriptType.Bootstrap, binding);
     }
 }

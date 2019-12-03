@@ -16,6 +16,8 @@ import com.sitewhere.microservice.scripting.Binding;
 import com.sitewhere.microservice.tenant.TenantManagementRequestBuilder;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.scripting.IScriptVariables;
+import com.sitewhere.spi.microservice.scripting.ScriptScope;
+import com.sitewhere.spi.microservice.scripting.ScriptType;
 import com.sitewhere.spi.microservice.tenant.ITenantManagement;
 
 /**
@@ -33,6 +35,6 @@ public class ScriptedTenantModelInitializer extends ScriptedModelInitializer<Voi
 	binding.setVariable(IScriptVariables.VAR_LOGGER, LOGGER);
 	binding.setVariable(IScriptVariables.VAR_TENANT_MANAGEMENT_BUILDER,
 		new TenantManagementRequestBuilder(tenantManagement));
-	run(binding);
+	run(ScriptScope.Microservice, ScriptType.Bootstrap, binding);
     }
 }

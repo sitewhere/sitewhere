@@ -8,8 +8,6 @@
 package com.sitewhere.connectors.microservice;
 
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsMicroservice;
-import com.sitewhere.microservice.instance.InstanceSettings;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Spring bean configuration for microservice.
@@ -18,9 +16,5 @@ public class OutboundConnectorsMicroserviceConfiguration {
 
     public IOutboundConnectorsMicroservice outboundConnectorsMicroservice() {
 	return new OutboundConnectorsMicroservice();
-    }
-
-    public IInstanceSettings instanceSettings() {
-	return new InstanceSettings();
     }
 }

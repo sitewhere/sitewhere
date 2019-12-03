@@ -8,8 +8,6 @@
 package com.sitewhere.event.microservice;
 
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
-import com.sitewhere.microservice.instance.InstanceSettings;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Spring bean configuration for microservice.
@@ -18,9 +16,5 @@ public class EventManagementMicroserviceConfiguration {
 
     public IEventManagementMicroservice eventManagementMicroservice() {
 	return new EventManagementMicroservice();
-    }
-
-    public IInstanceSettings instanceSettings() {
-	return new InstanceSettings();
     }
 }

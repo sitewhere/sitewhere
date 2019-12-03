@@ -8,8 +8,6 @@
 package com.sitewhere.device.microservice;
 
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
-import com.sitewhere.microservice.instance.InstanceSettings;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Spring bean configuration for microservice.
@@ -18,9 +16,5 @@ public class DeviceManagementMicroserviceConfiguration {
 
     public IDeviceManagementMicroservice deviceManagementMicroservice() {
 	return new DeviceManagementMicroservice();
-    }
-
-    public IInstanceSettings instanceSettings() {
-	return new InstanceSettings();
     }
 }

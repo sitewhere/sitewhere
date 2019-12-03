@@ -23,6 +23,8 @@ import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.microservice.scripting.IScriptVariables;
+import com.sitewhere.spi.microservice.scripting.ScriptScope;
+import com.sitewhere.spi.microservice.scripting.ScriptType;
 
 /**
  * Implementation of {@link IOutboundCommandRouter} that uses scripts to perform
@@ -105,7 +107,7 @@ public class ScriptedCommandRouter extends ScriptingComponent<String> implements
 	    binding.setVariable(IScriptVariables.VAR_SYSTEM_COMMAND, system);
 	    binding.setVariable(IScriptVariables.VAR_NESTING_CONTEXT, nesting);
 	    binding.setVariable(IScriptVariables.VAR_ACTIVE_ASSIGNMENTS, assignments);
-	    return run(binding);
+	    return run(ScriptScope.TenantEngine, ScriptType.Managed, binding);
 	} catch (SiteWhereException e) {
 	    throw new SiteWhereException("Unable to run router script.", e);
 	}

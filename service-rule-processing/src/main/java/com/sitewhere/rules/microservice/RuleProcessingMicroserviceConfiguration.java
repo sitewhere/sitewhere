@@ -7,9 +7,7 @@
  */
 package com.sitewhere.rules.microservice;
 
-import com.sitewhere.microservice.instance.InstanceSettings;
 import com.sitewhere.rules.spi.microservice.IRuleProcessingMicroservice;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Spring bean configuration for microservice.
@@ -18,9 +16,5 @@ public class RuleProcessingMicroserviceConfiguration {
 
     public IRuleProcessingMicroservice ruleProcessingMicroservice() {
 	return new RuleProcessingMicroservice();
-    }
-
-    public IInstanceSettings instanceSettings() {
-	return new InstanceSettings();
     }
 }

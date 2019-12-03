@@ -74,12 +74,14 @@ public class EventManagementMicroservice extends
     }
 
     /*
-     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
-     * microserviceInitialize(com.sitewhere.spi.microservice.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.multitenant.MultitenantMicroservice#initialize(com
+     * .sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+
 	// Create GRPC components.
 	createGrpcComponents();
 
@@ -97,12 +99,14 @@ public class EventManagementMicroservice extends
     }
 
     /*
-     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
-     * microserviceStart(com.sitewhere.spi.microservice.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.multitenant.MultitenantMicroservice#start(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
@@ -117,12 +121,11 @@ public class EventManagementMicroservice extends
     }
 
     /*
-     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
-     * microserviceStop(com.sitewhere.spi.microservice.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#stop(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
@@ -134,6 +137,8 @@ public class EventManagementMicroservice extends
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
+
+	super.stop(monitor);
     }
 
     /**

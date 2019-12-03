@@ -12,8 +12,11 @@ import com.sitewhere.instance.tenant.ScriptedTenantModelInitializer;
 import com.sitewhere.instance.user.ScriptedUserModelInitializer;
 import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.microservice.exception.ConcurrentK8sUpdateException;
+import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.lifecycle.LifecycleComponent;
+import com.sitewhere.microservice.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
@@ -29,17 +32,74 @@ import io.sitewhere.k8s.crd.instance.dataset.InstanceDatasetTemplate;
 public class InstanceBoostrapper extends LifecycleComponent implements IInstanceBootstrapper {
 
     /** Functional area for tenant management */
-    private static final String FA_TENANT_MANGEMENT = "tenantManagement";
+    public static final String FA_TENANT_MANGEMENT = "tenantManagement";
 
     /** Functional area for user management */
-    private static final String FA_USER_MANGEMENT = "userManagement";
+    public static final String FA_USER_MANGEMENT = "userManagement";
+
+    /** Tenant model initializer */
+    private ScriptedTenantModelInitializer tenantModelInitializer = new ScriptedTenantModelInitializer();
+
+    /** User model initializer */
+    private ScriptedUserModelInitializer userModelInitializer = new ScriptedUserModelInitializer();
 
     public InstanceBoostrapper() {
 	super(LifecycleComponentType.Other);
     }
 
+    /*
+     * @see com.sitewhere.microservice.lifecycle.LifecycleComponent#initialize(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+	ICompositeLifecycleStep initialize = new CompositeLifecycleStep("Initialize");
+
+	// Initialize tenant model initializer.
+	initialize.addInitializeStep(this, getTenantModelInitializer(), true);
+
+	// Initialize user model initializer.
+	initialize.addInitializeStep(this, getUserModelInitializer(), true);
+
+	// Execute initialization steps.
+	initialize.execute(monitor);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.microservice.lifecycle.LifecycleComponent#start(com.sitewhere.
+     * spi.microservice.lifecycle.ILifecycleProgressMonitor)
+     */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start");
+
+	// Start tenant model initializer.
+	start.addStartStep(this, getTenantModelInitializer(), true);
+
+	// Start user model initializer.
+	start.addStartStep(this, getUserModelInitializer(), true);
+
+	// Execute bootstrap logic.
+	start.addStep(new SimpleLifecycleStep("Bootstrap") {
+
+	    @Override
+	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		bootstrap();
+	    }
+	});
+
+	// Execute start steps.
+	start.execute(monitor);
+    }
+
+    /**
+     * Bootstrap instance.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void bootstrap() throws SiteWhereException {
 	// Load latest instance configuration from k8s.
 	SiteWhereInstance instance = getMicroservice().loadInstanceConfiguration();
 	instance = createStatusIfMissing(instance);
@@ -96,16 +156,6 @@ public class InstanceBoostrapper extends LifecycleComponent implements IInstance
     }
 
     /**
-     * Get filename based on functional area.
-     * 
-     * @param functionalArea
-     * @return
-     */
-    protected String getFileNameForFunctionalArea(String functionalArea) {
-	return String.format("%s.groovy", functionalArea);
-    }
-
-    /**
      * Bootstrap tenant management using Groovy script.
      * 
      * @param template
@@ -116,12 +166,9 @@ public class InstanceBoostrapper extends LifecycleComponent implements IInstance
 	if (tenantManagement != null) {
 	    getLogger().info(String.format("Initializing tenant management from template '%s'.",
 		    template.getMetadata().getName()));
-	    // String scriptName = getFileNameForFunctionalArea(FA_TENANT_MANGEMENT);
-	    // getScriptSynchronizer().add(getScriptContext(), ScriptType.Initializer,
-	    // scriptName,
-	    // tenantManagement.getBytes());
-	    ScriptedTenantModelInitializer initializer = new ScriptedTenantModelInitializer();
-	    initializer.initialize(getMicroservice().getTenantManagement());
+	    getMicroservice().getScriptManager().addBootstrapScript(FA_TENANT_MANGEMENT, tenantManagement);
+	    getTenantModelInitializer().setScriptId(FA_TENANT_MANGEMENT);
+	    getTenantModelInitializer().initialize(getMicroservice().getTenantManagement());
 	    getLogger().info(String.format("Completed execution of tenant management template '%s'.",
 		    template.getMetadata().getName()));
 	}
@@ -138,12 +185,9 @@ public class InstanceBoostrapper extends LifecycleComponent implements IInstance
 	if (userManagement != null) {
 	    getLogger().info(String.format("Initializing user management from template '%s'.",
 		    template.getMetadata().getName()));
-	    // String scriptName = getFileNameForFunctionalArea(FA_USER_MANGEMENT);
-	    // getScriptSynchronizer().add(getScriptContext(), ScriptType.Initializer,
-	    // scriptName,
-	    // userManagement.getBytes());
-	    ScriptedUserModelInitializer initializer = new ScriptedUserModelInitializer();
-	    initializer.initialize(getUserManagement());
+	    getMicroservice().getScriptManager().addBootstrapScript(FA_USER_MANGEMENT, userManagement);
+	    getUserModelInitializer().setScriptId(FA_USER_MANGEMENT);
+	    getUserModelInitializer().initialize(getUserManagement());
 	    getLogger().info(String.format("Completed execution of user management template '%s'.",
 		    template.getMetadata().getName()));
 	}
@@ -175,6 +219,14 @@ public class InstanceBoostrapper extends LifecycleComponent implements IInstance
 		throw new SiteWhereException("Failed to lock instance for bootstrap due to interrupt.");
 	    }
 	}
+    }
+
+    protected ScriptedTenantModelInitializer getTenantModelInitializer() {
+	return tenantModelInitializer;
+    }
+
+    protected ScriptedUserModelInitializer getUserModelInitializer() {
+	return userModelInitializer;
     }
 
     protected IUserManagement getUserManagement() {

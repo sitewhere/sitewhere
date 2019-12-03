@@ -105,12 +105,14 @@ public class InstanceManagementMicroservice
     }
 
     /*
-     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
-     * microserviceInitialize(com.sitewhere.spi.microservice.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.configuration.ConfigurableMicroservice#initialize(
+     * com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+
 	// Create dataset bootstrapper.
 	this.instanceBootstrapper = new InstanceBoostrapper();
 
@@ -199,14 +201,14 @@ public class InstanceManagementMicroservice
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.microservice.spi.IGlobalMicroservice#microserviceStart(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.microservice.lifecycle.LifecycleComponent#start(com.sitewhere.
+     * spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
@@ -248,13 +250,12 @@ public class InstanceManagementMicroservice
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.IGlobalMicroservice#microserviceStop(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.lifecycle.LifecycleComponent#stop(com.sitewhere.
+     * spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
@@ -293,6 +294,8 @@ public class InstanceManagementMicroservice
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
+
+	super.stop(monitor);
     }
 
     /*

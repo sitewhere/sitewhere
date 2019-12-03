@@ -9,8 +9,6 @@ package com.sitewhere.instance.user.persistence;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import com.sitewhere.microservice.persistence.Persistence;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
@@ -28,8 +26,8 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
  */
 public class UserManagementPersistenceLogic extends Persistence {
 
-    @Inject
-    private static PasswordEncoder PASSWORD_ENCODER;
+    // TODO: Replace with globally configurable method.
+    private static PasswordEncoder PASSWORD_ENCODER = new PasswordEncoder();
 
     /**
      * Common logic for creating a user based on an incoming request.

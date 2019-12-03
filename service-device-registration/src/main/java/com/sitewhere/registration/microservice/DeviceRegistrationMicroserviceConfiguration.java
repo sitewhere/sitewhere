@@ -7,9 +7,7 @@
  */
 package com.sitewhere.registration.microservice;
 
-import com.sitewhere.microservice.instance.InstanceSettings;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Spring bean configuration for microservice.
@@ -18,9 +16,5 @@ public class DeviceRegistrationMicroserviceConfiguration {
 
     public IDeviceRegistrationMicroservice deviceRegistrationMicroservice() {
 	return new DeviceRegistrationMicroservice();
-    }
-
-    public IInstanceSettings instanceSettings() {
-	return new InstanceSettings();
     }
 }

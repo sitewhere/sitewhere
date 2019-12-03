@@ -7,9 +7,7 @@
  */
 package com.sitewhere.search.microservice;
 
-import com.sitewhere.microservice.instance.InstanceSettings;
 import com.sitewhere.search.spi.microservice.IEventSearchMicroservice;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Spring bean configuration for microservice.
@@ -18,9 +16,5 @@ public class EventSearchMicroserviceConfiguration {
 
     public IEventSearchMicroservice eventSearchMicroservice() {
 	return new EventSearchMicroservice();
-    }
-
-    public IInstanceSettings instanceSettings() {
-	return new InstanceSettings();
     }
 }

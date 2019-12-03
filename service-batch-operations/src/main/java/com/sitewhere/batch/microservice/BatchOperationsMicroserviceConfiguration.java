@@ -8,8 +8,6 @@
 package com.sitewhere.batch.microservice;
 
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
-import com.sitewhere.microservice.instance.InstanceSettings;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Spring bean configuration for microservice.
@@ -18,9 +16,5 @@ public class BatchOperationsMicroserviceConfiguration {
 
     public IBatchOperationsMicroservice batchOperationsMicroservice() {
 	return new BatchOperationsMicroservice();
-    }
-
-    public IInstanceSettings instanceSettings() {
-	return new InstanceSettings();
     }
 }

@@ -8,8 +8,6 @@
 package com.sitewhere.commands.microservice;
 
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryMicroservice;
-import com.sitewhere.microservice.instance.InstanceSettings;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 
 /**
  * Spring bean configuration for microservice.
@@ -18,9 +16,5 @@ public class CommandDeliveryMicroserviceConfiguration {
 
     public ICommandDeliveryMicroservice commandDeliveryMicroservice() {
 	return new CommandDeliveryMicroservice();
-    }
-
-    public IInstanceSettings instanceSettings() {
-	return new InstanceSettings();
     }
 }

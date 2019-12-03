@@ -17,6 +17,8 @@ import com.sitewhere.microservice.scripting.Binding;
 import com.sitewhere.schedule.spi.initializer.IScheduleModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.scripting.IScriptVariables;
+import com.sitewhere.spi.microservice.scripting.ScriptScope;
+import com.sitewhere.spi.microservice.scripting.ScriptType;
 
 /**
  * Implementation of {@link IScheduleModelInitializer} that delegates creation
@@ -38,6 +40,6 @@ public class ScriptedScheduleModelInitializer extends ScriptedModelInitializer<V
 	Binding binding = new Binding();
 	binding.setVariable(IScriptVariables.VAR_LOGGER, LOGGER);
 	binding.setVariable("scheduleBuilder", new ScheduleManagementRequestBuilder(scheduleManagement));
-	run(binding);
+	run(ScriptScope.TenantEngine, ScriptType.Bootstrap, binding);
     }
 }

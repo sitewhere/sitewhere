@@ -65,12 +65,14 @@ public class DeviceRegistrationMicroservice extends
     }
 
     /*
-     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
-     * microserviceInitialize(com.sitewhere.spi.microservice.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.multitenant.MultitenantMicroservice#initialize(com
+     * .sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+
 	// Create GRPC components.
 	createGrpcComponents();
 
@@ -85,12 +87,14 @@ public class DeviceRegistrationMicroservice extends
     }
 
     /*
-     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
-     * microserviceStart(com.sitewhere.spi.microservice.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.multitenant.MultitenantMicroservice#start(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
@@ -102,12 +106,11 @@ public class DeviceRegistrationMicroservice extends
     }
 
     /*
-     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
-     * microserviceStop(com.sitewhere.spi.microservice.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#stop(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
@@ -116,6 +119,8 @@ public class DeviceRegistrationMicroservice extends
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
+
+	super.stop(monitor);
     }
 
     /**

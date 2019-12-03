@@ -21,6 +21,8 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.scripting.IScriptVariables;
+import com.sitewhere.spi.microservice.scripting.ScriptScope;
+import com.sitewhere.spi.microservice.scripting.ScriptType;
 
 /**
  * Implementation of {@link IDeviceEventFilter} that uses a Groovy script to
@@ -110,7 +112,7 @@ public class ScriptedFilter extends DeviceEventFilter {
 	    binding.setVariable(IScriptVariables.VAR_DEVICE, device);
 	    binding.setVariable(IScriptVariables.VAR_DEVICE_MANAGEMENT_BUILDER,
 		    new DeviceManagementRequestBuilder(deviceManagement));
-	    return run(binding);
+	    return run(ScriptScope.TenantEngine, ScriptType.Managed, binding);
 	}
     }
 
