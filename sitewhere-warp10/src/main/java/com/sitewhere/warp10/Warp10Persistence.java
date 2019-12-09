@@ -7,5 +7,21 @@
  */
 package com.sitewhere.warp10;
 
+import com.sitewhere.spi.search.IDateRangeSearchCriteria;
+import com.sitewhere.warp10.rest.QueryParams;
+
 public class Warp10Persistence {
+
+    public static void addDateSearchCriteria(QueryParams queryParams, IDateRangeSearchCriteria criteria) {
+
+        if ((criteria.getStartDate() == null) && (criteria.getEndDate() == null)) {
+            return;
+        }
+        if (criteria.getStartDate() != null) {
+            queryParams.setStartDate(criteria.getStartDate());
+        }
+        if (criteria.getEndDate() != null) {
+            queryParams.setEndDate(criteria.getEndDate());
+        }
+    }
 }

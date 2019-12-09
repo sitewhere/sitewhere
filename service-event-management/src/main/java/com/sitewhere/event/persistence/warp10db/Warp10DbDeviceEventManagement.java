@@ -27,6 +27,7 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.warp10.Warp10DbClient;
+import com.sitewhere.warp10.Warp10Persistence;
 import com.sitewhere.warp10.rest.GTSInput;
 import com.sitewhere.warp10.rest.GTSOutput;
 import com.sitewhere.warp10.rest.QueryParams;
@@ -125,6 +126,7 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
         QueryParams queryParams = QueryParams.builder();
         queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Measurement.name());
         queryParams.addParameter(getFieldForIndex(index), entityIds.stream().map(Object::toString).collect(Collectors.joining("|")));
+        Warp10Persistence.addDateSearchCriteria(queryParams, criteria);
 
         List<IDeviceMeasurement> results = new ArrayList();
         List<GTSOutput> fetch = getClient().findGTS(queryParams);
@@ -158,6 +160,7 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
         QueryParams queryParams = QueryParams.builder();
         queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Location.name());
         queryParams.addParameter(getFieldForIndex(index), entityIds.stream().map(Object::toString).collect(Collectors.joining("|")));
+        Warp10Persistence.addDateSearchCriteria(queryParams, criteria);
 
         List<IDeviceLocation> results = new ArrayList();
         List<GTSOutput> fetch = getClient().findGTS(queryParams);
@@ -189,6 +192,7 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
         QueryParams queryParams = QueryParams.builder();
         queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Alert.name());
         queryParams.addParameter(getFieldForIndex(index), entityIds.stream().map(Object::toString).collect(Collectors.joining("|")));
+        Warp10Persistence.addDateSearchCriteria(queryParams, criteria);
 
         List<IDeviceAlert> results = new ArrayList();
         List<GTSOutput> fetch = getClient().findGTS(queryParams);
@@ -225,9 +229,8 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
 
         QueryParams queryParams = QueryParams.builder();
         queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandInvocation.name());
-        queryParams.setStartDate(criteria.getStartDate());
-        queryParams.setEndDate(criteria.getEndDate());
         queryParams.addParameter(getFieldForIndex(index), entityIds.stream().map(Object::toString).collect(Collectors.joining("|")));
+        Warp10Persistence.addDateSearchCriteria(queryParams, criteria);
 
         List<IDeviceCommandInvocation> results = new ArrayList();
         List<GTSOutput> fetch = getClient().findGTS(queryParams);
@@ -275,6 +278,7 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
         QueryParams queryParams = QueryParams.builder();
         queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandResponse.name());
         queryParams.addParameter(getFieldForIndex(index), entityIds.stream().map(Object::toString).collect(Collectors.joining("|")));
+        Warp10Persistence.addDateSearchCriteria(queryParams, criteria);
 
         List<IDeviceCommandResponse> results = new ArrayList();
         List<GTSOutput> fetch = getClient().findGTS(queryParams);
@@ -305,9 +309,8 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
 
         QueryParams queryParams = QueryParams.builder();
         queryParams.addParameter(Warp10DeviceEvent.PROP_EVENT_TYPE, DeviceEventType.StateChange.name());
-        queryParams.setStartDate(criteria.getStartDate());
-        queryParams.setEndDate(criteria.getEndDate());
         queryParams.addParameter(getFieldForIndex(index), entityIds.stream().map(Object::toString).collect(Collectors.joining("|")));
+        Warp10Persistence.addDateSearchCriteria(queryParams, criteria);
 
         List<IDeviceStateChange> results = new ArrayList();
         List<GTSOutput> fetch = getClient().findGTS(queryParams);

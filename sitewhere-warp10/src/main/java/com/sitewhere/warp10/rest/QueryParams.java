@@ -7,12 +7,15 @@
  */
 package com.sitewhere.warp10.rest;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 public class QueryParams {
@@ -22,6 +25,8 @@ public class QueryParams {
     private final String STOP_DATE = "stop";
     private final String NOW = "now";
     private final String TIMESTAMP = "timespan";
+    private final String INITIAL_DATE = "2000-01-01T00:00:00.000-00:00";
+    private final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.sssssssss'Z'";
 
     private Map<String, String> parameters = new HashMap<String, String>();
 
@@ -55,11 +60,17 @@ public class QueryParams {
 
     private String getDateFilter() {
         StringBuilder filter = new StringBuilder();
+        DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+        Date now = new Date();
+
         if (startDate !=null && endDate != null) {
-            TimeZone tz = TimeZone.getTimeZone("UTC");
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'"); // Quoted "Z" to indicate UTC, no timezone offset
-            df.setTimeZone(tz);
             filter.append(START_DATE).append("=").append(df.format(startDate)).append("&").append(STOP_DATE).append("=").append(df.format(endDate));
+        } else if(startDate !=null && endDate == null) {
+            filter.append(START_DATE).append("=").append(df.format(startDate)).append("&").append(STOP_DATE).append("=").append(df.format(now));
+        } else if(startDate ==null && endDate != null) {
+            DateTimeFormatter fmt = DateTimeFormat.forPattern(DATE_FORMAT);
+            DateTime initial = new DateTime(INITIAL_DATE);
+            filter.append(START_DATE).append("=").append(fmt.print(initial)).append("&").append(STOP_DATE).append("=").append(df.format(endDate));
         } else {
             filter.append(NOW).append("=now").append("&").append(TIMESTAMP).append("=-10");
         }
