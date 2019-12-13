@@ -5,10 +5,10 @@ dependencies {
     compile group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
 
 	// SiteWhere Communication Protocol integration.	
-    compile group: 'com.sitewhere', name: 'sitewhere-communication', version: "${rootProject.ext['sitewhere.communication.api.version']}"
+    compile group: 'com.sitewhere', name: 'sitewhere-communication', version: "${rootProject.ext['sitewhere.integration.api.version']}"
 
 	// SiteWhere Solr integration.	
-    compile group: 'com.sitewhere', name: 'sitewhere-solr', version: "${rootProject.ext['sitewhere.solr.api.version']}"
+    compile group: 'com.sitewhere', name: 'sitewhere-solr', version: "${rootProject.ext['sitewhere.integration.api.version']}"
 
     // Amazon SQS dependencies.
     compile group: 'com.amazonaws', name: 'aws-java-sdk-sqs', version: '1.9.6'

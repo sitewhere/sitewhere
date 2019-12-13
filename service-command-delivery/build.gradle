@@ -5,7 +5,7 @@ dependencies {
     compile group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
 
 	// SiteWhere Communication Protocol integration.	
-    compile group: 'com.sitewhere', name: 'sitewhere-communication', version: "${rootProject.ext['sitewhere.communication.api.version']}"
+    compile group: 'com.sitewhere', name: 'sitewhere-communication', version: "${rootProject.ext['sitewhere.integration.api.version']}"
 	
 	// Commons Lang 3 for utility functions.
 	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'

@@ -5,5 +5,5 @@ dependencies {
     compile group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
 
 	// SiteWhere Solr integration.	
-    compile group: 'com.sitewhere', name: 'sitewhere-solr', version: "${rootProject.ext['sitewhere.solr.api.version']}"
+    compile group: 'com.sitewhere', name: 'sitewhere-solr', version: "${rootProject.ext['sitewhere.integration.api.version']}"
 }

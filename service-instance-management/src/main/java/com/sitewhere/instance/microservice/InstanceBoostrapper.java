@@ -11,14 +11,17 @@ import com.sitewhere.instance.spi.microservice.IInstanceBootstrapper;
 import com.sitewhere.instance.tenant.ScriptedTenantModelInitializer;
 import com.sitewhere.instance.user.ScriptedUserModelInitializer;
 import com.sitewhere.microservice.api.user.IUserManagement;
-import com.sitewhere.microservice.exception.ConcurrentK8sUpdateException;
+import com.sitewhere.microservice.instance.InstanceStatusUpdateOperation;
+import com.sitewhere.microservice.lifecycle.AsyncStartLifecycleComponent;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.microservice.lifecycle.LifecycleComponent;
+import com.sitewhere.microservice.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.microservice.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.lifecycle.IAsyncStartLifecycleComponent;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.tenant.ITenantManagement;
 
 import io.sitewhere.k8s.crd.common.BootstrapState;
 import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
@@ -29,7 +32,7 @@ import io.sitewhere.k8s.crd.instance.dataset.InstanceDatasetTemplate;
  * Checks whether an instance is bootstrapped with initial data and, if not,
  * handles the bootstrap process.
  */
-public class InstanceBoostrapper extends LifecycleComponent implements IInstanceBootstrapper {
+public class InstanceBoostrapper extends AsyncStartLifecycleComponent implements IInstanceBootstrapper {
 
     /** Functional area for tenant management */
     public static final String FA_TENANT_MANGEMENT = "tenantManagement";
@@ -67,12 +70,12 @@ public class InstanceBoostrapper extends LifecycleComponent implements IInstance
     }
 
     /*
-     * @see
-     * com.sitewhere.microservice.lifecycle.LifecycleComponent#start(com.sitewhere.
-     * spi.microservice.lifecycle.ILifecycleProgressMonitor)
+     * @see com.sitewhere.spi.microservice.lifecycle.IAsyncStartLifecycleComponent#
+     * asyncStart()
      */
     @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void asyncStart() throws SiteWhereException {
+	ILifecycleProgressMonitor monitor = LifecycleProgressMonitor.createFor("Start", getMicroservice());
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start");
 
 	// Start tenant model initializer.
@@ -95,6 +98,27 @@ public class InstanceBoostrapper extends LifecycleComponent implements IInstance
     }
 
     /**
+     * Create default status if missing from resource.
+     * 
+     * @param instance
+     * @throws SiteWhereException
+     */
+    protected void createStatusIfMissing(SiteWhereInstance instance) throws SiteWhereException {
+	if (instance.getStatus() == null) {
+	    getMicroservice().executeInstanceStatusUpdate(new InstanceStatusUpdateOperation() {
+
+		@Override
+		public void update(SiteWhereInstance current) throws SiteWhereException {
+		    getLogger().info("Creating default instance status since none was found.");
+		    current.setStatus(new SiteWhereInstanceStatus());
+		    current.getStatus().setUserManagementBootstrapState(BootstrapState.NotBootstrapped);
+		    current.getStatus().setTenantManagementBootstrapState(BootstrapState.NotBootstrapped);
+		}
+	    });
+	}
+    }
+
+    /**
      * Bootstrap instance.
      * 
      * @throws SiteWhereException
@@ -102,123 +126,174 @@ public class InstanceBoostrapper extends LifecycleComponent implements IInstance
     protected void bootstrap() throws SiteWhereException {
 	// Load latest instance configuration from k8s.
 	SiteWhereInstance instance = getMicroservice().loadInstanceConfiguration();
-	instance = createStatusIfMissing(instance);
-
-	switch (instance.getStatus().getBootstrapState()) {
-	case BootstrapFailed: {
-	    getLogger().warn("Skipping instance bootstrap due to previous failure.");
-	    return;
-	}
-	case Bootstrapped: {
-	    getLogger().info("Instance already bootstrapped.");
-	    return;
-	}
-	case Bootstrapping: {
-	    getLogger().info("Instance already in bootstrapping state.");
-	    return;
-	}
-	case NotBootstrapped: {
-	    break;
-	}
-	}
-
-	// Mark instance as bootstrapping.
-	instance = setBootstrappingStatus(BootstrapState.Bootstrapping);
+	createStatusIfMissing(instance);
 
 	// Load template and bootstrap datasets.
 	InstanceDatasetTemplate template = getMicroservice().loadInstanceDatasetTemplate(instance);
 
-	try {
-	    bootstrapTenantManagement(template);
-	    bootstrapUserManagement(template);
-
-	    // Mark instance as bootstrapped.
-	    instance = setBootstrappingStatus(BootstrapState.Bootstrapped);
-	} catch (SiteWhereException e) {
-	    // Indicate that bootstrap failed.
-	    instance = setBootstrappingStatus(BootstrapState.BootstrapFailed);
-	    throw e;
-	}
+	// Bootstrap tenants and users.
+	bootstrapTenants(instance, template);
+	bootstrapUsers(instance, template);
     }
 
     /**
-     * Create default status if missing from resource.
+     * Bootstrap tenants using initializer.
      * 
      * @param instance
-     * @return
+     * @param template
+     * @throws SiteWhereException
      */
-    protected SiteWhereInstance createStatusIfMissing(SiteWhereInstance instance) {
-	if (instance.getStatus() == null) {
-	    instance.setStatus(new SiteWhereInstanceStatus());
+    protected void bootstrapTenants(SiteWhereInstance instance, InstanceDatasetTemplate template)
+	    throws SiteWhereException {
+	switch (instance.getStatus().getTenantManagementBootstrapState()) {
+	case BootstrapFailed: {
+	    getLogger().warn("Skipping tenants bootstrap due to previous failure.");
+	    break;
 	}
-	instance.getStatus().setBootstrapState(BootstrapState.NotBootstrapped);
-	return instance;
+	case Bootstrapped: {
+	    getLogger().info("Tenants already bootstrapped.");
+	    break;
+	}
+	case Bootstrapping: {
+	    getLogger().info("Tenants already in bootstrapping state.");
+	    break;
+	}
+	case NotBootstrapped: {
+	    getLogger().info("Tenants not bootstrapped. Running initializer.");
+	    runTenantManagementInitializer(template);
+	    break;
+	}
+	}
     }
 
     /**
-     * Bootstrap tenant management using Groovy script.
+     * Bootstrap tenant management using script.
      * 
      * @param template
      * @throws SiteWhereException
      */
-    protected void bootstrapTenantManagement(InstanceDatasetTemplate template) throws SiteWhereException {
-	String tenantManagement = template.getSpec().getDatasets().get(FA_TENANT_MANGEMENT);
-	if (tenantManagement != null) {
-	    getLogger().info(String.format("Initializing tenant management from template '%s'.",
-		    template.getMetadata().getName()));
-	    getMicroservice().getScriptManager().addBootstrapScript(FA_TENANT_MANGEMENT, tenantManagement);
-	    getTenantModelInitializer().setScriptId(FA_TENANT_MANGEMENT);
-	    getTenantModelInitializer().initialize(getMicroservice().getTenantManagement());
-	    getLogger().info(String.format("Completed execution of tenant management template '%s'.",
-		    template.getMetadata().getName()));
+    protected void runTenantManagementInitializer(InstanceDatasetTemplate template) throws SiteWhereException {
+	try {
+	    setTenantBootstrapState(BootstrapState.Bootstrapping);
+	    ITenantManagement tenants = getMicroservice().getTenantManagement();
+	    if (tenants instanceof IAsyncStartLifecycleComponent) {
+		getLogger().info("Waiting for tenant management to start before bootstrapping...");
+		((IAsyncStartLifecycleComponent) tenants).waitForComponentStarted();
+	    }
+
+	    String tenantManagement = template.getSpec().getDatasets().get(FA_TENANT_MANGEMENT);
+	    if (tenantManagement != null) {
+		getLogger().info(String.format("Initializing tenant management from template '%s'.",
+			template.getMetadata().getName()));
+		getMicroservice().getScriptManager().addBootstrapScript(FA_TENANT_MANGEMENT, tenantManagement);
+		getTenantModelInitializer().setScriptId(FA_TENANT_MANGEMENT);
+		getTenantModelInitializer().initialize(tenants);
+		getLogger().info(String.format("Completed execution of tenant management template '%s'.",
+			template.getMetadata().getName()));
+	    }
+	    setTenantBootstrapState(BootstrapState.Bootstrapped);
+	} catch (Throwable t) {
+	    setTenantBootstrapState(BootstrapState.BootstrapFailed);
+	    throw t;
 	}
     }
 
     /**
-     * Bootstrap user management using Groovy script.
+     * Bootstrap users using initializer.
+     * 
+     * @param instance
+     * @param template
+     * @throws SiteWhereException
+     */
+    protected void bootstrapUsers(SiteWhereInstance instance, InstanceDatasetTemplate template)
+	    throws SiteWhereException {
+	switch (instance.getStatus().getUserManagementBootstrapState()) {
+	case BootstrapFailed: {
+	    getLogger().warn("Skipping users bootstrap due to previous failure.");
+	    break;
+	}
+	case Bootstrapped: {
+	    getLogger().info("Users already bootstrapped.");
+	    break;
+	}
+	case Bootstrapping: {
+	    getLogger().info("Users already in bootstrapping state.");
+	    break;
+	}
+	case NotBootstrapped: {
+	    getLogger().info("Users not bootstrapped. Running initializer.");
+	    runUserManagementInitializer(template);
+	    break;
+	}
+	}
+    }
+
+    /**
+     * Bootstrap user management using script.
      * 
      * @param template
      * @throws SiteWhereException
      */
-    protected void bootstrapUserManagement(InstanceDatasetTemplate template) throws SiteWhereException {
-	String userManagement = template.getSpec().getDatasets().get(FA_USER_MANGEMENT);
-	if (userManagement != null) {
-	    getLogger().info(String.format("Initializing user management from template '%s'.",
-		    template.getMetadata().getName()));
-	    getMicroservice().getScriptManager().addBootstrapScript(FA_USER_MANGEMENT, userManagement);
-	    getUserModelInitializer().setScriptId(FA_USER_MANGEMENT);
-	    getUserModelInitializer().initialize(getUserManagement());
-	    getLogger().info(String.format("Completed execution of user management template '%s'.",
-		    template.getMetadata().getName()));
+    protected void runUserManagementInitializer(InstanceDatasetTemplate template) throws SiteWhereException {
+	try {
+	    setUserBootstrapState(BootstrapState.Bootstrapping);
+	    IUserManagement users = getUserManagement();
+	    if (users instanceof IAsyncStartLifecycleComponent) {
+		getLogger().info("Waiting for user management to start before bootstrapping...");
+		((IAsyncStartLifecycleComponent) users).waitForComponentStarted();
+	    }
+
+	    String userManagement = template.getSpec().getDatasets().get(FA_USER_MANGEMENT);
+	    if (userManagement != null) {
+		getLogger().info(String.format("Initializing user management from template '%s'.",
+			template.getMetadata().getName()));
+		getMicroservice().getScriptManager().addBootstrapScript(FA_USER_MANGEMENT, userManagement);
+		getUserModelInitializer().setScriptId(FA_USER_MANGEMENT);
+		getUserModelInitializer().initialize(getUserManagement());
+		getLogger().info(String.format("Completed execution of user management template '%s'.",
+			template.getMetadata().getName()));
+	    }
+	    setUserBootstrapState(BootstrapState.Bootstrapped);
+	} catch (Throwable t) {
+	    setUserBootstrapState(BootstrapState.BootstrapFailed);
+	    throw t;
 	}
     }
 
     /**
-     * Attempts to set the boostrapping indicator. Handles cases where there is
+     * Attempts to set the tenant bootstrap indicator. Handles cases where there is
      * contention for the instance configuration update.
      * 
-     * @param status
-     * @return
+     * @param state
      * @throws SiteWhereException
      */
-    protected SiteWhereInstance setBootstrappingStatus(BootstrapState status) throws SiteWhereException {
-	while (true) {
-	    try {
-		SiteWhereInstance instance = getMicroservice().loadInstanceConfiguration();
-		instance = createStatusIfMissing(instance);
-		instance.getStatus().setBootstrapState(status);
-		instance = getMicroservice().updateInstanceConfiguration(instance);
-		getLogger().info(String.format("Set instance bootstrap status to `%s`.", status.name()));
-		return instance;
-	    } catch (ConcurrentK8sUpdateException e) {
-		getLogger().info("Instance configuration updated concurrently. Will retry.");
+    protected void setTenantBootstrapState(BootstrapState state) throws SiteWhereException {
+	getMicroservice().executeInstanceStatusUpdate(new InstanceStatusUpdateOperation() {
+
+	    @Override
+	    public void update(SiteWhereInstance current) throws SiteWhereException {
+		getLogger().info(String.format("Set tenant management bootstrap status to `%s`.", state.name()));
+		current.getStatus().setTenantManagementBootstrapState(state);
 	    }
-	    try {
-		Thread.sleep(500);
-	    } catch (InterruptedException e) {
-		throw new SiteWhereException("Failed to lock instance for bootstrap due to interrupt.");
+	});
+    }
+
+    /**
+     * Attempts to set the user bootstrap indicator. Handles cases where there is
+     * contention for the instance configuration update.
+     * 
+     * @param state
+     * @throws SiteWhereException
+     */
+    protected void setUserBootstrapState(BootstrapState state) throws SiteWhereException {
+	getMicroservice().executeInstanceStatusUpdate(new InstanceStatusUpdateOperation() {
+
+	    @Override
+	    public void update(SiteWhereInstance current) throws SiteWhereException {
+		getLogger().info(String.format("Set user management bootstrap status to `%s`.", state.name()));
+		current.getStatus().setUserManagementBootstrapState(state);
 	    }
-	}
+	});
     }
 
     protected ScriptedTenantModelInitializer getTenantModelInitializer() {

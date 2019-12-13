@@ -4,12 +4,8 @@ dependencies {
 	// SiteWhere microservice library including gRPC support.	
     compile group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
 
-	// SiteWhere MongoDB integration.	
-    compile group: 'com.sitewhere', name: 'sitewhere-mongodb', version: "${rootProject.ext['sitewhere.mongodb.api.version']}"
-
-	// SiteWhere Cassandra integration.	
-    compile group: 'com.sitewhere', name: 'sitewhere-cassandra', version: "${rootProject.ext['sitewhere.cassandra.api.version']}"
-
-	// SiteWhere InfluxDB integration.	
-    compile group: 'com.sitewhere', name: 'sitewhere-influxdb', version: "${rootProject.ext['sitewhere.influxdb.api.version']}"
+	// SiteWhere database integrations.	
+    compile group: 'com.sitewhere', name: 'sitewhere-mongodb', version: "${rootProject.ext['sitewhere.integration.api.version']}"
+    compile group: 'com.sitewhere', name: 'sitewhere-cassandra', version: "${rootProject.ext['sitewhere.integration.api.version']}"
+    compile group: 'com.sitewhere', name: 'sitewhere-influxdb', version: "${rootProject.ext['sitewhere.integration.api.version']}"
 }

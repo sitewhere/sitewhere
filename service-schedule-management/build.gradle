@@ -5,7 +5,7 @@ dependencies {
     compile group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
 
 	// SiteWhere MongoDB integration.	
-    compile group: 'com.sitewhere', name: 'sitewhere-mongodb', version: "${rootProject.ext['sitewhere.mongodb.api.version']}"
+    compile group: 'com.sitewhere', name: 'sitewhere-mongodb', version: "${rootProject.ext['sitewhere.integration.api.version']}"
 	
     compile group: 'org.quartz-scheduler', name: 'quartz', version:'2.2.2'
 }

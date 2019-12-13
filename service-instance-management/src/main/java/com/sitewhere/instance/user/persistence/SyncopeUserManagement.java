@@ -48,7 +48,7 @@ import com.evanlennick.retry4j.config.RetryConfig;
 import com.evanlennick.retry4j.config.RetryConfigBuilder;
 import com.evanlennick.retry4j.listener.RetryListener;
 import com.sitewhere.microservice.api.user.IUserManagement;
-import com.sitewhere.microservice.lifecycle.LifecycleComponent;
+import com.sitewhere.microservice.lifecycle.AsyncStartLifecycleComponent;
 import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.user.GrantedAuthority;
@@ -72,7 +72,7 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
 /**
  * Interact with Apache Synope instance to manage users.
  */
-public class SyncopeUserManagement extends LifecycleComponent implements IUserManagement {
+public class SyncopeUserManagement extends AsyncStartLifecycleComponent implements IUserManagement {
 
     /** Number of seconds between fallback attempts for connecting to Syncope */
     private static final int CONNECT_SECS_BETWEEN_RETRIES = 10;
@@ -129,6 +129,10 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 	super(LifecycleComponentType.DataStore);
     }
 
+    /*
+     * @see com.sitewhere.microservice.lifecycle.LifecycleComponent#initialize(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
+     */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Wait for connection in background thread.
@@ -141,8 +145,12 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 		TOKEN_REFRESH_IN_MINUTES, TimeUnit.MINUTES);
     }
 
+    /*
+     * @see com.sitewhere.spi.microservice.lifecycle.IAsyncStartLifecycleComponent#
+     * asyncStart()
+     */
     @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void asyncStart() throws SiteWhereException {
 	// Block until Syncope is available.
 	try {
 	    getSyncopeAvailable().await();
@@ -215,6 +223,11 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 	}
     }
 
+    /*
+     * @see
+     * com.sitewhere.microservice.lifecycle.LifecycleComponent#stop(com.sitewhere.
+     * spi.microservice.lifecycle.ILifecycleProgressMonitor)
+     */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (this.waiter != null) {
@@ -225,6 +238,11 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 	}
     }
 
+    /*
+     * @see
+     * com.sitewhere.microservice.api.user.IUserManagement#createUser(com.sitewhere.
+     * spi.user.request.IUserCreateRequest, java.lang.Boolean)
+     */
     @Override
     public IUser createUser(IUserCreateRequest request, Boolean encodePassword) throws SiteWhereException {
 	User swuser = UserManagementPersistenceLogic.userCreateLogic(request, encodePassword);
@@ -258,11 +276,21 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 	return attr.schema(name).value(value).build();
     }
 
+    /*
+     * @see
+     * com.sitewhere.microservice.api.user.IUserManagement#importUser(com.sitewhere.
+     * spi.user.IUser, boolean)
+     */
     @Override
     public IUser importUser(IUser user, boolean overwrite) throws SiteWhereException {
 	throw new RuntimeException("Not implemented.");
     }
 
+    /*
+     * @see
+     * com.sitewhere.microservice.api.user.IUserManagement#authenticate(java.lang.
+     * String, java.lang.String, boolean)
+     */
     @Override
     public IUser authenticate(String username, String password, boolean updateLastLogin) throws SiteWhereException {
 	if (password == null) {
@@ -276,6 +304,11 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 	return match;
     }
 
+    /*
+     * @see
+     * com.sitewhere.microservice.api.user.IUserManagement#updateUser(java.lang.
+     * String, com.sitewhere.spi.user.request.IUserCreateRequest, boolean)
+     */
     @Override
     public IUser updateUser(String username, IUserCreateRequest request, boolean encodePassword)
 	    throws SiteWhereException {
@@ -319,7 +352,8 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 
     /*
      * @see
-     * com.sitewhere.spi.user.IUserManagement#getUserByUsername(java.lang.String)
+     * com.sitewhere.microservice.api.user.IUserManagement#getUserByUsername(java.
+     * lang.String)
      */
     @Override
     public IUser getUserByUsername(String username) throws SiteWhereException {
@@ -348,8 +382,9 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
     }
 
     /*
-     * @see com.sitewhere.spi.user.IUserManagement#getGrantedAuthorities(java.lang.
-     * String)
+     * @see
+     * com.sitewhere.microservice.api.user.IUserManagement#getGrantedAuthorities(
+     * java.lang.String)
      */
     @Override
     public List<IGrantedAuthority> getGrantedAuthorities(String username) throws SiteWhereException {
@@ -366,8 +401,9 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
     }
 
     /*
-     * @see com.sitewhere.spi.user.IUserManagement#addGrantedAuthorities(java.lang.
-     * String, java.util.List)
+     * @see
+     * com.sitewhere.microservice.api.user.IUserManagement#addGrantedAuthorities(
+     * java.lang.String, java.util.List)
      */
     @Override
     public List<IGrantedAuthority> addGrantedAuthorities(String username, List<String> authorities)
@@ -377,8 +413,8 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 
     /*
      * @see
-     * com.sitewhere.spi.user.IUserManagement#removeGrantedAuthorities(java.lang.
-     * String, java.util.List)
+     * com.sitewhere.microservice.api.user.IUserManagement#removeGrantedAuthorities(
+     * java.lang.String, java.util.List)
      */
     @Override
     public List<IGrantedAuthority> removeGrantedAuthorities(String username, List<String> authorities)
@@ -387,8 +423,9 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
     }
 
     /*
-     * @see com.sitewhere.spi.user.IUserManagement#listUsers(com.sitewhere.spi.user.
-     * IUserSearchCriteria)
+     * @see
+     * com.sitewhere.microservice.api.user.IUserManagement#listUsers(com.sitewhere.
+     * spi.user.IUserSearchCriteria)
      */
     @Override
     public ISearchResults<IUser> listUsers(IUserSearchCriteria criteria) throws SiteWhereException {
@@ -402,7 +439,9 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
     }
 
     /*
-     * @see com.sitewhere.spi.user.IUserManagement#deleteUser(java.lang.String)
+     * @see
+     * com.sitewhere.microservice.api.user.IUserManagement#deleteUser(java.lang.
+     * String)
      */
     @Override
     public IUser deleteUser(String username) throws SiteWhereException {
@@ -411,8 +450,8 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 
     /*
      * @see
-     * com.sitewhere.spi.user.IUserManagement#createGrantedAuthority(com.sitewhere.
-     * spi.user.request.IGrantedAuthorityCreateRequest)
+     * com.sitewhere.microservice.api.user.IUserManagement#createGrantedAuthority(
+     * com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest)
      */
     @Override
     public IGrantedAuthority createGrantedAuthority(IGrantedAuthorityCreateRequest request) throws SiteWhereException {
@@ -453,8 +492,8 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 
     /*
      * @see
-     * com.sitewhere.spi.user.IUserManagement#getGrantedAuthorityByName(java.lang.
-     * String)
+     * com.sitewhere.microservice.api.user.IUserManagement#getGrantedAuthorityByName
+     * (java.lang.String)
      */
     @Override
     public IGrantedAuthority getGrantedAuthorityByName(String name) throws SiteWhereException {
@@ -468,8 +507,10 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
     }
 
     /*
-     * @see com.sitewhere.spi.user.IUserManagement#updateGrantedAuthority(java.lang.
-     * String, com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest)
+     * @see
+     * com.sitewhere.microservice.api.user.IUserManagement#updateGrantedAuthority(
+     * java.lang.String,
+     * com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest)
      */
     @Override
     public IGrantedAuthority updateGrantedAuthority(String name, IGrantedAuthorityCreateRequest request)
@@ -479,8 +520,8 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 
     /*
      * @see
-     * com.sitewhere.spi.user.IUserManagement#listGrantedAuthorities(com.sitewhere.
-     * spi.user.IGrantedAuthoritySearchCriteria)
+     * com.sitewhere.microservice.api.user.IUserManagement#listGrantedAuthorities(
+     * com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria)
      */
     @Override
     public ISearchResults<IGrantedAuthority> listGrantedAuthorities(IGrantedAuthoritySearchCriteria criteria)
@@ -498,8 +539,9 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
     }
 
     /*
-     * @see com.sitewhere.spi.user.IUserManagement#deleteGrantedAuthority(java.lang.
-     * String)
+     * @see
+     * com.sitewhere.microservice.api.user.IUserManagement#deleteGrantedAuthority(
+     * java.lang.String)
      */
     @Override
     public void deleteGrantedAuthority(String authority) throws SiteWhereException {
