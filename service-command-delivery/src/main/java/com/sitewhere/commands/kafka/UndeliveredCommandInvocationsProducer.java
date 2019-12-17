@@ -30,6 +30,6 @@ public class UndeliveredCommandInvocationsProducer extends MicroserviceKafkaProd
     @Override
     public String getTargetTopicName() throws SiteWhereException {
 	return getMicroservice().getKafkaTopicNaming()
-		.getUndeliveredCommandInvocationsTopic(getTenantEngine().getTenant());
+		.getUndeliveredCommandInvocationsTopic(getTenantEngine().getTenantResource());
     }
 }

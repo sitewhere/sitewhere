@@ -24,7 +24,8 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenant;
+
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Microservice that provides batch operations functionality.
@@ -70,11 +71,11 @@ public class BatchOperationsMicroservice extends
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * createTenantEngine(com.sitewhere.spi.tenant.ITenant)
+     * createTenantEngine(io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine)
      */
     @Override
-    public IBatchOperationsTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new BatchOperationsTenantEngine(tenant);
+    public IBatchOperationsTenantEngine createTenantEngine(SiteWhereTenantEngine engine) throws SiteWhereException {
+	return new BatchOperationsTenantEngine(engine);
     }
 
     /*

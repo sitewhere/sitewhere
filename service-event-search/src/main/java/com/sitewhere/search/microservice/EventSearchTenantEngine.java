@@ -10,14 +10,16 @@ package com.sitewhere.search.microservice;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.search.configuration.EventSearchTenantConfiguration;
+import com.sitewhere.search.configuration.EventSearchTenantEngineModule;
 import com.sitewhere.search.spi.ISearchProvidersManager;
 import com.sitewhere.search.spi.microservice.IEventSearchTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
 
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 
 /**
@@ -30,8 +32,26 @@ public class EventSearchTenantEngine extends MicroserviceTenantEngine<EventSearc
     /** Manages the outbound connectors for this tenant */
     private ISearchProvidersManager searchProvidersManager;
 
-    public EventSearchTenantEngine(ITenant tenant) {
-	super(tenant);
+    public EventSearchTenantEngine(SiteWhereTenantEngine engine) {
+	super(engine);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationClass()
+     */
+    @Override
+    public Class<EventSearchTenantConfiguration> getConfigurationClass() {
+	return EventSearchTenantConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationModule()
+     */
+    @Override
+    public ITenantEngineModule<EventSearchTenantConfiguration> getConfigurationModule() {
+	return new EventSearchTenantEngineModule(getActiveConfiguration());
     }
 
     /*

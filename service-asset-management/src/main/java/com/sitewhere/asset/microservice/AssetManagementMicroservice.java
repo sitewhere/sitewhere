@@ -9,9 +9,6 @@ package com.sitewhere.asset.microservice;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.graalvm.polyglot.Context;
-import org.graalvm.polyglot.Value;
-
 import com.sitewhere.asset.configuration.AssetManagementConfiguration;
 import com.sitewhere.asset.grpc.AssetManagementGrpcServer;
 import com.sitewhere.asset.spi.grpc.IAssetManagementGrpcServer;
@@ -25,7 +22,8 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenant;
+
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Microservice that provides asset management functionality.
@@ -69,14 +67,12 @@ public class AssetManagementMicroservice extends
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice#
-     * createTenantEngine(com.sitewhere.spi.tenant.ITenant)
+     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
+     * createTenantEngine(io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine)
      */
     @Override
-    public IAssetManagementTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new AssetManagementTenantEngine(tenant);
+    public IAssetManagementTenantEngine createTenantEngine(SiteWhereTenantEngine engine) throws SiteWhereException {
+	return new AssetManagementTenantEngine(engine);
     }
 
     /*
@@ -87,8 +83,6 @@ public class AssetManagementMicroservice extends
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.initialize(monitor);
-
-	tryPolyglot();
 
 	// Create GRPC components.
 	createGrpcComponents();
@@ -104,18 +98,6 @@ public class AssetManagementMicroservice extends
 
 	// Execute initialization steps.
 	init.execute(monitor);
-    }
-
-    /**
-     * Attempt polygot execution.
-     */
-    protected void tryPolyglot() {
-	try (Context context = Context.create()) {
-	    Value result = context.eval("js", "({ " + "id   : 42, " + "text : '42', " + "arr  : [1,42,3] " + "})");
-	    int id = result.getMember("id").asInt();
-	    String text = result.getMember("text").asString();
-	    getLogger().info(String.format("JavaScript got %s %s", String.valueOf(id), text));
-	}
     }
 
     /*

@@ -10,6 +10,7 @@ package com.sitewhere.registration.microservice;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.registration.configuration.DeviceRegistrationTenantConfiguration;
+import com.sitewhere.registration.configuration.DeviceRegistrationTenantEngineModule;
 import com.sitewhere.registration.kafka.DeviceRegistrationEventsConsumer;
 import com.sitewhere.registration.kafka.UnregisteredEventsConsumer;
 import com.sitewhere.registration.spi.IRegistrationManager;
@@ -20,8 +21,9 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
 
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 
 /**
@@ -40,8 +42,26 @@ public class DeviceRegistrationTenantEngine extends MicroserviceTenantEngine<Dev
     /** Device registration manager */
     private IRegistrationManager registrationManager;
 
-    public DeviceRegistrationTenantEngine(ITenant tenant) {
-	super(tenant);
+    public DeviceRegistrationTenantEngine(SiteWhereTenantEngine engine) {
+	super(engine);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationClass()
+     */
+    @Override
+    public Class<DeviceRegistrationTenantConfiguration> getConfigurationClass() {
+	return DeviceRegistrationTenantConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationModule()
+     */
+    @Override
+    public ITenantEngineModule<DeviceRegistrationTenantConfiguration> getConfigurationModule() {
+	return new DeviceRegistrationTenantEngineModule(getActiveConfiguration());
     }
 
     /*
@@ -63,9 +83,6 @@ public class DeviceRegistrationTenantEngine extends MicroserviceTenantEngine<Dev
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
-
-	// Initialize discoverable lifecycle components.
-	init.addStep(initializeDiscoverableBeans(getModuleContext()));
 
 	// Initialize unregistered events consumer.
 	init.addInitializeStep(this, getUnregisteredEventsConsumer(), true);

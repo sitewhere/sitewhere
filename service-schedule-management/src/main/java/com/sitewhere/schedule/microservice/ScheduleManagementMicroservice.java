@@ -18,7 +18,8 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenant;
+
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Microservice that provides schedule management functionality.
@@ -57,11 +58,11 @@ public class ScheduleManagementMicroservice extends
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * createTenantEngine(com.sitewhere.spi.tenant.ITenant)
+     * createTenantEngine(io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine)
      */
     @Override
-    public IScheduleManagementTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new ScheduleManagementTenantEngine(tenant);
+    public IScheduleManagementTenantEngine createTenantEngine(SiteWhereTenantEngine engine) throws SiteWhereException {
+	return new ScheduleManagementTenantEngine(engine);
     }
 
     /*

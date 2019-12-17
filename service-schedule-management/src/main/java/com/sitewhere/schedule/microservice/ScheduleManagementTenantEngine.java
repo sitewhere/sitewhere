@@ -12,13 +12,15 @@ import com.sitewhere.microservice.api.schedule.IScheduleManagement;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.schedule.configuration.ScheduleManagementTenantConfiguration;
+import com.sitewhere.schedule.configuration.ScheduleManagementTenantEngineModule;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
 
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 
 /**
@@ -34,8 +36,26 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine<Sch
     /** Responds to schedule management GRPC requests */
     private ScheduleManagementGrpc.ScheduleManagementImplBase scheduleManagementImpl;
 
-    public ScheduleManagementTenantEngine(ITenant tenant) {
-	super(tenant);
+    public ScheduleManagementTenantEngine(SiteWhereTenantEngine engine) {
+	super(engine);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationClass()
+     */
+    @Override
+    public Class<ScheduleManagementTenantConfiguration> getConfigurationClass() {
+	return ScheduleManagementTenantConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationModule()
+     */
+    @Override
+    public ITenantEngineModule<ScheduleManagementTenantConfiguration> getConfigurationModule() {
+	return new ScheduleManagementTenantEngineModule(getActiveConfiguration());
     }
 
     /*
@@ -55,9 +75,6 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine<Sch
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
 
-	// Initialize discoverable lifecycle components.
-	init.addStep(initializeDiscoverableBeans(getModuleContext()));
-
 	// Initialize schedule management persistence.
 	init.addInitializeStep(this, getScheduleManagement(), true);
 
@@ -74,9 +91,6 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine<Sch
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
-
-	// Start discoverable lifecycle components.
-	start.addStep(startDiscoverableBeans(getModuleContext()));
 
 	// Start schedule management persistence.
 	start.addStartStep(this, getScheduleManagement(), true);
@@ -132,9 +146,6 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine<Sch
 
 	// Stop schedule management persistence.
 	stop.addStopStep(this, getScheduleManagement());
-
-	// Stop discoverable lifecycle components.
-	stop.addStep(stopDiscoverableBeans(getModuleContext()));
 
 	// Execute shutdown steps.
 	stop.execute(monitor);

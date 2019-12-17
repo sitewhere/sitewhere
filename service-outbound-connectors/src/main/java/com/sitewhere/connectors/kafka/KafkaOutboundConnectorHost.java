@@ -69,8 +69,8 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
      */
     @Override
     public String getConsumerGroupId() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getTenantPrefix(getTenantEngine().getTenant()) + "connector."
-		+ getOutboundConnector().getConnectorId();
+	return getMicroservice().getKafkaTopicNaming().getTenantPrefix(getTenantEngine().getTenantResource())
+		+ "connector." + getOutboundConnector().getConnectorId();
     }
 
     /*
@@ -80,7 +80,8 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
     @Override
     public List<String> getSourceTopicNames() throws SiteWhereException {
 	List<String> topics = new ArrayList<String>();
-	topics.add(getMicroservice().getKafkaTopicNaming().getOutboundEventsTopic(getTenantEngine().getTenant()));
+	topics.add(
+		getMicroservice().getKafkaTopicNaming().getOutboundEventsTopic(getTenantEngine().getTenantResource()));
 	return topics;
     }
 
@@ -186,7 +187,7 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
 	private List<ConsumerRecord<String, byte[]>> records;
 
 	public TopicBatchProcessor(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records) {
-	    super(getTenantEngine().getMicroservice(), getTenantEngine().getTenant());
+	    super(getTenantEngine().getMicroservice(), getTenantEngine().getTenantResource());
 	    this.topicPartition = topicPartition;
 	    this.records = records;
 	}

@@ -58,7 +58,7 @@ public class DefaultMqttParameterExtractor extends TenantEngineLifecycleComponen
 	MqttParameters params = new MqttParameters();
 
 	Map<String, String> values = new HashMap<>();
-	values.put("tenant", getTenantEngine().getTenant().getToken());
+	values.put("tenant", getTenantEngine().getTenantResource().getMetadata().getName());
 	values.put("device", nesting.getGateway().getToken());
 
 	// TODO: Does targeting based on assignment make sense?

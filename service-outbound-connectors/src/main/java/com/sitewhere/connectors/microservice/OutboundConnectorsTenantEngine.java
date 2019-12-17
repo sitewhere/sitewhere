@@ -8,6 +8,7 @@
 package com.sitewhere.connectors.microservice;
 
 import com.sitewhere.connectors.configuration.OutboundConnectorsTenantConfiguration;
+import com.sitewhere.connectors.configuration.OutboundConnectorsTenantEngineModule;
 import com.sitewhere.connectors.spi.IOutboundConnectorsManager;
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsTenantEngine;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
@@ -16,8 +17,9 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
 
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 
 /**
@@ -30,8 +32,26 @@ public class OutboundConnectorsTenantEngine extends MicroserviceTenantEngine<Out
     /** Manages the outbound connectors for this tenant */
     private IOutboundConnectorsManager outboundConnectorsManager;
 
-    public OutboundConnectorsTenantEngine(ITenant tenant) {
-	super(tenant);
+    public OutboundConnectorsTenantEngine(SiteWhereTenantEngine engine) {
+	super(engine);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationClass()
+     */
+    @Override
+    public Class<OutboundConnectorsTenantConfiguration> getConfigurationClass() {
+	return OutboundConnectorsTenantConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationModule()
+     */
+    @Override
+    public ITenantEngineModule<OutboundConnectorsTenantConfiguration> getConfigurationModule() {
+	return new OutboundConnectorsTenantEngineModule(getActiveConfiguration());
     }
 
     /*

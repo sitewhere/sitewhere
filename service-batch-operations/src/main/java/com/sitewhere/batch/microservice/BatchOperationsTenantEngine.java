@@ -8,6 +8,7 @@
 package com.sitewhere.batch.microservice;
 
 import com.sitewhere.batch.configuration.BatchOperationsTenantConfiguration;
+import com.sitewhere.batch.configuration.BatchOperationsTenantEngineModule;
 import com.sitewhere.batch.kafka.FailedBatchElementsProducer;
 import com.sitewhere.batch.kafka.UnprocessedBatchElementsProducer;
 import com.sitewhere.batch.kafka.UnprocessedBatchOperationsProducer;
@@ -24,8 +25,9 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
 
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 
 /**
@@ -53,8 +55,26 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine<BatchO
     /** Failed batch elements producer */
     private IFailedBatchElementsProducer failedBatchElementsProducer;
 
-    public BatchOperationsTenantEngine(ITenant tenant) {
-	super(tenant);
+    public BatchOperationsTenantEngine(SiteWhereTenantEngine engine) {
+	super(engine);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationClass()
+     */
+    @Override
+    public Class<BatchOperationsTenantConfiguration> getConfigurationClass() {
+	return BatchOperationsTenantConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationModule()
+     */
+    @Override
+    public ITenantEngineModule<BatchOperationsTenantConfiguration> getConfigurationModule() {
+	return new BatchOperationsTenantEngineModule(getActiveConfiguration());
     }
 
     /*
@@ -84,9 +104,6 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine<BatchO
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
 
-	// Initialize discoverable lifecycle components.
-	init.addStep(initializeDiscoverableBeans(getModuleContext()));
-
 	// Initialize batch management persistence.
 	init.addInitializeStep(this, getBatchManagement(), true);
 
@@ -115,9 +132,6 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine<BatchO
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
-
-	// Start discoverable lifecycle components.
-	start.addStep(startDiscoverableBeans(getModuleContext()));
 
 	// Start batch management persistence.
 	start.addStartStep(this, getBatchManagement(), true);
@@ -173,9 +187,6 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine<BatchO
 
 	// Stop batch management persistence.
 	stop.addStopStep(this, getBatchManagement());
-
-	// Stop discoverable lifecycle components.
-	stop.addStep(stopDiscoverableBeans(getModuleContext()));
 
 	// Execute shutdown steps.
 	stop.execute(monitor);

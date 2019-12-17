@@ -72,7 +72,7 @@ public class KafkaRuleProcessorHost extends DirectKafkaConsumer {
      */
     @Override
     public String getConsumerGroupId() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getTenantPrefix(getTenantEngine().getTenant())
+	return getMicroservice().getKafkaTopicNaming().getTenantPrefix(getTenantEngine().getTenantResource())
 		+ "rule-processor." + getRuleProcessor().getProcessorId();
     }
 
@@ -83,7 +83,8 @@ public class KafkaRuleProcessorHost extends DirectKafkaConsumer {
     @Override
     public List<String> getSourceTopicNames() throws SiteWhereException {
 	List<String> topics = new ArrayList<String>();
-	topics.add(getMicroservice().getKafkaTopicNaming().getOutboundEventsTopic(getTenantEngine().getTenant()));
+	topics.add(
+		getMicroservice().getKafkaTopicNaming().getOutboundEventsTopic(getTenantEngine().getTenantResource()));
 	return topics;
     }
 
@@ -167,7 +168,7 @@ public class KafkaRuleProcessorHost extends DirectKafkaConsumer {
 	private byte[] encoded;
 
 	public EventPayloadProcessor(byte[] encoded) {
-	    super(getTenantEngine().getMicroservice(), getTenantEngine().getTenant());
+	    super(getTenantEngine().getMicroservice(), getTenantEngine().getTenantResource());
 	    this.encoded = encoded;
 	}
 

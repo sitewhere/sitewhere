@@ -59,7 +59,8 @@ public class DeviceStateEnrichedEventsConsumer extends MicroserviceKafkaConsumer
      */
     @Override
     public String getConsumerGroupId() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getTenantPrefix(getTenantEngine().getTenant()) + GROUP_ID_SUFFIX;
+	return getMicroservice().getKafkaTopicNaming().getTenantPrefix(getTenantEngine().getTenantResource())
+		+ GROUP_ID_SUFFIX;
     }
 
     /*
@@ -69,7 +70,8 @@ public class DeviceStateEnrichedEventsConsumer extends MicroserviceKafkaConsumer
     @Override
     public List<String> getSourceTopicNames() throws SiteWhereException {
 	List<String> topics = new ArrayList<String>();
-	topics.add(getMicroservice().getKafkaTopicNaming().getOutboundEventsTopic(getTenantEngine().getTenant()));
+	topics.add(
+		getMicroservice().getKafkaTopicNaming().getOutboundEventsTopic(getTenantEngine().getTenantResource()));
 	return topics;
     }
 
@@ -169,7 +171,7 @@ public class DeviceStateEnrichedEventsConsumer extends MicroserviceKafkaConsumer
 
 	public DeviceStateProcessor(IMicroserviceTenantEngine<?> tenantEngine,
 		List<ConsumerRecord<String, byte[]>> records) {
-	    super(tenantEngine.getMicroservice(), tenantEngine.getTenant());
+	    super(tenantEngine.getMicroservice(), tenantEngine.getTenantResource());
 	    this.records = records;
 	}
 

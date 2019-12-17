@@ -30,6 +30,6 @@ public class UnprocessedBatchOperationsProducer extends MicroserviceKafkaProduce
     @Override
     public String getTargetTopicName() throws SiteWhereException {
 	return getMicroservice().getKafkaTopicNaming()
-		.getUnprocessedBatchOperationsTopic(getTenantEngine().getTenant());
+		.getUnprocessedBatchOperationsTopic(getTenantEngine().getTenantResource());
     }
 }

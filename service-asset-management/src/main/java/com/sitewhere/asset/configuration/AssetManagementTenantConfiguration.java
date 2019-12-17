@@ -7,6 +7,7 @@
  */
 package com.sitewhere.asset.configuration;
 
+import com.sitewhere.datastore.DatastoreDefinition;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineConfiguration;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -16,4 +17,15 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
  */
 @RegisterForReflection
 public class AssetManagementTenantConfiguration implements ITenantEngineConfiguration {
+
+    /** Datastore definition */
+    private DatastoreDefinition datastore;
+
+    public DatastoreDefinition getDatastore() {
+	return datastore;
+    }
+
+    public void setDatastore(DatastoreDefinition datastore) {
+	this.datastore = datastore;
+    }
 }

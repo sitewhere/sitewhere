@@ -29,6 +29,7 @@ public class UnprocessedBatchElementsProducer extends MicroserviceKafkaProducer
      */
     @Override
     public String getTargetTopicName() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getUnprocessedBatchElementsTopic(getTenantEngine().getTenant());
+	return getMicroservice().getKafkaTopicNaming()
+		.getUnprocessedBatchElementsTopic(getTenantEngine().getTenantResource());
     }
 }

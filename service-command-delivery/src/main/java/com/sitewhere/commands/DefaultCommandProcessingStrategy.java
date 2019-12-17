@@ -72,7 +72,7 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
 		List<IDeviceAssignment> active = getDeviceManagementApiChannel()
 			.getActiveDeviceAssignments(device.getId());
 		IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device,
-			getTenantEngine().getTenant());
+			getTenantEngine().getTenantResource());
 		CommandRoutingLogic.routeCommand(getOutboundCommandRouter(), getUndeliveredCommandInvocationsProducer(),
 			context, execution, nesting, active);
 	    }
@@ -99,7 +99,7 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
 	List<IDeviceAssignment> assignments = getDeviceManagementApiChannel()
 		.getActiveDeviceAssignments(device.getId());
 	IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device,
-		getTenantEngine().getTenant());
+		getTenantEngine().getTenantResource());
 	CommandRoutingLogic.routeSystemCommand(getOutboundCommandRouter(), command, nesting, assignments);
     }
 

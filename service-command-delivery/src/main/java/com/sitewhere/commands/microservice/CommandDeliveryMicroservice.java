@@ -18,7 +18,8 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenant;
+
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Microservice that provides command delivery functionality.
@@ -57,11 +58,11 @@ public class CommandDeliveryMicroservice extends
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * createTenantEngine(com.sitewhere.spi.tenant.ITenant)
+     * createTenantEngine(io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine)
      */
     @Override
-    public ICommandDeliveryTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new CommandDeliveryTenantEngine(tenant);
+    public ICommandDeliveryTenantEngine createTenantEngine(SiteWhereTenantEngine engine) throws SiteWhereException {
+	return new CommandDeliveryTenantEngine(engine);
     }
 
     /*

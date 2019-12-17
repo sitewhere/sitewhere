@@ -20,7 +20,8 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenant;
+
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Microservice that provides rule processing functionality.
@@ -62,11 +63,11 @@ public class RuleProcessingMicroservice extends
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * createTenantEngine(com.sitewhere.spi.tenant.ITenant)
+     * createTenantEngine(io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine)
      */
     @Override
-    public IRuleProcessingTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new RuleProcessingTenantEngine(tenant);
+    public IRuleProcessingTenantEngine createTenantEngine(SiteWhereTenantEngine engine) throws SiteWhereException {
+	return new RuleProcessingTenantEngine(engine);
     }
 
     /*

@@ -8,6 +8,9 @@
 package com.sitewhere.asset.microservice;
 
 import com.sitewhere.asset.configuration.AssetManagementTenantConfiguration;
+import com.sitewhere.asset.configuration.AssetManagementTenantEngineModule;
+import com.sitewhere.asset.grpc.AssetManagementImpl;
+import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
@@ -17,8 +20,9 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
 
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 
 /**
@@ -34,8 +38,37 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine<AssetM
     /** Responds to asset management GRPC requests */
     private AssetManagementGrpc.AssetManagementImplBase assetManagementImpl;
 
-    public AssetManagementTenantEngine(ITenant tenant) {
-	super(tenant);
+    public AssetManagementTenantEngine(SiteWhereTenantEngine tenantEngineResource) {
+	super(tenantEngineResource);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationClass()
+     */
+    @Override
+    public Class<AssetManagementTenantConfiguration> getConfigurationClass() {
+	return AssetManagementTenantConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationModule()
+     */
+    @Override
+    public ITenantEngineModule<AssetManagementTenantConfiguration> getConfigurationModule() {
+	return new AssetManagementTenantEngineModule(getActiveConfiguration());
+    }
+
+    /*
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * loadEngineComponents()
+     */
+    @Override
+    public void loadEngineComponents() throws SiteWhereException {
+	this.assetManagement = (IAssetManagement) getInjector().getInstance(IAssetManagement.class);
+	this.assetManagementImpl = new AssetManagementImpl((IAssetManagementMicroservice) getMicroservice(),
+		getAssetManagement());
     }
 
     /*
@@ -45,33 +78,14 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine<AssetM
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Initialize underlying APIs.
-	initializeAssetManagementApis();
-
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
-
-	// Initialize discoverable lifecycle components.
-	init.addStep(initializeDiscoverableBeans(getModuleContext()));
 
 	// Initialize asset management persistence.
 	init.addInitializeStep(this, getAssetManagement(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
-    }
-
-    /**
-     * Initialize underlying APIs from Spring.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void initializeAssetManagementApis() throws SiteWhereException {
-	// this.assetManagement = (IAssetManagement) getModuleContext()
-	// .getBean(AssetManagementBeans.BEAN_ASSET_MANAGEMENT);
-	// this.assetManagementImpl = new
-	// AssetManagementImpl((IAssetManagementMicroservice) getMicroservice(),
-	// getAssetManagement());
     }
 
     /*
@@ -83,9 +97,6 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine<AssetM
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
-
-	// Start discoverable lifecycle components.
-	start.addStep(startDiscoverableBeans(getModuleContext()));
 
 	// Start asset management persistence.
 	start.addStartStep(this, getAssetManagement(), true);
@@ -140,9 +151,6 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine<AssetM
 
 	// Stop asset management persistence.
 	stop.addStopStep(this, getAssetManagement());
-
-	// Stop discoverable lifecycle components.
-	stop.addStep(stopDiscoverableBeans(getModuleContext()));
 
 	// Execute shutdown steps.
 	stop.execute(monitor);

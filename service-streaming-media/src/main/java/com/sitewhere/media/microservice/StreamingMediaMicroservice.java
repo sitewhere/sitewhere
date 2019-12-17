@@ -13,7 +13,8 @@ import com.sitewhere.media.spi.microservice.IStreamingMediaTenantEngine;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.tenant.ITenant;
+
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Microservice that provides streaming media functionality.
@@ -49,10 +50,10 @@ public class StreamingMediaMicroservice extends
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * createTenantEngine(com.sitewhere.spi.tenant.ITenant)
+     * createTenantEngine(io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine)
      */
     @Override
-    public IStreamingMediaTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new StreamingMediaTenantEngine(tenant);
+    public IStreamingMediaTenantEngine createTenantEngine(SiteWhereTenantEngine engine) throws SiteWhereException {
+	return new StreamingMediaTenantEngine(engine);
     }
 }

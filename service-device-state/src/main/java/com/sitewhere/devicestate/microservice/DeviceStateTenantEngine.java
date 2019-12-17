@@ -8,6 +8,7 @@
 package com.sitewhere.devicestate.microservice;
 
 import com.sitewhere.devicestate.configuration.DeviceStateTenantConfiguration;
+import com.sitewhere.devicestate.configuration.DeviceStateTenantEngineModule;
 import com.sitewhere.devicestate.spi.IDevicePresenceManager;
 import com.sitewhere.devicestate.spi.kafka.IDeviceStateEnrichedEventsConsumer;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
@@ -19,8 +20,9 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
 
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 
 /**
@@ -42,8 +44,26 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine<DeviceStat
     /** Presence manager implementation */
     private IDevicePresenceManager devicePresenceManager;
 
-    public DeviceStateTenantEngine(ITenant tenant) {
-	super(tenant);
+    public DeviceStateTenantEngine(SiteWhereTenantEngine engine) {
+	super(engine);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationClass()
+     */
+    @Override
+    public Class<DeviceStateTenantConfiguration> getConfigurationClass() {
+	return DeviceStateTenantConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationModule()
+     */
+    @Override
+    public ITenantEngineModule<DeviceStateTenantConfiguration> getConfigurationModule() {
+	return new DeviceStateTenantEngineModule(getActiveConfiguration());
     }
 
     /*
@@ -73,9 +93,6 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine<DeviceStat
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
 
-	// Initialize discoverable lifecycle components.
-	init.addStep(initializeDiscoverableBeans(getModuleContext()));
-
 	// Initialize device state management persistence.
 	init.addInitializeStep(this, getDeviceStateManagement(), true);
 
@@ -98,9 +115,6 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine<DeviceStat
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
-
-	// Start discoverable lifecycle components.
-	start.addStep(startDiscoverableBeans(getModuleContext()));
 
 	// Start device state management persistence.
 	start.addStartStep(this, getDeviceStateManagement(), true);
@@ -144,9 +158,6 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine<DeviceStat
 
 	// Stop device state management persistence.
 	stop.addStopStep(this, getDeviceStateManagement());
-
-	// Stop discoverable lifecycle components.
-	stop.addStep(stopDiscoverableBeans(getModuleContext()));
 
 	// Execute shutdown steps.
 	stop.execute(monitor);

@@ -13,7 +13,8 @@ import com.sitewhere.search.spi.microservice.IEventSearchMicroservice;
 import com.sitewhere.search.spi.microservice.IEventSearchTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.tenant.ITenant;
+
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Microservice that provides event search functionality.
@@ -49,10 +50,10 @@ public class EventSearchMicroservice
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * createTenantEngine(com.sitewhere.spi.tenant.ITenant)
+     * createTenantEngine(io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine)
      */
     @Override
-    public IEventSearchTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new EventSearchTenantEngine(tenant);
+    public IEventSearchTenantEngine createTenantEngine(SiteWhereTenantEngine engine) throws SiteWhereException {
+	return new EventSearchTenantEngine(engine);
     }
 }

@@ -8,6 +8,7 @@
 package com.sitewhere.event.microservice;
 
 import com.sitewhere.event.configuration.EventManagementTenantConfiguration;
+import com.sitewhere.event.configuration.EventManagementTenantEngineModule;
 import com.sitewhere.event.grpc.EventManagementImpl;
 import com.sitewhere.event.kafka.OutboundCommandInvocationsProducer;
 import com.sitewhere.event.kafka.OutboundEventsProducer;
@@ -27,8 +28,9 @@ import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
 
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 
 /**
@@ -53,8 +55,26 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
     /** Kakfa producer for pushed persistend command invocations to a topic */
     private IOutboundCommandInvocationsProducer outboundCommandInvocationsProducer;
 
-    public EventManagementTenantEngine(ITenant tenant) {
-	super(tenant);
+    public EventManagementTenantEngine(SiteWhereTenantEngine engine) {
+	super(engine);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationClass()
+     */
+    @Override
+    public Class<EventManagementTenantConfiguration> getConfigurationClass() {
+	return EventManagementTenantConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationModule()
+     */
+    @Override
+    public ITenantEngineModule<EventManagementTenantConfiguration> getConfigurationModule() {
+	return new EventManagementTenantEngineModule(getActiveConfiguration());
     }
 
     /*
@@ -72,9 +92,6 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
-
-	// Initialize discoverable lifecycle components.
-	init.addStep(initializeDiscoverableBeans(getModuleContext()));
 
 	// Initialize event management persistence.
 	init.addInitializeStep(this, getEventManagement(), true);
@@ -126,9 +143,6 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
-
-	// Start discoverable lifecycle components.
-	start.addStep(startDiscoverableBeans(getModuleContext()));
 
 	// Start event management persistence.
 	start.addStartStep(this, getEventManagement(), true);
@@ -210,9 +224,6 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
 
 	// Stop outbound events producer.
 	stop.addStopStep(this, getOutboundEventsProducer());
-
-	// Stop discoverable lifecycle components.
-	stop.addStep(stopDiscoverableBeans(getModuleContext()));
 
 	// Execute shutdown steps.
 	stop.execute(monitor);

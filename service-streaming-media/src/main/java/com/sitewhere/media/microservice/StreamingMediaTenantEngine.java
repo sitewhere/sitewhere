@@ -8,13 +8,15 @@
 package com.sitewhere.media.microservice;
 
 import com.sitewhere.media.configuration.StreamingMediaTenantConfiguration;
+import com.sitewhere.media.configuration.StreamingMediaTenantEngineModule;
 import com.sitewhere.media.spi.microservice.IStreamingMediaTenantEngine;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
 
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 
 /**
@@ -24,8 +26,26 @@ import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 public class StreamingMediaTenantEngine extends MicroserviceTenantEngine<StreamingMediaTenantConfiguration>
 	implements IStreamingMediaTenantEngine {
 
-    public StreamingMediaTenantEngine(ITenant tenant) {
-	super(tenant);
+    public StreamingMediaTenantEngine(SiteWhereTenantEngine engine) {
+	super(engine);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationClass()
+     */
+    @Override
+    public Class<StreamingMediaTenantConfiguration> getConfigurationClass() {
+	return StreamingMediaTenantConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationModule()
+     */
+    @Override
+    public ITenantEngineModule<StreamingMediaTenantConfiguration> getConfigurationModule() {
+	return new StreamingMediaTenantEngineModule(getActiveConfiguration());
     }
 
     /*

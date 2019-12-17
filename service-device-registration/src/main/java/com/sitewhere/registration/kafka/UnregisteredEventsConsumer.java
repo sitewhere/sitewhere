@@ -65,7 +65,8 @@ public class UnregisteredEventsConsumer extends DirectKafkaConsumer implements I
      */
     @Override
     public String getConsumerGroupId() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getTenantPrefix(getTenantEngine().getTenant()) + GROUP_ID_SUFFIX;
+	return getMicroservice().getKafkaTopicNaming().getTenantPrefix(getTenantEngine().getTenantResource())
+		+ GROUP_ID_SUFFIX;
     }
 
     /*
@@ -76,7 +77,7 @@ public class UnregisteredEventsConsumer extends DirectKafkaConsumer implements I
     public List<String> getSourceTopicNames() throws SiteWhereException {
 	List<String> topics = new ArrayList<String>();
 	topics.add(getMicroservice().getKafkaTopicNaming()
-		.getUnregisteredDeviceEventsTopic(getTenantEngine().getTenant()));
+		.getUnregisteredDeviceEventsTopic(getTenantEngine().getTenantResource()));
 	return topics;
     }
 
@@ -139,7 +140,7 @@ public class UnregisteredEventsConsumer extends DirectKafkaConsumer implements I
 	private byte[] encoded;
 
 	public UnregisteredDeviceEventProcessor(IMicroserviceTenantEngine<?> tenantEngine, byte[] encoded) {
-	    super(tenantEngine.getMicroservice(), tenantEngine.getTenant());
+	    super(tenantEngine.getMicroservice(), tenantEngine.getTenantResource());
 	    this.encoded = encoded;
 	}
 

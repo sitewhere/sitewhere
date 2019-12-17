@@ -9,6 +9,7 @@ package com.sitewhere.labels.microservice;
 
 import com.sitewhere.grpc.service.LabelGenerationGrpc;
 import com.sitewhere.labels.configuration.LabelGenerationTenantConfiguration;
+import com.sitewhere.labels.configuration.LabelGenerationTenantEngineModule;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationTenantEngine;
 import com.sitewhere.microservice.api.label.ILabelGeneratorManager;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
@@ -17,8 +18,9 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
 
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 
 /**
@@ -34,8 +36,26 @@ public class LabelGenerationTenantEngine extends MicroserviceTenantEngine<LabelG
     /** Responds to label generation GRPC requests */
     private LabelGenerationGrpc.LabelGenerationImplBase labelGenerationImpl;
 
-    public LabelGenerationTenantEngine(ITenant tenant) {
-	super(tenant);
+    public LabelGenerationTenantEngine(SiteWhereTenantEngine engine) {
+	super(engine);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationClass()
+     */
+    @Override
+    public Class<LabelGenerationTenantConfiguration> getConfigurationClass() {
+	return LabelGenerationTenantConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationModule()
+     */
+    @Override
+    public ITenantEngineModule<LabelGenerationTenantConfiguration> getConfigurationModule() {
+	return new LabelGenerationTenantEngineModule(getActiveConfiguration());
     }
 
     /*
@@ -54,9 +74,6 @@ public class LabelGenerationTenantEngine extends MicroserviceTenantEngine<LabelG
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
 
-	// Initialize discoverable lifecycle components.
-	init.addStep(initializeDiscoverableBeans(getModuleContext()));
-
 	// Initialize label generator manager.
 	init.addInitializeStep(this, getLabelGeneratorManager(), true);
 
@@ -73,9 +90,6 @@ public class LabelGenerationTenantEngine extends MicroserviceTenantEngine<LabelG
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
-
-	// Start discoverable lifecycle components.
-	start.addStep(startDiscoverableBeans(getModuleContext()));
 
 	// Start label generator manager.
 	start.addStartStep(this, getLabelGeneratorManager(), true);
@@ -107,9 +121,6 @@ public class LabelGenerationTenantEngine extends MicroserviceTenantEngine<LabelG
 
 	// Stop label generator manager.
 	stop.addStopStep(this, getLabelGeneratorManager());
-
-	// Stop discoverable lifecycle components.
-	stop.addStep(stopDiscoverableBeans(getModuleContext()));
 
 	// Execute shutdown steps.
 	stop.execute(monitor);

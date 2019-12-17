@@ -61,7 +61,7 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
     public byte[] encode(IDeviceCommandExecution execution, IDeviceNestingContext nested,
 	    List<IDeviceAssignment> assignments) throws SiteWhereException {
 	byte[] encoded = ProtobufMessageBuilder.createMessage(execution, nested, assignments,
-		getTenantEngine().getTenant(), getDeviceManagement());
+		getTenantEngine().getTenantResource(), getDeviceManagement());
 	getLogger().debug("Protobuf message: 0x" + DataUtils.bytesToHex(encoded));
 	return encoded;
     }

@@ -20,7 +20,8 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenant;
+
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Microservice that provides outbound connector management.
@@ -62,11 +63,11 @@ public class OutboundConnectorsMicroservice extends
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * createTenantEngine(com.sitewhere.spi.tenant.ITenant)
+     * createTenantEngine(io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine)
      */
     @Override
-    public IOutboundConnectorsTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new OutboundConnectorsTenantEngine(tenant);
+    public IOutboundConnectorsTenantEngine createTenantEngine(SiteWhereTenantEngine engine) throws SiteWhereException {
+	return new OutboundConnectorsTenantEngine(engine);
     }
 
     /*

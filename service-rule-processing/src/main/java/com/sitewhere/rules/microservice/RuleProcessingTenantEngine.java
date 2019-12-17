@@ -10,14 +10,16 @@ package com.sitewhere.rules.microservice;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.rules.configuration.RuleProcessingTenantConfiguration;
+import com.sitewhere.rules.configuration.RuleProcessingTenantEngineModule;
 import com.sitewhere.rules.spi.IRuleProcessorsManager;
 import com.sitewhere.rules.spi.microservice.IRuleProcessingTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
 
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 
 /**
@@ -30,8 +32,26 @@ public class RuleProcessingTenantEngine extends MicroserviceTenantEngine<RulePro
     /** Rule processors manager */
     private IRuleProcessorsManager ruleProcessorsManager;
 
-    public RuleProcessingTenantEngine(ITenant tenant) {
-	super(tenant);
+    public RuleProcessingTenantEngine(SiteWhereTenantEngine engine) {
+	super(engine);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationClass()
+     */
+    @Override
+    public Class<RuleProcessingTenantConfiguration> getConfigurationClass() {
+	return RuleProcessingTenantConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationModule()
+     */
+    @Override
+    public ITenantEngineModule<RuleProcessingTenantConfiguration> getConfigurationModule() {
+	return new RuleProcessingTenantEngineModule(getActiveConfiguration());
     }
 
     /*

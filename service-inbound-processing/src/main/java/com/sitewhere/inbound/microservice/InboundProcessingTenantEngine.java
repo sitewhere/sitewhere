@@ -8,6 +8,7 @@
 package com.sitewhere.inbound.microservice;
 
 import com.sitewhere.inbound.configuration.InboundProcessingTenantConfiguration;
+import com.sitewhere.inbound.configuration.InboundProcessingTenantEngineModule;
 import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
 import com.sitewhere.inbound.spi.kafka.IInboundEventsProducer;
 import com.sitewhere.inbound.spi.kafka.IUnregisteredEventsProducer;
@@ -18,8 +19,9 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
 
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 
 /**
@@ -38,8 +40,26 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine<Inbo
     /** Kafka producer for forwarding processed events */
     private IInboundEventsProducer inboundEventsProducer;
 
-    public InboundProcessingTenantEngine(ITenant tenant) {
-	super(tenant);
+    public InboundProcessingTenantEngine(SiteWhereTenantEngine engine) {
+	super(engine);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationClass()
+     */
+    @Override
+    public Class<InboundProcessingTenantConfiguration> getConfigurationClass() {
+	return InboundProcessingTenantConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationModule()
+     */
+    @Override
+    public ITenantEngineModule<InboundProcessingTenantConfiguration> getConfigurationModule() {
+	return new InboundProcessingTenantEngineModule(getActiveConfiguration());
     }
 
     /*

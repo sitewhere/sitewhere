@@ -30,6 +30,6 @@ public class OutboundCommandInvocationsProducer extends MicroserviceKafkaProduce
     @Override
     public String getTargetTopicName() throws SiteWhereException {
 	return getMicroservice().getKafkaTopicNaming()
-		.getOutboundCommandInvocationsTopic(getTenantEngine().getTenant());
+		.getOutboundCommandInvocationsTopic(getTenantEngine().getTenantResource());
     }
 }

@@ -32,7 +32,6 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Extension of {@link FilteredOutboundConnector} that sends messages to
@@ -94,7 +93,7 @@ public class RabbitMqOutboundConnector extends SerialOutboundConnector
 	    factory.setUri(getConnectionUri());
 	    this.connection = factory.newConnection();
 	    this.channel = connection.createChannel();
-	    this.exchange = getTenantEngine().getTenant().getToken() + DEFAULT_EXCHANGE_SUFFIX;
+	    this.exchange = getTenantEngine().getTenantResource().getMetadata().getName() + DEFAULT_EXCHANGE_SUFFIX;
 	    channel.exchangeDeclare(exchange, "topic");
 	    getLogger().info("RabbitMQ outbound processor connected to: " + getConnectionUri());
 	} catch (Exception e) {
@@ -206,7 +205,7 @@ public class RabbitMqOutboundConnector extends SerialOutboundConnector
      * @throws SiteWhereException
      */
     protected void sendEvent(IDeviceEvent event) throws SiteWhereException {
-	IDeviceManagement dm = getDeviceManagement(getTenantEngine().getTenant());
+	IDeviceManagement dm = getDeviceManagement();
 	IDeviceAssignment assignment = dm.getDeviceAssignment(event.getDeviceAssignmentId());
 	IDevice device = dm.getDevice(assignment.getDeviceId());
 	if (getMulticaster() != null) {
@@ -282,9 +281,5 @@ public class RabbitMqOutboundConnector extends SerialOutboundConnector
 
     public void setTopic(String topic) {
 	this.topic = topic;
-    }
-
-    private IDeviceManagement getDeviceManagement(ITenant tenant) {
-	return null;
     }
 }

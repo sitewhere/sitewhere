@@ -20,7 +20,8 @@ import org.eclipse.californium.core.server.MessageDeliverer;
 import com.sitewhere.rest.model.device.communication.DeviceRequest.Type;
 import com.sitewhere.sources.decoder.coap.CoapJsonDecoder;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
-import com.sitewhere.spi.tenant.ITenant;
+
+import io.sitewhere.k8s.crd.tenant.SiteWhereTenant;
 
 /**
  * Take care of all SiteWhere message handling.
@@ -59,7 +60,7 @@ public class CoapMessageDeliverer implements MessageDeliverer {
     public void deliverRequest(Exchange exchange) {
 	OptionSet options = exchange.getRequest().getOptions();
 	List<String> paths = options.getUriPath();
-	handleRequest(getEventReceiver().getTenantEngine().getTenant(), paths, exchange);
+	handleRequest(getEventReceiver().getTenantEngine().getTenantResource(), paths, exchange);
     }
 
     /**
@@ -69,7 +70,7 @@ public class CoapMessageDeliverer implements MessageDeliverer {
      * @param paths
      * @param exchange
      */
-    protected void handleRequest(ITenant tenant, List<String> paths, Exchange exchange) {
+    protected void handleRequest(SiteWhereTenant tenant, List<String> paths, Exchange exchange) {
 	String resourceType = paths.remove(0);
 	if (PATH_DEVICES.equals(resourceType)) {
 	    handleDeviceRequest(tenant, paths, exchange);
@@ -85,7 +86,7 @@ public class CoapMessageDeliverer implements MessageDeliverer {
      * @param paths
      * @param exchange
      */
-    protected void handleDeviceRequest(ITenant tenant, List<String> paths, Exchange exchange) {
+    protected void handleDeviceRequest(SiteWhereTenant tenant, List<String> paths, Exchange exchange) {
 	if (paths.size() == 0) {
 	    createAndSendResponse(ResponseCode.BAD_REQUEST, "No device token specified.", exchange);
 	} else {
@@ -110,7 +111,7 @@ public class CoapMessageDeliverer implements MessageDeliverer {
      * @param paths
      * @param exchange
      */
-    protected void handlePerDevicePostRequest(ITenant tenant, String deviceToken, List<String> paths,
+    protected void handlePerDevicePostRequest(SiteWhereTenant tenant, String deviceToken, List<String> paths,
 	    Exchange exchange) {
 	if (paths.size() > 0) {
 	    String operation = paths.remove(0);
@@ -135,7 +136,7 @@ public class CoapMessageDeliverer implements MessageDeliverer {
      * @param deviceToken
      * @param exchange
      */
-    protected void handleDeviceRegistration(ITenant tenant, String deviceToken, Exchange exchange) {
+    protected void handleDeviceRegistration(SiteWhereTenant tenant, String deviceToken, Exchange exchange) {
 	Map<String, Object> metadata = new HashMap<String, Object>();
 	metadata.put(CoapJsonDecoder.META_EVENT_TYPE, Type.RegisterDevice.name());
 	metadata.put(CoapJsonDecoder.META_DEVICE_TOKEN, deviceToken);
@@ -151,7 +152,7 @@ public class CoapMessageDeliverer implements MessageDeliverer {
      * @param paths
      * @param exchange
      */
-    protected void handleAddDeviceMeasurement(ITenant tenant, String deviceToken, List<String> paths,
+    protected void handleAddDeviceMeasurement(SiteWhereTenant tenant, String deviceToken, List<String> paths,
 	    Exchange exchange) {
 	Map<String, Object> metadata = new HashMap<String, Object>();
 	metadata.put(CoapJsonDecoder.META_EVENT_TYPE, Type.DeviceMeasurement.name());
@@ -168,7 +169,8 @@ public class CoapMessageDeliverer implements MessageDeliverer {
      * @param paths
      * @param exchange
      */
-    protected void handleAddDeviceAlert(ITenant tenant, String deviceToken, List<String> paths, Exchange exchange) {
+    protected void handleAddDeviceAlert(SiteWhereTenant tenant, String deviceToken, List<String> paths,
+	    Exchange exchange) {
 	Map<String, Object> metadata = new HashMap<String, Object>();
 	metadata.put(CoapJsonDecoder.META_EVENT_TYPE, Type.DeviceAlert.name());
 	metadata.put(CoapJsonDecoder.META_DEVICE_TOKEN, deviceToken);
@@ -184,7 +186,8 @@ public class CoapMessageDeliverer implements MessageDeliverer {
      * @param paths
      * @param exchange
      */
-    protected void handleAddDeviceLocation(ITenant tenant, String deviceToken, List<String> paths, Exchange exchange) {
+    protected void handleAddDeviceLocation(SiteWhereTenant tenant, String deviceToken, List<String> paths,
+	    Exchange exchange) {
 	Map<String, Object> metadata = new HashMap<String, Object>();
 	metadata.put(CoapJsonDecoder.META_EVENT_TYPE, Type.DeviceLocation.name());
 	metadata.put(CoapJsonDecoder.META_DEVICE_TOKEN, deviceToken);
@@ -200,7 +203,8 @@ public class CoapMessageDeliverer implements MessageDeliverer {
      * @param paths
      * @param exchange
      */
-    protected void handleAddDeviceAck(ITenant tenant, String deviceToken, List<String> paths, Exchange exchange) {
+    protected void handleAddDeviceAck(SiteWhereTenant tenant, String deviceToken, List<String> paths,
+	    Exchange exchange) {
 	Map<String, Object> metadata = new HashMap<String, Object>();
 	metadata.put(CoapJsonDecoder.META_EVENT_TYPE, Type.Acknowledge.name());
 	metadata.put(CoapJsonDecoder.META_DEVICE_TOKEN, deviceToken);

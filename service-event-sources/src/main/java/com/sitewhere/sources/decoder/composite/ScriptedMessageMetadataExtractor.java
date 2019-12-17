@@ -9,7 +9,6 @@ package com.sitewhere.sources.decoder.composite;
 
 import java.util.Map;
 
-import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.scripting.Binding;
 import com.sitewhere.microservice.scripting.ScriptingComponent;
 import com.sitewhere.sources.spi.EventDecodeException;
@@ -20,7 +19,6 @@ import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.microservice.scripting.IScriptVariables;
 import com.sitewhere.spi.microservice.scripting.ScriptScope;
 import com.sitewhere.spi.microservice.scripting.ScriptType;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Implements {@link IMessageMetadataExtractor} by using a script to extract
@@ -42,17 +40,13 @@ public class ScriptedMessageMetadataExtractor extends ScriptingComponent<IMessag
 	    throws EventDecodeException {
 	try {
 	    Binding binding = createBindingFor(this);
-	    binding.setVariable(IScriptVariables.VAR_DEVICE_MANAGEMENT,
-		    getDeviceManagement(getTenantEngine().getTenant()));
+	    // binding.setVariable(IScriptVariables.VAR_DEVICE_MANAGEMENT,
+	    // getDeviceManagement());
 	    binding.setVariable(IScriptVariables.VAR_PAYLOAD, payload);
 	    binding.setVariable(IScriptVariables.VAR_PAYLOAD_METADATA, eventSourceMetadata);
 	    return (IMessageMetadata<byte[]>) run(ScriptScope.TenantEngine, ScriptType.Managed, binding);
 	} catch (SiteWhereException e) {
 	    throw new EventDecodeException("Unable to run metadata extractor.", e);
 	}
-    }
-
-    private IDeviceManagement getDeviceManagement(ITenant tenant) {
-	return null;
     }
 }

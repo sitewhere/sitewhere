@@ -52,7 +52,8 @@ public class UnprocessedBatchOperationsConsumer extends DirectKafkaConsumer
      */
     @Override
     public String getConsumerGroupId() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getTenantPrefix(getTenantEngine().getTenant()) + GROUP_ID_SUFFIX;
+	return getMicroservice().getKafkaTopicNaming().getTenantPrefix(getTenantEngine().getTenantResource())
+		+ GROUP_ID_SUFFIX;
     }
 
     /*
@@ -63,7 +64,7 @@ public class UnprocessedBatchOperationsConsumer extends DirectKafkaConsumer
     public List<String> getSourceTopicNames() throws SiteWhereException {
 	List<String> topics = new ArrayList<String>();
 	topics.add(getMicroservice().getKafkaTopicNaming()
-		.getUnprocessedBatchOperationsTopic(getTenantEngine().getTenant()));
+		.getUnprocessedBatchOperationsTopic(getTenantEngine().getTenantResource()));
 	return topics;
     }
 

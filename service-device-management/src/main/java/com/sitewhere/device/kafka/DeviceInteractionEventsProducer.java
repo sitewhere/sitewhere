@@ -28,6 +28,6 @@ public class DeviceInteractionEventsProducer extends MicroserviceKafkaProducer
      */
     @Override
     public String getTargetTopicName() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getInboundEventsTopic(getTenantEngine().getTenant());
+	return getMicroservice().getKafkaTopicNaming().getInboundEventsTopic(getTenantEngine().getTenantResource());
     }
 }

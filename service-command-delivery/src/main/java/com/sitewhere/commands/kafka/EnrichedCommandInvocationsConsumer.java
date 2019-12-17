@@ -68,7 +68,8 @@ public class EnrichedCommandInvocationsConsumer extends DirectKafkaConsumer
      */
     @Override
     public String getConsumerGroupId() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getTenantPrefix(getTenantEngine().getTenant()) + GROUP_ID_SUFFIX;
+	return getMicroservice().getKafkaTopicNaming().getTenantPrefix(getTenantEngine().getTenantResource())
+		+ GROUP_ID_SUFFIX;
     }
 
     /*
@@ -79,7 +80,7 @@ public class EnrichedCommandInvocationsConsumer extends DirectKafkaConsumer
     public List<String> getSourceTopicNames() throws SiteWhereException {
 	List<String> topics = new ArrayList<String>();
 	topics.add(getMicroservice().getKafkaTopicNaming()
-		.getOutboundCommandInvocationsTopic(getTenantEngine().getTenant()));
+		.getOutboundCommandInvocationsTopic(getTenantEngine().getTenantResource()));
 	return topics;
     }
 
@@ -142,7 +143,7 @@ public class EnrichedCommandInvocationsConsumer extends DirectKafkaConsumer
 	private byte[] encoded;
 
 	public CommandInvocationProcessor(IMicroserviceTenantEngine<?> tenantEngine, byte[] encoded) {
-	    super(tenantEngine.getMicroservice(), tenantEngine.getTenant());
+	    super(tenantEngine.getMicroservice(), tenantEngine.getTenantResource());
 	    this.encoded = encoded;
 	}
 

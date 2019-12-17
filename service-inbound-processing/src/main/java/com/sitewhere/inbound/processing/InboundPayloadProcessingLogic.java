@@ -217,7 +217,7 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	private GDecodedEventPayload event;
 
 	public InboundEventPayloadProcessor(GDecodedEventPayload event) {
-	    super(getTenantEngine().getMicroservice(), getTenantEngine().getTenant());
+	    super(getTenantEngine().getMicroservice(), getTenantEngine().getTenantResource());
 	    this.event = event;
 	}
 

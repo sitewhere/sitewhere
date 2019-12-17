@@ -9,6 +9,7 @@ package com.sitewhere.commands.microservice;
 
 import com.sitewhere.commands.DefaultCommandProcessingStrategy;
 import com.sitewhere.commands.configuration.CommandDeliveryTenantConfiguration;
+import com.sitewhere.commands.configuration.CommandDeliveryTenantEngineModule;
 import com.sitewhere.commands.kafka.EnrichedCommandInvocationsConsumer;
 import com.sitewhere.commands.kafka.UndeliveredCommandInvocationsProducer;
 import com.sitewhere.commands.spi.ICommandDestinationsManager;
@@ -23,8 +24,9 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
 
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 
 /**
@@ -49,8 +51,26 @@ public class CommandDeliveryTenantEngine extends MicroserviceTenantEngine<Comman
     /** Kafka producer for undelivered command invocations */
     private IUndeliveredCommandInvocationsProducer undeliveredCommandInvocationsProducer;
 
-    public CommandDeliveryTenantEngine(ITenant tenant) {
-	super(tenant);
+    public CommandDeliveryTenantEngine(SiteWhereTenantEngine engine) {
+	super(engine);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationClass()
+     */
+    @Override
+    public Class<CommandDeliveryTenantConfiguration> getConfigurationClass() {
+	return CommandDeliveryTenantConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationModule()
+     */
+    @Override
+    public ITenantEngineModule<CommandDeliveryTenantConfiguration> getConfigurationModule() {
+	return new CommandDeliveryTenantEngineModule(getActiveConfiguration());
     }
 
     /*

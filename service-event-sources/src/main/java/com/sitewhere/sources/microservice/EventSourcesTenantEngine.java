@@ -10,14 +10,16 @@ package com.sitewhere.sources.microservice;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
 import com.sitewhere.sources.configuration.EventSourcesTenantConfiguration;
+import com.sitewhere.sources.configuration.EventSourcesTenantEngineModule;
 import com.sitewhere.sources.spi.IEventSourcesManager;
 import com.sitewhere.sources.spi.microservice.IEventSourcesTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
 
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 
 /**
@@ -30,8 +32,26 @@ public class EventSourcesTenantEngine extends MicroserviceTenantEngine<EventSour
     /** Event sources manager */
     private IEventSourcesManager eventSourcesManager;
 
-    public EventSourcesTenantEngine(ITenant tenant) {
-	super(tenant);
+    public EventSourcesTenantEngine(SiteWhereTenantEngine engine) {
+	super(engine);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationClass()
+     */
+    @Override
+    public Class<EventSourcesTenantConfiguration> getConfigurationClass() {
+	return EventSourcesTenantConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationModule()
+     */
+    @Override
+    public ITenantEngineModule<EventSourcesTenantConfiguration> getConfigurationModule() {
+	return new EventSourcesTenantEngineModule(getActiveConfiguration());
     }
 
     /*

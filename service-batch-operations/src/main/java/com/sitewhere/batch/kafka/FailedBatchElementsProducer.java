@@ -28,6 +28,7 @@ public class FailedBatchElementsProducer extends MicroserviceKafkaProducer imple
      */
     @Override
     public String getTargetTopicName() throws SiteWhereException {
-	return getMicroservice().getKafkaTopicNaming().getFailedBatchElementsTopic(getTenantEngine().getTenant());
+	return getMicroservice().getKafkaTopicNaming()
+		.getFailedBatchElementsTopic(getTenantEngine().getTenantResource());
     }
 }
