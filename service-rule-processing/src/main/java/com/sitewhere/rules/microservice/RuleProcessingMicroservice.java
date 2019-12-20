@@ -7,6 +7,8 @@
  */
 package com.sitewhere.rules.microservice;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
@@ -14,10 +16,12 @@ import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.rules.configuration.RuleProcessingConfiguration;
+import com.sitewhere.rules.configuration.RuleProcessingModule;
 import com.sitewhere.rules.spi.microservice.IRuleProcessingMicroservice;
 import com.sitewhere.rules.spi.microservice.IRuleProcessingTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
@@ -26,6 +30,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides rule processing functionality.
  */
+@ApplicationScoped
 public class RuleProcessingMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, RuleProcessingConfiguration, IRuleProcessingTenantEngine>
 	implements IRuleProcessingMicroservice {
@@ -59,6 +64,14 @@ public class RuleProcessingMicroservice extends
     @Override
     public Class<RuleProcessingConfiguration> getConfigurationClass() {
 	return RuleProcessingConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
+     */
+    @Override
+    public IMicroserviceModule<RuleProcessingConfiguration> createConfigurationModule() {
+	return new RuleProcessingModule(getMicroserviceConfiguration());
     }
 
     /*

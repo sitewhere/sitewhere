@@ -66,10 +66,10 @@ public class CommandDeliveryTenantEngine extends MicroserviceTenantEngine<Comman
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * getConfigurationModule()
+     * createConfigurationModule()
      */
     @Override
-    public ITenantEngineModule<CommandDeliveryTenantConfiguration> getConfigurationModule() {
+    public ITenantEngineModule<CommandDeliveryTenantConfiguration> createConfigurationModule() {
 	return new CommandDeliveryTenantEngineModule(getActiveConfiguration());
     }
 

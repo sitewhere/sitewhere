@@ -10,6 +10,7 @@ package com.sitewhere.asset.microservice;
 import javax.enterprise.context.ApplicationScoped;
 
 import com.sitewhere.asset.configuration.AssetManagementConfiguration;
+import com.sitewhere.asset.configuration.AssetManagementModule;
 import com.sitewhere.asset.grpc.AssetManagementGrpcServer;
 import com.sitewhere.asset.spi.grpc.IAssetManagementGrpcServer;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
@@ -20,6 +21,7 @@ import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
@@ -64,6 +66,14 @@ public class AssetManagementMicroservice extends
     @Override
     public Class<AssetManagementConfiguration> getConfigurationClass() {
 	return AssetManagementConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
+     */
+    @Override
+    public IMicroserviceModule<AssetManagementConfiguration> createConfigurationModule() {
+	return new AssetManagementModule(getMicroserviceConfiguration());
     }
 
     /*

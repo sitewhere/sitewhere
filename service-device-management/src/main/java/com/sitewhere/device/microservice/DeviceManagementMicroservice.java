@@ -7,7 +7,10 @@
  */
 package com.sitewhere.device.microservice;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import com.sitewhere.device.configuration.DeviceManagementConfiguration;
+import com.sitewhere.device.configuration.DeviceManagementModule;
 import com.sitewhere.device.grpc.DeviceManagementGrpcServer;
 import com.sitewhere.device.spi.grpc.IDeviceManagementGrpcServer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
@@ -18,6 +21,7 @@ import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
@@ -26,6 +30,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides device management functionality.
  */
+@ApplicationScoped
 public class DeviceManagementMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, DeviceManagementConfiguration, IDeviceManagementTenantEngine>
 	implements IDeviceManagementMicroservice {
@@ -61,6 +66,14 @@ public class DeviceManagementMicroservice extends
     @Override
     public Class<DeviceManagementConfiguration> getConfigurationClass() {
 	return DeviceManagementConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
+     */
+    @Override
+    public IMicroserviceModule<DeviceManagementConfiguration> createConfigurationModule() {
+	return new DeviceManagementModule(getMicroserviceConfiguration());
     }
 
     /*

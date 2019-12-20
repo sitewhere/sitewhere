@@ -7,6 +7,8 @@
  */
 package com.sitewhere.sources.microservice;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
@@ -14,10 +16,12 @@ import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.sources.configuration.EventSourcesConfiguration;
+import com.sitewhere.sources.configuration.EventSourcesModule;
 import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
 import com.sitewhere.sources.spi.microservice.IEventSourcesTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
@@ -26,6 +30,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides event sources functionality.
  */
+@ApplicationScoped
 public class EventSourcesMicroservice
 	extends MultitenantMicroservice<MicroserviceIdentifier, EventSourcesConfiguration, IEventSourcesTenantEngine>
 	implements IEventSourcesMicroservice {
@@ -61,6 +66,14 @@ public class EventSourcesMicroservice
     @Override
     public Class<EventSourcesConfiguration> getConfigurationClass() {
 	return EventSourcesConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
+     */
+    @Override
+    public IMicroserviceModule<EventSourcesConfiguration> createConfigurationModule() {
+	return new EventSourcesModule(getMicroserviceConfiguration());
     }
 
     /*

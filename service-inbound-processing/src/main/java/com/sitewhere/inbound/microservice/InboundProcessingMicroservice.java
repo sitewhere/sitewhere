@@ -7,17 +7,21 @@
  */
 package com.sitewhere.inbound.microservice;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.inbound.configuration.InboundProcessingConfiguration;
+import com.sitewhere.inbound.configuration.InboundProcessingModule;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
@@ -26,6 +30,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides inbound event processing functionality.
  */
+@ApplicationScoped
 public class InboundProcessingMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, InboundProcessingConfiguration, IInboundProcessingTenantEngine>
 	implements IInboundProcessingMicroservice {
@@ -59,6 +64,14 @@ public class InboundProcessingMicroservice extends
     @Override
     public Class<InboundProcessingConfiguration> getConfigurationClass() {
 	return InboundProcessingConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
+     */
+    @Override
+    public IMicroserviceModule<InboundProcessingConfiguration> createConfigurationModule() {
+	return new InboundProcessingModule(getMicroserviceConfiguration());
     }
 
     /*

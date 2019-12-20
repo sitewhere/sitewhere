@@ -51,10 +51,10 @@ public class LabelGenerationTenantEngine extends MicroserviceTenantEngine<LabelG
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * getConfigurationModule()
+     * createConfigurationModule()
      */
     @Override
-    public ITenantEngineModule<LabelGenerationTenantConfiguration> getConfigurationModule() {
+    public ITenantEngineModule<LabelGenerationTenantConfiguration> createConfigurationModule() {
 	return new LabelGenerationTenantEngineModule(getActiveConfiguration());
     }
 

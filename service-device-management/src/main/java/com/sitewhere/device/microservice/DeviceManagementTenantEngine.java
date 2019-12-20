@@ -60,10 +60,10 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine<Devic
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * getConfigurationModule()
+     * createConfigurationModule()
      */
     @Override
-    public ITenantEngineModule<DeviceManagementTenantConfiguration> getConfigurationModule() {
+    public ITenantEngineModule<DeviceManagementTenantConfiguration> createConfigurationModule() {
 	return new DeviceManagementTenantEngineModule(getActiveConfiguration());
     }
 

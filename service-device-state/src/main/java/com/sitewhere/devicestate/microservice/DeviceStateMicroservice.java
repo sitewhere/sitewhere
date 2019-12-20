@@ -7,7 +7,10 @@
  */
 package com.sitewhere.devicestate.microservice;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import com.sitewhere.devicestate.configuration.DeviceStateConfiguration;
+import com.sitewhere.devicestate.configuration.DeviceStateModule;
 import com.sitewhere.devicestate.grpc.DeviceStateGrpcServer;
 import com.sitewhere.devicestate.spi.grpc.IDeviceStateGrpcServer;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
@@ -22,6 +25,7 @@ import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
@@ -30,6 +34,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides device state mangagement functionality.
  */
+@ApplicationScoped
 public class DeviceStateMicroservice
 	extends MultitenantMicroservice<MicroserviceIdentifier, DeviceStateConfiguration, IDeviceStateTenantEngine>
 	implements IDeviceStateMicroservice {
@@ -69,6 +74,14 @@ public class DeviceStateMicroservice
     @Override
     public Class<DeviceStateConfiguration> getConfigurationClass() {
 	return DeviceStateConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
+     */
+    @Override
+    public IMicroserviceModule<DeviceStateConfiguration> createConfigurationModule() {
+	return new DeviceStateModule(getMicroserviceConfiguration());
     }
 
     /*

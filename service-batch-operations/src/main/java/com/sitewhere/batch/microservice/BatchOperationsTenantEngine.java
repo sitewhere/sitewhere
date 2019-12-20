@@ -70,20 +70,19 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine<BatchO
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * getConfigurationModule()
+     * createConfigurationModule()
      */
     @Override
-    public ITenantEngineModule<BatchOperationsTenantConfiguration> getConfigurationModule() {
+    public ITenantEngineModule<BatchOperationsTenantConfiguration> createConfigurationModule() {
 	return new BatchOperationsTenantEngineModule(getActiveConfiguration());
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * tenantInitialize(com.sitewhere.spi.microservice.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * loadEngineComponents()
      */
     @Override
-    public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void loadEngineComponents() throws SiteWhereException {
 	// // Create management interfaces.
 	// IBatchManagement implementation = (IBatchManagement) getModuleContext()
 	// .getBean(BatchManagementBeans.BEAN_BATCH_MANAGEMENT);
@@ -95,7 +94,15 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine<BatchO
 	// // Load configured batch operation manager.
 	// this.batchOperationManager = (IBatchOperationManager) getModuleContext()
 	// .getBean(BatchManagementBeans.BEAN_BATCH_OPERATION_MANAGER);
+    }
 
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * tenantInitialize(com.sitewhere.spi.microservice.lifecycle.
+     * ILifecycleProgressMonitor)
+     */
+    @Override
+    public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create Kafka components.
 	this.unprocessedBatchOperationsProducer = new UnprocessedBatchOperationsProducer();
 	this.unprocessedBatchElementsProducer = new UnprocessedBatchElementsProducer();

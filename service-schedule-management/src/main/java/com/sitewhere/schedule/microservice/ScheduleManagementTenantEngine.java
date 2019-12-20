@@ -51,10 +51,10 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine<Sch
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * getConfigurationModule()
+     * createConfigurationModule()
      */
     @Override
-    public ITenantEngineModule<ScheduleManagementTenantConfiguration> getConfigurationModule() {
+    public ITenantEngineModule<ScheduleManagementTenantConfiguration> createConfigurationModule() {
 	return new ScheduleManagementTenantEngineModule(getActiveConfiguration());
     }
 

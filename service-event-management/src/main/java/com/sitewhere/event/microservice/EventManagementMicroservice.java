@@ -7,7 +7,10 @@
  */
 package com.sitewhere.event.microservice;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import com.sitewhere.event.configuration.EventManagementConfiguration;
+import com.sitewhere.event.configuration.EventManagementModule;
 import com.sitewhere.event.grpc.EventManagementGrpcServer;
 import com.sitewhere.event.spi.grpc.IEventManagementGrpcServer;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
@@ -18,6 +21,7 @@ import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
@@ -26,6 +30,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides device event management functionality.
  */
+@ApplicationScoped
 public class EventManagementMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, EventManagementConfiguration, IEventManagementTenantEngine>
 	implements IEventManagementMicroservice {
@@ -61,6 +66,14 @@ public class EventManagementMicroservice extends
     @Override
     public Class<EventManagementConfiguration> getConfigurationClass() {
 	return EventManagementConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
+     */
+    @Override
+    public IMicroserviceModule<EventManagementConfiguration> createConfigurationModule() {
+	return new EventManagementModule(getMicroserviceConfiguration());
     }
 
     /*

@@ -47,10 +47,10 @@ public class OutboundConnectorsTenantEngine extends MicroserviceTenantEngine<Out
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * getConfigurationModule()
+     * createConfigurationModule()
      */
     @Override
-    public ITenantEngineModule<OutboundConnectorsTenantConfiguration> getConfigurationModule() {
+    public ITenantEngineModule<OutboundConnectorsTenantConfiguration> createConfigurationModule() {
 	return new OutboundConnectorsTenantEngineModule(getActiveConfiguration());
     }
 

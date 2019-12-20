@@ -7,6 +7,9 @@ dependencies {
 	// SiteWhere MongoDB integration.	
     compile group: 'com.sitewhere', name: 'sitewhere-mongodb', version: "${rootProject.ext['sitewhere.integration.api.version']}"
 
+	// SiteWhere RDB integration.	
+    compile group: 'com.sitewhere', name: 'sitewhere-rdb', version: "${rootProject.ext['sitewhere.integration.api.version']}"
+
 	// SiteWhere Datastore support.	
     compile group: 'com.sitewhere', name: 'sitewhere-datastore', version: "${rootProject.ext['sitewhere.integration.api.version']}"
 

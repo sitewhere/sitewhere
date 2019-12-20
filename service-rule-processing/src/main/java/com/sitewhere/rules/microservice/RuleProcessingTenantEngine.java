@@ -47,10 +47,10 @@ public class RuleProcessingTenantEngine extends MicroserviceTenantEngine<RulePro
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * getConfigurationModule()
+     * createConfigurationModule()
      */
     @Override
-    public ITenantEngineModule<RuleProcessingTenantConfiguration> getConfigurationModule() {
+    public ITenantEngineModule<RuleProcessingTenantConfiguration> createConfigurationModule() {
 	return new RuleProcessingTenantEngineModule(getActiveConfiguration());
     }
 

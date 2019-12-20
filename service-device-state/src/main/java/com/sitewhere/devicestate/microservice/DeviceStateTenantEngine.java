@@ -59,10 +59,10 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine<DeviceStat
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * getConfigurationModule()
+     * createConfigurationModule()
      */
     @Override
-    public ITenantEngineModule<DeviceStateTenantConfiguration> getConfigurationModule() {
+    public ITenantEngineModule<DeviceStateTenantConfiguration> createConfigurationModule() {
 	return new DeviceStateTenantEngineModule(getActiveConfiguration());
     }
 

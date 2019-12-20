@@ -47,10 +47,10 @@ public class EventSearchTenantEngine extends MicroserviceTenantEngine<EventSearc
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * getConfigurationModule()
+     * createConfigurationModule()
      */
     @Override
-    public ITenantEngineModule<EventSearchTenantConfiguration> getConfigurationModule() {
+    public ITenantEngineModule<EventSearchTenantConfiguration> createConfigurationModule() {
 	return new EventSearchTenantEngineModule(getActiveConfiguration());
     }
 

@@ -47,10 +47,10 @@ public class EventSourcesTenantEngine extends MicroserviceTenantEngine<EventSour
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * getConfigurationModule()
+     * createConfigurationModule()
      */
     @Override
-    public ITenantEngineModule<EventSourcesTenantConfiguration> getConfigurationModule() {
+    public ITenantEngineModule<EventSourcesTenantConfiguration> createConfigurationModule() {
 	return new EventSourcesTenantEngineModule(getActiveConfiguration());
     }
 

@@ -7,18 +7,23 @@
  */
 package com.sitewhere.media.microservice;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import com.sitewhere.media.configuration.StreamingMediaConfiguration;
+import com.sitewhere.media.configuration.StreamingMediaModule;
 import com.sitewhere.media.spi.microservice.IStreamingMediaMicroservice;
 import com.sitewhere.media.spi.microservice.IStreamingMediaTenantEngine;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
 
 import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Microservice that provides streaming media functionality.
  */
+@ApplicationScoped
 public class StreamingMediaMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, StreamingMediaConfiguration, IStreamingMediaTenantEngine>
 	implements IStreamingMediaMicroservice {
@@ -46,6 +51,14 @@ public class StreamingMediaMicroservice extends
     @Override
     public Class<StreamingMediaConfiguration> getConfigurationClass() {
 	return StreamingMediaConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
+     */
+    @Override
+    public IMicroserviceModule<StreamingMediaConfiguration> createConfigurationModule() {
+	return new StreamingMediaModule(getMicroserviceConfiguration());
     }
 
     /*

@@ -7,15 +7,19 @@
  */
 package com.sitewhere.schedule.microservice;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.schedule.configuration.ScheduleManagementConfiguration;
+import com.sitewhere.schedule.configuration.ScheduleManagementModule;
 import com.sitewhere.schedule.grpc.ScheduleManagementGrpcServer;
 import com.sitewhere.schedule.spi.grpc.IScheduleManagementGrpcServer;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
@@ -24,6 +28,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides schedule management functionality.
  */
+@ApplicationScoped
 public class ScheduleManagementMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, ScheduleManagementConfiguration, IScheduleManagementTenantEngine>
 	implements IScheduleManagementMicroservice {
@@ -54,6 +59,14 @@ public class ScheduleManagementMicroservice extends
     @Override
     public Class<ScheduleManagementConfiguration> getConfigurationClass() {
 	return ScheduleManagementConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
+     */
+    @Override
+    public IMicroserviceModule<ScheduleManagementConfiguration> createConfigurationModule() {
+	return new ScheduleManagementModule(getMicroserviceConfiguration());
     }
 
     /*

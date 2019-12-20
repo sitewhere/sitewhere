@@ -7,7 +7,10 @@
  */
 package com.sitewhere.connectors.microservice;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import com.sitewhere.connectors.configuration.OutboundConnectorsConfiguration;
+import com.sitewhere.connectors.configuration.OutboundConnectorsModule;
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsMicroservice;
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsTenantEngine;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
@@ -18,6 +21,7 @@ import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
@@ -26,6 +30,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides outbound connector management.
  */
+@ApplicationScoped
 public class OutboundConnectorsMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, OutboundConnectorsConfiguration, IOutboundConnectorsTenantEngine>
 	implements IOutboundConnectorsMicroservice {
@@ -59,6 +64,14 @@ public class OutboundConnectorsMicroservice extends
     @Override
     public Class<OutboundConnectorsConfiguration> getConfigurationClass() {
 	return OutboundConnectorsConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
+     */
+    @Override
+    public IMicroserviceModule<OutboundConnectorsConfiguration> createConfigurationModule() {
+	return new OutboundConnectorsModule(getMicroserviceConfiguration());
     }
 
     /*

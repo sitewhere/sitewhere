@@ -7,7 +7,10 @@
  */
 package com.sitewhere.commands.microservice;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import com.sitewhere.commands.configuration.CommandDeliveryConfiguration;
+import com.sitewhere.commands.configuration.CommandDeliveryModule;
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryMicroservice;
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
@@ -16,6 +19,7 @@ import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
@@ -24,6 +28,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides command delivery functionality.
  */
+@ApplicationScoped
 public class CommandDeliveryMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, CommandDeliveryConfiguration, ICommandDeliveryTenantEngine>
 	implements ICommandDeliveryMicroservice {
@@ -54,6 +59,14 @@ public class CommandDeliveryMicroservice extends
     @Override
     public Class<CommandDeliveryConfiguration> getConfigurationClass() {
 	return CommandDeliveryConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
+     */
+    @Override
+    public IMicroserviceModule<CommandDeliveryConfiguration> createConfigurationModule() {
+	return new CommandDeliveryModule(getMicroserviceConfiguration());
     }
 
     /*

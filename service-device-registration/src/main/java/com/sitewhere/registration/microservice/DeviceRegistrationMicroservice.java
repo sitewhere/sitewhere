@@ -7,15 +7,19 @@
  */
 package com.sitewhere.registration.microservice;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.registration.configuration.DeviceRegistrationConfiguration;
+import com.sitewhere.registration.configuration.DeviceRegistrationModule;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
@@ -24,6 +28,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides device registration functionality.
  */
+@ApplicationScoped
 public class DeviceRegistrationMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, DeviceRegistrationConfiguration, IDeviceRegistrationTenantEngine>
 	implements IDeviceRegistrationMicroservice {
@@ -54,6 +59,14 @@ public class DeviceRegistrationMicroservice extends
     @Override
     public Class<DeviceRegistrationConfiguration> getConfigurationClass() {
 	return DeviceRegistrationConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
+     */
+    @Override
+    public IMicroserviceModule<DeviceRegistrationConfiguration> createConfigurationModule() {
+	return new DeviceRegistrationModule(getMicroserviceConfiguration());
     }
 
     /*

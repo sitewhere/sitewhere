@@ -55,10 +55,10 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine<Inbo
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * getConfigurationModule()
+     * createConfigurationModule()
      */
     @Override
-    public ITenantEngineModule<InboundProcessingTenantConfiguration> getConfigurationModule() {
+    public ITenantEngineModule<InboundProcessingTenantConfiguration> createConfigurationModule() {
 	return new InboundProcessingTenantEngineModule(getActiveConfiguration());
     }
 

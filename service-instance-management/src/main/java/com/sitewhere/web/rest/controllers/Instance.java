@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
+import com.sitewhere.microservice.MicroserviceUtils;
 import com.sitewhere.microservice.scripting.ScriptCloneRequest;
 import com.sitewhere.microservice.scripting.ScriptCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
@@ -587,8 +588,8 @@ public class Instance {
 	String instanceId = getMicroservice().getInstanceSettings().getInstanceId();
 	SiteWhereMicroserviceList list = getMicroservice().getSiteWhereKubernetesClient().getMicroservices().list();
 	for (SiteWhereMicroservice microservice : list.getItems()) {
-	    if (microservice.getSpec().getInstanceName().equals(instanceId)
-		    && microservice.getSpec().getFunctionalArea().equals(identifier.getPath())) {
+	    if (MicroserviceUtils.getInstanceName(microservice).equals(instanceId)
+		    && MicroserviceUtils.getFunctionalArea(microservice).equals(identifier.getPath())) {
 		return microservice;
 	    }
 	}

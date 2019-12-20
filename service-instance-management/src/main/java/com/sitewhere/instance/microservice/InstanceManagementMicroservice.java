@@ -7,6 +7,8 @@
  */
 package com.sitewhere.instance.microservice;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
 import com.sitewhere.grpc.client.batch.BatchManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
@@ -22,6 +24,7 @@ import com.sitewhere.grpc.client.spi.client.IDeviceStateApiChannel;
 import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiChannel;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
 import com.sitewhere.instance.configuration.InstanceManagementConfiguration;
+import com.sitewhere.instance.configuration.InstanceManagementModule;
 import com.sitewhere.instance.grpc.tenant.TenantManagementGrpcServer;
 import com.sitewhere.instance.grpc.user.UserManagementGrpcServer;
 import com.sitewhere.instance.spi.microservice.IInstanceBootstrapper;
@@ -34,12 +37,14 @@ import com.sitewhere.microservice.configuration.ConfigurableMicroservice;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Microservice that provides instance management functionality.
  */
+@ApplicationScoped
 public class InstanceManagementMicroservice
 	extends ConfigurableMicroservice<MicroserviceIdentifier, InstanceManagementConfiguration>
 	implements IInstanceManagementMicroservice<MicroserviceIdentifier> {
@@ -102,6 +107,14 @@ public class InstanceManagementMicroservice
     @Override
     public Class<InstanceManagementConfiguration> getConfigurationClass() {
 	return InstanceManagementConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
+     */
+    @Override
+    public IMicroserviceModule<InstanceManagementConfiguration> createConfigurationModule() {
+	return new InstanceManagementModule(getMicroserviceConfiguration());
     }
 
     /*

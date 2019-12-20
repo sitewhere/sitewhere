@@ -41,10 +41,10 @@ public class StreamingMediaTenantEngine extends MicroserviceTenantEngine<Streami
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * getConfigurationModule()
+     * createConfigurationModule()
      */
     @Override
-    public ITenantEngineModule<StreamingMediaTenantConfiguration> getConfigurationModule() {
+    public ITenantEngineModule<StreamingMediaTenantConfiguration> createConfigurationModule() {
 	return new StreamingMediaTenantEngineModule(getActiveConfiguration());
     }
 

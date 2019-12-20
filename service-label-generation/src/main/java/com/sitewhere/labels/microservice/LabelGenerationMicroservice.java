@@ -7,11 +7,14 @@
  */
 package com.sitewhere.labels.microservice;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.labels.configuration.LabelGenerationConfiguration;
+import com.sitewhere.labels.configuration.LabelGenerationModule;
 import com.sitewhere.labels.grpc.LabelGenerationGrpcServer;
 import com.sitewhere.labels.spi.grpc.ILabelGenerationGrpcServer;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationMicroservice;
@@ -20,6 +23,7 @@ import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
@@ -28,6 +32,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides label generation functionality.
  */
+@ApplicationScoped
 public class LabelGenerationMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, LabelGenerationConfiguration, ILabelGenerationTenantEngine>
 	implements ILabelGenerationMicroservice {
@@ -64,6 +69,14 @@ public class LabelGenerationMicroservice extends
     @Override
     public Class<LabelGenerationConfiguration> getConfigurationClass() {
 	return LabelGenerationConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
+     */
+    @Override
+    public IMicroserviceModule<LabelGenerationConfiguration> createConfigurationModule() {
+	return new LabelGenerationModule(getMicroserviceConfiguration());
     }
 
     /*

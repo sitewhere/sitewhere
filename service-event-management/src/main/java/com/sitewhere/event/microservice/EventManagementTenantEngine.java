@@ -70,10 +70,10 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * getConfigurationModule()
+     * createConfigurationModule()
      */
     @Override
-    public ITenantEngineModule<EventManagementTenantConfiguration> getConfigurationModule() {
+    public ITenantEngineModule<EventManagementTenantConfiguration> createConfigurationModule() {
 	return new EventManagementTenantEngineModule(getActiveConfiguration());
     }
 

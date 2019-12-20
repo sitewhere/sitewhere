@@ -10,12 +10,17 @@ package com.sitewhere.asset.microservice;
 import com.sitewhere.asset.configuration.AssetManagementTenantConfiguration;
 import com.sitewhere.asset.configuration.AssetManagementTenantEngineModule;
 import com.sitewhere.asset.grpc.AssetManagementImpl;
+import com.sitewhere.asset.persistence.rdb.entity.RdbAsset;
+import com.sitewhere.asset.persistence.rdb.entity.RdbAssetType;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
+import com.sitewhere.rdb.RdbEntityManagerProvider;
+import com.sitewhere.rdb.providers.postgresql.Postgres95Provider;
+import com.sitewhere.rdb.spi.IRdbEntityManagerProvider;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
@@ -38,6 +43,9 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine<AssetM
     /** Responds to asset management GRPC requests */
     private AssetManagementGrpc.AssetManagementImplBase assetManagementImpl;
 
+    /** RDB entity manager provider */
+    private IRdbEntityManagerProvider rdbEntityManagerProvider;
+
     public AssetManagementTenantEngine(SiteWhereTenantEngine tenantEngineResource) {
 	super(tenantEngineResource);
     }
@@ -53,10 +61,10 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine<AssetM
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * getConfigurationModule()
+     * createConfigurationModule()
      */
     @Override
-    public ITenantEngineModule<AssetManagementTenantConfiguration> getConfigurationModule() {
+    public ITenantEngineModule<AssetManagementTenantConfiguration> createConfigurationModule() {
 	return new AssetManagementTenantEngineModule(getActiveConfiguration());
     }
 
@@ -69,6 +77,10 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine<AssetM
 	this.assetManagement = (IAssetManagement) getInjector().getInstance(IAssetManagement.class);
 	this.assetManagementImpl = new AssetManagementImpl((IAssetManagementMicroservice) getMicroservice(),
 		getAssetManagement());
+
+	// Create an entity manager provider.
+	this.rdbEntityManagerProvider = new RdbEntityManagerProvider(new Postgres95Provider(),
+		new Class<?>[] { RdbAsset.class, RdbAssetType.class });
     }
 
     /*
@@ -80,6 +92,9 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine<AssetM
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
+
+	// Initialize RDB entity management.
+	init.addInitializeStep(this, getRdbEntityManagerProvider(), true);
 
 	// Initialize asset management persistence.
 	init.addInitializeStep(this, getAssetManagement(), true);
@@ -97,6 +112,9 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine<AssetM
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
+
+	// Start RDB entity management.
+	start.addStartStep(this, getRdbEntityManagerProvider(), true);
 
 	// Start asset management persistence.
 	start.addStartStep(this, getAssetManagement(), true);
@@ -152,13 +170,14 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine<AssetM
 	// Stop asset management persistence.
 	stop.addStopStep(this, getAssetManagement());
 
+	// Stop RDB entity management.
+	stop.addStopStep(this, getRdbEntityManagerProvider());
+
 	// Execute shutdown steps.
 	stop.execute(monitor);
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine#
      * getAssetManagement()
      */
@@ -167,13 +186,7 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine<AssetM
 	return assetManagement;
     }
 
-    public void setAssetManagement(IAssetManagement assetManagement) {
-	this.assetManagement = assetManagement;
-    }
-
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine#
      * getAssetManagementImpl()
      */
@@ -182,7 +195,12 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine<AssetM
 	return assetManagementImpl;
     }
 
-    public void setAssetManagementImpl(AssetManagementGrpc.AssetManagementImplBase assetManagementImpl) {
-	this.assetManagementImpl = assetManagementImpl;
+    /*
+     * @see com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine#
+     * getRdbEntityManagerProvider()
+     */
+    @Override
+    public IRdbEntityManagerProvider getRdbEntityManagerProvider() {
+	return rdbEntityManagerProvider;
     }
 }

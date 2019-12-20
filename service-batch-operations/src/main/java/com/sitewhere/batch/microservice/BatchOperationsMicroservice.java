@@ -10,6 +10,7 @@ package com.sitewhere.batch.microservice;
 import javax.enterprise.context.ApplicationScoped;
 
 import com.sitewhere.batch.configuration.BatchOperationsConfiguration;
+import com.sitewhere.batch.configuration.BatchOperationsModule;
 import com.sitewhere.batch.grpc.BatchManagementGrpcServer;
 import com.sitewhere.batch.spi.grpc.IBatchManagementGrpcServer;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
@@ -22,6 +23,7 @@ import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
@@ -67,6 +69,14 @@ public class BatchOperationsMicroservice extends
     @Override
     public Class<BatchOperationsConfiguration> getConfigurationClass() {
 	return BatchOperationsConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
+     */
+    @Override
+    public IMicroserviceModule<BatchOperationsConfiguration> createConfigurationModule() {
+	return new BatchOperationsModule(getMicroserviceConfiguration());
     }
 
     /*
