@@ -7,16 +7,24 @@
  */
 package com.sitewhere.asset.persistence.rdb;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
 import com.sitewhere.asset.persistence.AssetManagementPersistence;
+import com.sitewhere.asset.persistence.rdb.entity.Queries;
 import com.sitewhere.asset.persistence.rdb.entity.RdbAsset;
 import com.sitewhere.asset.persistence.rdb.entity.RdbAssetType;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.rdb.RdbTenantComponent;
 import com.sitewhere.rdb.spi.IRdbEntityManagerProvider;
+import com.sitewhere.rdb.spi.IRdbQueryProvider;
 import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.rest.model.asset.AssetType;
 import com.sitewhere.spi.SiteWhereException;
@@ -34,7 +42,7 @@ import com.sitewhere.spi.search.asset.IAssetTypeSearchCritiera;
 /**
  * Implementation of {@link IAssetManagement} that stores data in RDB.
  */
-public class RdbAssetManagement extends RdbTenantComponent<AssetManagementRdbClient> implements IAssetManagement {
+public class RdbAssetManagement extends RdbTenantComponent implements IAssetManagement {
 
     /*
      * @see com.sitewhere.microservice.api.asset.IAssetManagement#createAsset(com.
@@ -44,7 +52,7 @@ public class RdbAssetManagement extends RdbTenantComponent<AssetManagementRdbCli
     public IAsset createAsset(IAssetCreateRequest request) throws SiteWhereException {
 	// Look up asset type.
 	IAssetType assetType = getAssetTypeByToken(request.getAssetTypeToken());
-	if (assetType != null) {
+	if (assetType == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidAssetTypeToken, ErrorLevel.ERROR);
 	}
 
@@ -52,7 +60,7 @@ public class RdbAssetManagement extends RdbTenantComponent<AssetManagementRdbCli
 	Asset asset = AssetManagementPersistence.assetCreateLogic(assetType, request);
 	RdbAsset created = new RdbAsset();
 	RdbAsset.copy(asset, created);
-	created = getClient().getAssetRepository().save(created);
+	getEntityManagerProvider().persist(created);
 	return created;
     }
 
@@ -63,17 +71,15 @@ public class RdbAssetManagement extends RdbTenantComponent<AssetManagementRdbCli
      */
     @Override
     public IAsset updateAsset(UUID assetId, IAssetCreateRequest request) throws SiteWhereException {
-	Optional<RdbAsset> opt = getClient().getAssetRepository().findById(assetId);
-	if (opt.isPresent()) {
-	    RdbAsset updated = opt.get();
-
+	RdbAsset existing = getEntityManagerProvider().findById(assetId, RdbAsset.class);
+	if (existing != null) {
 	    IAssetType assetType = getAssetTypeByToken(request.getAssetTypeToken());
 	    Asset updates = new Asset();
 
 	    // Use common update logic.
 	    AssetManagementPersistence.assetUpdateLogic(assetType, updates, request);
-	    RdbAsset.copy(updates, updated);
-	    return getClient().getAssetRepository().save(updated);
+	    RdbAsset.copy(updates, existing);
+	    return getEntityManagerProvider().merge(existing);
 	}
 	return null;
     }
@@ -85,11 +91,7 @@ public class RdbAssetManagement extends RdbTenantComponent<AssetManagementRdbCli
      */
     @Override
     public IAsset getAsset(UUID assetId) throws SiteWhereException {
-	Optional<RdbAsset> opt = getClient().getAssetRepository().findById(assetId);
-	if (opt.isPresent()) {
-	    return opt.get();
-	}
-	return null;
+	return getEntityManagerProvider().findById(assetId, RdbAsset.class);
     }
 
     /*
@@ -99,11 +101,9 @@ public class RdbAssetManagement extends RdbTenantComponent<AssetManagementRdbCli
      */
     @Override
     public IAsset getAssetByToken(String token) throws SiteWhereException {
-	Optional<RdbAsset> opt = getClient().getAssetRepository().findByToken(token);
-	if (opt.isPresent()) {
-	    return opt.get();
-	}
-	return null;
+	Query query = getEntityManagerProvider().query(Queries.QUERY_ASSET_BY_TOKEN);
+	query.setParameter("token", token);
+	return getEntityManagerProvider().findOne(query, RdbAsset.class);
     }
 
     /*
@@ -113,11 +113,7 @@ public class RdbAssetManagement extends RdbTenantComponent<AssetManagementRdbCli
      */
     @Override
     public IAsset deleteAsset(UUID assetId) throws SiteWhereException {
-	Optional<RdbAsset> opt = getClient().getAssetRepository().findById(assetId);
-	if (opt.isPresent()) {
-	    getClient().getAssetRepository().deleteById(assetId);
-	}
-	return opt.get();
+	return getEntityManagerProvider().remove(assetId, RdbAsset.class);
     }
 
     /*
@@ -125,33 +121,37 @@ public class RdbAssetManagement extends RdbTenantComponent<AssetManagementRdbCli
      * sitewhere.spi.search.asset.IAssetSearchCriteria)
      */
     @Override
-    public ISearchResults<IAsset> listAssets(IAssetSearchCriteria criteria) throws SiteWhereException {
-	// Sort sort = new Sort(Sort.Direction.DESC, "createdDate");
-	// Specification<Asset> specification = new Specification<Asset>() {
-	// @Override
-	// public Predicate toPredicate(Root<Asset> root, CriteriaQuery<?> query,
-	// CriteriaBuilder cb) {
-	// List<Predicate> predicates = new ArrayList();
-	// if (criteria.getAssetTypeToken() != null) {
-	// Path path = root.get("assetTypeId");
-	// predicates.add(cb.equal(path, criteria.getAssetTypeToken()));
-	// }
-	// return query.where(predicates.toArray(new
-	// Predicate[predicates.size()])).getRestriction();
-	// }
-	// };
-	// if (criteria.getPageSize() == 0) {
-	// List<Asset> result = getClient().getAssetRepository().findAll(specification,
-	// sort);
-	// return new SearchResultsConverter<IAsset>().convert(result, result.size());
-	// } else {
-	// int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
-	// Page<Asset> page = getClient().getAssetRepository().findAll(specification,
-	// PageRequest.of(pageIndex, criteria.getPageSize(), sort));
-	// return new SearchResultsConverter<IAsset>().convert(page.getContent(),
-	// page.getTotalElements());
-	// }
-	return null;
+    public ISearchResults<RdbAsset> listAssets(IAssetSearchCriteria criteria) throws SiteWhereException {
+	return getEntityManagerProvider().findWithCriteria(criteria, new IRdbQueryProvider<RdbAsset>() {
+
+	    /*
+	     * @see com.sitewhere.rdb.spi.IRdbQueryProvider#addPredicates(javax.persistence.
+	     * criteria.CriteriaBuilder, java.util.List, javax.persistence.criteria.Root)
+	     */
+	    @Override
+	    public void addPredicates(CriteriaBuilder cb, List<Predicate> predicates, Root<RdbAsset> root)
+		    throws SiteWhereException {
+		if (criteria.getAssetTypeToken() != null) {
+		    IAssetType assetType = getAssetTypeByToken(criteria.getAssetTypeToken());
+		    if (assetType == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidAssetTypeToken, ErrorLevel.ERROR);
+		    }
+		    predicates.add(cb.equal(root.get("assetTypeId"), assetType.getId()));
+		}
+	    }
+
+	    /*
+	     * @see
+	     * com.sitewhere.rdb.spi.IRdbQueryProvider#addSort(javax.persistence.criteria.
+	     * CriteriaBuilder, javax.persistence.criteria.Root,
+	     * javax.persistence.criteria.CriteriaQuery)
+	     */
+	    @Override
+	    public CriteriaQuery<RdbAsset> addSort(CriteriaBuilder cb, Root<RdbAsset> root,
+		    CriteriaQuery<RdbAsset> query) {
+		return query.orderBy(cb.desc(root.get("createdDate")));
+	    }
+	}, RdbAsset.class);
     }
 
     /*
@@ -161,10 +161,11 @@ public class RdbAssetManagement extends RdbTenantComponent<AssetManagementRdbCli
      */
     @Override
     public IAssetType createAssetType(IAssetTypeCreateRequest request) throws SiteWhereException {
+	// Use common logic so all backend implementations work the same.
 	AssetType assetType = AssetManagementPersistence.assetTypeCreateLogic(request);
 	RdbAssetType created = new RdbAssetType();
 	RdbAssetType.copy(assetType, created);
-	created = getClient().getAssetTypeRepository().save(created);
+	getEntityManagerProvider().persist(created);
 	return created;
     }
 
@@ -175,16 +176,14 @@ public class RdbAssetManagement extends RdbTenantComponent<AssetManagementRdbCli
      */
     @Override
     public IAssetType updateAssetType(UUID assetTypeId, IAssetTypeCreateRequest request) throws SiteWhereException {
-	Optional<RdbAssetType> opt = getClient().getAssetTypeRepository().findById(assetTypeId);
-	if (opt.isPresent()) {
-	    RdbAssetType updated = opt.get();
-	    AssetType assetType = new AssetType();
-	    assetType.setId(assetTypeId);
+	RdbAssetType existing = getEntityManagerProvider().findById(assetTypeId, RdbAssetType.class);
+	if (existing != null) {
+	    AssetType updates = new AssetType();
 
-	    // Use common asset type update logic.
-	    AssetManagementPersistence.assetTypeUpdateLogic(assetType, request);
-	    RdbAssetType.copy(assetType, updated);
-	    updated = getClient().getAssetTypeRepository().save(updated);
+	    // Use common update logic.
+	    AssetManagementPersistence.assetTypeUpdateLogic(updates, request);
+	    RdbAssetType.copy(updates, existing);
+	    return getEntityManagerProvider().merge(existing);
 	}
 	return null;
     }
@@ -196,11 +195,7 @@ public class RdbAssetManagement extends RdbTenantComponent<AssetManagementRdbCli
      */
     @Override
     public IAssetType getAssetType(UUID assetTypeId) throws SiteWhereException {
-	Optional<RdbAssetType> opt = getClient().getAssetTypeRepository().findById(assetTypeId);
-	if (opt.isPresent()) {
-	    return opt.get();
-	}
-	return null;
+	return getEntityManagerProvider().findById(assetTypeId, RdbAssetType.class);
     }
 
     /*
@@ -210,11 +205,9 @@ public class RdbAssetManagement extends RdbTenantComponent<AssetManagementRdbCli
      */
     @Override
     public IAssetType getAssetTypeByToken(String token) throws SiteWhereException {
-	Optional<RdbAssetType> opt = getClient().getAssetTypeRepository().findByToken(token);
-	if (opt.isPresent()) {
-	    return opt.get();
-	}
-	return null;
+	Query query = getEntityManagerProvider().query(Queries.QUERY_ASSET_TYPE_BY_TOKEN);
+	query.setParameter("token", token);
+	return getEntityManagerProvider().findOne(query, RdbAssetType.class);
     }
 
     /*
@@ -224,11 +217,7 @@ public class RdbAssetManagement extends RdbTenantComponent<AssetManagementRdbCli
      */
     @Override
     public IAssetType deleteAssetType(UUID assetTypeId) throws SiteWhereException {
-	Optional<RdbAssetType> opt = getClient().getAssetTypeRepository().findById(assetTypeId);
-	if (opt.isPresent()) {
-	    getClient().getAssetRepository().deleteById(assetTypeId);
-	}
-	return opt.get();
+	return getEntityManagerProvider().remove(assetTypeId, RdbAssetType.class);
     }
 
     /*
@@ -237,39 +226,30 @@ public class RdbAssetManagement extends RdbTenantComponent<AssetManagementRdbCli
      * sitewhere.spi.search.asset.IAssetTypeSearchCritiera)
      */
     @Override
-    public ISearchResults<IAssetType> listAssetTypes(IAssetTypeSearchCritiera criteria) throws SiteWhereException {
-	// Sort sort = new Sort(Sort.Direction.DESC, "createdDate");
-	// Specification<AssetType> specification = new Specification<AssetType>() {
-	// @Override
-	// public Predicate toPredicate(Root<AssetType> root, CriteriaQuery<?> query,
-	// CriteriaBuilder cb) {
-	// return null;
-	// }
-	// };
-	// if (criteria.getPageSize() == 0) {
-	// List<AssetType> result =
-	// getClient().getAssetTypeRepository().findAll(specification, sort);
-	// return new SearchResultsConverter<IAssetType>().convert(result,
-	// result.size());
-	// } else {
-	// int pageIndex = Math.max(0, criteria.getPageNumber() - 1);
-	// Page<AssetType> page =
-	// getClient().getAssetTypeRepository().findAll(specification,
-	// PageRequest.of(pageIndex, criteria.getPageSize(), sort));
-	// return new SearchResultsConverter<IAssetType>().convert(page.getContent(),
-	// page.getTotalElements());
-	// }
-	return null;
-    }
+    public ISearchResults<RdbAssetType> listAssetTypes(IAssetTypeSearchCritiera criteria) throws SiteWhereException {
+	return getEntityManagerProvider().findWithCriteria(criteria, new IRdbQueryProvider<RdbAssetType>() {
 
-    /*
-     * @see
-     * com.sitewhere.rdb.RdbTenantComponent#createRdbClient(com.sitewhere.rdb.spi.
-     * IRdbEntityManagerProvider)
-     */
-    @Override
-    public AssetManagementRdbClient createRdbClient(IRdbEntityManagerProvider provider) throws SiteWhereException {
-	return new AssetManagementRdbClient();
+	    /*
+	     * @see com.sitewhere.rdb.spi.IRdbQueryProvider#addPredicates(javax.persistence.
+	     * criteria.CriteriaBuilder, java.util.List, javax.persistence.criteria.Root)
+	     */
+	    @Override
+	    public void addPredicates(CriteriaBuilder cb, List<Predicate> predicates, Root<RdbAssetType> root)
+		    throws SiteWhereException {
+	    }
+
+	    /*
+	     * @see
+	     * com.sitewhere.rdb.spi.IRdbQueryProvider#addSort(javax.persistence.criteria.
+	     * CriteriaBuilder, javax.persistence.criteria.Root,
+	     * javax.persistence.criteria.CriteriaQuery)
+	     */
+	    @Override
+	    public CriteriaQuery<RdbAssetType> addSort(CriteriaBuilder cb, Root<RdbAssetType> root,
+		    CriteriaQuery<RdbAssetType> query) {
+		return query.orderBy(cb.asc(root.get("name")));
+	    }
+	}, RdbAssetType.class);
     }
 
     /*

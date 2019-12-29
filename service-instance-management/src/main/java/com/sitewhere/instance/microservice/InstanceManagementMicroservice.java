@@ -127,7 +127,7 @@ public class InstanceManagementMicroservice
 	super.initialize(monitor);
 
 	// Create dataset bootstrapper.
-	this.instanceBootstrapper = new InstanceBoostrapper();
+	this.instanceBootstrapper = new InstanceBootstrapper();
 
 	// Create management implementations.
 	createManagementImplementations();

@@ -198,7 +198,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GListCustomerTypesResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListCustomerTypesMethod());
-	    ISearchResults<ICustomerType> apiResult = getDeviceManagement()
+	    ISearchResults<? extends ICustomerType> apiResult = getDeviceManagement()
 		    .listCustomerTypes(CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
 	    GListCustomerTypesResponse.Builder response = GListCustomerTypesResponse.newBuilder();
 	    GCustomerTypeSearchResults.Builder results = GCustomerTypeSearchResults.newBuilder();
@@ -327,7 +327,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GGetCustomerChildrenResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetCustomerChildrenMethod());
-	    List<ICustomer> apiResult = getDeviceManagement().getCustomerChildren(request.getToken());
+	    List<? extends ICustomer> apiResult = getDeviceManagement().getCustomerChildren(request.getToken());
 	    GGetCustomerChildrenResponse.Builder response = GGetCustomerChildrenResponse.newBuilder();
 	    if (apiResult != null) {
 		response.addAllCustomers(DeviceModelConverter.asGrpcCustomers(apiResult));
@@ -379,7 +379,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void listCustomers(GListCustomersRequest request, StreamObserver<GListCustomersResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListCustomersMethod());
-	    ISearchResults<ICustomer> apiResult = getDeviceManagement()
+	    ISearchResults<? extends ICustomer> apiResult = getDeviceManagement()
 		    .listCustomers(DeviceModelConverter.asApiCustomerSearchCriteria(request.getCriteria()));
 	    GListCustomersResponse.Builder response = GListCustomersResponse.newBuilder();
 	    GCustomerSearchResults.Builder results = GCustomerSearchResults.newBuilder();
@@ -557,7 +557,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void listAreaTypes(GListAreaTypesRequest request, StreamObserver<GListAreaTypesResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListAreaTypesMethod());
-	    ISearchResults<IAreaType> apiResult = getDeviceManagement()
+	    ISearchResults<? extends IAreaType> apiResult = getDeviceManagement()
 		    .listAreaTypes(CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
 	    GListAreaTypesResponse.Builder response = GListAreaTypesResponse.newBuilder();
 	    GAreaTypeSearchResults.Builder results = GAreaTypeSearchResults.newBuilder();
@@ -681,7 +681,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GGetAreaChildrenResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetAreaChildrenMethod());
-	    List<IArea> apiResult = getDeviceManagement().getAreaChildren(request.getToken());
+	    List<? extends IArea> apiResult = getDeviceManagement().getAreaChildren(request.getToken());
 	    GGetAreaChildrenResponse.Builder response = GGetAreaChildrenResponse.newBuilder();
 	    if (apiResult != null) {
 		response.addAllAreas(DeviceModelConverter.asGrpcAreas(apiResult));
@@ -730,7 +730,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void listAreas(GListAreasRequest request, StreamObserver<GListAreasResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListAreasMethod());
-	    ISearchResults<IArea> apiResult = getDeviceManagement()
+	    ISearchResults<? extends IArea> apiResult = getDeviceManagement()
 		    .listAreas(DeviceModelConverter.asApiAreaSearchCriteria(request.getCriteria()));
 	    GListAreasResponse.Builder response = GListAreasResponse.newBuilder();
 	    GAreaSearchResults.Builder results = GAreaSearchResults.newBuilder();
@@ -910,7 +910,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void listZones(GListZonesRequest request, StreamObserver<GListZonesResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListZonesMethod());
-	    ISearchResults<IZone> apiResult = getDeviceManagement()
+	    ISearchResults<? extends IZone> apiResult = getDeviceManagement()
 		    .listZones(DeviceModelConverter.asApiZoneSearchCriteria(request.getCriteria()));
 	    GListZonesResponse.Builder response = GListZonesResponse.newBuilder();
 	    GZoneSearchResults.Builder results = GZoneSearchResults.newBuilder();
@@ -1067,7 +1067,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GListDeviceTypesResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDeviceTypesMethod());
-	    ISearchResults<IDeviceType> apiResult = getDeviceManagement()
+	    ISearchResults<? extends IDeviceType> apiResult = getDeviceManagement()
 		    .listDeviceTypes(CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
 	    GListDeviceTypesResponse.Builder response = GListDeviceTypesResponse.newBuilder();
 	    GDeviceTypeSearchResults.Builder results = GDeviceTypeSearchResults.newBuilder();
@@ -1239,7 +1239,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 
 	    IDeviceCommandSearchCriteria criteria = DeviceModelConverter
 		    .asApiDeviceCommandSearchCriteria(request.getCriteria());
-	    ISearchResults<IDeviceCommand> apiResult = getDeviceManagement().listDeviceCommands(criteria);
+	    ISearchResults<? extends IDeviceCommand> apiResult = getDeviceManagement().listDeviceCommands(criteria);
 	    GListDeviceCommandsResponse.Builder response = GListDeviceCommandsResponse.newBuilder();
 	    GDeviceCommandSearchResults.Builder results = GDeviceCommandSearchResults.newBuilder();
 	    for (IDeviceCommand apiType : apiResult.getResults()) {
@@ -1406,7 +1406,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GListDeviceStatusesResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDeviceStatusesMethod());
-	    ISearchResults<IDeviceStatus> apiResult = getDeviceManagement()
+	    ISearchResults<? extends IDeviceStatus> apiResult = getDeviceManagement()
 		    .listDeviceStatuses(DeviceModelConverter.asApiDeviceStatusSearchCriteria(request.getCriteria()));
 	    GListDeviceStatusesResponse.Builder response = GListDeviceStatusesResponse.newBuilder();
 	    GDeviceStatusSearchResults.Builder results = GDeviceStatusSearchResults.newBuilder();
@@ -1565,7 +1565,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     public void listDevices(GListDevicesRequest request, StreamObserver<GListDevicesResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDevicesMethod());
-	    ISearchResults<IDevice> apiResult = getDeviceManagement()
+	    ISearchResults<? extends IDevice> apiResult = getDeviceManagement()
 		    .listDevices(DeviceModelConverter.asApiDeviceSearchCriteria(request.getCriteria()));
 	    GListDevicesResponse.Builder response = GListDevicesResponse.newBuilder();
 	    GDeviceSearchResults.Builder results = GDeviceSearchResults.newBuilder();
@@ -1786,7 +1786,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GListDeviceGroupsResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDeviceGroupsMethod());
-	    ISearchResults<IDeviceGroup> apiResult = getDeviceManagement()
+	    ISearchResults<? extends IDeviceGroup> apiResult = getDeviceManagement()
 		    .listDeviceGroups(CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
 	    GListDeviceGroupsResponse.Builder response = GListDeviceGroupsResponse.newBuilder();
 	    GDeviceGroupSearchResults.Builder results = GDeviceGroupSearchResults.newBuilder();
@@ -1818,7 +1818,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GListDeviceGroupsWithRoleResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDeviceGroupsWithRoleMethod());
-	    ISearchResults<IDeviceGroup> apiResult = getDeviceManagement().listDeviceGroupsWithRole(
+	    ISearchResults<? extends IDeviceGroup> apiResult = getDeviceManagement().listDeviceGroupsWithRole(
 		    request.getCriteria().getRole(),
 		    CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
 	    GListDeviceGroupsWithRoleResponse.Builder response = GListDeviceGroupsWithRoleResponse.newBuilder();
@@ -1880,7 +1880,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getAddDeviceGroupElementsMethod());
 	    List<IDeviceGroupElementCreateRequest> apiRequest = DeviceModelConverter
 		    .asApiDeviceGroupElementCreateRequests(request.getRequestsList());
-	    List<IDeviceGroupElement> apiResult = getDeviceManagement().addDeviceGroupElements(
+	    List<? extends IDeviceGroupElement> apiResult = getDeviceManagement().addDeviceGroupElements(
 		    CommonModelConverter.asApiUuid(request.getGroupId()), apiRequest, request.getIgnoreDuplicates());
 	    GAddDeviceGroupElementsResponse.Builder response = GAddDeviceGroupElementsResponse.newBuilder();
 	    for (IDeviceGroupElement apiElement : apiResult) {
@@ -1909,7 +1909,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GRemoveDeviceGroupElementsResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getRemoveDeviceGroupElementsMethod());
-	    List<IDeviceGroupElement> apiResult = getDeviceManagement()
+	    List<? extends IDeviceGroupElement> apiResult = getDeviceManagement()
 		    .removeDeviceGroupElements(CommonModelConverter.asApiUuids(request.getElementIdsList()));
 	    GRemoveDeviceGroupElementsResponse.Builder response = GRemoveDeviceGroupElementsResponse.newBuilder();
 	    for (IDeviceGroupElement apiElement : apiResult) {
@@ -1938,7 +1938,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GListDeviceGroupElementsResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDeviceGroupElementsMethod());
-	    ISearchResults<IDeviceGroupElement> apiResult = getDeviceManagement().listDeviceGroupElements(
+	    ISearchResults<? extends IDeviceGroupElement> apiResult = getDeviceManagement().listDeviceGroupElements(
 		    CommonModelConverter.asApiUuid(request.getGroupId()),
 		    CommonModelConverter.asApiSearchCriteria(request.getCriteria().getPaging()));
 	    GListDeviceGroupElementsResponse.Builder response = GListDeviceGroupElementsResponse.newBuilder();
@@ -2052,7 +2052,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GGetActiveAssignmentsForDeviceResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetActiveAssignmentsForDeviceMethod());
-	    List<IDeviceAssignment> apiResult = getDeviceManagement()
+	    List<? extends IDeviceAssignment> apiResult = getDeviceManagement()
 		    .getActiveDeviceAssignments(CommonModelConverter.asApiUuid(request.getId()));
 	    GGetActiveAssignmentsForDeviceResponse.Builder response = GGetActiveAssignmentsForDeviceResponse
 		    .newBuilder();
@@ -2164,7 +2164,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GListDeviceAssignmentsResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDeviceAssignmentsMethod());
-	    ISearchResults<IDeviceAssignment> apiResult = getDeviceManagement().listDeviceAssignments(
+	    ISearchResults<? extends IDeviceAssignment> apiResult = getDeviceManagement().listDeviceAssignments(
 		    DeviceModelConverter.asApiDeviceAssignmentSearchCriteria(request.getCriteria()));
 	    GListDeviceAssignmentsResponse.Builder response = GListDeviceAssignmentsResponse.newBuilder();
 	    GDeviceAssignmentSearchResults.Builder results = GDeviceAssignmentSearchResults.newBuilder();
@@ -2274,7 +2274,7 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    StreamObserver<GSearchDeviceAlarmsResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getSearchDeviceAlarmsMethod());
-	    ISearchResults<IDeviceAlarm> apiResult = getDeviceManagement()
+	    ISearchResults<? extends IDeviceAlarm> apiResult = getDeviceManagement()
 		    .searchDeviceAlarms(DeviceModelConverter.asApiDeviceAlarmSearchCriteria(request.getCriteria()));
 	    GSearchDeviceAlarmsResponse.Builder response = GSearchDeviceAlarmsResponse.newBuilder();
 	    GDeviceAlarmSearchResults.Builder results = GDeviceAlarmSearchResults.newBuilder();

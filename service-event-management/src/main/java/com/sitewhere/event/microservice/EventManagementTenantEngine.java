@@ -31,7 +31,6 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
 
 import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
-import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 
 /**
  * Implementation of {@link IMicroserviceTenantEngine} that implements event
@@ -167,40 +166,6 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
     @Override
     public IFunctionIdentifier[] getTenantBootstrapPrerequisites() {
 	return new IFunctionIdentifier[] { MicroserviceIdentifier.DeviceManagement };
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * tenantBootstrap(io.sitewhere.k8s.crd.tenant.engine.dataset.
-     * TenantEngineDatasetTemplate,
-     * com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void tenantBootstrap(TenantEngineDatasetTemplate template, ILifecycleProgressMonitor monitor)
-	    throws SiteWhereException {
-	// String scriptName = String.format("%s.groovy",
-	// template.getMetadata().getName());
-	// Path path = getScriptSynchronizer().add(getScriptContext(),
-	// ScriptType.Initializer, scriptName,
-	// template.getSpec().getConfiguration().getBytes());
-	//
-	// Execute remote calls as superuser.
-	// Authentication previous =
-	// SecurityContextHolder.getContext().getAuthentication();
-	// try {
-	// SecurityContextHolder.getContext()
-	// .setAuthentication(getMicroservice().getSystemUser().getAuthenticationForTenant(getTenant()));
-	//
-	// getLogger().info(String.format("Applying bootstrap script '%s'.", path));
-	// GroovyEventModelInitializer initializer = new
-	// GroovyEventModelInitializer(getGroovyConfiguration(), path);
-	// initializer.initialize(getCachedDeviceManagement(), getEventManagement());
-	// } catch (Throwable e) {
-	// getLogger().error("Unhandled exception in bootstrap script.", e);
-	// throw new SiteWhereException(e);
-	// } finally {
-	// SecurityContextHolder.getContext().setAuthentication(previous);
-	// }
     }
 
     /*

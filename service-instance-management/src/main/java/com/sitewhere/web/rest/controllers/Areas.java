@@ -199,7 +199,7 @@ public class Areas {
 	AreaSearchCriteria criteria = buildAreaSearchCriteria(page, pageSize, rootOnly, parentAreaToken, areaTypeToken);
 
 	// Perform search.
-	ISearchResults<IArea> matches = getDeviceManagement().listAreas(criteria);
+	ISearchResults<? extends IArea> matches = getDeviceManagement().listAreas(criteria);
 	AreaMarshalHelper helper = new AreaMarshalHelper(getDeviceManagement(), getAssetManagement());
 	helper.setIncludeAreaType(includeAreaType);
 	helper.setIncludeZones(includeZones);
@@ -511,7 +511,7 @@ public class Areas {
 	List<String> areas = resolveAreaTokensRecursive(areaToken, true, getDeviceManagement());
 	criteria.setAreaTokens(areas);
 
-	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
+	ISearchResults<? extends IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeDevice(includeDevice);
 	helper.setIncludeCustomer(includeCustomer);
@@ -612,7 +612,7 @@ public class Areas {
     protected static void resolveAreasRecursively(IArea current, boolean recursive, Map<String, IArea> matches,
 	    IDeviceManagement deviceManagement) throws SiteWhereException {
 	matches.put(current.getToken(), current);
-	List<IArea> children = deviceManagement.getAreaChildren(current.getToken());
+	List<? extends IArea> children = deviceManagement.getAreaChildren(current.getToken());
 	for (IArea child : children) {
 	    resolveAreasRecursively(child, recursive, matches, deviceManagement);
 	}

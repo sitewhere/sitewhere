@@ -39,7 +39,7 @@ public class JsonCommandExecutionEncoder extends TenantEngineLifecycleComponent
      */
     @Override
     public byte[] encode(IDeviceCommandExecution command, IDeviceNestingContext nested,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	EncodedCommandExecution encoded = new EncodedCommandExecution(command, nested, assignments);
 	getLogger().debug("Custom command being encoded:\n\n" + MarshalUtils.marshalJsonAsPrettyString(encoded));
 	return MarshalUtils.marshalJson(encoded);
@@ -53,7 +53,7 @@ public class JsonCommandExecutionEncoder extends TenantEngineLifecycleComponent
      */
     @Override
     public byte[] encodeSystemCommand(ISystemCommand command, IDeviceNestingContext nested,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	EncodedCommandExecution encoded = new EncodedCommandExecution(command, nested, assignments);
 	getLogger().debug("System command being encoded:\n\n" + MarshalUtils.marshalJsonAsPrettyString(encoded));
 	return MarshalUtils.marshalJson(encoded);

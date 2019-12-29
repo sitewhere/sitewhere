@@ -55,7 +55,7 @@ public class CommandDestination<T, P> extends TenantEngineLifecycleComponent imp
      */
     @Override
     public void deliverCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	T encoded = getCommandExecutionEncoder().encode(execution, nesting, assignments);
 	if (encoded != null) {
 	    P params = getCommandDeliveryParameterExtractor().extractDeliveryParameters(nesting, assignments,
@@ -73,7 +73,7 @@ public class CommandDestination<T, P> extends TenantEngineLifecycleComponent imp
      */
     @Override
     public void deliverSystemCommand(ISystemCommand command, IDeviceNestingContext nesting,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	T encoded = getCommandExecutionEncoder().encodeSystemCommand(command, nesting, assignments);
 	if (encoded != null) {
 	    P params = getCommandDeliveryParameterExtractor().extractDeliveryParameters(nesting, assignments, null);

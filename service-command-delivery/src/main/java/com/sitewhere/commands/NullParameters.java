@@ -45,7 +45,8 @@ public class NullParameters {
 	 */
 	@Override
 	public NullParameters extractDeliveryParameters(IDeviceNestingContext nesting,
-		List<IDeviceAssignment> assignments, IDeviceCommandExecution execution) throws SiteWhereException {
+		List<? extends IDeviceAssignment> assignments, IDeviceCommandExecution execution)
+		throws SiteWhereException {
 	    return parameters;
 	}
     }

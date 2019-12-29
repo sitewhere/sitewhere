@@ -39,7 +39,7 @@ public class ScriptedParameterExtractor<T> extends ScriptingComponent<T>
      * java.util.List, com.sitewhere.spi.device.command.IDeviceCommandExecution)
      */
     @Override
-    public T extractDeliveryParameters(IDeviceNestingContext nesting, List<IDeviceAssignment> assignments,
+    public T extractDeliveryParameters(IDeviceNestingContext nesting, List<? extends IDeviceAssignment> assignments,
 	    IDeviceCommandExecution execution) throws SiteWhereException {
 	try {
 	    Binding binding = createBindingFor(this);

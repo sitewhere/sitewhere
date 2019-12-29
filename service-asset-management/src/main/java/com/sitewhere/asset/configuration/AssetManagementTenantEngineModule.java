@@ -7,7 +7,7 @@
  */
 package com.sitewhere.asset.configuration;
 
-import com.sitewhere.asset.persistence.mongodb.MongoAssetManagement;
+import com.sitewhere.asset.persistence.rdb.RdbAssetManagement;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.multitenant.TenantEngineModule;
 
@@ -26,6 +26,6 @@ public class AssetManagementTenantEngineModule extends TenantEngineModule<AssetM
      */
     @Override
     protected void configure() {
-	bind(IAssetManagement.class).to(MongoAssetManagement.class);
+	bind(IAssetManagement.class).to(RdbAssetManagement.class);
     }
 }

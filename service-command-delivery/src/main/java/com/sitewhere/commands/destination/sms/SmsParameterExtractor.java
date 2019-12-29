@@ -41,8 +41,9 @@ public class SmsParameterExtractor extends TenantEngineLifecycleComponent
      * java.util.List, com.sitewhere.spi.device.command.IDeviceCommandExecution)
      */
     @Override
-    public SmsParameters extractDeliveryParameters(IDeviceNestingContext nesting, List<IDeviceAssignment> assignments,
-	    IDeviceCommandExecution execution) throws SiteWhereException {
+    public SmsParameters extractDeliveryParameters(IDeviceNestingContext nesting,
+	    List<? extends IDeviceAssignment> assignments, IDeviceCommandExecution execution)
+	    throws SiteWhereException {
 	SmsParameters params = new SmsParameters();
 
 	// Load hostname and port from device metadata.

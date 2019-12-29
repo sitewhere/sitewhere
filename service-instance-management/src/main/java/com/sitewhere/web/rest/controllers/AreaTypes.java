@@ -145,7 +145,7 @@ public class AreaTypes {
 	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	ISearchResults<IAreaType> matches = getDeviceManagement().listAreaTypes(criteria);
+	ISearchResults<? extends IAreaType> matches = getDeviceManagement().listAreaTypes(criteria);
 
 	AreaTypeMarshalHelper helper = new AreaTypeMarshalHelper(getDeviceManagement());
 	helper.setIncludeContainedAreaTypes(includeContainedAreaTypes);

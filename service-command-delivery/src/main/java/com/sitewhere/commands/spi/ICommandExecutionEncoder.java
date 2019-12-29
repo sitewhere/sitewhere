@@ -36,8 +36,8 @@ public interface ICommandExecutionEncoder<T> extends ITenantEngineLifecycleCompo
      * @return
      * @throws SiteWhereException
      */
-    public T encode(IDeviceCommandExecution command, IDeviceNestingContext nested, List<IDeviceAssignment> assignments)
-	    throws SiteWhereException;
+    public T encode(IDeviceCommandExecution command, IDeviceNestingContext nested,
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException;
 
     /**
      * Encodes a SiteWhere system command.
@@ -49,5 +49,5 @@ public interface ICommandExecutionEncoder<T> extends ITenantEngineLifecycleCompo
      * @throws SiteWhereException
      */
     public T encodeSystemCommand(ISystemCommand command, IDeviceNestingContext nested,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException;
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException;
 }

@@ -154,7 +154,7 @@ public class Assets {
 	criteria.setAssetTypeToken(assetTypeToken);
 
 	// Perform search.
-	ISearchResults<IAsset> matches = getAssetManagement().listAssets(criteria);
+	ISearchResults<? extends IAsset> matches = getAssetManagement().listAssets(criteria);
 	AssetMarshalHelper helper = new AssetMarshalHelper(getAssetManagement());
 	helper.setIncludeAssetType(includeAssetType);
 

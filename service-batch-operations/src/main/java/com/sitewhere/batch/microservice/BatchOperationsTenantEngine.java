@@ -28,7 +28,6 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
 
 import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
-import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 
 /**
  * Implementation of {@link IMicroserviceTenantEngine} that implements batch
@@ -157,17 +156,6 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine<BatchO
 
 	// Execute startup steps.
 	start.execute(monitor);
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * tenantBootstrap(io.sitewhere.k8s.crd.tenant.engine.dataset.
-     * TenantEngineDatasetTemplate,
-     * com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void tenantBootstrap(TenantEngineDatasetTemplate template, ILifecycleProgressMonitor monitor)
-	    throws SiteWhereException {
     }
 
     /*

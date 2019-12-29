@@ -31,6 +31,6 @@ public interface ICommandDeliveryParameterExtractor<T> extends ITenantEngineLife
      * @return
      * @throws SiteWhereException
      */
-    public T extractDeliveryParameters(IDeviceNestingContext nesting, List<IDeviceAssignment> assignments,
+    public T extractDeliveryParameters(IDeviceNestingContext nesting, List<? extends IDeviceAssignment> assignments,
 	    IDeviceCommandExecution execution) throws SiteWhereException;
 }

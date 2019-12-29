@@ -175,7 +175,7 @@ public class DeviceGroups {
 	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	ISearchResults<IDeviceGroup> results;
+	ISearchResults<? extends IDeviceGroup> results;
 	if (role == null) {
 	    results = getDeviceManagement().listDeviceGroups(criteria);
 	} else {
@@ -213,8 +213,8 @@ public class DeviceGroups {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 
 	IDeviceGroup group = assureDeviceGroup(groupToken);
-	ISearchResults<IDeviceGroupElement> results = getDeviceManagement().listDeviceGroupElements(group.getId(),
-		criteria);
+	ISearchResults<? extends IDeviceGroupElement> results = getDeviceManagement()
+		.listDeviceGroupElements(group.getId(), criteria);
 	List<IDeviceGroupElement> elmConv = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElement elm : results.getResults()) {
 	    elmConv.add(helper.convert(elm, getAssetManagement()));
@@ -245,7 +245,8 @@ public class DeviceGroups {
 	validateDeviceGroupElements(request, getDeviceManagement());
 
 	IDeviceGroup group = assureDeviceGroup(groupToken);
-	List<IDeviceGroupElement> results = getDeviceManagement().addDeviceGroupElements(group.getId(), elements, true);
+	List<? extends IDeviceGroupElement> results = getDeviceManagement().addDeviceGroupElements(group.getId(),
+		elements, true);
 	List<IDeviceGroupElement> converted = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElement elm : results) {
 	    converted.add(helper.convert(elm, getAssetManagement()));
@@ -315,7 +316,7 @@ public class DeviceGroups {
 	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getDeviceManagement())
 		.setIncludeDetails(false);
 
-	List<IDeviceGroupElement> results = getDeviceManagement().removeDeviceGroupElements(elementIds);
+	List<? extends IDeviceGroupElement> results = getDeviceManagement().removeDeviceGroupElements(elementIds);
 	List<IDeviceGroupElement> converted = new ArrayList<IDeviceGroupElement>();
 	for (IDeviceGroupElement elm : results) {
 	    converted.add(helper.convert(elm, getAssetManagement()));

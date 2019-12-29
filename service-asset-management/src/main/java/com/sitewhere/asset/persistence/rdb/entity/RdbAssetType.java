@@ -23,6 +23,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Fetch;
@@ -34,6 +35,7 @@ import com.sitewhere.spi.asset.IAssetType;
 
 @Entity
 @Table(name = "asset_types")
+@NamedQuery(name = Queries.QUERY_ASSET_TYPE_BY_TOKEN, query = "SELECT a FROM RdbAssetType a WHERE a.token = :token")
 public class RdbAssetType extends RdbBrandedEntity implements IAssetType {
 
     /** Serial version UID */
@@ -129,5 +131,6 @@ public class RdbAssetType extends RdbBrandedEntity implements IAssetType {
 	target.setAssetCategory(source.getAssetCategory());
 	target.setName(source.getName());
 	target.setDescription(source.getDescription());
+	RdbBrandedEntity.copy(source, target);
     }
 }

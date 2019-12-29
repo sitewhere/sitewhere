@@ -7,14 +7,19 @@
  */
 package com.sitewhere.device;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
 
 /**
- * Spring Boot application for device management microservice.
+ * Main application which runs the device management microservice.
  */
+@ApplicationScoped
 public class DeviceManagementApplication extends MicroserviceApplication<IDeviceManagementMicroservice> {
 
+    @Inject
     private IDeviceManagementMicroservice microservice;
 
     /*

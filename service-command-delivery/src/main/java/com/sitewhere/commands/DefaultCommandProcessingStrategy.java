@@ -69,7 +69,7 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
 		    throw new SiteWhereException("Targeted assignment references device that does not exist.");
 		}
 
-		List<IDeviceAssignment> active = getDeviceManagementApiChannel()
+		List<? extends IDeviceAssignment> active = getDeviceManagementApiChannel()
 			.getActiveDeviceAssignments(device.getId());
 		IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device,
 			getTenantEngine().getTenantResource());
@@ -96,7 +96,7 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
 	    throw new SiteWhereException("Targeted assignment references device that does not exist.");
 	}
 
-	List<IDeviceAssignment> assignments = getDeviceManagementApiChannel()
+	List<? extends IDeviceAssignment> assignments = getDeviceManagementApiChannel()
 		.getActiveDeviceAssignments(device.getId());
 	IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device,
 		getTenantEngine().getTenantResource());

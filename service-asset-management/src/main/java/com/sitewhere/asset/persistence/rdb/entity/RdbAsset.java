@@ -21,6 +21,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Fetch;
@@ -31,6 +32,7 @@ import com.sitewhere.spi.asset.IAsset;
 
 @Entity
 @Table(name = "assets")
+@NamedQuery(name = Queries.QUERY_ASSET_BY_TOKEN, query = "SELECT a FROM RdbAsset a WHERE a.token = :token")
 public class RdbAsset extends RdbBrandedEntity implements IAsset {
 
     /** Serial version UID */

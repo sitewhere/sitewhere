@@ -194,7 +194,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    StreamObserver<GListAssetTypesResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, AssetManagementGrpc.getListAssetTypesMethod());
-	    ISearchResults<IAssetType> apiResult = getAssetManagement()
+	    ISearchResults<? extends IAssetType> apiResult = getAssetManagement()
 		    .listAssetTypes(AssetModelConverter.asApiAssetTypeSearchCriteria(request.getCriteria()));
 	    GListAssetTypesResponse.Builder response = GListAssetTypesResponse.newBuilder();
 	    GAssetTypeSearchResults.Builder results = GAssetTypeSearchResults.newBuilder();
@@ -340,7 +340,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
     public void listAssets(GListAssetsRequest request, StreamObserver<GListAssetsResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, AssetManagementGrpc.getListAssetsMethod());
-	    ISearchResults<IAsset> apiResult = getAssetManagement()
+	    ISearchResults<? extends IAsset> apiResult = getAssetManagement()
 		    .listAssets(AssetModelConverter.asApiAssetSearchCriteria(request.getCriteria()));
 	    GListAssetsResponse.Builder response = GListAssetsResponse.newBuilder();
 	    GAssetSearchResults.Builder results = GAssetSearchResults.newBuilder();

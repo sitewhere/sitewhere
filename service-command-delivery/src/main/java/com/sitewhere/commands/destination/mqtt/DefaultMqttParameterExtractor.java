@@ -53,8 +53,9 @@ public class DefaultMqttParameterExtractor extends TenantEngineLifecycleComponen
      * java.util.List, com.sitewhere.spi.device.command.IDeviceCommandExecution)
      */
     @Override
-    public MqttParameters extractDeliveryParameters(IDeviceNestingContext nesting, List<IDeviceAssignment> assignments,
-	    IDeviceCommandExecution execution) throws SiteWhereException {
+    public MqttParameters extractDeliveryParameters(IDeviceNestingContext nesting,
+	    List<? extends IDeviceAssignment> assignments, IDeviceCommandExecution execution)
+	    throws SiteWhereException {
 	MqttParameters params = new MqttParameters();
 
 	Map<String, String> values = new HashMap<>();

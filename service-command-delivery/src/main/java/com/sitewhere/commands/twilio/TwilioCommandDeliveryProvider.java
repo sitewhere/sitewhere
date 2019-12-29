@@ -81,7 +81,7 @@ public class TwilioCommandDeliveryProvider extends TenantEngineLifecycleComponen
      * java.lang.Object)
      */
     @Override
-    public void deliver(IDeviceNestingContext nested, List<IDeviceAssignment> assignments,
+    public void deliver(IDeviceNestingContext nested, List<? extends IDeviceAssignment> assignments,
 	    IDeviceCommandExecution execution, String encoded, SmsParameters params) throws SiteWhereException {
 	getLogger().info("Delivering SMS command to " + params.getSmsPhoneNumber() + ".");
 	sendSms(encoded, getFromPhoneNumber(), params.getSmsPhoneNumber());
@@ -94,8 +94,8 @@ public class TwilioCommandDeliveryProvider extends TenantEngineLifecycleComponen
      * java.lang.Object)
      */
     @Override
-    public void deliverSystemCommand(IDeviceNestingContext nested, List<IDeviceAssignment> assignments, String encoded,
-	    SmsParameters params) throws SiteWhereException {
+    public void deliverSystemCommand(IDeviceNestingContext nested, List<? extends IDeviceAssignment> assignments,
+	    String encoded, SmsParameters params) throws SiteWhereException {
 	throw new UnsupportedOperationException();
     }
 

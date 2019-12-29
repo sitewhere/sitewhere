@@ -158,7 +158,7 @@ public class DeviceTypes {
 	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	ISearchResults<IDeviceType> results = getDeviceManagement().listDeviceTypes(criteria);
+	ISearchResults<? extends IDeviceType> results = getDeviceManagement().listDeviceTypes(criteria);
 	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getDeviceManagement());
 	List<IDeviceType> typesConv = new ArrayList<IDeviceType>();
 	for (IDeviceType type : results.getResults()) {

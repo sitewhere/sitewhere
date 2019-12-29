@@ -62,7 +62,7 @@ public interface ICommandDestination<T, P> extends ITenantEngineLifecycleCompone
      * @throws SiteWhereException
      */
     public void deliverCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException;
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException;
 
     /**
      * Deliver a system command.
@@ -73,5 +73,5 @@ public interface ICommandDestination<T, P> extends ITenantEngineLifecycleCompone
      * @throws SiteWhereException
      */
     public void deliverSystemCommand(ISystemCommand command, IDeviceNestingContext nesting,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException;
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException;
 }

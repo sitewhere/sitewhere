@@ -58,8 +58,9 @@ public class MetadataCoapParameterExtractor extends TenantEngineLifecycleCompone
      * java.util.List, com.sitewhere.spi.device.command.IDeviceCommandExecution)
      */
     @Override
-    public CoapParameters extractDeliveryParameters(IDeviceNestingContext nesting, List<IDeviceAssignment> assignments,
-	    IDeviceCommandExecution execution) throws SiteWhereException {
+    public CoapParameters extractDeliveryParameters(IDeviceNestingContext nesting,
+	    List<? extends IDeviceAssignment> assignments, IDeviceCommandExecution execution)
+	    throws SiteWhereException {
 	// Load hostname and port from device metadata.
 	Map<String, String> deviceMeta = nesting.getGateway().getMetadata();
 	String hostname = deviceMeta.get(getHostnameMetadataField());

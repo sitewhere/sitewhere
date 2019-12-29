@@ -85,7 +85,7 @@ public class DeviceCommands {
 	DeviceCommandSearchCriteria criteria = new DeviceCommandSearchCriteria(1, 0);
 	criteria.setDeviceTypeToken(deviceTypeToken);
 
-	List<IDeviceCommand> results = getDeviceManagement().listDeviceCommands(criteria).getResults();
+	List<? extends IDeviceCommand> results = getDeviceManagement().listDeviceCommands(criteria).getResults();
 	Collections.sort(results, new Comparator<IDeviceCommand>() {
 	    public int compare(IDeviceCommand o1, IDeviceCommand o2) {
 		if ((o1.getNamespace() == null) && (o2.getNamespace() != null)) {

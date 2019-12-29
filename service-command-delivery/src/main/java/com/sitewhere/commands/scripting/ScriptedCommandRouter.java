@@ -44,7 +44,7 @@ public class ScriptedCommandRouter extends ScriptingComponent<String> implements
      */
     @Override
     public List<ICommandDestination<?, ?>> getDestinationsFor(IDeviceCommandExecution execution,
-	    IDeviceNestingContext nesting, List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    IDeviceNestingContext nesting, List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	return findAndResolveCommandDestinations(execution, null, nesting, assignments);
     }
 
@@ -56,7 +56,7 @@ public class ScriptedCommandRouter extends ScriptingComponent<String> implements
      */
     @Override
     public List<ICommandDestination<?, ?>> getDestinationsFor(ISystemCommand command, IDeviceNestingContext nesting,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	return findAndResolveCommandDestinations(null, command, nesting, assignments);
     }
 
@@ -72,7 +72,7 @@ public class ScriptedCommandRouter extends ScriptingComponent<String> implements
      * @throws SiteWhereException
      */
     protected List<ICommandDestination<?, ?>> findAndResolveCommandDestinations(IDeviceCommandExecution execution,
-	    ISystemCommand system, IDeviceNestingContext nesting, List<IDeviceAssignment> assignments)
+	    ISystemCommand system, IDeviceNestingContext nesting, List<? extends IDeviceAssignment> assignments)
 	    throws SiteWhereException {
 	String target = findCommandDestination(execution, system, nesting, assignments);
 	if (target != null) {
@@ -100,7 +100,7 @@ public class ScriptedCommandRouter extends ScriptingComponent<String> implements
      * @throws SiteWhereException
      */
     protected String findCommandDestination(IDeviceCommandExecution execution, ISystemCommand system,
-	    IDeviceNestingContext nesting, List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    IDeviceNestingContext nesting, List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	try {
 	    Binding binding = createBindingFor(this);
 	    binding.setVariable(IScriptVariables.VAR_COMMAND_EXECUTION, execution);

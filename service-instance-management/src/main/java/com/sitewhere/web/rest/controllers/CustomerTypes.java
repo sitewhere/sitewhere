@@ -145,7 +145,7 @@ public class CustomerTypes {
 	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	ISearchResults<ICustomerType> matches = getDeviceManagement().listCustomerTypes(criteria);
+	ISearchResults<? extends ICustomerType> matches = getDeviceManagement().listCustomerTypes(criteria);
 
 	CustomerTypeMarshalHelper helper = new CustomerTypeMarshalHelper(getDeviceManagement());
 	helper.setIncludeContainedCustomerTypes(includeContainedCustomerTypes);

@@ -42,7 +42,7 @@ public class ScriptedCommandExecutionEncoder extends ScriptingComponent<byte[]>
      */
     @Override
     public byte[] encode(IDeviceCommandExecution command, IDeviceNestingContext nested,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	try {
 	    Binding binding = createBindingFor(this);
 	    binding.setVariable(IScriptVariables.VAR_COMMAND_EXECUTION, command);
@@ -62,7 +62,7 @@ public class ScriptedCommandExecutionEncoder extends ScriptingComponent<byte[]>
      */
     @Override
     public byte[] encodeSystemCommand(ISystemCommand command, IDeviceNestingContext nested,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	try {
 	    Binding binding = createBindingFor(this);
 	    binding.setVariable(IScriptVariables.VAR_SYSTEM_COMMAND, command);

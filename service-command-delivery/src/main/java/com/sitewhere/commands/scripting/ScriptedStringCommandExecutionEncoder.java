@@ -43,7 +43,7 @@ public class ScriptedStringCommandExecutionEncoder extends ScriptingComponent<St
      */
     @Override
     public String encode(IDeviceCommandExecution command, IDeviceNestingContext nested,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	try {
 	    Binding binding = createBindingFor(this);
 	    binding.setVariable(IScriptVariables.VAR_COMMAND_EXECUTION, command);
@@ -63,7 +63,7 @@ public class ScriptedStringCommandExecutionEncoder extends ScriptingComponent<St
      */
     @Override
     public String encodeSystemCommand(ISystemCommand command, IDeviceNestingContext nested,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	try {
 	    Binding binding = createBindingFor(this);
 	    binding.setVariable(IScriptVariables.VAR_SYSTEM_COMMAND, command);

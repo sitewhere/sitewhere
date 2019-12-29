@@ -40,7 +40,7 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
      */
     @Override
     public List<ICommandDestination<?, ?>> getDestinationsFor(IDeviceCommandExecution execution,
-	    IDeviceNestingContext nesting, List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    IDeviceNestingContext nesting, List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	return destinations;
     }
 
@@ -52,7 +52,7 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
      */
     @Override
     public List<ICommandDestination<?, ?>> getDestinationsFor(ISystemCommand command, IDeviceNestingContext nesting,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	return destinations;
     }
 

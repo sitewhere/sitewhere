@@ -37,7 +37,7 @@ public class CommandRoutingLogic {
      */
     public static void routeCommand(IOutboundCommandRouter router, IUndeliveredCommandInvocationsProducer undelivered,
 	    IDeviceEventContext eventContext, IDeviceCommandExecution execution, IDeviceNestingContext nesting,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	List<ICommandDestination<?, ?>> destinations = router.getDestinationsFor(execution, nesting, assignments);
 	boolean deliveredToAll = true;
 	for (ICommandDestination<?, ?> destination : destinations) {
@@ -73,7 +73,7 @@ public class CommandRoutingLogic {
      * @throws SiteWhereException
      */
     public static void routeSystemCommand(IOutboundCommandRouter router, ISystemCommand command,
-	    IDeviceNestingContext nesting, List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    IDeviceNestingContext nesting, List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	List<ICommandDestination<?, ?>> destinations = router.getDestinationsFor(command, nesting, assignments);
 	for (ICommandDestination<?, ?> destination : destinations) {
 	    deliverSystemCommand(destination, command, nesting, assignments);
@@ -91,7 +91,7 @@ public class CommandRoutingLogic {
      * @throws SiteWhereException
      */
     public static void deliverCommand(ICommandDestination<?, ?> destination, IDeviceCommandExecution execution,
-	    IDeviceNestingContext nesting, List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    IDeviceNestingContext nesting, List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	destination.deliverCommand(execution, nesting, assignments);
     }
 
@@ -105,7 +105,7 @@ public class CommandRoutingLogic {
      * @throws SiteWhereException
      */
     public static void deliverSystemCommand(ICommandDestination<?, ?> destination, ISystemCommand command,
-	    IDeviceNestingContext nesting, List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    IDeviceNestingContext nesting, List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	destination.deliverSystemCommand(command, nesting, assignments);
     }
 }

@@ -7,17 +7,40 @@
  */
 package com.sitewhere.device.microservice;
 
+import com.sitewhere.device.DeviceManagementTriggers;
 import com.sitewhere.device.configuration.DeviceManagementTenantConfiguration;
 import com.sitewhere.device.configuration.DeviceManagementTenantEngineModule;
+import com.sitewhere.device.grpc.DeviceManagementImpl;
 import com.sitewhere.device.kafka.DeviceInteractionEventsProducer;
+import com.sitewhere.device.persistence.rdb.entity.RdbArea;
+import com.sitewhere.device.persistence.rdb.entity.RdbAreaType;
+import com.sitewhere.device.persistence.rdb.entity.RdbCommandParameter;
+import com.sitewhere.device.persistence.rdb.entity.RdbCustomer;
+import com.sitewhere.device.persistence.rdb.entity.RdbCustomerType;
+import com.sitewhere.device.persistence.rdb.entity.RdbDevice;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceAlarm;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceAssignment;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceCommand;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceElementMapping;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceElementSchema;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceGroup;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceGroupElement;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceSlot;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceStatus;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceType;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceUnit;
+import com.sitewhere.device.persistence.rdb.entity.RdbLocation;
+import com.sitewhere.device.persistence.rdb.entity.RdbZone;
 import com.sitewhere.device.spi.kafka.IDeviceInteractionEventsProducer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
 import com.sitewhere.grpc.service.DeviceManagementGrpc;
-import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
+import com.sitewhere.rdb.RdbProviderInformation;
+import com.sitewhere.rdb.RdbTenantEngine;
+import com.sitewhere.rdb.providers.postgresql.Postgres95Provider;
+import com.sitewhere.rdb.providers.postgresql.PostgresConnectionInfo;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
@@ -27,13 +50,12 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
 
 import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
-import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 
 /**
  * Implementation of {@link IMicroserviceTenantEngine} that implements device
  * management functionality.
  */
-public class DeviceManagementTenantEngine extends MicroserviceTenantEngine<DeviceManagementTenantConfiguration>
+public class DeviceManagementTenantEngine extends RdbTenantEngine<DeviceManagementTenantConfiguration>
 	implements IDeviceManagementTenantEngine {
 
     /** Device management persistence API */
@@ -68,19 +90,60 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine<Devic
     }
 
     /*
+     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getProviderInformation()
+     */
+    @Override
+    public RdbProviderInformation<?> getProviderInformation() {
+	PostgresConnectionInfo connInfo = new PostgresConnectionInfo();
+	connInfo.setHostname("sitewhere-postgresql");
+	connInfo.setPort(5000);
+	connInfo.setUsername("syncope");
+	connInfo.setPassword("syncope");
+	return new Postgres95Provider(connInfo);
+    }
+
+    /*
+     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getEntityClasses()
+     */
+    @Override
+    public Class<?>[] getEntityClasses() {
+	return new Class<?>[] { RdbArea.class, RdbAreaType.class, RdbCommandParameter.class, RdbCustomer.class,
+		RdbCustomerType.class, RdbDevice.class, RdbDeviceAlarm.class, RdbDeviceAssignment.class,
+		RdbDeviceCommand.class, RdbDeviceElementMapping.class, RdbDeviceElementSchema.class,
+		RdbDeviceGroup.class, RdbDeviceGroupElement.class, RdbDeviceSlot.class, RdbDeviceStatus.class,
+		RdbDeviceType.class, RdbDeviceUnit.class, RdbLocation.class, RdbZone.class };
+    }
+
+    /*
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * loadEngineComponents()
+     */
+    @Override
+    public void loadEngineComponents() throws SiteWhereException {
+	// // Create management interfaces.
+	IDeviceManagement implementation = getInjector().getInstance(IDeviceManagement.class);
+	this.deviceManagement = new DeviceManagementTriggers(implementation, this);
+	this.deviceManagementImpl = new DeviceManagementImpl((IDeviceManagementMicroservice) getMicroservice(),
+		getDeviceManagement());
+    }
+
+    /*
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * getTenantBootstrapPrerequisites()
+     */
+    @Override
+    public IFunctionIdentifier[] getTenantBootstrapPrerequisites() {
+	return new IFunctionIdentifier[] { MicroserviceIdentifier.AssetManagement };
+    }
+
+    /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
      * tenantInitialize(com.sitewhere.spi.microservice.lifecycle.
      * ILifecycleProgressMonitor)
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// // Create management interfaces.
-	// IDeviceManagement implementation = (IDeviceManagement) getModuleContext()
-	// .getBean(DeviceManagementBeans.BEAN_DEVICE_MANAGEMENT);
-	// this.deviceManagement = new DeviceManagementTriggers(implementation, this);
-	// this.deviceManagementImpl = new
-	// DeviceManagementImpl((IDeviceManagementMicroservice) getMicroservice(),
-	// getDeviceManagement());
+	super.tenantInitialize(monitor);
 
 	// Device interaction events producer.
 	this.deviceInteractionEventsProducer = new DeviceInteractionEventsProducer();
@@ -105,6 +168,8 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine<Devic
      */
     @Override
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.tenantStart(monitor);
+
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
 
@@ -116,49 +181,6 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine<Devic
 
 	// Execute startup steps.
 	start.execute(monitor);
-    }
-
-    /*
-     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
-     * getTenantBootstrapPrerequisites()
-     */
-    @Override
-    public IFunctionIdentifier[] getTenantBootstrapPrerequisites() {
-	return new IFunctionIdentifier[] { MicroserviceIdentifier.AssetManagement };
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * tenantBootstrap(io.sitewhere.k8s.crd.tenant.engine.dataset.
-     * TenantEngineDatasetTemplate,
-     * com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void tenantBootstrap(TenantEngineDatasetTemplate template, ILifecycleProgressMonitor monitor)
-	    throws SiteWhereException {
-	// String scriptName = String.format("%s.groovy",
-	// template.getMetadata().getName());
-	// Path path = getScriptSynchronizer().add(getScriptContext(),
-	// ScriptType.Initializer, scriptName,
-	// template.getSpec().getConfiguration().getBytes());
-	//
-	// Execute remote calls as superuser.
-	// Authentication previous =
-	// SecurityContextHolder.getContext().getAuthentication();
-	// try {
-	// SecurityContextHolder.getContext()
-	// .setAuthentication(getMicroservice().getSystemUser().getAuthenticationForTenant(getTenant()));
-	//
-	// getLogger().info(String.format("Applying bootstrap script '%s'.", path));
-	// GroovyDeviceModelInitializer initializer = new
-	// GroovyDeviceModelInitializer(getGroovyConfiguration(), path);
-	// initializer.initialize(getDeviceManagement(), getAssetManagement());
-	// } catch (Throwable e) {
-	// getLogger().error("Unhandled exception in bootstrap script.", e);
-	// throw new SiteWhereException(e);
-	// } finally {
-	// SecurityContextHolder.getContext().setAuthentication(previous);
-	// }
     }
 
     /*
@@ -179,6 +201,8 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine<Devic
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
+
+	super.tenantStop(monitor);
     }
 
     /*
@@ -192,10 +216,6 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine<Devic
 	return deviceManagement;
     }
 
-    public void setDeviceManagement(IDeviceManagement deviceManagement) {
-	this.deviceManagement = deviceManagement;
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -207,10 +227,6 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine<Devic
 	return deviceManagementImpl;
     }
 
-    public void setDeviceManagementImpl(DeviceManagementGrpc.DeviceManagementImplBase deviceManagementImpl) {
-	this.deviceManagementImpl = deviceManagementImpl;
-    }
-
     /*
      * @see com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine#
      * getDeviceInteractionEventsProducer()
@@ -218,13 +234,5 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine<Devic
     @Override
     public IDeviceInteractionEventsProducer getDeviceInteractionEventsProducer() {
 	return deviceInteractionEventsProducer;
-    }
-
-    public void setDeviceInteractionEventsProducer(IDeviceInteractionEventsProducer deviceInteractionEventsProducer) {
-	this.deviceInteractionEventsProducer = deviceInteractionEventsProducer;
-    }
-
-    public IAssetManagement getAssetManagement() {
-	return ((IDeviceManagementMicroservice) getMicroservice()).getAssetManagementApiChannel();
     }
 }

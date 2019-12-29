@@ -15,26 +15,28 @@ import com.sitewhere.asset.persistence.rdb.entity.RdbAssetType;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
+import com.sitewhere.microservice.api.asset.AssetManagementRequestBuilder;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
-import com.sitewhere.rdb.RdbEntityManagerProvider;
+import com.sitewhere.microservice.scripting.Binding;
+import com.sitewhere.rdb.RdbProviderInformation;
+import com.sitewhere.rdb.RdbTenantEngine;
 import com.sitewhere.rdb.providers.postgresql.Postgres95Provider;
-import com.sitewhere.rdb.spi.IRdbEntityManagerProvider;
+import com.sitewhere.rdb.providers.postgresql.PostgresConnectionInfo;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
+import com.sitewhere.spi.microservice.scripting.IScriptVariables;
 
 import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
-import io.sitewhere.k8s.crd.tenant.engine.dataset.TenantEngineDatasetTemplate;
 
 /**
  * Implementation of {@link IMicroserviceTenantEngine} that implements asset
  * management functionality.
  */
-public class AssetManagementTenantEngine extends MicroserviceTenantEngine<AssetManagementTenantConfiguration>
+public class AssetManagementTenantEngine extends RdbTenantEngine<AssetManagementTenantConfiguration>
 	implements IAssetManagementTenantEngine {
 
     /** Asset management persistence API */
@@ -42,9 +44,6 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine<AssetM
 
     /** Responds to asset management GRPC requests */
     private AssetManagementGrpc.AssetManagementImplBase assetManagementImpl;
-
-    /** RDB entity manager provider */
-    private IRdbEntityManagerProvider rdbEntityManagerProvider;
 
     public AssetManagementTenantEngine(SiteWhereTenantEngine tenantEngineResource) {
 	super(tenantEngineResource);
@@ -69,18 +68,45 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine<AssetM
     }
 
     /*
+     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getProviderInformation()
+     */
+    @Override
+    public RdbProviderInformation<?> getProviderInformation() {
+	PostgresConnectionInfo connInfo = new PostgresConnectionInfo();
+	connInfo.setHostname("sitewhere-postgresql");
+	connInfo.setPort(5000);
+	connInfo.setUsername("syncope");
+	connInfo.setPassword("syncope");
+	return new Postgres95Provider(connInfo);
+    }
+
+    /*
+     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getEntityClasses()
+     */
+    @Override
+    public Class<?>[] getEntityClasses() {
+	return new Class<?>[] { RdbAsset.class, RdbAssetType.class };
+    }
+
+    /*
      * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
      * loadEngineComponents()
      */
     @Override
     public void loadEngineComponents() throws SiteWhereException {
-	this.assetManagement = (IAssetManagement) getInjector().getInstance(IAssetManagement.class);
+	this.assetManagement = getInjector().getInstance(IAssetManagement.class);
 	this.assetManagementImpl = new AssetManagementImpl((IAssetManagementMicroservice) getMicroservice(),
 		getAssetManagement());
+    }
 
-	// Create an entity manager provider.
-	this.rdbEntityManagerProvider = new RdbEntityManagerProvider(new Postgres95Provider(),
-		new Class<?>[] { RdbAsset.class, RdbAssetType.class });
+    /*
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * setDatasetBootsrapBindings(com.sitewhere.microservice.scripting.Binding)
+     */
+    @Override
+    public void setDatasetBootsrapBindings(Binding binding) throws SiteWhereException {
+	binding.setVariable(IScriptVariables.VAR_ASSET_MANAGEMENT_BUILDER,
+		new AssetManagementRequestBuilder(getAssetManagement()));
     }
 
     /*
@@ -90,11 +116,10 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine<AssetM
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.tenantInitialize(monitor);
+
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
-
-	// Initialize RDB entity management.
-	init.addInitializeStep(this, getRdbEntityManagerProvider(), true);
 
 	// Initialize asset management persistence.
 	init.addInitializeStep(this, getAssetManagement(), true);
@@ -110,51 +135,16 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine<AssetM
      */
     @Override
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.tenantStart(monitor);
+
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
-
-	// Start RDB entity management.
-	start.addStartStep(this, getRdbEntityManagerProvider(), true);
 
 	// Start asset management persistence.
 	start.addStartStep(this, getAssetManagement(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * tenantBootstrap(io.sitewhere.k8s.crd.tenant.engine.dataset.
-     * TenantEngineDatasetTemplate,
-     * com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void tenantBootstrap(TenantEngineDatasetTemplate template, ILifecycleProgressMonitor monitor)
-	    throws SiteWhereException {
-	// String scriptName = String.format("%s.groovy",
-	// template.getMetadata().getName());
-	// Path path = getScriptSynchronizer().add(getScriptContext(),
-	// ScriptType.Initializer, scriptName,
-	// template.getSpec().getConfiguration().getBytes());
-	//
-	// Execute remote calls as superuser.
-	// Authentication previous =
-	// SecurityContextHolder.getContext().getAuthentication();
-	// try {
-	// SecurityContextHolder.getContext()
-	// .setAuthentication(getMicroservice().getSystemUser().getAuthenticationForTenant(getTenant()));
-	//
-	// getLogger().info(String.format("Applying bootstrap script '%s'.", path));
-	// GroovyAssetModelInitializer initializer = new
-	// GroovyAssetModelInitializer(getGroovyConfiguration(), path);
-	// initializer.initialize(getAssetManagement());
-	// } catch (Throwable e) {
-	// getLogger().error("Unhandled exception in bootstrap script.", e);
-	// throw new SiteWhereException(e);
-	// } finally {
-	// SecurityContextHolder.getContext().setAuthentication(previous);
-	// }
     }
 
     /*
@@ -170,11 +160,10 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine<AssetM
 	// Stop asset management persistence.
 	stop.addStopStep(this, getAssetManagement());
 
-	// Stop RDB entity management.
-	stop.addStopStep(this, getRdbEntityManagerProvider());
-
 	// Execute shutdown steps.
 	stop.execute(monitor);
+
+	super.tenantStop(monitor);
     }
 
     /*
@@ -193,14 +182,5 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine<AssetM
     @Override
     public AssetManagementGrpc.AssetManagementImplBase getAssetManagementImpl() {
 	return assetManagementImpl;
-    }
-
-    /*
-     * @see com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine#
-     * getRdbEntityManagerProvider()
-     */
-    @Override
-    public IRdbEntityManagerProvider getRdbEntityManagerProvider() {
-	return rdbEntityManagerProvider;
     }
 }

@@ -82,7 +82,7 @@ public class AssetManagementPersistence extends Persistence {
 	    throws SiteWhereException {
 	AssetSearchCriteria criteria = new AssetSearchCriteria(1, 1);
 	criteria.setAssetTypeToken(assetType.getToken());
-	ISearchResults<IAsset> assets = assetManagement.listAssets(criteria);
+	ISearchResults<? extends IAsset> assets = assetManagement.listAssets(criteria);
 	if (assets.getNumResults() > 0) {
 	    throw new SiteWhereSystemException(ErrorCode.AssetTypeNoDeleteHasAssets, ErrorLevel.ERROR);
 	}
@@ -141,7 +141,7 @@ public class AssetManagementPersistence extends Persistence {
 	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(1, 1);
 	criteria.setAssetTokens(Collections.singletonList(asset.getToken()));
 
-	ISearchResults<IDeviceAssignment> assignments = deviceManagement.listDeviceAssignments(criteria);
+	ISearchResults<? extends IDeviceAssignment> assignments = deviceManagement.listDeviceAssignments(criteria);
 	if (assignments.getNumResults() > 0) {
 	    throw new SiteWhereSystemException(ErrorCode.AssetNoDeleteHasAssignments, ErrorLevel.ERROR);
 	}

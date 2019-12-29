@@ -40,7 +40,7 @@ public class CoapCommandDeliveryProvider extends TenantEngineLifecycleComponent
      * java.lang.Object)
      */
     @Override
-    public void deliver(IDeviceNestingContext nested, List<IDeviceAssignment> assignments,
+    public void deliver(IDeviceNestingContext nested, List<? extends IDeviceAssignment> assignments,
 	    IDeviceCommandExecution execution, byte[] encoded, CoapParameters parameters) throws SiteWhereException {
 	CoapClient client = createCoapClient(parameters);
 	CoapResponse response = null;
@@ -65,8 +65,8 @@ public class CoapCommandDeliveryProvider extends TenantEngineLifecycleComponent
      * java.lang.Object)
      */
     @Override
-    public void deliverSystemCommand(IDeviceNestingContext nested, List<IDeviceAssignment> assignments, byte[] encoded,
-	    CoapParameters parameters) throws SiteWhereException {
+    public void deliverSystemCommand(IDeviceNestingContext nested, List<? extends IDeviceAssignment> assignments,
+	    byte[] encoded, CoapParameters parameters) throws SiteWhereException {
 	CoapClient client = createCoapClient(parameters);
 	CoapResponse response = null;
 	getLogger().debug(parameters.toString());

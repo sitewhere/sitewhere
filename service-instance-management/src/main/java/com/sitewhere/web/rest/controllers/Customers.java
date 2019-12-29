@@ -198,7 +198,7 @@ public class Customers {
 		customerTypeToken);
 
 	// Perform search.
-	ISearchResults<ICustomer> matches = getDeviceManagement().listCustomers(criteria);
+	ISearchResults<? extends ICustomer> matches = getDeviceManagement().listCustomers(criteria);
 	CustomerMarshalHelper helper = new CustomerMarshalHelper(getDeviceManagement(), getAssetManagement());
 	helper.setIncludeCustomerType(includeCustomerType);
 
@@ -503,7 +503,7 @@ public class Customers {
 	List<String> customers = resolveCustomerTokensRecursive(customerToken, true, getDeviceManagement());
 	criteria.setCustomerTokens(customers);
 
-	ISearchResults<IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
+	ISearchResults<? extends IDeviceAssignment> matches = getDeviceManagement().listDeviceAssignments(criteria);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeDevice(includeDevice);
 	helper.setIncludeCustomer(includeCustomer);
@@ -588,7 +588,7 @@ public class Customers {
     protected static void resolveCustomersRecursively(ICustomer current, boolean recursive,
 	    Map<String, ICustomer> matches, IDeviceManagement deviceManagement) throws SiteWhereException {
 	matches.put(current.getToken(), current);
-	List<ICustomer> children = deviceManagement.getCustomerChildren(current.getToken());
+	List<? extends ICustomer> children = deviceManagement.getCustomerChildren(current.getToken());
 	for (ICustomer child : children) {
 	    resolveCustomersRecursively(child, recursive, matches, deviceManagement);
 	}

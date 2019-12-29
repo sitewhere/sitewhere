@@ -218,7 +218,8 @@ public class Devices {
 	    @ApiParam(value = "Include asset information", required = false) @QueryParam("includeAsset") @DefaultValue("false") boolean includeAsset)
 	    throws SiteWhereException {
 	IDevice existing = assertDeviceByToken(deviceToken);
-	List<IDeviceAssignment> assignments = getDeviceManagement().getActiveDeviceAssignments(existing.getId());
+	List<? extends IDeviceAssignment> assignments = getDeviceManagement()
+		.getActiveDeviceAssignments(existing.getId());
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeDevice(includeDevice);
 	helper.setIncludeCustomer(includeCustomer);
@@ -262,7 +263,7 @@ public class Devices {
 	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(page, pageSize);
 	criteria.setDeviceTokens(Collections.singletonList(deviceToken));
 
-	ISearchResults<IDeviceAssignment> history = getDeviceManagement().listDeviceAssignments(criteria);
+	ISearchResults<? extends IDeviceAssignment> history = getDeviceManagement().listDeviceAssignments(criteria);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeDevice(includeDevice);
 	helper.setIncludeCustomer(includeCustomer);
@@ -347,7 +348,7 @@ public class Devices {
 	    throws SiteWhereException {
 	IDeviceSearchCriteria criteria = new DeviceSearchCriteria(deviceType, excludeAssigned, page, pageSize,
 		Assignments.parseDateOrFail(startDate), Assignments.parseDateOrFail(endDate));
-	ISearchResults<IDevice> results = getDeviceManagement().listDevices(criteria);
+	ISearchResults<? extends IDevice> results = getDeviceManagement().listDevices(criteria);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeDeviceType(includeDeviceType);
 	helper.setIncludeAssignment(includeAssignment);
@@ -466,10 +467,12 @@ public class Devices {
 	    @ApiParam(value = "Device token", required = true) @PathParam("deviceToken") String deviceToken,
 	    @RequestBody DeviceEventBatch batch) throws SiteWhereException {
 	IDevice device = assertDeviceByToken(deviceToken);
-	if (device.getActiveDeviceAssignmentIds().size() == 0) {
+	List<? extends IDeviceAssignment> active = getDeviceManagement().getActiveDeviceAssignments(device.getId());
+	if (active.size() == 0) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceNotAssigned, ErrorLevel.ERROR);
 	}
-	List<IDeviceAssignment> assignments = getDeviceManagement().getActiveDeviceAssignments(device.getId());
+	List<? extends IDeviceAssignment> assignments = getDeviceManagement()
+		.getActiveDeviceAssignments(device.getId());
 
 	IDeviceEventBatchResponse response = null;
 	for (IDeviceAssignment assignment : assignments) {

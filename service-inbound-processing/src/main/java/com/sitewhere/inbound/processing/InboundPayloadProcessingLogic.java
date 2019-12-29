@@ -108,7 +108,7 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
      * @throws SiteWhereException
      */
     protected void processDecodedEvent(GDecodedEventPayload event) throws SiteWhereException {
-	List<IDeviceAssignment> assignments = validateAssignment(event);
+	List<? extends IDeviceAssignment> assignments = validateAssignment(event);
 	if (getLogger().isDebugEnabled()) {
 	    getLogger().debug(String.format("Found %s for '%s'.",
 		    assignments.size() > 1 ? "" + assignments.size() + " active assignments"
@@ -133,7 +133,8 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
      * @return
      * @throws SiteWhereException
      */
-    protected List<IDeviceAssignment> validateAssignment(GDecodedEventPayload payload) throws SiteWhereException {
+    protected List<? extends IDeviceAssignment> validateAssignment(GDecodedEventPayload payload)
+	    throws SiteWhereException {
 	if (getLogger().isDebugEnabled()) {
 	    getLogger().debug(String.format("Validating device assignment for '%s'.", payload.getDeviceToken()));
 	}
@@ -154,18 +155,9 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 	    return null;
 	}
 
-	// Verify that device is assigned.
-	if (device.getActiveDeviceAssignmentIds().size() == 0) {
-	    if (getLogger().isDebugEnabled()) {
-		getLogger().debug(String.format("No active assignments found for '%s'.", payload.getDeviceToken()));
-	    }
-	    handleUnassignedDevice(payload);
-	    return null;
-	}
-
 	// Verify that device assignment exists.
 	final Histogram.Timer assignmentLookupTime = ASSIGNMENT_LOOKUP_TIMER.labels(buildLabels()).startTimer();
-	List<IDeviceAssignment> assignments = null;
+	List<? extends IDeviceAssignment> assignments = null;
 	try {
 	    assignments = getDeviceManagement().getActiveDeviceAssignments(device.getId());
 	} finally {

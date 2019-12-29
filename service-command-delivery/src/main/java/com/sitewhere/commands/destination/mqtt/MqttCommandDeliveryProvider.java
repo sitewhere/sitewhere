@@ -82,7 +82,7 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
      * java.lang.Object)
      */
     @Override
-    public void deliver(IDeviceNestingContext nested, List<IDeviceAssignment> assignments,
+    public void deliver(IDeviceNestingContext nested, List<? extends IDeviceAssignment> assignments,
 	    IDeviceCommandExecution execution, byte[] encoded, MqttParameters params) throws SiteWhereException {
 	try {
 	    getLogger().info("About to publish command message to topic: " + params.getCommandTopic());
@@ -100,8 +100,8 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
      * java.lang.Object)
      */
     @Override
-    public void deliverSystemCommand(IDeviceNestingContext nested, List<IDeviceAssignment> assignments, byte[] encoded,
-	    MqttParameters params) throws SiteWhereException {
+    public void deliverSystemCommand(IDeviceNestingContext nested, List<? extends IDeviceAssignment> assignments,
+	    byte[] encoded, MqttParameters params) throws SiteWhereException {
 	try {
 	    getLogger().info("About to publish system message to topic: " + params.getSystemTopic());
 	    connection.publish(params.getSystemTopic(), encoded, QoS.AT_LEAST_ONCE, false);

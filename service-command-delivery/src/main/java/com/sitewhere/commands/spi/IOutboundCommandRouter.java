@@ -31,7 +31,7 @@ public interface IOutboundCommandRouter extends ITenantEngineLifecycleComponent 
      * @throws SiteWhereException
      */
     public List<ICommandDestination<?, ?>> getDestinationsFor(IDeviceCommandExecution execution,
-	    IDeviceNestingContext nesting, List<IDeviceAssignment> assignments) throws SiteWhereException;
+	    IDeviceNestingContext nesting, List<? extends IDeviceAssignment> assignments) throws SiteWhereException;
 
     /**
      * Compute list of destinations for the given system command.
@@ -43,5 +43,5 @@ public interface IOutboundCommandRouter extends ITenantEngineLifecycleComponent 
      * @throws SiteWhereException
      */
     public List<ICommandDestination<?, ?>> getDestinationsFor(ISystemCommand command, IDeviceNestingContext nesting,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException;
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException;
 }

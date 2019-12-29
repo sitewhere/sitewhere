@@ -59,7 +59,7 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
      */
     @Override
     public byte[] encode(IDeviceCommandExecution execution, IDeviceNestingContext nested,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	byte[] encoded = ProtobufMessageBuilder.createMessage(execution, nested, assignments,
 		getTenantEngine().getTenantResource(), getDeviceManagement());
 	getLogger().debug("Protobuf message: 0x" + DataUtils.bytesToHex(encoded));
@@ -74,7 +74,7 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
      */
     @Override
     public byte[] encodeSystemCommand(ISystemCommand command, IDeviceNestingContext nested,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	switch (command.getType()) {
 	case RegistrationAck: {
 	    IRegistrationAckCommand ack = (IRegistrationAckCommand) command;

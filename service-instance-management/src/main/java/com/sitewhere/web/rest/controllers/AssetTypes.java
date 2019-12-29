@@ -148,7 +148,7 @@ public class AssetTypes {
 	AssetTypeSearchCriteria criteria = new AssetTypeSearchCriteria(page, pageSize);
 
 	// Perform search.
-	ISearchResults<IAssetType> matches = getAssetManagement().listAssetTypes(criteria);
+	ISearchResults<? extends IAssetType> matches = getAssetManagement().listAssetTypes(criteria);
 	AssetTypeMarshalHelper helper = new AssetTypeMarshalHelper(getAssetManagement());
 
 	List<IAssetType> results = new ArrayList<IAssetType>();

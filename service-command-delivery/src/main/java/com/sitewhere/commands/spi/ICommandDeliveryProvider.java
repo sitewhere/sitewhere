@@ -19,10 +19,10 @@ import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
  * Handles delivery of encoded command information on an underlying transport.
  * 
  * @param <T>
- *            type of data that was encoded by the
- *            {@link ICommandExecutionEncoder}/
+ *                type of data that was encoded by the
+ *                {@link ICommandExecutionEncoder}/
  * @param <P>
- *            parameters specific to the delivery provider
+ *                parameters specific to the delivery provider
  */
 public interface ICommandDeliveryProvider<T, P> extends ITenantEngineLifecycleComponent {
 
@@ -38,7 +38,7 @@ public interface ICommandDeliveryProvider<T, P> extends ITenantEngineLifecycleCo
      * @param parameters
      * @throws SiteWhereException
      */
-    public void deliver(IDeviceNestingContext nested, List<IDeviceAssignment> assignments,
+    public void deliver(IDeviceNestingContext nested, List<? extends IDeviceAssignment> assignments,
 	    IDeviceCommandExecution execution, T encoded, P parameters) throws SiteWhereException;
 
     /**
@@ -50,6 +50,6 @@ public interface ICommandDeliveryProvider<T, P> extends ITenantEngineLifecycleCo
      * @param parameters
      * @throws SiteWhereException
      */
-    public void deliverSystemCommand(IDeviceNestingContext nested, List<IDeviceAssignment> assignments, T encoded,
-	    P parameters) throws SiteWhereException;
+    public void deliverSystemCommand(IDeviceNestingContext nested, List<? extends IDeviceAssignment> assignments,
+	    T encoded, P parameters) throws SiteWhereException;
 }

@@ -48,7 +48,7 @@ public class DeviceStreamManager extends TenantEngineLifecycleComponent implemen
     @Override
     public void handleDeviceStreamRequest(String deviceToken, IDeviceStreamCreateRequest request)
 	    throws SiteWhereException {
-	List<IDeviceAssignment> assignments = getActiveAssignments(deviceToken);
+	List<? extends IDeviceAssignment> assignments = getActiveAssignments(deviceToken);
 
 	DeviceStreamAckCommand ack = new DeviceStreamAckCommand();
 	try {
@@ -74,7 +74,7 @@ public class DeviceStreamManager extends TenantEngineLifecycleComponent implemen
     public void handleDeviceStreamDataRequest(String deviceToken, IDeviceStreamDataCreateRequest request)
 	    throws SiteWhereException {
 	// TODO: Send to all active assignments?
-	List<IDeviceAssignment> assignments = getActiveAssignments(deviceToken);
+	List<? extends IDeviceAssignment> assignments = getActiveAssignments(deviceToken);
 	getDeviceStreamDataManagement().addDeviceStreamData(assignments.get(0).getId(), request);
     }
 
@@ -110,7 +110,7 @@ public class DeviceStreamManager extends TenantEngineLifecycleComponent implemen
      * @return
      * @throws SiteWhereException
      */
-    protected List<IDeviceAssignment> getActiveAssignments(String deviceToken) throws SiteWhereException {
+    protected List<? extends IDeviceAssignment> getActiveAssignments(String deviceToken) throws SiteWhereException {
 	IDevice device = getDeviceManagement().getDeviceByToken(deviceToken);
 	if (device == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceToken, ErrorLevel.ERROR);

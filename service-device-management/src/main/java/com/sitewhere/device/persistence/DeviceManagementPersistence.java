@@ -32,7 +32,6 @@ import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.DeviceStatus;
 import com.sitewhere.rest.model.device.DeviceType;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
-import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
@@ -61,7 +60,6 @@ import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
-import com.sitewhere.spi.device.element.IDeviceElementSchema;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.request.IDeviceAlarmCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
@@ -89,19 +87,16 @@ public class DeviceManagementPersistence extends Persistence {
      * request.
      * 
      * @param request
-     * @param containedCustomerTypeIds
      * @return
      * @throws SiteWhereException
      */
-    public static CustomerType customerTypeCreateLogic(ICustomerTypeCreateRequest request,
-	    List<UUID> containedCustomerTypeIds) throws SiteWhereException {
+    public static CustomerType customerTypeCreateLogic(ICustomerTypeCreateRequest request) throws SiteWhereException {
 	CustomerType type = new CustomerType();
 	Persistence.brandedEntityCreateLogic(request, type);
 
 	type.setName(request.getName());
 	type.setDescription(request.getDescription());
 	type.setIcon(request.getIcon());
-	type.setContainedCustomerTypeIds(containedCustomerTypeIds);
 
 	return type;
     }
@@ -115,8 +110,8 @@ public class DeviceManagementPersistence extends Persistence {
      * @param target
      * @throws SiteWhereException
      */
-    public static void customerTypeUpdateLogic(ICustomerTypeCreateRequest request, List<UUID> containedCustomerTypeIds,
-	    CustomerType target) throws SiteWhereException {
+    public static void customerTypeUpdateLogic(ICustomerTypeCreateRequest request, CustomerType target)
+	    throws SiteWhereException {
 	Persistence.brandedEntityUpdateLogic(request, target);
 
 	if (request.getName() != null) {
@@ -127,9 +122,6 @@ public class DeviceManagementPersistence extends Persistence {
 	}
 	if (request.getIcon() != null) {
 	    target.setIcon(request.getIcon());
-	}
-	if (request.getContainedCustomerTypeTokens() != null) {
-	    target.setContainedCustomerTypeIds(containedCustomerTypeIds);
 	}
     }
 
@@ -183,19 +175,16 @@ public class DeviceManagementPersistence extends Persistence {
      * request.
      * 
      * @param request
-     * @param containedAreaTypeIds
      * @return
      * @throws SiteWhereException
      */
-    public static AreaType areaTypeCreateLogic(IAreaTypeCreateRequest request, List<UUID> containedAreaTypeIds)
-	    throws SiteWhereException {
+    public static AreaType areaTypeCreateLogic(IAreaTypeCreateRequest request) throws SiteWhereException {
 	AreaType type = new AreaType();
 	Persistence.brandedEntityCreateLogic(request, type);
 
 	type.setName(request.getName());
 	type.setDescription(request.getDescription());
 	type.setIcon(request.getIcon());
-	type.setContainedAreaTypeIds(containedAreaTypeIds);
 
 	return type;
     }
@@ -205,12 +194,10 @@ public class DeviceManagementPersistence extends Persistence {
      * type.
      * 
      * @param request
-     * @param containedAreaTypeIds
      * @param target
      * @throws SiteWhereException
      */
-    public static void areaTypeUpdateLogic(IAreaTypeCreateRequest request, List<UUID> containedAreaTypeIds,
-	    AreaType target) throws SiteWhereException {
+    public static void areaTypeUpdateLogic(IAreaTypeCreateRequest request, AreaType target) throws SiteWhereException {
 	Persistence.brandedEntityUpdateLogic(request, target);
 
 	if (request.getName() != null) {
@@ -221,9 +208,6 @@ public class DeviceManagementPersistence extends Persistence {
 	}
 	if (request.getIcon() != null) {
 	    target.setIcon(request.getIcon());
-	}
-	if (request.getContainedAreaTypeTokens() != null) {
-	    target.setContainedAreaTypeIds(containedAreaTypeIds);
 	}
     }
 
@@ -303,11 +287,12 @@ public class DeviceManagementPersistence extends Persistence {
 	// If composite container policy and no device element schema, create
 	// empty schema.
 	if (request.getContainerPolicy() == DeviceContainerPolicy.Composite) {
-	    IDeviceElementSchema schema = request.getDeviceElementSchema();
-	    if (schema == null) {
-		schema = new DeviceElementSchema();
-	    }
-	    type.setDeviceElementSchema((DeviceElementSchema) schema);
+	    // TODO: Handle creating device element schema.
+	    // IDeviceElementSchema schema = request.getDeviceElementSchema();
+	    // if (schema == null) {
+	    // schema = new DeviceElementSchema();
+	    // }
+	    // type.setDeviceElementSchema((DeviceElementSchema) schema);
 	}
 
 	return type;
@@ -340,13 +325,14 @@ public class DeviceManagementPersistence extends Persistence {
 	// 'composite'.
 	if (target.getContainerPolicy() == DeviceContainerPolicy.Composite) {
 	    if (request.getContainerPolicy() == DeviceContainerPolicy.Standalone) {
-		target.setDeviceElementSchema(null);
+		target.setDeviceElementSchemaId(null);
 	    } else {
-		IDeviceElementSchema schema = request.getDeviceElementSchema();
-		if (schema == null) {
-		    schema = new DeviceElementSchema();
-		}
-		target.setDeviceElementSchema((DeviceElementSchema) schema);
+		// TODO: Handle creating device element schema.
+		// IDeviceElementSchema schema = request.getDeviceElementSchema();
+		// if (schema == null) {
+		// schema = new DeviceElementSchema();
+		// }
+		// target.setDeviceElementSchema((DeviceElementSchema) schema);
 	    }
 	}
     }
@@ -362,7 +348,7 @@ public class DeviceManagementPersistence extends Persistence {
 	    throws SiteWhereException {
 	DeviceSearchCriteria criteria = new DeviceSearchCriteria(1, 1, null, null);
 	criteria.setDeviceTypeToken(deviceType.getToken());
-	ISearchResults<IDevice> devices = deviceManagement.listDevices(criteria);
+	ISearchResults<? extends IDevice> devices = deviceManagement.listDevices(criteria);
 	if (devices.getNumResults() > 0) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceTypeInUseByDevices, ErrorLevel.ERROR);
 	}
@@ -378,7 +364,7 @@ public class DeviceManagementPersistence extends Persistence {
      * @throws SiteWhereException
      */
     public static DeviceCommand deviceCommandCreateLogic(IDeviceType deviceType, IDeviceCommandCreateRequest request,
-	    List<IDeviceCommand> existing) throws SiteWhereException {
+	    List<? extends IDeviceCommand> existing) throws SiteWhereException {
 	DeviceCommand command = new DeviceCommand();
 	Persistence.entityCreateLogic(request, command);
 
@@ -405,7 +391,7 @@ public class DeviceManagementPersistence extends Persistence {
      * @throws SiteWhereException
      */
     public static void deviceCommandUpdateLogic(IDeviceType deviceType, IDeviceCommandCreateRequest request,
-	    DeviceCommand target, List<IDeviceCommand> existing) throws SiteWhereException {
+	    DeviceCommand target, List<? extends IDeviceCommand> existing) throws SiteWhereException {
 	Persistence.entityUpdateLogic(request, target);
 
 	if (request.getDeviceTypeToken() != null) {
@@ -437,7 +423,7 @@ public class DeviceManagementPersistence extends Persistence {
      * @throws SiteWhereException
      */
     public static DeviceStatus deviceStatusCreateLogic(IDeviceType deviceType, IDeviceStatusCreateRequest request,
-	    List<IDeviceStatus> existing) throws SiteWhereException {
+	    List<? extends IDeviceStatus> existing) throws SiteWhereException {
 	DeviceStatus status = new DeviceStatus();
 	Persistence.entityCreateLogic(request, status);
 
@@ -481,7 +467,7 @@ public class DeviceManagementPersistence extends Persistence {
      * @throws SiteWhereException
      */
     public static void deviceStatusUpdateLogic(IDeviceType deviceType, IDeviceStatusCreateRequest request,
-	    DeviceStatus target, List<IDeviceStatus> existing) throws SiteWhereException {
+	    DeviceStatus target, List<? extends IDeviceStatus> existing) throws SiteWhereException {
 	Persistence.entityUpdateLogic(request, target);
 
 	if (request.getDeviceTypeToken() != null) {
@@ -516,7 +502,7 @@ public class DeviceManagementPersistence extends Persistence {
      * @param existing
      * @throws SiteWhereException
      */
-    protected static void checkDuplicateStatus(DeviceStatus status, List<IDeviceStatus> existing)
+    protected static void checkDuplicateStatus(DeviceStatus status, List<? extends IDeviceStatus> existing)
 	    throws SiteWhereException {
 	for (IDeviceStatus current : existing) {
 	    if (current.getCode().equals(status.getCode())) {
@@ -592,14 +578,15 @@ public class DeviceManagementPersistence extends Persistence {
      * @throws SiteWhereException
      */
     public static void deviceDeleteLogic(IDevice device, IDeviceManagement deviceManagement) throws SiteWhereException {
-	if (device.getActiveDeviceAssignmentIds().size() > 0) {
+	List<? extends IDeviceAssignment> assignments = deviceManagement.getActiveDeviceAssignments(device.getId());
+	if (assignments.size() > 0) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceCanNotBeDeletedIfAssigned, ErrorLevel.ERROR);
 	}
 
 	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(1, 1);
 	criteria.setDeviceTokens(Collections.singletonList(device.getToken()));
-	ISearchResults<IDeviceAssignment> assignments = deviceManagement.listDeviceAssignments(criteria);
-	if (assignments.getNumResults() > 0) {
+	ISearchResults<? extends IDeviceAssignment> all = deviceManagement.listDeviceAssignments(criteria);
+	if (all.getNumResults() > 0) {
 	    throw new SiteWhereSystemException(ErrorCode.DeviceDeleteHasAssignments, ErrorLevel.ERROR);
 	}
     }
@@ -633,7 +620,7 @@ public class DeviceManagementPersistence extends Persistence {
 	DeviceTypeUtils.getDeviceSlotByPath(deviceType, request.getDeviceElementSchemaPath());
 
 	// Verify that there is not an existing mapping for the path.
-	List<IDeviceElementMapping> existing = device.getDeviceElementMappings();
+	List<? extends IDeviceElementMapping> existing = device.getDeviceElementMappings();
 	List<DeviceElementMapping> newMappings = new ArrayList<DeviceElementMapping>();
 	for (IDeviceElementMapping mapping : existing) {
 	    if (mapping.getDeviceElementSchemaPath().equals(request.getDeviceElementSchemaPath())) {
@@ -672,7 +659,7 @@ public class DeviceManagementPersistence extends Persistence {
 	}
 
 	// Verify that mapping exists and build list without deleted mapping.
-	List<IDeviceElementMapping> existing = device.getDeviceElementMappings();
+	List<? extends IDeviceElementMapping> existing = device.getDeviceElementMappings();
 	List<DeviceElementMapping> newMappings = new ArrayList<DeviceElementMapping>();
 	IDeviceElementMapping match = null;
 	for (IDeviceElementMapping mapping : existing) {
@@ -924,11 +911,10 @@ public class DeviceManagementPersistence extends Persistence {
      * 
      * @param request
      * @param area
-     * @param uuid
      * @return
      * @throws SiteWhereException
      */
-    public static Zone zoneCreateLogic(IZoneCreateRequest request, IArea area, String uuid) throws SiteWhereException {
+    public static Zone zoneCreateLogic(IZoneCreateRequest request, IArea area) throws SiteWhereException {
 	Zone zone = new Zone();
 	Persistence.entityCreateLogic(request, zone);
 
@@ -1040,7 +1026,6 @@ public class DeviceManagementPersistence extends Persistence {
     public static DeviceGroupElement deviceGroupElementCreateLogic(IDeviceGroupElementCreateRequest request,
 	    IDeviceGroup group, IDevice device, IDeviceGroup nested) throws SiteWhereException {
 	DeviceGroupElement element = new DeviceGroupElement();
-	element.setId(UUID.randomUUID());
 
 	element.setGroupId(group.getId());
 	element.setDeviceId(device != null ? device.getId() : null);

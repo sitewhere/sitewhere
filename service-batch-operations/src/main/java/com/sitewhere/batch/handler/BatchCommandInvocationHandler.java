@@ -79,14 +79,14 @@ public class BatchCommandInvocationHandler extends TenantEngineLifecycleComponen
 	}
 
 	// Find the current assignment information for the device.
-	if (device.getActiveDeviceAssignmentIds().size() == 0) {
+	List<? extends IDeviceAssignment> active = getDeviceManagement().getActiveDeviceAssignments(device.getId());
+	if (active.size() == 0) {
 	    getLogger().info("Device is not currently assigned. Skipping command invocation.");
 	    return ElementProcessingStatus.Failed;
 	}
 
 	// TODO: Should batch operation target multiple assignments?
-	List<IDeviceAssignment> assignments = getDeviceManagement().getActiveDeviceAssignments(device.getId());
-	IDeviceAssignment target = assignments.get(0);
+	IDeviceAssignment target = active.get(0);
 
 	// Create the request.
 	DeviceCommandInvocationCreateRequest request = new DeviceCommandInvocationCreateRequest();

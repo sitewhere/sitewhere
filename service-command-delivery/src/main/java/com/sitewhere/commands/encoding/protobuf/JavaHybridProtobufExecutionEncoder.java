@@ -36,7 +36,7 @@ public class JavaHybridProtobufExecutionEncoder extends ProtobufExecutionEncoder
      */
     @Override
     public byte[] encode(IDeviceCommandExecution execution, IDeviceNestingContext nested,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	try {
 	    ByteArrayOutputStream encoded = new ByteArrayOutputStream();
 	    ObjectOutputStream out = new ObjectOutputStream(encoded);
