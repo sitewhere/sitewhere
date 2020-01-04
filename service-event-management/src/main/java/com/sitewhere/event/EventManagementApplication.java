@@ -7,14 +7,19 @@
  */
 package com.sitewhere.event;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
 
 /**
- * Spring Boot application for device event management microservice.
+ * Main application which runs the event management microservice.
  */
+@ApplicationScoped
 public class EventManagementApplication extends MicroserviceApplication<IEventManagementMicroservice> {
 
+    @Inject
     private IEventManagementMicroservice microservice;
 
     /*

@@ -19,6 +19,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -27,6 +29,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sitewhere.rdb.entities.RdbBrandedEntity;
 import com.sitewhere.spi.customer.ICustomer;
 
@@ -45,13 +48,21 @@ public class RdbCustomer extends RdbBrandedEntity implements ICustomer {
     @Column(name = "id")
     private UUID id;
 
-    /** Customer type id */
-    @Column(name = "customer_type_id")
+    @Column(name = "customer_type_id", insertable = false, updatable = false, nullable = false)
     private UUID customerTypeId;
 
-    /** Parent customer id */
-    @Column(name = "parent_id")
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "customer_type_id")
+    private RdbCustomerType customerType;
+
+    @Column(name = "parent_id", insertable = false, updatable = false, nullable = true)
     private UUID parentId;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "parent_id")
+    private RdbCustomer parent;
 
     /** Area name */
     @Column(name = "name")
@@ -63,7 +74,7 @@ public class RdbCustomer extends RdbBrandedEntity implements ICustomer {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
-    @CollectionTable(name = "customer_metadata")
+    @CollectionTable(name = "customer_metadata", joinColumns = @JoinColumn(name = "customer_type_id"))
     @MapKeyColumn(name = "prop_key")
     @Column(name = "prop_value")
     private Map<String, String> metadata = new HashMap<>();
@@ -140,15 +151,25 @@ public class RdbCustomer extends RdbBrandedEntity implements ICustomer {
 	this.metadata = metadata;
     }
 
+    public RdbCustomerType getCustomerType() {
+	return customerType;
+    }
+
+    public void setCustomerType(RdbCustomerType customerType) {
+	this.customerType = customerType;
+    }
+
+    public RdbCustomer getParent() {
+	return parent;
+    }
+
+    public void setParent(RdbCustomer parent) {
+	this.parent = parent;
+    }
+
     public static void copy(ICustomer source, RdbCustomer target) {
 	if (source.getId() != null) {
 	    target.setId(source.getId());
-	}
-	if (source.getCustomerTypeId() != null) {
-	    target.setCustomerTypeId(source.getCustomerTypeId());
-	}
-	if (source.getParentId() != null) {
-	    target.setParentId(source.getParentId());
 	}
 	if (source.getName() != null) {
 	    target.setName(source.getName());

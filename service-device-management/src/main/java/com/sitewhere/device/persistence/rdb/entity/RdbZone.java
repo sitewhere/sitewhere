@@ -22,6 +22,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -76,7 +77,7 @@ public class RdbZone extends RdbPersistentEntity implements IZone {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
-    @CollectionTable(name = "zone_metadata")
+    @CollectionTable(name = "zone_metadata", joinColumns = @JoinColumn(name = "zone_id"))
     @MapKeyColumn(name = "prop_key")
     @Column(name = "prop_value")
     private Map<String, String> metadata = new HashMap<>();

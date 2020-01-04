@@ -60,7 +60,7 @@ public class RdbDeviceSlot extends RdbPersistentEntity implements IDeviceSlot, S
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
-    @CollectionTable(name = "device_slot_metadata")
+    @CollectionTable(name = "device_slot_metadata", joinColumns = @JoinColumn(name = "device_slot_id"))
     @MapKeyColumn(name = "prop_key")
     @Column(name = "prop_value")
     private Map<String, String> metadata = new HashMap<>();

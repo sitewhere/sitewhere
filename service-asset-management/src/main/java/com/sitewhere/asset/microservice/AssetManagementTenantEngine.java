@@ -101,10 +101,10 @@ public class AssetManagementTenantEngine extends RdbTenantEngine<AssetManagement
 
     /*
      * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
-     * setDatasetBootsrapBindings(com.sitewhere.microservice.scripting.Binding)
+     * setDatasetBootstrapBindings(com.sitewhere.microservice.scripting.Binding)
      */
     @Override
-    public void setDatasetBootsrapBindings(Binding binding) throws SiteWhereException {
+    public void setDatasetBootstrapBindings(Binding binding) throws SiteWhereException {
 	binding.setVariable(IScriptVariables.VAR_ASSET_MANAGEMENT_BUILDER,
 		new AssetManagementRequestBuilder(getAssetManagement()));
     }

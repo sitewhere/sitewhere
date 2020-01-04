@@ -478,13 +478,24 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
      */
     @Override
     public RdbDevice createDevice(IDeviceCreateRequest request) throws SiteWhereException {
-	IDeviceType deviceType = getDeviceTypeByToken(request.getDeviceTypeToken());
+	RdbDeviceType deviceType = getDeviceTypeByToken(request.getDeviceTypeToken());
 	if (deviceType == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceTypeToken, ErrorLevel.ERROR);
 	}
+
+	RdbDevice parent = null;
+	if (request.getParentDeviceToken() != null) {
+	    parent = getDeviceByToken(request.getParentDeviceToken());
+	    if (parent == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidDeviceToken, ErrorLevel.ERROR);
+	    }
+	}
+
 	Device newDevice = DeviceManagementPersistence.deviceCreateLogic(request, deviceType);
 	RdbDevice created = new RdbDevice();
 	RdbDevice.copy(newDevice, created);
+	created.setDeviceType(deviceType);
+	created.setParentDevice(parent);
 	getEntityManagerProvider().persist(created);
 	return created;
     }
@@ -521,13 +532,13 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	RdbDevice existing = getEntityManagerProvider().findById(id, RdbDevice.class);
 	if (existing != null) {
 	    // Look up device type.
-	    IDeviceType deviceType = null;
+	    RdbDeviceType deviceType = null;
 	    if (request.getDeviceTypeToken() == null) {
 		deviceType = getDeviceTypeByToken(request.getDeviceTypeToken());
 	    }
 
 	    // Look up parent device.
-	    IDevice parent = null;
+	    RdbDevice parent = null;
 	    if (request.getParentDeviceToken() == null) {
 		parent = getDeviceByToken(request.getParentDeviceToken());
 	    }
@@ -536,6 +547,12 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	    Device updates = new Device();
 	    DeviceManagementPersistence.deviceUpdateLogic(request, deviceType, parent, updates);
 	    RdbDevice.copy(updates, existing);
+	    if (deviceType != null) {
+		existing.setDeviceType(deviceType);
+	    }
+	    if (parent != null) {
+		existing.setParentDevice(parent);
+	    }
 	    return getEntityManagerProvider().merge(existing);
 	}
 	return null;
@@ -986,8 +1003,10 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
     @Override
     public ICustomerType createCustomerType(ICustomerTypeCreateRequest request) throws SiteWhereException {
 	List<RdbCustomerType> contained = new ArrayList<>();
-	for (String token : request.getContainedCustomerTypeTokens()) {
-	    contained.add(getCustomerTypeByToken(token));
+	if (request.getContainedCustomerTypeTokens() != null) {
+	    for (String token : request.getContainedCustomerTypeTokens()) {
+		contained.add(getCustomerTypeByToken(token));
+	    }
 	}
 
 	// Use common logic to load assignment from request.
@@ -1122,7 +1141,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	RdbCustomer parentCustomer = null;
 	if (request.getParentToken() != null) {
 	    parentCustomer = getCustomerByToken(request.getParentToken());
-	    if (parentCustomer != null) {
+	    if (parentCustomer == null) {
 		throw new SiteWhereSystemException(ErrorCode.InvalidCustomerToken, ErrorLevel.ERROR);
 	    }
 	}
@@ -1131,6 +1150,8 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	Customer customer = DeviceManagementPersistence.customerCreateLogic(request, customerType, parentCustomer);
 	RdbCustomer created = new RdbCustomer();
 	RdbCustomer.copy(customer, created);
+	created.setCustomerType(customerType);
+	created.setParent(parentCustomer);
 	getEntityManagerProvider().persist(created);
 	return created;
     }
@@ -1195,7 +1216,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	    RdbCustomer parentCustomer = null;
 	    if (request.getParentToken() != null) {
 		parentCustomer = getCustomerByToken(request.getParentToken());
-		if (parentCustomer != null) {
+		if (parentCustomer == null) {
 		    throw new SiteWhereSystemException(ErrorCode.InvalidCustomerToken, ErrorLevel.ERROR);
 		}
 	    }
@@ -1204,6 +1225,12 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	    Customer updates = new Customer();
 	    DeviceManagementPersistence.customerUpdateLogic(request, updates);
 	    RdbCustomer.copy(updates, existing);
+	    if (customerType != null) {
+		existing.setCustomerType(customerType);
+	    }
+	    if (parentCustomer != null) {
+		existing.setParent(parentCustomer);
+	    }
 	    return getEntityManagerProvider().merge(existing);
 	}
 	return null;
@@ -1288,8 +1315,10 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
     @Override
     public RdbAreaType createAreaType(IAreaTypeCreateRequest request) throws SiteWhereException {
 	List<RdbAreaType> contained = new ArrayList<>();
-	for (String token : request.getContainedAreaTypeTokens()) {
-	    contained.add(getAreaTypeByToken(token));
+	if (request.getContainedAreaTypeTokens() != null) {
+	    for (String token : request.getContainedAreaTypeTokens()) {
+		contained.add(getAreaTypeByToken(token));
+	    }
 	}
 
 	// Use common logic to load assignment from request.
@@ -1424,7 +1453,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	RdbArea parentArea = null;
 	if (request.getParentToken() != null) {
 	    parentArea = getAreaByToken(request.getParentToken());
-	    if (parentArea != null) {
+	    if (parentArea == null) {
 		throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
 	    }
 	}
@@ -1433,6 +1462,8 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	Area area = DeviceManagementPersistence.areaCreateLogic(request, areaType, parentArea);
 	RdbArea created = new RdbArea();
 	RdbArea.copy(area, created);
+	created.setAreaType(areaType);
+	created.setParent(parentArea);
 	getEntityManagerProvider().persist(created);
 	return created;
     }
@@ -1497,7 +1528,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	    RdbArea parentArea = null;
 	    if (request.getParentToken() != null) {
 		parentArea = getAreaByToken(request.getParentToken());
-		if (parentArea != null) {
+		if (parentArea == null) {
 		    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
 		}
 	    }
@@ -1506,6 +1537,12 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	    Area updates = new Area();
 	    DeviceManagementPersistence.areaUpdateLogic(request, updates);
 	    RdbArea.copy(updates, existing);
+	    if (areaType != null) {
+		existing.setAreaType(areaType);
+	    }
+	    if (parentArea != null) {
+		existing.setParent(parentArea);
+	    }
 	    return getEntityManagerProvider().merge(existing);
 	}
 	return null;

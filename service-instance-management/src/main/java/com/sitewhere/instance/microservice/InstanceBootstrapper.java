@@ -98,27 +98,6 @@ public class InstanceBootstrapper extends AsyncStartLifecycleComponent implement
     }
 
     /**
-     * Create default status if missing from resource.
-     * 
-     * @param instance
-     * @throws SiteWhereException
-     */
-    protected void createStatusIfMissing(SiteWhereInstance instance) throws SiteWhereException {
-	if (instance.getStatus() == null) {
-	    getMicroservice().executeInstanceStatusUpdate(new InstanceStatusUpdateOperation() {
-
-		@Override
-		public void update(SiteWhereInstance current) throws SiteWhereException {
-		    getLogger().info("Creating default instance status since none was found.");
-		    current.setStatus(new SiteWhereInstanceStatus());
-		    current.getStatus().setUserManagementBootstrapState(BootstrapState.NotBootstrapped);
-		    current.getStatus().setTenantManagementBootstrapState(BootstrapState.NotBootstrapped);
-		}
-	    });
-	}
-    }
-
-    /**
      * Bootstrap instance.
      * 
      * @throws SiteWhereException
@@ -126,7 +105,8 @@ public class InstanceBootstrapper extends AsyncStartLifecycleComponent implement
     protected void bootstrap() throws SiteWhereException {
 	// Load latest instance configuration from k8s.
 	SiteWhereInstance instance = getMicroservice().loadInstanceResource();
-	createStatusIfMissing(instance);
+	setTenantBootstrapState(BootstrapState.NotBootstrapped);
+	setUserBootstrapState(BootstrapState.NotBootstrapped);
 
 	// Load template and bootstrap datasets.
 	InstanceDatasetTemplate template = getMicroservice().loadInstanceDatasetTemplate(instance);
@@ -271,9 +251,9 @@ public class InstanceBootstrapper extends AsyncStartLifecycleComponent implement
 	getMicroservice().executeInstanceStatusUpdate(new InstanceStatusUpdateOperation() {
 
 	    @Override
-	    public void update(SiteWhereInstance current) throws SiteWhereException {
+	    public void update(SiteWhereInstanceStatus current) throws SiteWhereException {
 		getLogger().info(String.format("Set tenant management bootstrap status to `%s`.", state.name()));
-		current.getStatus().setTenantManagementBootstrapState(state);
+		current.setTenantManagementBootstrapState(state);
 	    }
 	});
     }
@@ -289,9 +269,9 @@ public class InstanceBootstrapper extends AsyncStartLifecycleComponent implement
 	getMicroservice().executeInstanceStatusUpdate(new InstanceStatusUpdateOperation() {
 
 	    @Override
-	    public void update(SiteWhereInstance current) throws SiteWhereException {
+	    public void update(SiteWhereInstanceStatus current) throws SiteWhereException {
 		getLogger().info(String.format("Set user management bootstrap status to `%s`.", state.name()));
-		current.getStatus().setUserManagementBootstrapState(state);
+		current.setUserManagementBootstrapState(state);
 	    }
 	});
     }

@@ -23,6 +23,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -63,7 +64,7 @@ public class RdbDeviceElementSchema extends RdbPersistentEntity implements IDevi
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
-    @CollectionTable(name = "device_element_schema_metadata")
+    @CollectionTable(name = "device_element_schema_metadata", joinColumns = @JoinColumn(name = "device_element_schema_id"))
     @MapKeyColumn(name = "prop_key")
     @Column(name = "prop_value")
     private Map<String, String> metadata = new HashMap<>();

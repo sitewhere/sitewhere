@@ -23,6 +23,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -32,6 +33,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sitewhere.rdb.entities.RdbBrandedEntity;
 import com.sitewhere.spi.area.IArea;
 
@@ -50,13 +52,21 @@ public class RdbArea extends RdbBrandedEntity implements IArea {
     @Column(name = "id")
     private UUID id;
 
-    /** Area type id */
-    @Column(name = "area_type_id")
+    @Column(name = "area_type_id", insertable = false, updatable = false, nullable = false)
     private UUID areaTypeId;
 
-    /** Parent area id */
-    @Column(name = "parent_id")
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "area_type_id")
+    private RdbAreaType areaType;
+
+    @Column(name = "parent_id", insertable = false, updatable = false, nullable = true)
     private UUID parentId;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "parent_id")
+    private RdbArea parent;
 
     /** Area name */
     @Column(name = "name")
@@ -160,15 +170,25 @@ public class RdbArea extends RdbBrandedEntity implements IArea {
 	this.bounds = bounds;
     }
 
+    public RdbAreaType getAreaType() {
+	return areaType;
+    }
+
+    public void setAreaType(RdbAreaType areaType) {
+	this.areaType = areaType;
+    }
+
+    public RdbArea getParent() {
+	return parent;
+    }
+
+    public void setParent(RdbArea parent) {
+	this.parent = parent;
+    }
+
     public static void copy(IArea source, RdbArea target) {
 	if (source.getId() != null) {
 	    target.setId(source.getId());
-	}
-	if (source.getAreaTypeId() != null) {
-	    target.setAreaTypeId(source.getAreaTypeId());
-	}
-	if (source.getParentId() != null) {
-	    target.setParentId(source.getParentId());
 	}
 	if (source.getName() != null) {
 	    target.setName(source.getName());

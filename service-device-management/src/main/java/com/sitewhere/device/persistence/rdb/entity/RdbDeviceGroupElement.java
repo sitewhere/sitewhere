@@ -52,7 +52,7 @@ public class RdbDeviceGroupElement implements IDeviceGroupElement {
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "device_id")
-    private RdbDeviceGroup device;
+    private RdbDevice device;
 
     @Column(name = "nested_group_id", insertable = false, updatable = false, nullable = true)
     private UUID nestedGroupId;
@@ -137,11 +137,11 @@ public class RdbDeviceGroupElement implements IDeviceGroupElement {
 	this.deviceGroup = deviceGroup;
     }
 
-    public RdbDeviceGroup getDevice() {
+    public RdbDevice getDevice() {
 	return device;
     }
 
-    public void setDevice(RdbDeviceGroup device) {
+    public void setDevice(RdbDevice device) {
 	this.device = device;
     }
 

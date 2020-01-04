@@ -82,7 +82,7 @@ public class RdbDevice extends RdbPersistentEntity implements IDevice {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
-    @CollectionTable(name = "device_metadata")
+    @CollectionTable(name = "device_metadata", joinColumns = @JoinColumn(name = "device_id"))
     @MapKeyColumn(name = "prop_key")
     @Column(name = "prop_value")
     private Map<String, String> metadata = new HashMap<>();
@@ -190,12 +190,6 @@ public class RdbDevice extends RdbPersistentEntity implements IDevice {
     public static void copy(IDevice source, RdbDevice target) {
 	if (source.getId() != null) {
 	    target.setId(source.getId());
-	}
-	if (source.getDeviceTypeId() != null) {
-	    target.setDeviceTypeId(source.getDeviceTypeId());
-	}
-	if (source.getParentDeviceId() != null) {
-	    target.setParentDeviceId(source.getParentDeviceId());
 	}
 	if (source.getComments() != null) {
 	    target.setComments(source.getComments());

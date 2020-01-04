@@ -1,397 +1,501 @@
-create table area
-(
-    id  uuid not null constraint area_pkey primary key,
-    area_type_id      uuid,
-    background_color varchar,
-    border_color     varchar,
-    created_by       varchar,
-    created_date     timestamp,
-    description     varchar(1000),
-    foreground_color varchar,
-    icon            varchar,
-    image_url        varchar,
-    name            varchar,
-    parent_id        uuid,
-    token           varchar,
-    updated_by       varchar,
-    updated_date     timestamp
+create table devicemanagement.area (
+	id uuid not null, 
+	created_by varchar(255), 
+	created_date timestamp, 
+	token varchar(255), 
+	updated_by varchar(255), 
+	updated_date timestamp, 
+	background_color varchar(255), 
+	border_color varchar(255), 
+	foreground_color varchar(255), 
+	icon varchar(255), 
+	image_url varchar(255), 
+	area_type_id uuid, 
+	description varchar(1024), 
+	name varchar(255), 
+	parent_id uuid, 
+	primary key (id)
 );
 
-create table area_metadata
-(
-    area_id uuid not null constraint fkhmfvnp287p956qi7bkg5dew6u references area,
-    prop_value varchar,
-    prop_key   varchar not null,
-    constraint area_metadata_pkey primary key (area_id, prop_key)
+create table devicemanagement.area_metadata (
+	area_id uuid not null, 
+	prop_value varchar(255), 
+	prop_key varchar(255) not null, 
+	primary key (area_id, prop_key)
 );
 
-create table area_type
-(
-    id uuid not null constraint area_type_pkey primary key,
-    background_color varchar,
-    border_color     varchar,
-    created_by       varchar,
-    created_date     timestamp,
-    description     varchar,
-    foreground_color varchar,
-    icon            varchar,
-    image_url        varchar,
-    name            varchar,
-    token           varchar,
-    updated_by       varchar,
-    updated_date     timestamp
+alter table if exists devicemanagement.area_metadata 
+	add constraint FKdtewccsec602oh7oorq2u2bv0 foreign key (area_id) references devicemanagement.area;
+
+create table devicemanagement.area_type (
+	id uuid not null, 
+	created_by varchar(255), 
+	created_date timestamp, 
+	token varchar(255), 
+	updated_by varchar(255), 
+	updated_date timestamp, 
+	background_color varchar(255), 
+	border_color varchar(255), 
+	foreground_color varchar(255), 
+	icon varchar(255), image_url varchar(255), 
+	description varchar(1024), 
+	name varchar(255), 
+	primary key (id)
 );
 
-create table area_type_metadata
-(
-    area_type_id uuid not null constraint fk63869vnjm3fh73tfou4sr7enb references area_type,
-    prop_value   varchar,
-    prop_key     varchar not null,
-    constraint area_type_metadata_pkey primary key (area_type_id, prop_key)
+create table devicemanagement.area_type_metadata (
+	area_type_id uuid not null, 
+	prop_value varchar(255), 
+	prop_key varchar(255) not null, 
+	primary key (area_type_id, prop_key)
 );
 
-create table contained_area_type_ids
-(
-    area_type_id uuid not null constraint fkivgj2wi2k2rbhlfao83urn8s0 references area_type,
-    contained_area_type_id uuid
+alter table if exists devicemanagement.area_type_metadata 
+	add constraint FKmow76lp4asveec1sb9c0ajjso foreign key (area_type_id) references devicemanagement.area_type;
+
+create table devicemanagement.command_parameter (
+	id uuid not null, 
+	name varchar(255), 
+	required boolean, 
+	type varchar(255), 
+	device_command_id uuid not null, 
+	primary key (id)
 );
 
-create table customer
-(
-    id  uuid not null constraint customer_pkey primary key,
-    background_color varchar,
-    border_color     varchar,
-    created_by       varchar,
-    created_date     timestamp,
-    customer_type_id uuid,
-    description      varchar,
-    foreground_color varchar,
-    icon             varchar,
-    image_url        varchar,
-    name             varchar,
-    parent_id        uuid,
-    token            varchar,
-    updated_by       varchar,
-    updated_date     timestamp
+create table devicemanagement.contained_area_types (
+	parent_area_type_id uuid not null, 
+	child_area_type_id uuid not null
 );
 
-create table customer_metadata
-(
-    customer_id uuid not null constraint fkegp0a66oeynm3mfdptp0fwdxc references customer,
-    prop_value   varchar,
-    prop_key     varchar not null,
-    constraint customer_metadata_pkey
-        primary key (customer_id, prop_key)
+alter table if exists devicemanagement.contained_area_types 
+	add constraint FKq80500k6dpp3rwu62tru6tcwc foreign key (child_area_type_id) references devicemanagement.area_type;
+alter table if exists devicemanagement.contained_area_types 
+	add constraint FK3598kxugvflfwd3u0plpucc4h foreign key (parent_area_type_id) references devicemanagement.area_type;
+
+create table devicemanagement.contained_customer_types (
+	parent_customer_type_id uuid not null, 
+	child_customer_type_id uuid not null
 );
 
-create table customer_type
-(
-    id uuid not null constraint customer_type_pkey primary key,
-    background_color varchar,
-    border_color     varchar,
-    created_by       varchar,
-    created_date     timestamp,
-    description     varchar,
-    foreground_color varchar,
-    icon            varchar,
-    image_url        varchar,
-    name            varchar,
-    token           varchar,
-    updated_by       varchar,
-    updated_date     timestamp
+create table devicemanagement.customer (
+	id uuid not null, created_by varchar(255), 
+	created_date timestamp, token varchar(255), 
+	updated_by varchar(255), 
+	updated_date timestamp, 
+	background_color varchar(255), 
+	border_color varchar(255), 
+	foreground_color varchar(255), 
+	icon varchar(255), 
+	image_url varchar(255), 
+	customer_type_id uuid, 
+	description varchar(1024), 
+	name varchar(255), 
+	parent_id uuid, 
+	primary key (id)
 );
 
-create table customer_type_metadata
-(
-    customer_type_id uuid not null constraint fkh73yk0mon5ls1poxue1kwmis3 references customer_type,
-    prop_value       varchar,
-    prop_key         varchar not null,
-    constraint customer_type_metadata_pkey primary key (customer_type_id, prop_key)
+alter table if exists devicemanagement.customer 
+	add constraint FK70184a6yqo1yjbbi9x18mvftc foreign key (parent_id) references devicemanagement.customer;
+
+create table devicemanagement.customer_metadata (
+	customer_type_id uuid not null, 
+	prop_value varchar(255), 
+	prop_key varchar(255) not null, 
+	primary key (customer_type_id, prop_key)
 );
 
-create table contained_customer_type_ids
-(
-    customer_type_id uuid not null constraint fk54criwc27w7ln3plk646ana8l references customer_type,
-    contained_customer_type_id uuid
+alter table if exists devicemanagement.customer_metadata 
+	add constraint FKmc2l27xdnvr9ku9qub7ok5no5 foreign key (customer_type_id) references devicemanagement.customer;
+
+create table devicemanagement.customer_type (
+	id uuid not null, 
+	created_by varchar(255), 
+	created_date timestamp, 
+	token varchar(255), 
+	updated_by varchar(255), 
+	updated_date timestamp, 
+	background_color varchar(255), 
+	border_color varchar(255), 
+	foreground_color varchar(255), 
+	icon varchar(255), 
+	image_url varchar(255), 
+	description varchar(1024), 
+	name varchar(255), 
+	primary key (id)
 );
 
-create table device
-(
-    id uuid not null constraint device_pkey primary key,
-    comments           varchar,
-    created_by          varchar,
-    created_date        timestamp,
-    device_assignment_id uuid,
-    device_type_id       uuid,
-    device_type_token    varchar,
-    parent_device_id     uuid,
-    status             varchar,
-    token              varchar,
-    updated_by          varchar,
-    updated_date        timestamp
+alter table if exists devicemanagement.customer 
+	add constraint FKn8vf9jf3m29plqn6rx45p2pl7 foreign key (customer_type_id) references devicemanagement.customer_type;
+alter table if exists devicemanagement.contained_customer_types 
+	add constraint FKbx6e5afmk5b5c44q46aw7hdrf foreign key (child_customer_type_id) references devicemanagement.customer_type;
+alter table if exists devicemanagement.contained_customer_types 
+	add constraint FKorsqr5f1eyiycot107yw2sk7f foreign key (parent_customer_type_id) references devicemanagement.customer_type;
+
+create table devicemanagement.customer_type_metadata (
+	customer_type_id uuid not null, 
+	prop_value varchar(255), 
+	prop_key varchar(255) not null, 
+	primary key (customer_type_id, prop_key)
 );
 
-create table device_active_assignment
-(
-    device_id uuid not null constraint fk3fi15qo5rgptuvrfwasn5dn1l references device,
-    active_device_assignment_id uuid
+alter table if exists devicemanagement.customer_type_metadata 
+	add constraint FK4i255eelfy9h56oo2apjkww1b foreign key (customer_type_id) references devicemanagement.customer_type;
+
+create table devicemanagement.device (
+	id uuid not null, 
+	created_by varchar(255), 
+	created_date timestamp, 
+	token varchar(255), 
+	updated_by varchar(255), 
+	updated_date timestamp, 
+	comments varchar(1024), 
+	device_type_id uuid not null, 
+	parent_device_id uuid, 
+	status varchar(255), 
+	primary key (id)
 );
 
-create table device_alarm
-(
-    id  uuid not null constraint device_alarm_pkey primary key,
-    acknowledged_date   timestamp,
-    alarm_message       varchar,
-    area_id             uuid,
-    asset_id            uuid,
-    customer_id         uuid,
-    device_assignment_id uuid,
-    device_id           uuid,
-    resolved_date       timestamp,
-    state              varchar,
-    triggered_date      timestamp,
-    triggering_event_id  uuid
+alter table if exists devicemanagement.device 
+	add constraint FK407b76lvky0edm9leklkxf0u6 foreign key (parent_device_id) references devicemanagement.device;
+
+create table devicemanagement.device_alarm (
+	id uuid not null, 
+	acknowledged_date timestamp, 
+	alarm_message varchar(1024), 
+	area_id uuid, asset_id uuid, 
+	customer_id uuid, 
+	device_assignment_id uuid, 
+	device_id uuid, 
+	resolved_date timestamp, 
+	state varchar(255), 
+	triggered_date timestamp, 
+	triggering_event_id uuid, 
+	primary key (id)
 );
 
-create table device_alarm_metadata
-(
-    device_alarm_id uuid not null constraint fk7frl1jp0oylh4nkyj4x3g4tjb references device_alarm,
-    prop_value      varchar,
-    prop_key        varchar not null,
-    constraint device_alarm_metadata_pkey primary key (device_alarm_id, prop_key)
+create table devicemanagement.device_alarm_metadata (
+	device_alarm_id uuid not null, 
+	prop_value varchar(255), 
+	prop_key varchar(255) not null, 
+	primary key (device_alarm_id, prop_key)
 );
 
-create table device_element_schema
-(
-    id   uuid not null constraint device_element_schema_pkey primary key,
-    name varchar,
-    path varchar
+alter table if exists devicemanagement.device_alarm_metadata 
+	add constraint FKqrioneeqpjtoklfx2v9myby6l foreign key (device_alarm_id) references devicemanagement.device_alarm;
+
+create table devicemanagement.device_assignment (
+	id uuid not null, 
+	created_by varchar(255), 
+	created_date timestamp, 
+	token varchar(255), 
+	updated_by varchar(255), 
+	updated_date timestamp, 
+	active_date timestamp, 
+	area_id uuid, 
+	asset_id uuid, 
+	customer_id uuid, 
+	device_id uuid, 
+	device_type_id uuid, 
+	released_date timestamp, 
+	status varchar(255), 
+	primary key (id)
 );
 
-create table device_unit
-(
-    id   uuid not null
-        constraint device_util_pkey primary key,
-    name varchar,
-    path varchar,
-    id_schema uuid constraint device_unit_element_schema_fk references device_element_schema,
-    parent_id uuid constraint device_unit_parent_fk references device_unit
+create table devicemanagement.device_assignment_metadata (
+	device_assignment_id uuid not null, 
+	prop_value varchar(255), 
+	prop_key varchar(255) not null, 
+	primary key (device_assignment_id, prop_key)
 );
 
-create table device_slot
-(
-    id uuid not null constraint device_slot_pkey primary key,
-    name varchar,
-    path varchar,
-    device_unit_id uuid constraint device_unit_fk references device_unit(id),
-    device_element_schema_id uuid constraint device_element_schema_fk references device_element_schema(id)
+alter table if exists devicemanagement.device_assignment_metadata 
+	add constraint FK324eruvhibh708kvmduk9ecfa foreign key (device_assignment_id) references devicemanagement.device_assignment;
+
+create table devicemanagement.device_command (
+	id uuid not null, 
+	created_by varchar(255), 
+	created_date timestamp, 
+	token varchar(255), 
+	updated_by varchar(255), 
+	updated_date timestamp, 
+	description varchar(1024), 
+	device_type_id uuid, 
+	name varchar(255), 
+	namespace varchar(255), 
+	primary key (id)
 );
 
-create table device_assignment
-(
-    id uuid not null constraint device_assignment_pkey primary key,
-    active_date   timestamp,
-    area_id       uuid,
-    asset_id      uuid,
-    created_by    varchar,
-    created_date  timestamp,
-    customer_id   uuid,
-    device_id     uuid,
-    device_type_id uuid,
-    released_date timestamp,
-    status       varchar,
-    token        varchar,
-    updated_by    varchar,
-    updated_date  timestamp
+alter table if exists devicemanagement.command_parameter 
+	add constraint FK545gd0i40baxsq153ntqnhrub foreign key (device_command_id) references devicemanagement.device_command;
+
+create table devicemanagement.device_command_metadata (
+	device_command_id uuid not null, 
+	prop_value varchar(255), 
+	prop_key varchar(255) not null, 
+	primary key (device_command_id, prop_key)
 );
 
-create table device_assignment_metadata
-(
-    device_assignment_id uuid not null constraint fkj09gyp8kafgn9m9e5oeqwdqms references device_assignment,
-    prop_value varchar,
-    prop_key   varchar not null,
-    constraint device_assignment_metadata_pkey primary key (device_assignment_id, prop_key)
+alter table if exists devicemanagement.device_command_metadata 
+	add constraint FK6mxoujmskh3u1viyu19n8m232 foreign key (device_command_id) references devicemanagement.device_command;
+
+create table devicemanagement.device_element_mapping (
+	id uuid not null, 
+	device_element_schema_path varchar(255), 
+	device_token varchar(255), 
+	device_id uuid not null, 
+	primary key (id)
 );
 
-create table device_command
-(
-    id uuid not null constraint device_command_pkey primary key,
-    created_by       varchar,
-    created_date     timestamp,
-    description     varchar,
-    device_type_id    uuid,
-    device_type_token varchar,
-    name            varchar,
-    namespace       varchar,
-    token           varchar unique,
-    updated_by      varchar,
-    updated_date    timestamp
+alter table if exists devicemanagement.device_element_mapping 
+	add constraint FKqsacr6f6u2sas4327808f6wjv foreign key (device_id) references devicemanagement.device;
+
+create table devicemanagement.device_element_schema (
+	id uuid not null, 
+	created_by varchar(255), 
+	created_date timestamp, 
+	token varchar(255), 
+	updated_by varchar(255), 
+	updated_date timestamp, 
+	name varchar(255), 
+	path varchar(255), 
+	primary key (id)
 );
 
-create table device_command_metadata
-(
-    device_command_id uuid not null constraint fkhndjvpa5li7al6pwcne8jmq1p references device_command,
-    prop_value        varchar,
-    prop_key          varchar not null,
-    constraint device_command_metadata_pkey primary key (device_command_id, prop_key)
+create table devicemanagement.device_element_schema_metadata (
+	device_element_schema_id uuid not null, 
+	prop_value varchar(255), 
+	prop_key varchar(255) not null, 
+	primary key (device_element_schema_id, prop_key)
 );
 
+alter table if exists devicemanagement.device_element_schema_metadata 
+	add constraint FK98g45r3hh4k6viqjomjjsne7r foreign key (device_element_schema_id) references devicemanagement.device_element_schema;
 
-create table command_parameter
-(
-    id uuid not null constraint command_parameter_pkey primary key,
-    name     varchar,
-    required boolean not null,
-    type     varchar,
-    device_command_id uuid not null references device_command (id)
+create table devicemanagement.device_group (
+	id uuid not null, created_by varchar(255), 
+	created_date timestamp, 
+	token varchar(255), 
+	updated_by varchar(255), 
+	updated_date timestamp, 
+	background_color varchar(255), 
+	border_color varchar(255), 
+	foreground_color varchar(255), 
+	icon varchar(255), 
+	image_url varchar(255), 
+	description varchar(1024), 
+	name varchar(255), 
+	primary key (id)
 );
 
-create table device_element_mapping
-(
-    id uuid not null constraint device_element_mapping_pkey primary key,
-    device_element_schema_path varchar,
-    device_token varchar,
-    device_id uuid not null references device (id)
+create table devicemanagement.device_group_element (
+	id uuid not null, 
+	device_id uuid, 
+	group_id uuid not null, 
+	nested_group_id uuid, 
+	primary key (id)
 );
 
-create table device_group
-(
-    id  uuid not null constraint device_group_pkey primary key,
-    background_color varchar,
-    border_color     varchar,
-    created_by       varchar,
-    created_date     timestamp,
-    description     varchar,
-    foreground_color varchar,
-    icon            varchar,
-    image_url        varchar,
-    name            varchar,
-    token           varchar,
-    updated_by       varchar,
-    updated_date     timestamp
+alter table if exists devicemanagement.device_group_element 
+	add constraint FK6cta8dujfg17j8qdjcd0rvscq foreign key (device_id) references devicemanagement.device;
+alter table if exists devicemanagement.device_group_element 
+	add constraint FKdlvslctgh3axt3r4t17jlraep foreign key (group_id) references devicemanagement.device_group;
+alter table if exists devicemanagement.device_group_element 
+	add constraint FKgi6rkig707nqkm49v5rsvxixu foreign key (nested_group_id) references devicemanagement.device_group;
+
+create table devicemanagement.device_group_element_roles (
+	device_group_element_id uuid not null, 
+	role varchar(255)
 );
 
-create table device_group_element
-(
-    id uuid not null constraint device_group_element_pkey primary key,
-    device_id      uuid,
-    group_id       uuid,
-    nested_group_id uuid
+alter table if exists devicemanagement.device_group_element_roles 
+	add constraint FKn2mvogw0gomknvurg09n18jel foreign key (device_group_element_id) references devicemanagement.device_group_element;
+
+create table devicemanagement.device_group_metadata (
+	device_group_id uuid not null, 
+	prop_value varchar(255), 
+	prop_key varchar(255) not null, 
+	primary key (device_group_id, prop_key)
 );
 
-create table device_group_metadata
-(
-    device_group_id uuid not null constraint fkagh6eu89prqlut8wgrd7ru104 references device_group,
-    prop_value      varchar,
-    prop_key        varchar not null,
-    constraint device_group_metadata_pkey primary key (device_group_id, prop_key)
+alter table if exists devicemanagement.device_group_metadata 
+	add constraint FKkd3dexbifo2k9q3uacdbliubr foreign key (device_group_id) references devicemanagement.device_group;
+
+create table devicemanagement.device_group_roles (
+	device_group_id uuid not null, 
+	role varchar(255)
 );
 
-create table device_metadata
-(
-    device_id uuid not null constraint fklvnhinwxcopir2afw4hhd21dv references device,
-    prop_value varchar,
-    prop_key   varchar not null,
-    constraint device_metadata_pkey
-        primary key (device_id, prop_key)
+alter table if exists devicemanagement.device_group_roles 
+	add constraint FKhf6i5ur6tj1ads8sd8i64u8bn foreign key (device_group_id) references devicemanagement.device_group;
+
+create table devicemanagement.device_metadata (
+	device_id uuid not null, 
+	prop_value varchar(255), 
+	prop_key varchar(255) not null, 
+	primary key (device_id, prop_key)
 );
 
-create table device_status
-(
-    id uuid not null constraint device_status_pkey primary key,
-    background_color varchar,
-    border_color     varchar,
-    code            varchar,
-    created_by       varchar,
-    created_date     timestamp,
-    device_type_id    uuid,
-    device_type_token varchar,
-    foreground_color varchar,
-    icon            varchar,
-    name            varchar,
-    token           varchar,
-    updated_by       varchar,
-    updated_date     timestamp
+alter table if exists devicemanagement.device_metadata 
+	add constraint FKmb3ls1fsa08c84w1xls93whq4 foreign key (device_id) references devicemanagement.device;
+
+create table devicemanagement.device_slot (
+	id uuid not null, 
+	created_by varchar(255), 
+	created_date timestamp, 
+	token varchar(255), 
+	updated_by varchar(255), 
+	updated_date timestamp, 
+	name varchar(255), 
+	path varchar(255), 
+	device_element_schema_id uuid, 
+	device_unit_id uuid, 
+	primary key (id)
 );
 
-create table device_status_metadata
-(
-    device_status_id uuid not null constraint fk6hgkc6l5eh6j8d31tg2r1jb5g references device_status,
-    prop_value       varchar,
-    prop_key         varchar not null,
-    constraint device_status_metadata_pkey primary key (device_status_id, prop_key)
+alter table if exists devicemanagement.device_slot 
+	add constraint FK9qcpg8r7rvlj3us0wh5e86489 foreign key (device_element_schema_id) references devicemanagement.device_element_schema;
+
+create table devicemanagement.device_slot_metadata (
+	device_slot_id uuid not null, 
+	prop_value varchar(255), 
+	prop_key varchar(255) not null, 
+	primary key (device_slot_id, prop_key)
 );
 
-create table device_type
-(
-    id uuid not null constraint device_type_pkey primary key,
-    background_color     varchar,
-    border_color         varchar,
-    container_policy     varchar,
-    created_by           varchar,
-    created_date         timestamp,
-    description         varchar(1000),
-    device_element_schema_id uuid,
-    foreground_color     varchar,
-    icon                varchar,
-    image_url            varchar,
-    name                varchar,
-    token               varchar,
-    updated_by           varchar,
-    updated_date         timestamp
+alter table if exists devicemanagement.device_slot_metadata 
+	add constraint FK1n5x6lu8qhmp5rexda362n37l foreign key (device_slot_id) references devicemanagement.device_slot;
+
+create table devicemanagement.device_status (
+	id uuid not null, 
+	created_by varchar(255), 
+	created_date timestamp, 
+	token varchar(255), 
+	updated_by varchar(255), 
+	updated_date timestamp, 
+	background_color varchar(255), 
+	border_color varchar(255), 
+	code varchar(255), 
+	device_type_id uuid, 
+	foreground_color varchar(255), 
+	icon varchar(255), 
+	name varchar(255), 
+	primary key (id)
 );
 
-create table device_type_metadata
-(
-    device_type_id uuid not null constraint fk2l7wclaxgtbmwulpn4doah587 references device_type,
-    prop_value     varchar,
-    prop_key       varchar not null,
-    constraint device_type_metadata_pkey primary key (device_type_id, prop_key)
+create table devicemanagement.device_status_metadata (
+	device_status_id uuid not null, 
+	prop_value varchar(255), 
+	prop_key varchar(255) not null, 
+	primary key (device_status_id, prop_key)
 );
 
-create table device_group_roles
-(
-    device_group_id uuid not null constraint fkautwqvnlkybd7neyphvpmvsv7 references device_group,
-    role  varchar
+alter table if exists devicemanagement.device_status_metadata 
+	add constraint FKhlyajavfacu5kavagi4ndjx54 foreign key (device_status_id) references devicemanagement.device_status;
+
+create table devicemanagement.device_type (
+	id uuid not null, 
+	created_by varchar(255), 
+	created_date timestamp, 
+	token varchar(255), 
+	updated_by varchar(255), 
+	updated_date timestamp, 
+	background_color varchar(255), 
+	border_color varchar(255), 
+	foreground_color varchar(255), 
+	icon varchar(255), 
+	image_url varchar(255), 
+	container_policy varchar(255), 
+	description varchar(1024), 
+	device_element_schema_id uuid, 
+	name varchar(255), 
+	primary key (id)
 );
 
-create table device_group_element_roles
-(
-    device_group_element_id uuid not null constraint fkrhhirutvofaadogo9i22n6wm references device_group_element,
-    role varchar
+alter table if exists devicemanagement.device_type 
+	add constraint FKt81gytf4cc97fyhdwl64c0tin foreign key (device_element_schema_id) references devicemanagement.device_element_schema;
+alter table if exists devicemanagement.device 
+	add constraint FKo9oabhnk3f79y77ifapu6yp7t foreign key (device_type_id) references devicemanagement.device_type;
+
+create table devicemanagement.device_type_metadata (
+	device_type_id uuid not null, 
+	prop_value varchar(255), 
+	prop_key varchar(255) not null, 
+	primary key (device_type_id, prop_key)
 );
 
-create table zone
-(
-    id uuid not null constraint zone_pkey primary key,
-    area_id      uuid,
-    border_color varchar,
-    created_by   varchar,
-    created_date timestamp,
-    fill_color   varchar,
-    name        varchar,
-    border_opacity     double precision,
-    fill_opacity     double precision,
-    token       varchar,
-    updated_by   varchar,
-    updated_date timestamp
+alter table if exists devicemanagement.device_type_metadata 
+	add constraint FK6hytdgl1nm7j4j723rhydc4kh foreign key (device_type_id) references devicemanagement.device_type;
+
+create table devicemanagement.device_unit (
+	id uuid not null, 
+	created_by varchar(255), 
+	created_date timestamp, 
+	token varchar(255), 
+	updated_by varchar(255), 
+	updated_date timestamp, 
+	name varchar(255), 
+	path varchar(255), 
+	parent_id uuid, 
+	parentId uuid, 
+	primary key (id)
 );
 
-create table location
-(
-    id uuid not null constraint location_pkey primary key,
-    elevation double precision,
-    latitude  double precision,
-    longitude double precision,
-    area_id   uuid references area(id),
-    zone_id   uuid references zone(id)
+alter table if exists devicemanagement.device_unit 
+	add constraint FKfwbctd10qtda4iqe38p5hlpa4 foreign key (parent_id) references devicemanagement.device;
+alter table if exists devicemanagement.device_unit 
+	add constraint FK8ca41s2auhtibgfr5psv0qiyf foreign key (parentId) references devicemanagement.device_unit;
+alter table if exists devicemanagement.device_slot 
+	add constraint FKt2ic99iofu5lmnq8k6hfqss41 foreign key (device_unit_id) references devicemanagement.device_unit;
+
+create table devicemanagement.device_unit_metadata (
+	device_unit_id uuid not null, 
+	prop_value varchar(255), 
+	prop_key varchar(255) not null, 
+	primary key (device_unit_id, prop_key)
 );
 
-create table zone_metadata
-(
-    zone_id uuid not null constraint fkemse0xhpumauen49j0jnllp21 references zone,
-    prop_value varchar,
-    prop_key   varchar not null,
-    constraint zone_metadata_pkey
-        primary key (zone_id, prop_key)
+alter table if exists devicemanagement.device_unit_metadata 
+	add constraint FK6nuw4i8qyn5jmyap2i5vbcb6k foreign key (device_unit_id) references devicemanagement.device_unit;
+
+create table devicemanagement.location (
+	id uuid not null, 
+	elevation float8, 
+	latitude float8, 
+	longitude float8, 
+	area_id uuid, 
+	zone_id uuid, 
+	primary key (id)
 );
+
+alter table if exists devicemanagement.location 
+	add constraint FKkx17wmdxmy67gc9t04pghuwdp foreign key (area_id) references devicemanagement.area;
+
+create table devicemanagement.zone (
+	id uuid not null, 
+	created_by varchar(255), 
+	created_date timestamp, 
+	token varchar(255), 
+	updated_by varchar(255), 
+	updated_date timestamp, 
+	area_id uuid, 
+	border_color varchar(255), 
+	border_opacity float8, 
+	fill_color varchar(255), 
+	fill_opacity float8, 
+	name varchar(255), 
+	primary key (id)
+);
+
+alter table if exists devicemanagement.location 
+	add constraint FKairbravxei9ggr7lysb7c6bu0 foreign key (zone_id) references devicemanagement.zone;
+
+create table devicemanagement.zone_metadata (
+	zone_id uuid not null, 
+	prop_value varchar(255), 
+	prop_key varchar(255) not null, 
+	primary key (zone_id, prop_key)
+);
+
+alter table if exists devicemanagement.zone_metadata 
+	add constraint FKkvm0orjd7knnx3d8jwn0cp6ai foreign key (zone_id) references devicemanagement.zone;
+

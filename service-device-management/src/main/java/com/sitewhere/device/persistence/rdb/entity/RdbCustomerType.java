@@ -31,6 +31,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sitewhere.rdb.entities.RdbBrandedEntity;
 import com.sitewhere.spi.customer.ICustomerType;
 
@@ -55,12 +56,14 @@ public class RdbCustomerType extends RdbBrandedEntity implements ICustomerType {
     @Column(name = "description")
     private String description;
 
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "contained_customer_types", joinColumns = {
 	    @JoinColumn(name = "parent_customer_type_id") }, inverseJoinColumns = {
 		    @JoinColumn(name = "child_customer_type_id") })
     List<RdbCustomerType> containedCustomerTypes;
 
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "containedCustomerTypes")
     private List<RdbCustomerType> containingCustomerTypes;
 

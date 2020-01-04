@@ -35,8 +35,11 @@ import com.sitewhere.device.spi.kafka.IDeviceInteractionEventsProducer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
 import com.sitewhere.grpc.service.DeviceManagementGrpc;
+import com.sitewhere.microservice.api.device.DeviceManagementRequestBuilder;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.microservice.scripting.Binding;
+import com.sitewhere.rdb.RdbPersistenceOptions;
 import com.sitewhere.rdb.RdbProviderInformation;
 import com.sitewhere.rdb.RdbTenantEngine;
 import com.sitewhere.rdb.providers.postgresql.Postgres95Provider;
@@ -48,6 +51,7 @@ import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
+import com.sitewhere.spi.microservice.scripting.IScriptVariables;
 
 import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
@@ -125,6 +129,26 @@ public class DeviceManagementTenantEngine extends RdbTenantEngine<DeviceManageme
 	this.deviceManagement = new DeviceManagementTriggers(implementation, this);
 	this.deviceManagementImpl = new DeviceManagementImpl((IDeviceManagementMicroservice) getMicroservice(),
 		getDeviceManagement());
+    }
+
+    /*
+     * @see com.sitewhere.rdb.RdbTenantEngine#getPersistenceOptions()
+     */
+    @Override
+    public RdbPersistenceOptions getPersistenceOptions() {
+	RdbPersistenceOptions options = new RdbPersistenceOptions();
+	// options.setHbmToDdlAuto("update");
+	return options;
+    }
+
+    /*
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * setDatasetBootstrapBindings(com.sitewhere.microservice.scripting.Binding)
+     */
+    @Override
+    public void setDatasetBootstrapBindings(Binding binding) throws SiteWhereException {
+	binding.setVariable(IScriptVariables.VAR_DEVICE_MANAGEMENT_BUILDER,
+		new DeviceManagementRequestBuilder(getDeviceManagement()));
     }
 
     /*

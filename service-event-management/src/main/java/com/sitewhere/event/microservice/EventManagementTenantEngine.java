@@ -10,6 +10,7 @@ package com.sitewhere.event.microservice;
 import com.sitewhere.event.configuration.EventManagementTenantConfiguration;
 import com.sitewhere.event.configuration.EventManagementTenantEngineModule;
 import com.sitewhere.event.grpc.EventManagementImpl;
+import com.sitewhere.event.kafka.KafkaEventPersistenceTriggers;
 import com.sitewhere.event.kafka.OutboundCommandInvocationsProducer;
 import com.sitewhere.event.kafka.OutboundEventsProducer;
 import com.sitewhere.event.spi.kafka.IInboundEventsConsumer;
@@ -18,10 +19,13 @@ import com.sitewhere.event.spi.kafka.IOutboundEventsProducer;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
+import com.sitewhere.microservice.api.device.DeviceManagementRequestBuilder;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.event.DeviceEventRequestBuilder;
 import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
+import com.sitewhere.microservice.scripting.Binding;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
@@ -29,6 +33,7 @@ import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
+import com.sitewhere.spi.microservice.scripting.IScriptVariables;
 
 import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
@@ -77,18 +82,50 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
     }
 
     /*
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * loadEngineComponents()
+     */
+    @Override
+    public void loadEngineComponents() throws SiteWhereException {
+	// Create API implementation and gRPC server.
+	IDeviceEventManagement implementation = getInjector().getInstance(IDeviceEventManagement.class);
+	this.eventManagement = new KafkaEventPersistenceTriggers(this, implementation);
+	this.eventManagementImpl = new EventManagementImpl((IEventManagementMicroservice) getMicroservice(),
+		getEventManagement());
+
+	// Create Kafka components.
+	this.outboundEventsProducer = new OutboundEventsProducer();
+	this.outboundCommandInvocationsProducer = new OutboundCommandInvocationsProducer();
+    }
+
+    /*
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * setDatasetBootstrapBindings(com.sitewhere.microservice.scripting.Binding)
+     */
+    @Override
+    public void setDatasetBootstrapBindings(Binding binding) throws SiteWhereException {
+	binding.setVariable(IScriptVariables.VAR_DEVICE_MANAGEMENT_BUILDER,
+		new DeviceManagementRequestBuilder(getDeviceManagement()));
+	binding.setVariable(IScriptVariables.VAR_EVENT_MANAGEMENT_BUILDER,
+		new DeviceEventRequestBuilder(getDeviceManagement(), getEventManagement()));
+    }
+
+    /*
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * getTenantBootstrapPrerequisites()
+     */
+    @Override
+    public IFunctionIdentifier[] getTenantBootstrapPrerequisites() {
+	return new IFunctionIdentifier[] { MicroserviceIdentifier.DeviceManagement };
+    }
+
+    /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
      * tenantInitialize(com.sitewhere.spi.microservice.lifecycle.
      * ILifecycleProgressMonitor)
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Load event management implementation.
-	initializeManagementImplementations();
-
-	// Initialize Kafka components.
-	initializeKafkaComponents();
-
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
 
@@ -106,31 +143,6 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
 
 	// Execute initialization steps.
 	init.execute(monitor);
-    }
-
-    /**
-     * Initialize event management implementations based on configured model Spring
-     * context.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void initializeManagementImplementations() throws SiteWhereException {
-	// IDeviceEventManagement impl = (IDeviceEventManagement) getModuleContext()
-	// .getBean(EventManagementBeans.BEAN_EVENT_MANAGEMENT);
-	// this.eventManagement = new KafkaEventPersistenceTriggers(this, impl);
-
-	this.eventManagementImpl = new EventManagementImpl((IEventManagementMicroservice) getMicroservice(),
-		getEventManagement());
-    }
-
-    /**
-     * Initialize Kafka components.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void initializeKafkaComponents() throws SiteWhereException {
-	this.outboundEventsProducer = new OutboundEventsProducer();
-	this.outboundCommandInvocationsProducer = new OutboundCommandInvocationsProducer();
     }
 
     /*
@@ -157,15 +169,6 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
 
 	// Execute startup steps.
 	start.execute(monitor);
-    }
-
-    /*
-     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
-     * getTenantBootstrapPrerequisites()
-     */
-    @Override
-    public IFunctionIdentifier[] getTenantBootstrapPrerequisites() {
-	return new IFunctionIdentifier[] { MicroserviceIdentifier.DeviceManagement };
     }
 
     /*
@@ -205,10 +208,6 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
 	return eventManagement;
     }
 
-    public void setEventManagement(IDeviceEventManagement eventManagement) {
-	this.eventManagement = eventManagement;
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -220,10 +219,6 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
 	return eventManagementImpl;
     }
 
-    public void setEventManagementImpl(DeviceEventManagementGrpc.DeviceEventManagementImplBase eventManagementImpl) {
-	this.eventManagementImpl = eventManagementImpl;
-    }
-
     /*
      * @see com.sitewhere.event.spi.microservice.IEventManagementTenantEngine#
      * getInboundEventsConsumer()
@@ -231,10 +226,6 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
     @Override
     public IInboundEventsConsumer getInboundEventsConsumer() {
 	return inboundEventsConsumer;
-    }
-
-    public void setInboundEventsConsumer(IInboundEventsConsumer inboundEventsConsumer) {
-	this.inboundEventsConsumer = inboundEventsConsumer;
     }
 
     /*
@@ -246,10 +237,6 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
 	return outboundEventsProducer;
     }
 
-    public void setOutboundEventsProducer(IOutboundEventsProducer outboundEventsProducer) {
-	this.outboundEventsProducer = outboundEventsProducer;
-    }
-
     /*
      * @see com.sitewhere.event.spi.microservice.IEventManagementTenantEngine#
      * getOutboundCommandInvocationsProducer()
@@ -257,11 +244,6 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
     @Override
     public IOutboundCommandInvocationsProducer getOutboundCommandInvocationsProducer() {
 	return outboundCommandInvocationsProducer;
-    }
-
-    public void setOutboundCommandInvocationsProducer(
-	    IOutboundCommandInvocationsProducer outboundCommandInvocationsProducer) {
-	this.outboundCommandInvocationsProducer = outboundCommandInvocationsProducer;
     }
 
     protected IDeviceManagement getDeviceManagement() {
