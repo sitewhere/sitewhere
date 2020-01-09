@@ -13,6 +13,7 @@ import com.sitewhere.device.configuration.DeviceManagementTenantEngineModule;
 import com.sitewhere.device.grpc.DeviceManagementImpl;
 import com.sitewhere.device.kafka.DeviceInteractionEventsProducer;
 import com.sitewhere.device.persistence.rdb.entity.RdbArea;
+import com.sitewhere.device.persistence.rdb.entity.RdbAreaBoundary;
 import com.sitewhere.device.persistence.rdb.entity.RdbAreaType;
 import com.sitewhere.device.persistence.rdb.entity.RdbCommandParameter;
 import com.sitewhere.device.persistence.rdb.entity.RdbCustomer;
@@ -31,6 +32,7 @@ import com.sitewhere.device.persistence.rdb.entity.RdbDeviceType;
 import com.sitewhere.device.persistence.rdb.entity.RdbDeviceUnit;
 import com.sitewhere.device.persistence.rdb.entity.RdbLocation;
 import com.sitewhere.device.persistence.rdb.entity.RdbZone;
+import com.sitewhere.device.persistence.rdb.entity.RdbZoneBoundary;
 import com.sitewhere.device.spi.kafka.IDeviceInteractionEventsProducer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
@@ -111,11 +113,12 @@ public class DeviceManagementTenantEngine extends RdbTenantEngine<DeviceManageme
      */
     @Override
     public Class<?>[] getEntityClasses() {
-	return new Class<?>[] { RdbArea.class, RdbAreaType.class, RdbCommandParameter.class, RdbCustomer.class,
-		RdbCustomerType.class, RdbDevice.class, RdbDeviceAlarm.class, RdbDeviceAssignment.class,
-		RdbDeviceCommand.class, RdbDeviceElementMapping.class, RdbDeviceElementSchema.class,
-		RdbDeviceGroup.class, RdbDeviceGroupElement.class, RdbDeviceSlot.class, RdbDeviceStatus.class,
-		RdbDeviceType.class, RdbDeviceUnit.class, RdbLocation.class, RdbZone.class };
+	return new Class<?>[] { RdbArea.class, RdbAreaBoundary.class, RdbAreaType.class, RdbCommandParameter.class,
+		RdbCustomer.class, RdbCustomerType.class, RdbDevice.class, RdbDeviceAlarm.class,
+		RdbDeviceAssignment.class, RdbDeviceCommand.class, RdbDeviceElementMapping.class,
+		RdbDeviceElementSchema.class, RdbDeviceGroup.class, RdbDeviceGroupElement.class, RdbDeviceSlot.class,
+		RdbDeviceStatus.class, RdbDeviceType.class, RdbDeviceUnit.class, RdbLocation.class, RdbZone.class,
+		RdbZoneBoundary.class };
     }
 
     /*

@@ -53,15 +53,15 @@ public class RdbCustomer extends RdbBrandedEntity implements ICustomer {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "customer_type_id")
+    @JoinColumn(name = "customer_type_id", insertable = false, updatable = false)
     private RdbCustomerType customerType;
 
-    @Column(name = "parent_id", insertable = false, updatable = false, nullable = true)
+    @Column(name = "parent_id", nullable = true)
     private UUID parentId;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "parent_id")
+    @JoinColumn(name = "parent_id", insertable = false, updatable = false)
     private RdbCustomer parent;
 
     /** Area name */
@@ -170,6 +170,12 @@ public class RdbCustomer extends RdbBrandedEntity implements ICustomer {
     public static void copy(ICustomer source, RdbCustomer target) {
 	if (source.getId() != null) {
 	    target.setId(source.getId());
+	}
+	if (source.getCustomerTypeId() != null) {
+	    target.setCustomerTypeId(source.getCustomerTypeId());
+	}
+	if (source.getParentId() != null) {
+	    target.setParentId(source.getParentId());
 	}
 	if (source.getName() != null) {
 	    target.setName(source.getName());

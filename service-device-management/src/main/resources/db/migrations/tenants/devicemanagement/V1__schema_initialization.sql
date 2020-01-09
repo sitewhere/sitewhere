@@ -17,6 +17,21 @@ create table devicemanagement.area (
 	primary key (id)
 );
 
+alter table if exists devicemanagement.area 
+	add constraint FK2dmtr5518yrmeswf3hau5ksik foreign key (parent_id) references devicemanagement.area;
+	
+create table devicemanagement.area_boundary (
+	id uuid not null, 
+	elevation float8, 
+	latitude float8, 
+	longitude float8, 
+	area_id uuid not null, 
+	primary key (id)
+);
+
+alter table if exists devicemanagement.area_boundary 
+	add constraint FK7e7eg6saqp6hu1d2j2aue7sri foreign key (area_id) references devicemanagement.area;
+
 create table devicemanagement.area_metadata (
 	area_id uuid not null, 
 	prop_value varchar(255), 
@@ -42,6 +57,9 @@ create table devicemanagement.area_type (
 	name varchar(255), 
 	primary key (id)
 );
+
+alter table if exists devicemanagement.area 
+	add constraint FKnthup5wgq7m7rk8dkpoewbuyv foreign key (area_type_id) references devicemanagement.area_type;
 
 create table devicemanagement.area_type_metadata (
 	area_type_id uuid not null, 
@@ -173,6 +191,13 @@ create table devicemanagement.device_alarm (
 	primary key (id)
 );
 
+alter table if exists devicemanagement.device_alarm 
+	add constraint FKqua8scu5ea5sjede4gr0828g3 foreign key (area_id) references devicemanagement.area;
+alter table if exists devicemanagement.device_alarm 
+	add constraint FKi4ewckrslpj0mhr707pp24gg foreign key (customer_id) references devicemanagement.customer;
+alter table if exists devicemanagement.device_alarm 
+	add constraint FKpmfs22x1cg2hwhl2n250kmwao foreign key (device_id) references devicemanagement.device;
+
 create table devicemanagement.device_alarm_metadata (
 	device_alarm_id uuid not null, 
 	prop_value varchar(255), 
@@ -200,6 +225,15 @@ create table devicemanagement.device_assignment (
 	status varchar(255), 
 	primary key (id)
 );
+
+alter table if exists devicemanagement.device_assignment 
+	add constraint FK2jqk0lrnqbdkqrdkyqlp2ibf7 foreign key (device_id) references devicemanagement.device;
+alter table if exists devicemanagement.device_assignment 
+	add constraint FK43mo11770ycicj2e6xst18q76 foreign key (area_id) references devicemanagement.area;
+alter table if exists devicemanagement.device_assignment 
+	add constraint FK4kinev2orhiswlpxjhb0i92aw foreign key (customer_id) references devicemanagement.customer;
+alter table if exists devicemanagement.device_alarm 
+	add constraint FK83m49a8sgnd0il6jev29k3y9l foreign key (device_assignment_id) references devicemanagement.device_assignment;
 
 create table devicemanagement.device_assignment_metadata (
 	device_assignment_id uuid not null, 
@@ -415,6 +449,10 @@ alter table if exists devicemanagement.device_type
 	add constraint FKt81gytf4cc97fyhdwl64c0tin foreign key (device_element_schema_id) references devicemanagement.device_element_schema;
 alter table if exists devicemanagement.device 
 	add constraint FKo9oabhnk3f79y77ifapu6yp7t foreign key (device_type_id) references devicemanagement.device_type;
+alter table if exists devicemanagement.device_assignment 
+	add constraint FKjit064bbrpbd1xsvh0lyoyl30 foreign key (device_type_id) references devicemanagement.device_type;
+alter table if exists devicemanagement.device_command 
+	add constraint FKtgp3vk1kdgr3m6hc02lgdb1qf foreign key (device_type_id) references devicemanagement.device_type;
 
 create table devicemanagement.device_type_metadata (
 	device_type_id uuid not null, 
@@ -499,3 +537,14 @@ create table devicemanagement.zone_metadata (
 alter table if exists devicemanagement.zone_metadata 
 	add constraint FKkvm0orjd7knnx3d8jwn0cp6ai foreign key (zone_id) references devicemanagement.zone;
 
+create table devicemanagement.zone_boundary (
+	id uuid not null, 
+	elevation float8, 
+	latitude float8, 
+	longitude float8, 
+	zone_id uuid not null, 
+	primary key (id)
+);
+
+alter table if exists devicemanagement.zone_boundary 
+	add constraint FK2cji29qkja2p16alve5q1qom7 foreign key (zone_id) references devicemanagement.zone;

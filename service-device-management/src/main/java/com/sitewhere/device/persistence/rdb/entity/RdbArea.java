@@ -52,20 +52,20 @@ public class RdbArea extends RdbBrandedEntity implements IArea {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "area_type_id", insertable = false, updatable = false, nullable = false)
+    @Column(name = "area_type_id", nullable = false)
     private UUID areaTypeId;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "area_type_id")
+    @JoinColumn(name = "area_type_id", insertable = false, updatable = false)
     private RdbAreaType areaType;
 
-    @Column(name = "parent_id", insertable = false, updatable = false, nullable = true)
+    @Column(name = "parent_id", nullable = true)
     private UUID parentId;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "parent_id")
+    @JoinColumn(name = "parent_id", insertable = false, updatable = false)
     private RdbArea parent;
 
     /** Area name */
@@ -84,7 +84,7 @@ public class RdbArea extends RdbBrandedEntity implements IArea {
     private Map<String, String> metadata = new HashMap<>();
 
     @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "area")
-    private List<RdbLocation> bounds = new ArrayList<>();
+    private List<RdbAreaBoundary> bounds = new ArrayList<>();
 
     /*
      * @see com.sitewhere.spi.common.IPersistentEntity#getId()
@@ -162,11 +162,11 @@ public class RdbArea extends RdbBrandedEntity implements IArea {
      * @see com.sitewhere.spi.area.IBoundedEntity#getBounds()
      */
     @Override
-    public List<RdbLocation> getBounds() {
+    public List<RdbAreaBoundary> getBounds() {
 	return bounds;
     }
 
-    public void setBounds(List<RdbLocation> bounds) {
+    public void setBounds(List<RdbAreaBoundary> bounds) {
 	this.bounds = bounds;
     }
 
@@ -189,6 +189,12 @@ public class RdbArea extends RdbBrandedEntity implements IArea {
     public static void copy(IArea source, RdbArea target) {
 	if (source.getId() != null) {
 	    target.setId(source.getId());
+	}
+	if (source.getAreaTypeId() != null) {
+	    target.setAreaTypeId(source.getAreaTypeId());
+	}
+	if (source.getParentId() != null) {
+	    target.setParentId(source.getParentId());
 	}
 	if (source.getName() != null) {
 	    target.setName(source.getName());

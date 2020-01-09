@@ -24,6 +24,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -36,6 +37,7 @@ import com.sitewhere.spi.area.IZone;
 
 @Entity
 @Table(name = "zone")
+@NamedQuery(name = Queries.QUERY_ZONE_BY_TOKEN, query = "SELECT z FROM RdbZone z WHERE z.token = :token")
 public class RdbZone extends RdbPersistentEntity implements IZone {
 
     /** Serial version UID */
@@ -57,7 +59,7 @@ public class RdbZone extends RdbPersistentEntity implements IZone {
     /** Zone bounds */
     @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "zone")
     @Fetch(value = FetchMode.SUBSELECT)
-    private List<RdbLocation> bounds = new ArrayList<RdbLocation>();
+    private List<RdbZoneBoundary> bounds = new ArrayList<>();
 
     /** Border color */
     @Column(name = "border_color")
@@ -122,11 +124,11 @@ public class RdbZone extends RdbPersistentEntity implements IZone {
      * @see com.sitewhere.spi.area.IBoundedEntity#getBounds()
      */
     @Override
-    public List<RdbLocation> getBounds() {
+    public List<RdbZoneBoundary> getBounds() {
 	return bounds;
     }
 
-    public void setBounds(List<RdbLocation> bounds) {
+    public void setBounds(List<RdbZoneBoundary> bounds) {
 	this.bounds = bounds;
     }
 

@@ -50,6 +50,7 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
     @Override
     public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request) throws SiteWhereException {
 	IDeviceAssignment created = super.createDeviceAssignment(request);
+	getLogger().info(String.format("About to look for device '%s'", created.getDeviceId()));
 	IDevice device = super.getDevice(created.getDeviceId());
 
 	DeviceStateChangeCreateRequest state = new DeviceStateChangeCreateRequest();

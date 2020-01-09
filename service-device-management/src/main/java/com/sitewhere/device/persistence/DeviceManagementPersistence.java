@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -515,10 +514,12 @@ public class DeviceManagementPersistence extends Persistence {
      * Common logic for creating new device object and populating it from request.
      * 
      * @param request
+     * @param deviceType
+     * @param parentDevice
      * @return
      * @throws SiteWhereException
      */
-    public static Device deviceCreateLogic(IDeviceCreateRequest request, IDeviceType deviceType)
+    public static Device deviceCreateLogic(IDeviceCreateRequest request, IDeviceType deviceType, IDevice parentDevice)
 	    throws SiteWhereException {
 	Device device = new Device();
 	Persistence.entityCreateLogic(request, device);
@@ -529,6 +530,7 @@ public class DeviceManagementPersistence extends Persistence {
 	}
 	device.setToken(request.getToken());
 	device.setDeviceTypeId(deviceType.getId());
+	device.setParentDeviceId(parentDevice != null ? parentDevice.getId() : null);
 	device.setComments(request.getComments());
 	device.setStatus(request.getStatus());
 
@@ -771,7 +773,6 @@ public class DeviceManagementPersistence extends Persistence {
     public static DeviceAlarm deviceAlarmCreateLogic(IDeviceAssignment assignment, IDeviceAlarmCreateRequest request)
 	    throws SiteWhereException {
 	DeviceAlarm alarm = new DeviceAlarm();
-	alarm.setId(UUID.randomUUID());
 	alarm.setDeviceId(assignment.getDeviceId());
 	alarm.setDeviceAssignmentId(assignment.getId());
 	alarm.setCustomerId(assignment.getCustomerId());

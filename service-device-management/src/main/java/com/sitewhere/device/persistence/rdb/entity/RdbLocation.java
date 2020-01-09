@@ -7,31 +7,16 @@
  */
 package com.sitewhere.device.persistence.rdb.entity;
 
-import java.util.UUID;
-
 import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.MappedSuperclass;
 
 import com.sitewhere.spi.common.ILocation;
 
-@Entity
-@Table(name = "location")
+@MappedSuperclass
 public class RdbLocation implements ILocation {
 
     /** Serial version UID */
-    private static final long serialVersionUID = 5435624345597055085L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private UUID id;
+    private static final long serialVersionUID = 6990895156056876463L;
 
     /** Latitude value */
     @Column(name = "latitude")
@@ -44,14 +29,6 @@ public class RdbLocation implements ILocation {
     /** Elevation value */
     @Column(name = "elevation")
     private Double elevation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "area_id", nullable = true)
-    RdbArea area;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "zone_id", nullable = true)
-    RdbZone zone;
 
     /**
      * Constructor
@@ -70,14 +47,6 @@ public class RdbLocation implements ILocation {
 	this.latitude = latitude;
 	this.longitude = longitude;
 	this.elevation = elevation;
-    }
-
-    public UUID getId() {
-	return id;
-    }
-
-    public void setId(UUID id) {
-	this.id = id;
     }
 
     /*
@@ -114,22 +83,6 @@ public class RdbLocation implements ILocation {
 
     public void setElevation(Double elevation) {
 	this.elevation = elevation;
-    }
-
-    public RdbArea getArea() {
-	return area;
-    }
-
-    public void setArea(RdbArea area) {
-	this.area = area;
-    }
-
-    public RdbZone getZone() {
-	return zone;
-    }
-
-    public void setZone(RdbZone zone) {
-	this.zone = zone;
     }
 
     public static void copy(ILocation source, RdbLocation target) {

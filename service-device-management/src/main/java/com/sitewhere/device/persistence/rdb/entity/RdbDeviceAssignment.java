@@ -23,6 +23,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -31,6 +32,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sitewhere.rdb.entities.RdbPersistentEntity;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -50,24 +52,40 @@ public class RdbDeviceAssignment extends RdbPersistentEntity implements IDeviceA
     @Column(name = "id")
     private UUID id;
 
-    /** Device id */
-    @Column(name = "device_id")
+    @Column(name = "device_id", nullable = false)
     private UUID deviceId;
 
-    /** Device type id */
-    @Column(name = "device_type_id")
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "device_id", insertable = false, updatable = false)
+    private RdbDevice device;
+
+    @Column(name = "device_type_id", nullable = false)
     private UUID deviceTypeId;
 
-    /** Id of assigned customer */
-    @Column(name = "customer_id")
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "device_type_id", insertable = false, updatable = false)
+    private RdbDeviceType deviceType;
+
+    @Column(name = "customer_id", nullable = true)
     private UUID customerId;
 
-    /** Id of assigned area */
-    @Column(name = "area_id")
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "customer_id", insertable = false, updatable = false)
+    private RdbCustomer customer;
+
+    @Column(name = "area_id", nullable = true)
     private UUID areaId;
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "area_id", insertable = false, updatable = false)
+    private RdbArea area;
+
     /** Id of assigned asset */
-    @Column(name = "asset_id")
+    @Column(name = "asset_id", nullable = true)
     private UUID assetId;
 
     /** Assignment status */
@@ -208,6 +226,22 @@ public class RdbDeviceAssignment extends RdbPersistentEntity implements IDeviceA
 
     public void setMetadata(Map<String, String> metadata) {
 	this.metadata = metadata;
+    }
+
+    public RdbDevice getDevice() {
+	return device;
+    }
+
+    public RdbDeviceType getDeviceType() {
+	return deviceType;
+    }
+
+    public RdbCustomer getCustomer() {
+	return customer;
+    }
+
+    public RdbArea getArea() {
+	return area;
     }
 
     public static void copy(IDeviceAssignment source, RdbDeviceAssignment target) {

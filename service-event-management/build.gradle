@@ -9,4 +9,7 @@ dependencies {
     compile group: 'com.sitewhere', name: 'sitewhere-mongodb', version: "${rootProject.ext['sitewhere.integration.api.version']}"
     compile group: 'com.sitewhere', name: 'sitewhere-cassandra', version: "${rootProject.ext['sitewhere.integration.api.version']}"
     compile group: 'com.sitewhere', name: 'sitewhere-influxdb', version: "${rootProject.ext['sitewhere.integration.api.version']}"
+
+	// SiteWhere Datastore support.	
+    compile group: 'com.sitewhere', name: 'sitewhere-datastore', version: "${rootProject.ext['sitewhere.integration.api.version']}"
 }

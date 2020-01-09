@@ -49,20 +49,20 @@ public class RdbDevice extends RdbPersistentEntity implements IDevice {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "device_type_id", insertable = false, updatable = false, nullable = false)
+    @Column(name = "device_type_id", nullable = false)
     private UUID deviceTypeId;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "device_type_id")
+    @JoinColumn(name = "device_type_id", insertable = false, updatable = false)
     private RdbDeviceType deviceType;
 
-    @Column(name = "parent_device_id", insertable = false, updatable = false, nullable = true)
+    @Column(name = "parent_device_id", nullable = true)
     private UUID parentDeviceId;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "parent_device_id")
+    @JoinColumn(name = "parent_device_id", insertable = false, updatable = false)
     private RdbDevice parentDevice;
 
     @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "device")
@@ -175,21 +175,19 @@ public class RdbDevice extends RdbPersistentEntity implements IDevice {
 	return deviceType;
     }
 
-    public void setDeviceType(RdbDeviceType deviceType) {
-	this.deviceType = deviceType;
-    }
-
     public RdbDevice getParentDevice() {
 	return parentDevice;
-    }
-
-    public void setParentDevice(RdbDevice parentDevice) {
-	this.parentDevice = parentDevice;
     }
 
     public static void copy(IDevice source, RdbDevice target) {
 	if (source.getId() != null) {
 	    target.setId(source.getId());
+	}
+	if (source.getDeviceTypeId() != null) {
+	    target.setDeviceTypeId(source.getDeviceTypeId());
+	}
+	if (source.getParentDeviceId() != null) {
+	    target.setParentDeviceId(source.getParentDeviceId());
 	}
 	if (source.getComments() != null) {
 	    target.setComments(source.getComments());

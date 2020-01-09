@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.google.inject.Inject;
 import com.sitewhere.event.persistence.DeviceEventManagementPersistence;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
@@ -52,32 +53,24 @@ import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.warp10.Warp10DbClient;
+import com.sitewhere.warp10.Warp10Client;
 import com.sitewhere.warp10.Warp10Persistence;
 import com.sitewhere.warp10.rest.GTSInput;
 import com.sitewhere.warp10.rest.GTSOutput;
 import com.sitewhere.warp10.rest.QueryParams;
 
-public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponent implements IDeviceEventManagement {
+/**
+ * Implementation of {@link IDeviceEventManagement} that interacts with Warp 10.
+ */
+public class Warp10DeviceEventManagement extends TenantEngineLifecycleComponent implements IDeviceEventManagement {
 
     /** Warp 10 client */
-    private Warp10DbClient client;
+    private Warp10Client client;
 
-    public Warp10DbDeviceEventManagement() {
+    @Inject
+    public Warp10DeviceEventManagement(Warp10Client client) {
 	super(LifecycleComponentType.DataStore);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.microservice.lifecycle.LifecycleComponent#start(com.sitewhere.
-     * spi.microservice.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if (getClient() == null) {
-	    throw new SiteWhereException("No warp 10 client configured.");
-	}
-	getClient().start(monitor);
+	this.client = client;
     }
 
     /*
@@ -131,7 +124,7 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
      * @throws SiteWhereException
      */
     protected IDeviceAssignment assertDeviceAssignmentById(UUID id) throws SiteWhereException {
-	IDeviceAssignment assignment = getCachedDeviceManagement().getDeviceAssignment(id);
+	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(id);
 	if (assignment == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentId, ErrorLevel.ERROR);
 	}
@@ -291,7 +284,7 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
 	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
 
 	for (IDeviceCommandInvocationCreateRequest request : requests) {
-	    IDeviceCommand command = getCachedDeviceManagement().getDeviceCommandByToken(assignment.getDeviceTypeId(),
+	    IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(assignment.getDeviceTypeId(),
 		    request.getCommandToken());
 	    DeviceCommandInvocation ci = DeviceEventManagementPersistence.deviceCommandInvocationCreateLogic(assignment,
 		    command, request);
@@ -449,15 +442,40 @@ public class Warp10DbDeviceEventManagement extends TenantEngineLifecycleComponen
 	return new SearchResults<IDeviceStateChange>(results);
     }
 
-    public Warp10DbClient getClient() {
+    /*
+     * @see com.sitewhere.microservice.lifecycle.LifecycleComponent#initialize(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	initializeNestedComponent(getClient(), monitor, true);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.microservice.lifecycle.LifecycleComponent#start(com.sitewhere.
+     * spi.microservice.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	startNestedComponent(getClient(), monitor, true);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.microservice.lifecycle.LifecycleComponent#stop(com.sitewhere.
+     * spi.microservice.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	stopNestedComponent(getClient(), monitor);
+    }
+
+    public Warp10Client getClient() {
 	return client;
     }
 
-    public void setClient(Warp10DbClient client) {
-	this.client = client;
-    }
-
-    protected IDeviceManagement getCachedDeviceManagement() {
+    protected IDeviceManagement getDeviceManagement() {
 	return ((IEventManagementMicroservice) getMicroservice()).getDeviceManagementApiChannel();
     }
 

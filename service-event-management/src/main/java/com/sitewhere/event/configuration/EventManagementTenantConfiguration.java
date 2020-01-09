@@ -7,10 +7,22 @@
  */
 package com.sitewhere.event.configuration;
 
+import com.sitewhere.datastore.DatastoreDefinition;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineConfiguration;
 
 /**
  * Maps event management tenant engine YAML configuration to objects.
  */
 public class EventManagementTenantConfiguration implements ITenantEngineConfiguration {
+
+    /** Datastore definition */
+    private DatastoreDefinition datastore;
+
+    public DatastoreDefinition getDatastore() {
+	return datastore;
+    }
+
+    public void setDatastore(DatastoreDefinition datastore) {
+	this.datastore = datastore;
+    }
 }

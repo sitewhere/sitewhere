@@ -23,12 +23,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sitewhere.spi.device.DeviceAlarmState;
 import com.sitewhere.spi.device.IDeviceAlarm;
 
@@ -42,24 +44,39 @@ public class RdbDeviceAlarm implements IDeviceAlarm {
     @Column(name = "id")
     private UUID id;
 
-    /** Device id */
-    @Column(name = "device_id")
+    @Column(name = "device_id", nullable = false)
     private UUID deviceId;
 
-    /** Device assignment id */
-    @Column(name = "device_assignment_id")
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "device_id", insertable = false, updatable = false)
+    private RdbDevice device;
+
+    @Column(name = "device_assignment_id", nullable = true)
     private UUID deviceAssignmentId;
 
-    /** Customer id */
-    @Column(name = "customer_id")
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "device_assignment_id", insertable = false, updatable = false)
+    private RdbDeviceAssignment deviceAssignment;
+
+    @Column(name = "customer_id", nullable = true)
     private UUID customerId;
 
-    /** Area id */
-    @Column(name = "area_id")
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "customer_id", insertable = false, updatable = false)
+    private RdbCustomer customer;
+
+    @Column(name = "area_id", nullable = true)
     private UUID areaId;
 
-    /** Asset id */
-    @Column(name = "asset_id")
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "area_id", insertable = false, updatable = false)
+    private RdbArea area;
+
+    @Column(name = "asset_id", nullable = true)
     private UUID assetId;
 
     /** Alarm message */

@@ -7,7 +7,11 @@
  */
 package com.sitewhere.event.configuration;
 
+import com.sitewhere.event.configuration.providers.Warp10ClientProvider;
+import com.sitewhere.event.persistence.warp10.Warp10DeviceEventManagement;
+import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.microservice.multitenant.TenantEngineModule;
+import com.sitewhere.warp10.Warp10Client;
 
 /**
  * Guice module used for configuring components associated with a device state
@@ -17,5 +21,15 @@ public class EventManagementTenantEngineModule extends TenantEngineModule<EventM
 
     public EventManagementTenantEngineModule(EventManagementTenantConfiguration configuration) {
 	super(configuration);
+    }
+
+    /*
+     * @see com.google.inject.AbstractModule#configure()
+     */
+    @Override
+    protected void configure() {
+	bind(EventManagementTenantConfiguration.class).toInstance(getConfiguration());
+	bind(Warp10Client.class).toProvider(Warp10ClientProvider.class);
+	bind(IDeviceEventManagement.class).to(Warp10DeviceEventManagement.class);
     }
 }

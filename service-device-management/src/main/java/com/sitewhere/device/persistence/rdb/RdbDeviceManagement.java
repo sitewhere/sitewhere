@@ -40,6 +40,7 @@ import com.sitewhere.device.persistence.rdb.entity.RdbDeviceStatus;
 import com.sitewhere.device.persistence.rdb.entity.RdbDeviceType;
 import com.sitewhere.device.persistence.rdb.entity.RdbLocation;
 import com.sitewhere.device.persistence.rdb.entity.RdbZone;
+import com.sitewhere.device.persistence.rdb.entity.RdbZoneBoundary;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
@@ -491,11 +492,9 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	    }
 	}
 
-	Device newDevice = DeviceManagementPersistence.deviceCreateLogic(request, deviceType);
+	Device newDevice = DeviceManagementPersistence.deviceCreateLogic(request, deviceType, parent);
 	RdbDevice created = new RdbDevice();
 	RdbDevice.copy(newDevice, created);
-	created.setDeviceType(deviceType);
-	created.setParentDevice(parent);
 	getEntityManagerProvider().persist(created);
 	return created;
     }
@@ -547,12 +546,6 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	    Device updates = new Device();
 	    DeviceManagementPersistence.deviceUpdateLogic(request, deviceType, parent, updates);
 	    RdbDevice.copy(updates, existing);
-	    if (deviceType != null) {
-		existing.setDeviceType(deviceType);
-	    }
-	    if (parent != null) {
-		existing.setParentDevice(parent);
-	    }
 	    return getEntityManagerProvider().merge(existing);
 	}
 	return null;
@@ -642,13 +635,14 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
     @Override
     public RdbDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request)
 	    throws SiteWhereException {
-	IDevice existing = getDeviceByToken(request.getDeviceToken());
-	if (existing == null) {
+	// Require valid device.
+	RdbDevice device = getDeviceByToken(request.getDeviceToken());
+	if (device == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceToken, ErrorLevel.ERROR);
 	}
 
 	// Look up customer if specified.
-	ICustomer customer = null;
+	RdbCustomer customer = null;
 	if (request.getCustomerToken() != null) {
 	    customer = getCustomerByToken(request.getCustomerToken());
 	    if (customer == null) {
@@ -657,7 +651,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	}
 
 	// Look up area if specified.
-	IArea area = null;
+	RdbArea area = null;
 	if (request.getAreaToken() != null) {
 	    area = getAreaByToken(request.getAreaToken());
 	    if (area == null) {
@@ -677,7 +671,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 
 	// Use common logic to load assignment from request.
 	DeviceAssignment newAssignment = DeviceManagementPersistence.deviceAssignmentCreateLogic(request, customer,
-		area, asset, existing);
+		area, asset, device);
 
 	RdbDeviceAssignment created = new RdbDeviceAssignment();
 	RdbDeviceAssignment.copy(newAssignment, created);
@@ -1635,20 +1629,23 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	    }
 	}
 
-	// Parse bounds into entities.
-	List<RdbLocation> bounds = new ArrayList<>();
-	for (ILocation location : request.getBounds()) {
-	    RdbLocation rdblocation = new RdbLocation();
-	    RdbLocation.copy(location, rdblocation);
-	    bounds.add(rdblocation);
-	}
-
 	// Use common logic to load zone from request.
 	Zone zone = DeviceManagementPersistence.zoneCreateLogic(request, area);
 	RdbZone created = new RdbZone();
 	RdbZone.copy(zone, created);
+	getEntityManagerProvider().persist(created);
+
+	// Parse bounds into entities.
+	List<RdbZoneBoundary> bounds = new ArrayList<>();
+	for (ILocation location : request.getBounds()) {
+	    RdbZoneBoundary boundary = new RdbZoneBoundary();
+	    RdbLocation.copy(location, boundary);
+	    boundary.setZoneId(created.getId());
+	    bounds.add(boundary);
+	}
 	created.setBounds(bounds);
 	getEntityManagerProvider().persist(created);
+
 	return created;
     }
 
@@ -1691,24 +1688,26 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 		}
 	    }
 
-	    // Parse bounds into entities.
-	    List<RdbLocation> bounds = null;
-	    if (request.getBounds() != null) {
-		bounds = new ArrayList<>();
-		for (ILocation location : request.getBounds()) {
-		    RdbLocation rdblocation = new RdbLocation();
-		    RdbLocation.copy(location, rdblocation);
-		    bounds.add(rdblocation);
-		}
-	    }
-
 	    // Use common update logic.
 	    Zone updates = new Zone();
 	    DeviceManagementPersistence.zoneUpdateLogic(request, updates);
 	    RdbZone.copy(updates, existing);
+
+	    // Parse bounds into entities.
+	    List<RdbZoneBoundary> bounds = null;
+	    if (request.getBounds() != null) {
+		bounds = new ArrayList<>();
+		for (ILocation location : request.getBounds()) {
+		    RdbZoneBoundary boundary = new RdbZoneBoundary();
+		    RdbLocation.copy(location, boundary);
+		    boundary.setZoneId(existing.getId());
+		    bounds.add(boundary);
+		}
+	    }
 	    if (bounds != null) {
 		existing.setBounds(bounds);
 	    }
+
 	    return getEntityManagerProvider().merge(existing);
 	}
 	return null;
