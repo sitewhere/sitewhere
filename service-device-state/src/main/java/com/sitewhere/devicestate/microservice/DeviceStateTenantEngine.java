@@ -9,13 +9,21 @@ package com.sitewhere.devicestate.microservice;
 
 import com.sitewhere.devicestate.configuration.DeviceStateTenantConfiguration;
 import com.sitewhere.devicestate.configuration.DeviceStateTenantEngineModule;
+import com.sitewhere.devicestate.grpc.DeviceStateImpl;
+import com.sitewhere.devicestate.persistence.rdb.entity.RdbDeviceState;
 import com.sitewhere.devicestate.spi.IDevicePresenceManager;
 import com.sitewhere.devicestate.spi.kafka.IDeviceStateEnrichedEventsConsumer;
+import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
 import com.sitewhere.grpc.service.DeviceStateGrpc;
 import com.sitewhere.microservice.api.state.IDeviceStateManagement;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
+import com.sitewhere.microservice.scripting.Binding;
+import com.sitewhere.rdb.RdbPersistenceOptions;
+import com.sitewhere.rdb.RdbProviderInformation;
+import com.sitewhere.rdb.RdbTenantEngine;
+import com.sitewhere.rdb.providers.postgresql.Postgres95Provider;
+import com.sitewhere.rdb.providers.postgresql.PostgresConnectionInfo;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
@@ -28,7 +36,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
  * Implementation of {@link IMicroserviceTenantEngine} that implements device
  * state management functionality.
  */
-public class DeviceStateTenantEngine extends MicroserviceTenantEngine<DeviceStateTenantConfiguration>
+public class DeviceStateTenantEngine extends RdbTenantEngine<DeviceStateTenantConfiguration>
 	implements IDeviceStateTenantEngine {
 
     /** Device state management persistence API */
@@ -66,21 +74,64 @@ public class DeviceStateTenantEngine extends MicroserviceTenantEngine<DeviceStat
     }
 
     /*
+     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getProviderInformation()
+     */
+    @Override
+    public RdbProviderInformation<?> getProviderInformation() {
+	PostgresConnectionInfo connInfo = new PostgresConnectionInfo();
+	connInfo.setHostname("sitewhere-postgresql");
+	connInfo.setPort(5000);
+	connInfo.setUsername("syncope");
+	connInfo.setPassword("syncope");
+	return new Postgres95Provider(connInfo);
+    }
+
+    /*
+     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getEntityClasses()
+     */
+    @Override
+    public Class<?>[] getEntityClasses() {
+	return new Class<?>[] { RdbDeviceState.class };
+    }
+
+    /*
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * loadEngineComponents()
+     */
+    @Override
+    public void loadEngineComponents() throws SiteWhereException {
+	// Create management interfaces.
+	IDeviceStateManagement implementation = getInjector().getInstance(IDeviceStateManagement.class);
+	this.deviceStateManagement = implementation;
+	this.deviceStateImpl = new DeviceStateImpl((IDeviceStateMicroservice) getMicroservice(),
+		getDeviceStateManagement());
+    }
+
+    /*
+     * @see com.sitewhere.rdb.RdbTenantEngine#getPersistenceOptions()
+     */
+    @Override
+    public RdbPersistenceOptions getPersistenceOptions() {
+	RdbPersistenceOptions options = new RdbPersistenceOptions();
+	// options.setHbmToDdlAuto("update");
+	return options;
+    }
+
+    /*
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * setDatasetBootstrapBindings(com.sitewhere.microservice.scripting.Binding)
+     */
+    @Override
+    public void setDatasetBootstrapBindings(Binding binding) throws SiteWhereException {
+    }
+
+    /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
      * tenantInitialize(com.sitewhere.spi.microservice.lifecycle.
      * ILifecycleProgressMonitor)
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// // Create management interfaces.
-	// IDeviceStateManagement implementation = (IDeviceStateManagement)
-	// getModuleContext()
-	// .getBean(DeviceStateManagementBeans.BEAN_DEVICE_STATE_MANAGEMENT);
-	// this.deviceStateManagement = implementation;
-	// this.deviceStateImpl = new DeviceStateImpl((IDeviceStateMicroservice)
-	// getMicroservice(),
-	// getDeviceStateManagement());
-	//
 	// // Create enriched events consumer for building device state.
 	// this.deviceStateEnrichedEventsConsumer = new
 	// DeviceStateEnrichedEventsConsumer();

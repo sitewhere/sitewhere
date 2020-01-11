@@ -205,10 +205,6 @@ public class DeviceStateMicroservice
 	return deviceStateGrpcServer;
     }
 
-    public void setDeviceStateGrpcServer(IDeviceStateGrpcServer deviceStateGrpcServer) {
-	this.deviceStateGrpcServer = deviceStateGrpcServer;
-    }
-
     /*
      * @see com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice#
      * getDeviceManagementApiChannel()
@@ -216,10 +212,6 @@ public class DeviceStateMicroservice
     @Override
     public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
 	return deviceManagementApiChannel;
-    }
-
-    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
-	this.deviceManagementApiChannel = deviceManagementApiChannel;
     }
 
     /*
@@ -231,10 +223,6 @@ public class DeviceStateMicroservice
 	return assetManagementApiChannel;
     }
 
-    public void setAssetManagementApiChannel(IAssetManagementApiChannel<?> assetManagementApiChannel) {
-	this.assetManagementApiChannel = assetManagementApiChannel;
-    }
-
     /*
      * @see com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice#
      * getDeviceEventManagementApiChannel()
@@ -242,10 +230,5 @@ public class DeviceStateMicroservice
     @Override
     public IDeviceEventManagementApiChannel<?> getDeviceEventManagementApiChannel() {
 	return deviceEventManagementApiChannel;
-    }
-
-    public void setDeviceEventManagementApiChannel(
-	    IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel) {
-	this.deviceEventManagementApiChannel = deviceEventManagementApiChannel;
     }
 }

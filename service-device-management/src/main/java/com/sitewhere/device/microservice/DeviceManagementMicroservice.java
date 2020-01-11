@@ -165,10 +165,6 @@ public class DeviceManagementMicroservice extends
 	return deviceManagementGrpcServer;
     }
 
-    public void setDeviceManagementGrpcServer(IDeviceManagementGrpcServer deviceManagementGrpcServer) {
-	this.deviceManagementGrpcServer = deviceManagementGrpcServer;
-    }
-
     /*
      * @see com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice#
      * getAssetManagementApiChannel()
@@ -176,9 +172,5 @@ public class DeviceManagementMicroservice extends
     @Override
     public IAssetManagementApiChannel<?> getAssetManagementApiChannel() {
 	return assetManagementApiChannel;
-    }
-
-    public void setAssetManagementApiChannel(IAssetManagementApiChannel<?> assetManagementApiChannel) {
-	this.assetManagementApiChannel = assetManagementApiChannel;
     }
 }

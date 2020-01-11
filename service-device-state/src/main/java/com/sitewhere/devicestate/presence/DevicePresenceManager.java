@@ -135,7 +135,8 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
 		    Date endDate = new Date(System.currentTimeMillis() - (missingIntervalSecs * 1000));
 		    DeviceStateSearchCriteria criteria = new DeviceStateSearchCriteria(1, 0);
 		    criteria.setLastInteractionDateBefore(endDate);
-		    ISearchResults<IDeviceState> missing = getDeviceStateManagement().searchDeviceStates(criteria);
+		    ISearchResults<? extends IDeviceState> missing = getDeviceStateManagement()
+			    .searchDeviceStates(criteria);
 
 		    if (missing.getNumResults() > 0) {
 			getLogger()

@@ -74,24 +74,24 @@ public class DeviceStates {
 	    @ApiParam(value = "Include customer information", required = false) @QueryParam("includeCustomer") @DefaultValue("false") boolean includeCustomer,
 	    @ApiParam(value = "Include area information", required = false) @QueryParam("includeArea") @DefaultValue("false") boolean includeArea,
 	    @ApiParam(value = "Include asset information", required = false) @QueryParam("includeAsset") @DefaultValue("false") boolean includeAsset,
-	    @ApiParam(value = "Include event details", required = false) @QueryParam("includeEventDetails") @DefaultValue("false") boolean includeEventDetails,
+	    @ApiParam(value = "Include recent events", required = false) @QueryParam("includeRecentEvents") @DefaultValue("false") boolean includeRecentEvents,
 	    @RequestBody DeviceStateSearchCriteria criteria) throws SiteWhereException {
 
 	// Perform search.
-	ISearchResults<IDeviceState> matches = getDeviceStateManagement().searchDeviceStates(criteria);
+	ISearchResults<? extends IDeviceState> matches = getDeviceStateManagement().searchDeviceStates(criteria);
 	DeviceStateMarshalHelper helper = new DeviceStateMarshalHelper(getDeviceManagement(),
-		getDeviceEventManagement());
+		getDeviceEventManagement(), getAssetManagement());
 	helper.setIncludeDevice(includeDevice);
 	helper.setIncludeDeviceType(includeDeviceType);
 	helper.setIncludeDeviceAssignment(includeDeviceAssignment);
 	helper.setIncludeCustomer(includeCustomer);
 	helper.setIncludeArea(includeArea);
 	helper.setIncludeAsset(includeAsset);
-	helper.setIncludeEventDetails(includeEventDetails);
+	helper.setIncludeRecentEvents(includeRecentEvents);
 
 	List<IDeviceState> results = new ArrayList<>();
 	for (IDeviceState assn : matches.getResults()) {
-	    results.add(helper.convert(assn, getAssetManagement()));
+	    results.add(helper.convert(assn));
 	}
 	return Response.ok(new SearchResults<IDeviceState>(results, matches.getNumResults())).build();
     }

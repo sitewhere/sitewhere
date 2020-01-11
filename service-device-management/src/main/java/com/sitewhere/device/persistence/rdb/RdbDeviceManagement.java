@@ -112,7 +112,7 @@ import com.sitewhere.spi.search.device.IDeviceStatusSearchCriteria;
 import com.sitewhere.spi.search.device.IZoneSearchCriteria;
 
 /**
- * Device management implementation that uses Relational database for
+ * Device management implementation that uses a relational database for
  * persistence.
  */
 public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceManagement {

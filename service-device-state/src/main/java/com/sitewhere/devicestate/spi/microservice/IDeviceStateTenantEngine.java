@@ -12,6 +12,7 @@ import com.sitewhere.devicestate.spi.IDevicePresenceManager;
 import com.sitewhere.devicestate.spi.kafka.IDeviceStateEnrichedEventsConsumer;
 import com.sitewhere.grpc.service.DeviceStateGrpc;
 import com.sitewhere.microservice.api.state.IDeviceStateManagement;
+import com.sitewhere.rdb.spi.IRdbEntityManagerProvider;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
@@ -47,4 +48,11 @@ public interface IDeviceStateTenantEngine extends IMicroserviceTenantEngine<Devi
      * @return
      */
     public IDevicePresenceManager getDevicePresenceManager();
+
+    /**
+     * Get provider which provides an RDB entity manager for this tenant.
+     * 
+     * @return
+     */
+    public IRdbEntityManagerProvider getRdbEntityManagerProvider();
 }

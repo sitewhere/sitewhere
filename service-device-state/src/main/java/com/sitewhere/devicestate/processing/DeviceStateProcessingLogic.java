@@ -23,11 +23,8 @@ import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.rest.model.device.event.kafka.EnrichedEventPayload;
 import com.sitewhere.rest.model.device.state.request.DeviceStateCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
-import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.state.IDeviceState;
 
 import io.prometheus.client.Counter;
@@ -99,12 +96,14 @@ public class DeviceStateProcessingLogic extends TenantEngineLifecycleComponent i
      * @param payload
      * @throws SiteWhereException
      */
+    @SuppressWarnings("unused")
     protected void processDeviceStateEvent(EnrichedEventPayload payload) throws SiteWhereException {
 	// Only process events that affect state.
 	IDeviceEvent event = payload.getEvent();
 	IDeviceEventContext context = payload.getEventContext();
-	IDeviceState original = getDeviceStateManagement()
-		.getDeviceStateByDeviceAssignmentId(event.getDeviceAssignmentId());
+	// IDeviceState original = getDeviceStateManagement()
+	// .getDeviceStateByDeviceAssignmentId(event.getDeviceAssignmentId());
+	IDeviceState original = null;
 	switch (event.getEventType()) {
 	case Alert:
 	case Location:
@@ -128,62 +127,12 @@ public class DeviceStateProcessingLogic extends TenantEngineLifecycleComponent i
 	request.setLastInteractionDate(new Date());
 	request.setPresenceMissingDate(null);
 
-	// Merge alert information.
-	if (event instanceof IDeviceLocation) {
-	    mergeDeviceLocation((IDeviceLocation) event, original, request);
-	} else if (event instanceof IDeviceAlert) {
-	    mergeDeviceAlert((IDeviceAlert) event, original, request);
-	} else if (event instanceof IDeviceMeasurement) {
-	    mergeDeviceMeasurements((IDeviceMeasurement) event, original, request);
-	}
-
 	// Create or update device state.
 	if (original != null) {
 	    getDeviceStateManagement().updateDeviceState(original.getId(), request);
 	} else {
 	    getDeviceStateManagement().createDeviceState(request);
 	}
-    }
-
-    /**
-     * Merge location information.
-     * 
-     * @param location
-     * @param original
-     * @param request
-     */
-    protected void mergeDeviceLocation(IDeviceLocation location, IDeviceState original,
-	    DeviceStateCreateRequest request) {
-	request.setLastLocationEventId(location.getId());
-    }
-
-    /**
-     * Merge alert information.
-     * 
-     * @param alert
-     * @param original
-     * @param request
-     */
-    protected void mergeDeviceAlert(IDeviceAlert alert, IDeviceState original, DeviceStateCreateRequest request) {
-	if (original != null) {
-	    request.getLastAlertEventIds().putAll(original.getLastAlertEventIds());
-	}
-	request.getLastAlertEventIds().put(alert.getType(), alert.getId());
-    }
-
-    /**
-     * Merge measurement information.
-     * 
-     * @param mx
-     * @param original
-     * @param request
-     */
-    protected void mergeDeviceMeasurements(IDeviceMeasurement mx, IDeviceState original,
-	    DeviceStateCreateRequest request) {
-	if (original != null) {
-	    request.getLastMeasurementEventIds().putAll(original.getLastMeasurementEventIds());
-	}
-	request.getLastMeasurementEventIds().put(mx.getName(), mx.getId());
     }
 
     protected IDeviceStateManagement getDeviceStateManagement() {
