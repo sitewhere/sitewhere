@@ -7,6 +7,8 @@
  */
 package com.sitewhere.devicestate.configuration;
 
+import com.sitewhere.devicestate.persistence.rdb.RdbDeviceStateManagement;
+import com.sitewhere.microservice.api.state.IDeviceStateManagement;
 import com.sitewhere.microservice.multitenant.TenantEngineModule;
 
 /**
@@ -17,5 +19,13 @@ public class DeviceStateTenantEngineModule extends TenantEngineModule<DeviceStat
 
     public DeviceStateTenantEngineModule(DeviceStateTenantConfiguration configuration) {
 	super(configuration);
+    }
+
+    /*
+     * @see com.google.inject.AbstractModule#configure()
+     */
+    @Override
+    protected void configure() {
+	bind(IDeviceStateManagement.class).to(RdbDeviceStateManagement.class);
     }
 }

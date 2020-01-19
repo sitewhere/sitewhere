@@ -7,10 +7,23 @@
  */
 package com.sitewhere.sources.configuration;
 
+import java.util.List;
+
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineConfiguration;
 
 /**
  * Maps event sources tenant engine YAML configuration to objects.
  */
 public class EventSourcesTenantConfiguration implements ITenantEngineConfiguration {
+
+    /** Event source configurations indexed by id */
+    private List<EventSourceGenericConfiguration> eventSources;
+
+    public List<EventSourceGenericConfiguration> getEventSources() {
+	return eventSources;
+    }
+
+    public void setEventSources(List<EventSourceGenericConfiguration> eventSources) {
+	this.eventSources = eventSources;
+    }
 }

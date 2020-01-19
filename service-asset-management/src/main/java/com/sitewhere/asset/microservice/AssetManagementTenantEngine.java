@@ -74,7 +74,7 @@ public class AssetManagementTenantEngine extends RdbTenantEngine<AssetManagement
     public RdbProviderInformation<?> getProviderInformation() {
 	PostgresConnectionInfo connInfo = new PostgresConnectionInfo();
 	connInfo.setHostname("sitewhere-postgresql");
-	connInfo.setPort(5000);
+	connInfo.setPort(5432);
 	connInfo.setUsername("syncope");
 	connInfo.setPassword("syncope");
 	return new Postgres95Provider(connInfo);

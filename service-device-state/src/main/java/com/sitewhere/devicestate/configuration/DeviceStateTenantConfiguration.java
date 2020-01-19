@@ -7,10 +7,22 @@
  */
 package com.sitewhere.devicestate.configuration;
 
+import com.sitewhere.datastore.DatastoreDefinition;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineConfiguration;
 
 /**
  * Maps device state YAML configuration to objects.
  */
 public class DeviceStateTenantConfiguration implements ITenantEngineConfiguration {
+
+    /** Datastore definition */
+    private DatastoreDefinition datastore;
+
+    public DatastoreDefinition getDatastore() {
+	return datastore;
+    }
+
+    public void setDatastore(DatastoreDefinition datastore) {
+	this.datastore = datastore;
+    }
 }

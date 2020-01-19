@@ -10,9 +10,10 @@ package com.sitewhere.devicestate.microservice;
 import com.sitewhere.devicestate.configuration.DeviceStateTenantConfiguration;
 import com.sitewhere.devicestate.configuration.DeviceStateTenantEngineModule;
 import com.sitewhere.devicestate.grpc.DeviceStateImpl;
+import com.sitewhere.devicestate.kafka.DeviceStatePipeline;
 import com.sitewhere.devicestate.persistence.rdb.entity.RdbDeviceState;
+import com.sitewhere.devicestate.persistence.rdb.entity.RdbRecentStateEvent;
 import com.sitewhere.devicestate.spi.IDevicePresenceManager;
-import com.sitewhere.devicestate.spi.kafka.IDeviceStateEnrichedEventsConsumer;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
 import com.sitewhere.grpc.service.DeviceStateGrpc;
@@ -45,8 +46,8 @@ public class DeviceStateTenantEngine extends RdbTenantEngine<DeviceStateTenantCo
     /** Responds to device state GRPC requests */
     private DeviceStateGrpc.DeviceStateImplBase deviceStateImpl;
 
-    /** Kafka consumer for processing enriched events for device state */
-    private IDeviceStateEnrichedEventsConsumer deviceStateEnrichedEventsConsumer;
+    /** Kafka Streams pipeline for device state event processing */
+    private DeviceStatePipeline deviceStatePipeline = new DeviceStatePipeline();
 
     /** Presence manager implementation */
     private IDevicePresenceManager devicePresenceManager;
@@ -80,7 +81,7 @@ public class DeviceStateTenantEngine extends RdbTenantEngine<DeviceStateTenantCo
     public RdbProviderInformation<?> getProviderInformation() {
 	PostgresConnectionInfo connInfo = new PostgresConnectionInfo();
 	connInfo.setHostname("sitewhere-postgresql");
-	connInfo.setPort(5000);
+	connInfo.setPort(5432);
 	connInfo.setUsername("syncope");
 	connInfo.setPassword("syncope");
 	return new Postgres95Provider(connInfo);
@@ -91,7 +92,7 @@ public class DeviceStateTenantEngine extends RdbTenantEngine<DeviceStateTenantCo
      */
     @Override
     public Class<?>[] getEntityClasses() {
-	return new Class<?>[] { RdbDeviceState.class };
+	return new Class<?>[] { RdbDeviceState.class, RdbRecentStateEvent.class };
     }
 
     /*
@@ -132,10 +133,7 @@ public class DeviceStateTenantEngine extends RdbTenantEngine<DeviceStateTenantCo
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// // Create enriched events consumer for building device state.
-	// this.deviceStateEnrichedEventsConsumer = new
-	// DeviceStateEnrichedEventsConsumer();
-	//
+	super.tenantInitialize(monitor);
 	// // Create presence manager.
 	// this.devicePresenceManager = (IDevicePresenceManager) getModuleContext()
 	// .getBean(DeviceStateManagementBeans.BEAN_PRESENCE_MANAGER);
@@ -146,8 +144,8 @@ public class DeviceStateTenantEngine extends RdbTenantEngine<DeviceStateTenantCo
 	// Initialize device state management persistence.
 	init.addInitializeStep(this, getDeviceStateManagement(), true);
 
-	// Initialize device state enriched events consumer.
-	init.addInitializeStep(this, getDeviceStateEnrichedEventsConsumer(), true);
+	// Initialize device state pipeline.
+	init.addInitializeStep(this, getDeviceStatePipeline(), true);
 
 	// Initialize device presence manager.
 	init.addInitializeStep(this, getDevicePresenceManager(), true);
@@ -163,14 +161,16 @@ public class DeviceStateTenantEngine extends RdbTenantEngine<DeviceStateTenantCo
      */
     @Override
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.tenantStart(monitor);
+
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
 
 	// Start device state management persistence.
 	start.addStartStep(this, getDeviceStateManagement(), true);
 
-	// Start device state enriched events consumer.
-	start.addStartStep(this, getDeviceStateEnrichedEventsConsumer(), true);
+	// Start device state pipeline.
+	start.addStartStep(this, getDeviceStatePipeline(), true);
 
 	// Start device presence manager.
 	start.addStartStep(this, getDevicePresenceManager(), true);
@@ -186,14 +186,16 @@ public class DeviceStateTenantEngine extends RdbTenantEngine<DeviceStateTenantCo
      */
     @Override
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.tenantStop(monitor);
+
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
 
 	// Stop device presence manager.
 	stop.addStopStep(this, getDevicePresenceManager());
 
-	// Stop device state enriched events consumer.
-	stop.addStopStep(this, getDeviceStateEnrichedEventsConsumer());
+	// Stop device state pipeline.
+	stop.addStopStep(this, getDeviceStatePipeline());
 
 	// Stop device state management persistence.
 	stop.addStopStep(this, getDeviceStateManagement());
@@ -211,10 +213,6 @@ public class DeviceStateTenantEngine extends RdbTenantEngine<DeviceStateTenantCo
 	return deviceStateManagement;
     }
 
-    protected void setDeviceStateManagement(IDeviceStateManagement deviceStateManagement) {
-	this.deviceStateManagement = deviceStateManagement;
-    }
-
     /*
      * @see com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine#
      * getDeviceStateImpl()
@@ -222,24 +220,6 @@ public class DeviceStateTenantEngine extends RdbTenantEngine<DeviceStateTenantCo
     @Override
     public DeviceStateGrpc.DeviceStateImplBase getDeviceStateImpl() {
 	return deviceStateImpl;
-    }
-
-    protected void setDeviceStateImpl(DeviceStateGrpc.DeviceStateImplBase deviceStateImpl) {
-	this.deviceStateImpl = deviceStateImpl;
-    }
-
-    /*
-     * @see com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine#
-     * getDeviceStateEnrichedEventsConsumer()
-     */
-    @Override
-    public IDeviceStateEnrichedEventsConsumer getDeviceStateEnrichedEventsConsumer() {
-	return deviceStateEnrichedEventsConsumer;
-    }
-
-    protected void setDeviceStateEnrichedEventsConsumer(
-	    IDeviceStateEnrichedEventsConsumer deviceStateEnrichedEventsConsumer) {
-	this.deviceStateEnrichedEventsConsumer = deviceStateEnrichedEventsConsumer;
     }
 
     /*
@@ -251,7 +231,7 @@ public class DeviceStateTenantEngine extends RdbTenantEngine<DeviceStateTenantCo
 	return devicePresenceManager;
     }
 
-    protected void setDevicePresenceManager(IDevicePresenceManager devicePresenceManager) {
-	this.devicePresenceManager = devicePresenceManager;
+    public DeviceStatePipeline getDeviceStatePipeline() {
+	return deviceStatePipeline;
     }
 }

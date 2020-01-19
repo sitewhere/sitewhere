@@ -9,7 +9,6 @@ package com.sitewhere.devicestate.spi.microservice;
 
 import com.sitewhere.devicestate.configuration.DeviceStateTenantConfiguration;
 import com.sitewhere.devicestate.spi.IDevicePresenceManager;
-import com.sitewhere.devicestate.spi.kafka.IDeviceStateEnrichedEventsConsumer;
 import com.sitewhere.grpc.service.DeviceStateGrpc;
 import com.sitewhere.microservice.api.state.IDeviceStateManagement;
 import com.sitewhere.rdb.spi.IRdbEntityManagerProvider;
@@ -34,13 +33,6 @@ public interface IDeviceStateTenantEngine extends IMicroserviceTenantEngine<Devi
      * @return
      */
     public DeviceStateGrpc.DeviceStateImplBase getDeviceStateImpl();
-
-    /**
-     * Get Kafka consumer that delivers enriched events for processing.
-     * 
-     * @return
-     */
-    public IDeviceStateEnrichedEventsConsumer getDeviceStateEnrichedEventsConsumer();
 
     /**
      * Get presence manager implementation.

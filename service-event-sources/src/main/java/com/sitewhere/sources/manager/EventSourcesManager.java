@@ -5,17 +5,20 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.sources;
+package com.sitewhere.sources.manager;
 
 import java.util.List;
 import java.util.Map;
 
+import com.google.inject.Inject;
 import com.sitewhere.grpc.client.device.DeviceModelMarshaler;
 import com.sitewhere.grpc.client.event.EventModelMarshaler;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.rest.model.device.event.kafka.DecodedEventPayload;
 import com.sitewhere.rest.model.device.event.kafka.DeviceRegistrationPayload;
+import com.sitewhere.sources.configuration.EventSourcesTenantConfiguration;
 import com.sitewhere.sources.kafka.DecodedEventsProducer;
 import com.sitewhere.sources.kafka.DeviceRegistrationEventsProducer;
 import com.sitewhere.sources.kafka.FailedDecodeEventsProducer;
@@ -34,6 +37,9 @@ import com.sitewhere.spi.microservice.lifecycle.LifecycleStatus;
  */
 public class EventSourcesManager extends TenantEngineLifecycleComponent implements IEventSourcesManager {
 
+    /** Event sources configuration */
+    private EventSourcesTenantConfiguration configuration;
+
     /** List of event sources */
     private List<IInboundEventSource<?>> eventSources;
 
@@ -46,12 +52,21 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
     /** Kafka producer for device registation events from event sources */
     private DeviceRegistrationEventsProducer deviceRegistrationEventsProducer;
 
+    @Inject
+    public EventSourcesManager(EventSourcesTenantConfiguration configuration) {
+	this.configuration = configuration;
+    }
+
     /*
      * @see com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.
      * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	getLogger().info(String.format("About to initialize event sources manager with configuration:\n%s\n\n",
+		MarshalUtils.marshalJsonAsPrettyString(getConfiguration().getEventSources())));
+	this.eventSources = EventSourcesParser.parse(getConfiguration());
+
 	// Create Kafka components.
 	createKafkaComponents();
 
@@ -212,10 +227,6 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 	return eventSources;
     }
 
-    public void setEventSources(List<IInboundEventSource<?>> eventSources) {
-	this.eventSources = eventSources;
-    }
-
     /*
      * @see
      * com.sitewhere.sources.spi.IEventSourcesManager#getDecodedEventsProducer()
@@ -223,10 +234,6 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
     @Override
     public DecodedEventsProducer getDecodedEventsProducer() {
 	return decodedEventsProducer;
-    }
-
-    public void setDecodedEventsProducer(DecodedEventsProducer decodedEventsProducer) {
-	this.decodedEventsProducer = decodedEventsProducer;
     }
 
     /*
@@ -239,10 +246,6 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 	return failedDecodeEventsProducer;
     }
 
-    public void setFailedDecodeEventsProducer(FailedDecodeEventsProducer failedDecodeEventsProducer) {
-	this.failedDecodeEventsProducer = failedDecodeEventsProducer;
-    }
-
     /*
      * @see com.sitewhere.sources.spi.IEventSourcesManager#
      * getDeviceRegistrationEventsProducer()
@@ -252,7 +255,7 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 	return deviceRegistrationEventsProducer;
     }
 
-    public void setDeviceRegistrationEventsProducer(DeviceRegistrationEventsProducer deviceRegistrationEventsProducer) {
-	this.deviceRegistrationEventsProducer = deviceRegistrationEventsProducer;
+    protected EventSourcesTenantConfiguration getConfiguration() {
+	return configuration;
     }
 }

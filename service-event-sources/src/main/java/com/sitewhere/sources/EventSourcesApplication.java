@@ -7,14 +7,19 @@
  */
 package com.sitewhere.sources;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import com.sitewhere.microservice.MicroserviceApplication;
 import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
 
 /**
- * Spring Boot application for event sources microservice.
+ * Main application which runs the event sources microservice.
  */
+@ApplicationScoped
 public class EventSourcesApplication extends MicroserviceApplication<IEventSourcesMicroservice> {
 
+    @Inject
     private IEventSourcesMicroservice microservice;
 
     /*

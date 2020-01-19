@@ -14,6 +14,7 @@ import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.QoS;
 
 import com.sitewhere.commands.spi.ICommandDeliveryProvider;
+import com.sitewhere.communication.mqtt.IMqttConfiguration;
 import com.sitewhere.communication.mqtt.MqttLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -30,11 +31,14 @@ import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
 	implements ICommandDeliveryProvider<byte[], MqttParameters> {
 
+    /** Configuration */
+    private IMqttConfiguration configuration;
+
     /** Shared MQTT connection */
     private FutureConnection connection;
 
-    public MqttCommandDeliveryProvider() {
-	super(LifecycleComponentType.CommandDeliveryProvider);
+    public MqttCommandDeliveryProvider(IMqttConfiguration configuration) {
+	super(LifecycleComponentType.CommandDeliveryProvider, configuration);
     }
 
     /*
@@ -48,7 +52,8 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.start(monitor);
 
-	getLogger().info("Connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
+	getLogger().info("Connecting to MQTT broker at '" + getConfiguration().getHostname() + ":"
+		+ getConfiguration().getPort() + "'...");
 	connection = getConnection();
 	getLogger().info("Connected to MQTT broker.");
     }
@@ -109,5 +114,9 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to publish command to MQTT topic.", e);
 	}
+    }
+
+    protected IMqttConfiguration getConfiguration() {
+	return configuration;
     }
 }

@@ -75,7 +75,7 @@ public class RdbDeviceState extends RdbPersistentEntity implements IDeviceState 
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
-    @CollectionTable(name = "area_metadata", joinColumns = @JoinColumn(name = "area_id"))
+    @CollectionTable(name = "device_state_metadata", joinColumns = @JoinColumn(name = "device_state_id"))
     @MapKeyColumn(name = "prop_key")
     @Column(name = "prop_value")
     private Map<String, String> metadata = new HashMap<>();
