@@ -14,15 +14,13 @@ import com.sitewhere.asset.persistence.rdb.entity.RdbAsset;
 import com.sitewhere.asset.persistence.rdb.entity.RdbAssetType;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
+import com.sitewhere.datastore.DatastoreDefinition;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
 import com.sitewhere.microservice.api.asset.AssetManagementRequestBuilder;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.scripting.Binding;
-import com.sitewhere.rdb.RdbProviderInformation;
 import com.sitewhere.rdb.RdbTenantEngine;
-import com.sitewhere.rdb.providers.postgresql.Postgres95Provider;
-import com.sitewhere.rdb.providers.postgresql.PostgresConnectionInfo;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
@@ -68,16 +66,11 @@ public class AssetManagementTenantEngine extends RdbTenantEngine<AssetManagement
     }
 
     /*
-     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getProviderInformation()
+     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getDatastoreDefinition()
      */
     @Override
-    public RdbProviderInformation<?> getProviderInformation() {
-	PostgresConnectionInfo connInfo = new PostgresConnectionInfo();
-	connInfo.setHostname("sitewhere-postgresql");
-	connInfo.setPort(5432);
-	connInfo.setUsername("syncope");
-	connInfo.setPassword("syncope");
-	return new Postgres95Provider(connInfo);
+    public DatastoreDefinition getDatastoreDefinition() {
+	return getActiveConfiguration().getDatastore();
     }
 
     /*

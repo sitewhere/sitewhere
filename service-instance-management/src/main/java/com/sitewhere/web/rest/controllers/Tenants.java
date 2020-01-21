@@ -44,7 +44,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 /**
  * Controller for tenant operations.
  */
-@Path("/tenants")
+@Path("/api/tenants")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "tenants")

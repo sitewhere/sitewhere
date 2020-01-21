@@ -29,7 +29,7 @@ import io.swagger.annotations.ApiParam;
 /**
  * Controller for device status operations.
  */
-@Path("/statuses")
+@Path("/api/statuses")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "statuses")

@@ -7,6 +7,7 @@
  */
 package com.sitewhere.devicestate.microservice;
 
+import com.sitewhere.datastore.DatastoreDefinition;
 import com.sitewhere.devicestate.configuration.DeviceStateTenantConfiguration;
 import com.sitewhere.devicestate.configuration.DeviceStateTenantEngineModule;
 import com.sitewhere.devicestate.grpc.DeviceStateImpl;
@@ -21,10 +22,7 @@ import com.sitewhere.microservice.api.state.IDeviceStateManagement;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.scripting.Binding;
 import com.sitewhere.rdb.RdbPersistenceOptions;
-import com.sitewhere.rdb.RdbProviderInformation;
 import com.sitewhere.rdb.RdbTenantEngine;
-import com.sitewhere.rdb.providers.postgresql.Postgres95Provider;
-import com.sitewhere.rdb.providers.postgresql.PostgresConnectionInfo;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
@@ -75,16 +73,11 @@ public class DeviceStateTenantEngine extends RdbTenantEngine<DeviceStateTenantCo
     }
 
     /*
-     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getProviderInformation()
+     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getDatastoreDefinition()
      */
     @Override
-    public RdbProviderInformation<?> getProviderInformation() {
-	PostgresConnectionInfo connInfo = new PostgresConnectionInfo();
-	connInfo.setHostname("sitewhere-postgresql");
-	connInfo.setPort(5432);
-	connInfo.setUsername("syncope");
-	connInfo.setPassword("syncope");
-	return new Postgres95Provider(connInfo);
+    public DatastoreDefinition getDatastoreDefinition() {
+	return getActiveConfiguration().getDatastore();
     }
 
     /*

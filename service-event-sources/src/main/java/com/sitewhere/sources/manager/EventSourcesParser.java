@@ -18,7 +18,10 @@ import com.sitewhere.sources.BinaryInboundEventSource;
 import com.sitewhere.sources.configuration.EventSourceGenericConfiguration;
 import com.sitewhere.sources.configuration.EventSourcesTenantConfiguration;
 import com.sitewhere.sources.configuration.eventsource.MqttEventSourceConfiguration;
+import com.sitewhere.sources.decoder.json.JsonDeviceRequestDecoder;
+import com.sitewhere.sources.decoder.protobuf.ProtobufDeviceEventDecoder;
 import com.sitewhere.sources.mqtt.MqttInboundEventReceiver;
+import com.sitewhere.sources.spi.IDeviceEventDecoder;
 import com.sitewhere.sources.spi.IInboundEventSource;
 import com.sitewhere.spi.SiteWhereException;
 
@@ -71,6 +74,30 @@ public class EventSourcesParser {
 	MqttInboundEventReceiver receiver = new MqttInboundEventReceiver(mqttConfig);
 	BinaryInboundEventSource source = new BinaryInboundEventSource();
 	source.getInboundEventReceivers().add(receiver);
+	source.setDeviceEventDecoder(parseBinaryDecoder(sourceConfig));
 	return source;
+    }
+
+    /**
+     * Parse decoder type and return a binary decoder instance.
+     * 
+     * @param sourceConfig
+     * @return
+     * @throws SiteWhereException
+     */
+    protected static IDeviceEventDecoder<byte[]> parseBinaryDecoder(EventSourceGenericConfiguration sourceConfig)
+	    throws SiteWhereException {
+	switch (sourceConfig.getDecoder()) {
+	case "json": {
+	    return new JsonDeviceRequestDecoder();
+	}
+	case "protobuf": {
+	    return new ProtobufDeviceEventDecoder();
+	}
+	default: {
+	    throw new SiteWhereException(String.format("Unknown decoder type '%s' for source with id '%s'",
+		    sourceConfig.getDecoder(), sourceConfig.getId()));
+	}
+	}
     }
 }

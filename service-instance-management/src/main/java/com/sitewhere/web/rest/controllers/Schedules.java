@@ -38,7 +38,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 /**
  * Controller for schedule operations.
  */
-@Path("/schedules")
+@Path("/api/schedules")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "schedules")

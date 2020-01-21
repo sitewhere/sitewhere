@@ -27,7 +27,7 @@ import io.swagger.annotations.ApiOperation;
 /**
  * Controller for system operations.
  */
-@Path("/system")
+@Path("/api/system")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "system")

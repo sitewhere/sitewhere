@@ -7,16 +7,15 @@
  */
 package com.sitewhere.sources.configuration.eventsource;
 
-import org.apache.commons.text.StringSubstitutor;
-
 import com.fasterxml.jackson.databind.JsonNode;
+import com.sitewhere.microservice.configuration.json.JsonConfiguration;
 import com.sitewhere.sources.configuration.EventSourceGenericConfiguration;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Base class for common event source configuration.
  */
-public abstract class EventSourceConfiguration {
+public abstract class EventSourceConfiguration extends JsonConfiguration {
 
     /** Unique event source id */
     private String id;
@@ -37,73 +36,6 @@ public abstract class EventSourceConfiguration {
      * @throws SiteWhereException
      */
     public abstract void loadFrom(JsonNode json) throws SiteWhereException;
-
-    /**
-     * Parse an integer value using variable substitution.
-     * 
-     * @param fieldName
-     * @param json
-     * @param defaultValue
-     * @return
-     * @throws SiteWhereException
-     */
-    public int configurableInt(String fieldName, JsonNode json, int defaultValue) throws SiteWhereException {
-	JsonNode field = json.get(fieldName);
-	if (field == null) {
-	    return defaultValue;
-	}
-	StringSubstitutor sub = new StringSubstitutor(new SiteWhereStringLookup());
-	try {
-	    return field.isTextual() ? Integer.parseInt(sub.replace(field.textValue())) : field.asInt();
-	} catch (NumberFormatException e) {
-	    throw new SiteWhereException(
-		    String.format("Unable to parse integer configuration parameter '%s' with value of '%s'.", fieldName,
-			    field.toString()));
-	}
-    }
-
-    /**
-     * Parse a string value using variable substitution.
-     * 
-     * @param fieldName
-     * @param json
-     * @param defaultValue
-     * @return
-     * @throws SiteWhereException
-     */
-    public String configurableString(String fieldName, JsonNode json, String defaultValue) throws SiteWhereException {
-	JsonNode field = json.get(fieldName);
-	if (field == null) {
-	    return defaultValue;
-	}
-	StringSubstitutor sub = new StringSubstitutor(new SiteWhereStringLookup());
-	return sub.replace(field.textValue());
-    }
-
-    /**
-     * Parse a boolean value using variable substitution.
-     * 
-     * @param fieldName
-     * @param json
-     * @param defaultValue
-     * @return
-     * @throws SiteWhereException
-     */
-    public boolean configurableBoolean(String fieldName, JsonNode json, boolean defaultValue)
-	    throws SiteWhereException {
-	JsonNode field = json.get(fieldName);
-	if (field == null) {
-	    return defaultValue;
-	}
-	StringSubstitutor sub = new StringSubstitutor(new SiteWhereStringLookup());
-	try {
-	    return field.isBoolean() ? field.asBoolean() : Boolean.parseBoolean(sub.replace(field.textValue()));
-	} catch (NumberFormatException e) {
-	    throw new SiteWhereException(
-		    String.format("Unable to parse boolean configuration parameter '%s' with value of '%s'.", fieldName,
-			    field.toString()));
-	}
-    }
 
     public String getId() {
 	return id;

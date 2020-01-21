@@ -14,13 +14,15 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sitewhere.microservice.security.SiteWhereAuthentication;
+import com.sitewhere.microservice.security.UserContext;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
-import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.web.ISiteWhereWebConstants;
 
 import io.swagger.annotations.Api;
@@ -29,18 +31,14 @@ import io.swagger.annotations.ApiOperation;
 /**
  * Controller for security operations.
  */
-@Path("/jwt")
+@Path("/authapi/jwt")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "jwt")
 public class JwtService {
 
     /** Static logger instance */
-    @SuppressWarnings("unused")
     private static Log LOGGER = LogFactory.getLog(JwtService.class);
-
-    /** Number of minutes a token remains valid */
-    private static final int TOKEN_EXPIRATION_IN_MINUTES = 60;
 
     /** Injected reference to token management */
     @Inject
@@ -57,9 +55,12 @@ public class JwtService {
     @GET
     @ApiOperation(value = "Authenticate and receive a JWT")
     public Response jwt() throws SiteWhereException {
-	IUser user = null; // TODO: Add basic auth and user context.
-	String jwt = getTokenManagement().generateToken(user, TOKEN_EXPIRATION_IN_MINUTES);
-	return Response.ok().header(ISiteWhereWebConstants.HEADER_JWT, jwt).build();
+	SiteWhereAuthentication auth = UserContext.getCurrentUser();
+	if (auth != null) {
+	    return Response.ok().header(ISiteWhereWebConstants.HEADER_JWT, auth.getJwt()).build();
+	}
+	LOGGER.warn("No user context found for current thread.");
+	return Response.status(Status.UNAUTHORIZED).build();
     }
 
     /**

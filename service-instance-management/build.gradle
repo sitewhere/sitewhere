@@ -7,7 +7,7 @@ dependencies {
     compile group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
 
 	// Quarkus RESTEasy extension.
-    compile 'io.quarkus:quarkus-resteasy'
+    compile 'io.quarkus:quarkus-resteasy-jackson'
 
 	// Apache Syncope
 	compile group: 'org.apache.syncope.client', name: 'syncope-client-lib', version: '2.1.4'

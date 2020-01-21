@@ -59,7 +59,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 /**
  * Controller for batch operations.
  */
-@Path("/batch")
+@Path("/api/batch")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "batch")

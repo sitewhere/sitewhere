@@ -48,7 +48,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 /**
  * Controller for area type operations.
  */
-@Path("/areatypes")
+@Path("/api/areatypes")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "areatypes")

@@ -85,7 +85,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 /*
  * Controller for assignment operations.
  */
-@Path("/assignments")
+@Path("/api/assignments")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "assignments")

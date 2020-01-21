@@ -77,7 +77,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 /**
  * Controller for area operations.
  */
-@Path("/areas")
+@Path("/api/areas")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "areas")

@@ -77,7 +77,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 /**
  * Controller for customer operations.
  */
-@Path("/customers")
+@Path("/api/customers")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "customers")

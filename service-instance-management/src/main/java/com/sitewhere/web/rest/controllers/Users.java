@@ -48,7 +48,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 /**
  * Controller for user operations.
  */
-@Path("/users")
+@Path("/api/users")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "users")

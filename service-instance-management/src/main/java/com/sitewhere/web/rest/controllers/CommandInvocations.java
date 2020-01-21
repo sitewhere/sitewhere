@@ -41,7 +41,7 @@ import io.swagger.annotations.ApiParam;
 /**
  * Controller for command invocation operations.
  */
-@Path("/invocations")
+@Path("/api/invocations")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "invocations")

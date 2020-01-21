@@ -33,7 +33,7 @@ import io.swagger.annotations.ApiParam;
 /**
  * Controller for event operations.
  */
-@Path("/events")
+@Path("/api/events")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "events")
