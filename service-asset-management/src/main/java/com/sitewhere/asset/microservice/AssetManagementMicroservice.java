@@ -166,22 +166,19 @@ public class AssetManagementMicroservice extends
 
     /*
      * @see com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice#
+     * getAssetManagementGrpcServer()
+     */
+    @Override
+    public IAssetManagementGrpcServer getAssetManagementGrpcServer() {
+	return assetManagementGrpcServer;
+    }
+
+    /*
+     * @see com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice#
      * getDeviceManagementApiChannel()
      */
     @Override
     public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
 	return deviceManagementApiChannel;
-    }
-
-    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
-	this.deviceManagementApiChannel = deviceManagementApiChannel;
-    }
-
-    public IAssetManagementGrpcServer getAssetManagementGrpcServer() {
-	return assetManagementGrpcServer;
-    }
-
-    public void setAssetManagementGrpcServer(IAssetManagementGrpcServer assetManagementGrpcServer) {
-	this.assetManagementGrpcServer = assetManagementGrpcServer;
     }
 }

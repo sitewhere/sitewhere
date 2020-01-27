@@ -15,7 +15,7 @@ import com.sitewhere.batch.BatchOperationTypes;
 import com.sitewhere.batch.spi.IBatchOperationHandler;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
@@ -109,8 +109,8 @@ public class BatchCommandInvocationHandler extends TenantEngineLifecycleComponen
 	return ElementProcessingStatus.Succeeded;
     }
 
-    public IDeviceManagementApiChannel<?> getDeviceManagement() {
-	return ((IBatchOperationsMicroservice) getMicroservice()).getDeviceManagementApiChannel();
+    public IDeviceManagement getDeviceManagement() {
+	return ((IBatchOperationsMicroservice) getMicroservice()).getDeviceManagement();
     }
 
     public IDeviceEventManagement getDeviceEventManagement() {

@@ -546,7 +546,7 @@ public class Devices {
     }
 
     protected IDeviceManagement getDeviceManagement() {
-	return getMicroservice().getDeviceManagementApiChannel();
+	return getMicroservice().getDeviceManagement();
     }
 
     protected IDeviceEventManagement getDeviceEventManagement() {
@@ -554,7 +554,7 @@ public class Devices {
     }
 
     protected IAssetManagement getAssetManagement() {
-	return getMicroservice().getAssetManagementApiChannel();
+	return getMicroservice().getAssetManagement();
     }
 
     protected ILabelGeneration getLabelGeneration() {

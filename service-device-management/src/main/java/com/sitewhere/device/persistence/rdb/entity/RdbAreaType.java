@@ -27,6 +27,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -35,7 +36,7 @@ import com.sitewhere.rdb.entities.RdbBrandedEntity;
 import com.sitewhere.spi.area.IAreaType;
 
 @Entity
-@Table(name = "area_type")
+@Table(name = "area_type", uniqueConstraints = @UniqueConstraint(columnNames = { "token" }))
 @NamedQuery(name = Queries.QUERY_AREA_TYPE_BY_TOKEN, query = "SELECT a FROM RdbAreaType a WHERE a.token = :token")
 public class RdbAreaType extends RdbBrandedEntity implements IAreaType {
 
@@ -115,6 +116,11 @@ public class RdbAreaType extends RdbBrandedEntity implements IAreaType {
 	return metadata;
     }
 
+    /*
+     * @see
+     * com.sitewhere.rdb.entities.RdbPersistentEntity#setMetadata(java.util.Map)
+     */
+    @Override
     public void setMetadata(Map<String, String> metadata) {
 	this.metadata = metadata;
     }

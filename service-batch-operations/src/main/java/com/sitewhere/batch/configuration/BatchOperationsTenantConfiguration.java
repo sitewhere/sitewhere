@@ -7,10 +7,37 @@
  */
 package com.sitewhere.batch.configuration;
 
+import com.sitewhere.batch.configuration.manager.BatchOperationManagerConfiguration;
+import com.sitewhere.datastore.DatastoreDefinition;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineConfiguration;
+
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**
  * Maps batch operation tenant engine YAML configuration to objects.
  */
+@RegisterForReflection
 public class BatchOperationsTenantConfiguration implements ITenantEngineConfiguration {
+
+    /** Datastore definition */
+    private DatastoreDefinition datastore;
+
+    /** Batch operation manager configuration */
+    private BatchOperationManagerConfiguration batchOperationManager;
+
+    public DatastoreDefinition getDatastore() {
+	return datastore;
+    }
+
+    public void setDatastore(DatastoreDefinition datastore) {
+	this.datastore = datastore;
+    }
+
+    public BatchOperationManagerConfiguration getBatchOperationManager() {
+	return batchOperationManager;
+    }
+
+    public void setBatchOperationManager(BatchOperationManagerConfiguration batchOperationManager) {
+	this.batchOperationManager = batchOperationManager;
+    }
 }

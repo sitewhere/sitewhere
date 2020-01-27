@@ -7,16 +7,16 @@
  */
 package com.sitewhere.instance.spi.microservice;
 
-import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IBatchManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceStateApiChannel;
 import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiChannel;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
 import com.sitewhere.instance.configuration.InstanceManagementConfiguration;
 import com.sitewhere.instance.spi.tenant.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.instance.spi.user.grpc.IUserManagementGrpcServer;
+import com.sitewhere.microservice.api.asset.IAssetManagement;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
@@ -56,11 +56,11 @@ public interface IInstanceManagementMicroservice<F extends IFunctionIdentifier>
     public ITenantManagementGrpcServer getTenantManagementGrpcServer();
 
     /**
-     * Device management API access via GRPC channel.
+     * Device management API access via cached API channel.
      * 
      * @return
      */
-    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel();
+    public IDeviceManagement getDeviceManagement();
 
     /**
      * Device event management API access via GRPC channel.
@@ -74,7 +74,7 @@ public interface IInstanceManagementMicroservice<F extends IFunctionIdentifier>
      * 
      * @return
      */
-    public IAssetManagementApiChannel<?> getAssetManagementApiChannel();
+    public IAssetManagement getAssetManagement();
 
     /**
      * Batch management API access via GRPC channel.

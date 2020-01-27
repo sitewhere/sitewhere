@@ -28,6 +28,7 @@ import javax.persistence.MapKeyColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -38,7 +39,7 @@ import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
 
 @Entity
-@Table(name = "device_assignment")
+@Table(name = "device_assignment", uniqueConstraints = @UniqueConstraint(columnNames = { "token" }))
 @NamedQueries({
 	@NamedQuery(name = Queries.QUERY_DEVICE_ASSIGNMENT_BY_TOKEN, query = "SELECT a FROM RdbDeviceAssignment a WHERE a.token = :token"),
 	@NamedQuery(name = Queries.QUERY_DEVICE_ASSIGNMENT_BY_DEVICE_AND_STATUS, query = "SELECT a FROM RdbDeviceAssignment a WHERE a.deviceId = :deviceId AND a.status = :status") })
@@ -224,6 +225,11 @@ public class RdbDeviceAssignment extends RdbPersistentEntity implements IDeviceA
 	return metadata;
     }
 
+    /*
+     * @see
+     * com.sitewhere.rdb.entities.RdbPersistentEntity#setMetadata(java.util.Map)
+     */
+    @Override
     public void setMetadata(Map<String, String> metadata) {
 	this.metadata = metadata;
     }

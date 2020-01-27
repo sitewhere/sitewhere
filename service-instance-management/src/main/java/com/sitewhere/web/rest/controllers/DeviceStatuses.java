@@ -68,7 +68,7 @@ public class DeviceStatuses {
     }
 
     protected IDeviceManagement getDeviceManagement() {
-	return getMicroservice().getDeviceManagementApiChannel();
+	return getMicroservice().getDeviceManagement();
     }
 
     protected IInstanceManagementMicroservice<?> getMicroservice() {

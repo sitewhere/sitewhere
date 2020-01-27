@@ -187,7 +187,7 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 	    StreamObserver<GListBatchOperationsResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, BatchManagementGrpc.getListBatchOperationsMethod());
-	    ISearchResults<IBatchOperation> apiResult = getBatchManagement()
+	    ISearchResults<? extends IBatchOperation> apiResult = getBatchManagement()
 		    .listBatchOperations(BatchModelConverter.asApiBatchOperationSearchCriteria(request.getCriteria()));
 	    GListBatchOperationsResponse.Builder response = GListBatchOperationsResponse.newBuilder();
 	    GBatchOperationSearchResults.Builder results = GBatchOperationSearchResults.newBuilder();
@@ -270,7 +270,7 @@ public class BatchManagementImpl extends BatchManagementGrpc.BatchManagementImpl
 		    .asApiBatchElementSearchCriteria(request.getCriteria());
 	    getMicroservice().getLogger()
 		    .info("Batch element search criteria:\n" + MarshalUtils.marshalJsonAsPrettyString(criteria));
-	    ISearchResults<IBatchElement> apiResult = getBatchManagement()
+	    ISearchResults<? extends IBatchElement> apiResult = getBatchManagement()
 		    .listBatchElements(CommonModelConverter.asApiUuid(request.getBatchOperationId()), criteria);
 	    GListBatchElementsResponse.Builder response = GListBatchElementsResponse.newBuilder();
 	    GBatchElementSearchResults.Builder results = GBatchElementSearchResults.newBuilder();

@@ -191,7 +191,7 @@ public class AssetTypes {
     }
 
     protected IAssetManagement getAssetManagement() throws SiteWhereException {
-	return getMicroservice().getAssetManagementApiChannel();
+	return getMicroservice().getAssetManagement();
     }
 
     protected ILabelGeneration getLabelGeneration() {

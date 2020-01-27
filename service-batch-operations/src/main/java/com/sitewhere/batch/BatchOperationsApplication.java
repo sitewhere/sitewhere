@@ -14,7 +14,7 @@ import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
 
 /**
- * Spring Boot application for batch operations microservice.
+ * Main application which runs the batch operations microservice.
  */
 @ApplicationScoped
 public class BatchOperationsApplication extends MicroserviceApplication<IBatchOperationsMicroservice> {

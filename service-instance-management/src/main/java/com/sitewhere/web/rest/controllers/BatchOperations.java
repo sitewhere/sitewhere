@@ -109,7 +109,7 @@ public class BatchOperations {
 	    throws SiteWhereException {
 	BatchOperationSearchCriteria criteria = new BatchOperationSearchCriteria(page, pageSize);
 
-	ISearchResults<IBatchOperation> results = getBatchManagement().listBatchOperations(criteria);
+	ISearchResults<? extends IBatchOperation> results = getBatchManagement().listBatchOperations(criteria);
 	BatchOperationMarshalHelper helper = new BatchOperationMarshalHelper();
 	List<IBatchOperation> converted = new ArrayList<IBatchOperation>();
 	for (IBatchOperation op : results.getResults()) {
@@ -139,7 +139,7 @@ public class BatchOperations {
 	    throws SiteWhereException {
 	IBatchOperation batchOperation = assureBatchOperation(operationToken);
 	BatchElementSearchCriteria criteria = new BatchElementSearchCriteria(page, pageSize);
-	ISearchResults<IBatchElement> results = getBatchManagement().listBatchElements(batchOperation.getId(),
+	ISearchResults<? extends IBatchElement> results = getBatchManagement().listBatchElements(batchOperation.getId(),
 		criteria);
 
 	BatchElementMarshalHelper helper = new BatchElementMarshalHelper();
@@ -272,11 +272,11 @@ public class BatchOperations {
     }
 
     private IDeviceManagement getDeviceManagement() {
-	return getMicroservice().getDeviceManagementApiChannel();
+	return getMicroservice().getDeviceManagement();
     }
 
     private IAssetManagement getAssetManagement() {
-	return getMicroservice().getAssetManagementApiChannel();
+	return getMicroservice().getAssetManagement();
     }
 
     protected IBatchManagement getBatchManagement() {

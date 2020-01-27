@@ -122,6 +122,11 @@ public class RdbAssetType extends RdbBrandedEntity implements IAssetType {
 	return metadata;
     }
 
+    /*
+     * @see
+     * com.sitewhere.rdb.entities.RdbPersistentEntity#setMetadata(java.util.Map)
+     */
+    @Override
     public void setMetadata(Map<String, String> metadata) {
 	this.metadata = metadata;
     }

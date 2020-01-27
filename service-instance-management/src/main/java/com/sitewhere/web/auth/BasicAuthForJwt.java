@@ -96,12 +96,15 @@ public class BasicAuthForJwt implements ContainerRequestFilter {
     protected SiteWhereAuthentication authenticate(String encoded) throws SiteWhereException {
 	String decoded = new String(Base64.decodeBase64(encoded));
 	String[] parts = decoded.split(":");
-	String username = parts[0];
-	String password = parts[1];
-	IUser user = getUserManagement().authenticate(username, password, false);
-	List<IGrantedAuthority> auths = getUserManagement().getGrantedAuthorities(username);
-	String jwt = getTokenManagement().generateToken(user, 60);
-	return new SiteWhereAuthentication(user, auths, jwt);
+	if (parts.length > 1) {
+	    String username = parts[0];
+	    String password = parts[1];
+	    IUser user = getUserManagement().authenticate(username, password, false);
+	    List<IGrantedAuthority> auths = getUserManagement().getGrantedAuthorities(username);
+	    String jwt = getTokenManagement().generateToken(user, 60);
+	    return new SiteWhereAuthentication(user, auths, jwt);
+	}
+	throw new SiteWhereException(String.format("Invalid basic auth content: %s", decoded));
     }
 
     protected InstanceManagementMicroservice getMicroservice() {

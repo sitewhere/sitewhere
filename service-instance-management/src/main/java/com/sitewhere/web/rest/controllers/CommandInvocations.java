@@ -117,7 +117,7 @@ public class CommandInvocations {
     }
 
     protected IDeviceManagement getDeviceManagement() {
-	return getMicroservice().getDeviceManagementApiChannel();
+	return getMicroservice().getDeviceManagement();
     }
 
     protected IDeviceEventManagement getDeviceEventManagement() {

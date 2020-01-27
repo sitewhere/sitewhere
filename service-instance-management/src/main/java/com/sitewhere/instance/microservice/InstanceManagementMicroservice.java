@@ -10,7 +10,9 @@ package com.sitewhere.instance.microservice;
 import javax.enterprise.context.ApplicationScoped;
 
 import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
+import com.sitewhere.grpc.client.asset.CachedAssetManagementApiChannel;
 import com.sitewhere.grpc.client.batch.BatchManagementApiChannel;
+import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.devicestate.DeviceStateApiChannel;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
@@ -32,6 +34,8 @@ import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.instance.spi.tenant.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.instance.spi.user.grpc.IUserManagementGrpcServer;
 import com.sitewhere.instance.user.persistence.SyncopeUserManagement;
+import com.sitewhere.microservice.api.asset.IAssetManagement;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.microservice.configuration.ConfigurableMicroservice;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
@@ -62,13 +66,13 @@ public class InstanceManagementMicroservice
     private ITenantManagementGrpcServer tenantManagementGrpcServer;
 
     /** Device management API channel */
-    private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
+    private CachedDeviceManagementApiChannel deviceManagementApiChannel;
 
     /** Device event management API channel */
     private IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel;
 
     /** Asset management API channel */
-    private IAssetManagementApiChannel<?> assetManagementApiChannel;
+    private CachedAssetManagementApiChannel assetManagementApiChannel;
 
     /** Batch management API channel */
     private IBatchManagementApiChannel<?> batchManagementApiChannel;
@@ -151,13 +155,13 @@ public class InstanceManagementMicroservice
 	init.addInitializeStep(this, getUserManagementGrpcServer(), true);
 
 	// Initialize device management API channel.
-	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
+	init.addInitializeStep(this, getDeviceManagement(), true);
 
 	// Initialize device event management API channel.
 	init.addInitializeStep(this, getDeviceEventManagementApiChannel(), true);
 
 	// Initialize asset management API channel.
-	init.addInitializeStep(this, getAssetManagementApiChannel(), true);
+	init.addInitializeStep(this, getAssetManagement(), true);
 
 	// Initialize batch management API channel.
 	init.addInitializeStep(this, getBatchManagementApiChannel(), true);
@@ -192,13 +196,17 @@ public class InstanceManagementMicroservice
 	this.tenantManagementGrpcServer = new TenantManagementGrpcServer(this, getTenantManagement());
 
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
+	IDeviceManagementApiChannel<?> deviceManagement = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(deviceManagement,
+		new CachedDeviceManagementApiChannel.CacheSettings());
 
 	// Device event management.
 	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(getInstanceSettings());
 
 	// Asset management.
-	this.assetManagementApiChannel = new AssetManagementApiChannel(getInstanceSettings());
+	IAssetManagementApiChannel<?> assetManagement = new AssetManagementApiChannel(getInstanceSettings());
+	this.assetManagementApiChannel = new CachedAssetManagementApiChannel(assetManagement,
+		new CachedAssetManagementApiChannel.CacheSettings());
 
 	// Batch management.
 	this.batchManagementApiChannel = new BatchManagementApiChannel(getInstanceSettings());
@@ -238,13 +246,13 @@ public class InstanceManagementMicroservice
 	start.addStartStep(this, getUserManagementGrpcServer(), true);
 
 	// Start device mangement API channel.
-	start.addStartStep(this, getDeviceManagementApiChannel(), true);
+	start.addStartStep(this, getDeviceManagement(), true);
 
 	// Start device event mangement API channel.
 	start.addStartStep(this, getDeviceEventManagementApiChannel(), true);
 
 	// Start asset mangement API channel.
-	start.addStartStep(this, getAssetManagementApiChannel(), true);
+	start.addStartStep(this, getAssetManagement(), true);
 
 	// Start batch mangement API channel.
 	start.addStartStep(this, getBatchManagementApiChannel(), true);
@@ -273,13 +281,13 @@ public class InstanceManagementMicroservice
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop device mangement API channel .
-	stop.addStopStep(this, getDeviceManagementApiChannel());
+	stop.addStopStep(this, getDeviceManagement());
 
 	// Stop device event mangement API channel.
 	stop.addStopStep(this, getDeviceEventManagementApiChannel());
 
 	// Stop asset mangement API channel.
-	stop.addStopStep(this, getAssetManagementApiChannel());
+	stop.addStopStep(this, getAssetManagement());
 
 	// Stop batch mangement API channel.
 	stop.addStopStep(this, getBatchManagementApiChannel());
@@ -320,10 +328,6 @@ public class InstanceManagementMicroservice
 	return instanceBootstrapper;
     }
 
-    public void setInstanceBootstrapper(IInstanceBootstrapper instanceBootstrapper) {
-	this.instanceBootstrapper = instanceBootstrapper;
-    }
-
     /*
      * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
      * getUserManagementGrpcServer()
@@ -331,10 +335,6 @@ public class InstanceManagementMicroservice
     @Override
     public IUserManagementGrpcServer getUserManagementGrpcServer() {
 	return userManagementGrpcServer;
-    }
-
-    public void setUserManagementGrpcServer(IUserManagementGrpcServer userManagementGrpcServer) {
-	this.userManagementGrpcServer = userManagementGrpcServer;
     }
 
     /*
@@ -346,10 +346,6 @@ public class InstanceManagementMicroservice
 	return userManagement;
     }
 
-    public void setUserManagement(IUserManagement userManagement) {
-	this.userManagement = userManagement;
-    }
-
     /*
      * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
      * getTenantManagementGrpcServer()
@@ -359,21 +355,13 @@ public class InstanceManagementMicroservice
 	return tenantManagementGrpcServer;
     }
 
-    public void setTenantManagementGrpcServer(ITenantManagementGrpcServer tenantManagementGrpcServer) {
-	this.tenantManagementGrpcServer = tenantManagementGrpcServer;
-    }
-
     /*
      * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
-     * getDeviceManagementApiChannel()
+     * getDeviceManagement()
      */
     @Override
-    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
+    public IDeviceManagement getDeviceManagement() {
 	return deviceManagementApiChannel;
-    }
-
-    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
-	this.deviceManagementApiChannel = deviceManagementApiChannel;
     }
 
     /*
@@ -385,22 +373,13 @@ public class InstanceManagementMicroservice
 	return deviceEventManagementApiChannel;
     }
 
-    public void setDeviceEventManagementApiChannel(
-	    IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel) {
-	this.deviceEventManagementApiChannel = deviceEventManagementApiChannel;
-    }
-
     /*
      * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
-     * getAssetManagementApiChannel()
+     * getAssetManagement()
      */
     @Override
-    public IAssetManagementApiChannel<?> getAssetManagementApiChannel() {
+    public IAssetManagement getAssetManagement() {
 	return assetManagementApiChannel;
-    }
-
-    public void setAssetManagementApiChannel(IAssetManagementApiChannel<?> assetManagementApiChannel) {
-	this.assetManagementApiChannel = assetManagementApiChannel;
     }
 
     /*
@@ -412,10 +391,6 @@ public class InstanceManagementMicroservice
 	return batchManagementApiChannel;
     }
 
-    public void setBatchManagementApiChannel(IBatchManagementApiChannel<?> batchManagementApiChannel) {
-	this.batchManagementApiChannel = batchManagementApiChannel;
-    }
-
     /*
      * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
      * getScheduleManagementApiChannel()
@@ -423,10 +398,6 @@ public class InstanceManagementMicroservice
     @Override
     public IScheduleManagementApiChannel<?> getScheduleManagementApiChannel() {
 	return scheduleManagementApiChannel;
-    }
-
-    public void setScheduleManagementApiChannel(IScheduleManagementApiChannel<?> scheduleManagementApiChannel) {
-	this.scheduleManagementApiChannel = scheduleManagementApiChannel;
     }
 
     /*
@@ -438,10 +409,6 @@ public class InstanceManagementMicroservice
 	return labelGenerationApiChannel;
     }
 
-    public void setLabelGenerationApiChannel(ILabelGenerationApiChannel<?> labelGenerationApiChannel) {
-	this.labelGenerationApiChannel = labelGenerationApiChannel;
-    }
-
     /*
      * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
      * getDeviceStateApiChannel()
@@ -449,9 +416,5 @@ public class InstanceManagementMicroservice
     @Override
     public IDeviceStateApiChannel<?> getDeviceStateApiChannel() {
 	return deviceStateApiChannel;
-    }
-
-    public void setDeviceStateApiChannel(IDeviceStateApiChannel<?> deviceStateApiChannel) {
-	this.deviceStateApiChannel = deviceStateApiChannel;
     }
 }

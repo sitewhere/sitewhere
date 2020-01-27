@@ -7,6 +7,10 @@
  */
 package com.sitewhere.batch.configuration;
 
+import com.sitewhere.batch.configuration.manager.BatchOperationManagerProvider;
+import com.sitewhere.batch.persistence.rdb.RdbBatchManagement;
+import com.sitewhere.batch.spi.IBatchOperationManager;
+import com.sitewhere.microservice.api.batch.IBatchManagement;
 import com.sitewhere.microservice.multitenant.TenantEngineModule;
 
 /**
@@ -17,5 +21,15 @@ public class BatchOperationsTenantEngineModule extends TenantEngineModule<BatchO
 
     public BatchOperationsTenantEngineModule(BatchOperationsTenantConfiguration configuration) {
 	super(configuration);
+    }
+
+    /*
+     * @see com.google.inject.AbstractModule#configure()
+     */
+    @Override
+    protected void configure() {
+	bind(BatchOperationsTenantConfiguration.class).toInstance(getConfiguration());
+	bind(IBatchManagement.class).to(RdbBatchManagement.class);
+	bind(IBatchOperationManager.class).toProvider(BatchOperationManagerProvider.class);
     }
 }

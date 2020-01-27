@@ -14,6 +14,7 @@ import com.sitewhere.batch.spi.kafka.IUnprocessedBatchElementsProducer;
 import com.sitewhere.batch.spi.kafka.IUnprocessedBatchOperationsProducer;
 import com.sitewhere.grpc.service.BatchManagementGrpc;
 import com.sitewhere.microservice.api.batch.IBatchManagement;
+import com.sitewhere.rdb.spi.IRdbEntityManagerProvider;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
@@ -63,4 +64,11 @@ public interface IBatchOperationsTenantEngine extends IMicroserviceTenantEngine<
      * @return
      */
     public IFailedBatchElementsProducer getFailedBatchElementsProducer();
+
+    /**
+     * Get provider which provides an RDB entity manager for this tenant.
+     * 
+     * @return
+     */
+    public IRdbEntityManagerProvider getRdbEntityManagerProvider();
 }

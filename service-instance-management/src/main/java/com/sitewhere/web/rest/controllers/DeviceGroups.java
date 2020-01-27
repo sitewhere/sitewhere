@@ -340,11 +340,11 @@ public class DeviceGroups {
     }
 
     protected IDeviceManagement getDeviceManagement() {
-	return getMicroservice().getDeviceManagementApiChannel();
+	return getMicroservice().getDeviceManagement();
     }
 
     protected IAssetManagement getAssetManagement() {
-	return getMicroservice().getAssetManagementApiChannel();
+	return getMicroservice().getAssetManagement();
     }
 
     protected ILabelGeneration getLabelGeneration() {

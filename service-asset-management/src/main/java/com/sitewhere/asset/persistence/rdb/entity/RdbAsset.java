@@ -97,10 +97,16 @@ public class RdbAsset extends RdbBrandedEntity implements IAsset {
     /*
      * @see com.sitewhere.spi.common.IMetadataProvider#getMetadata()
      */
+    @Override
     public Map<String, String> getMetadata() {
 	return metadata;
     }
 
+    /*
+     * @see
+     * com.sitewhere.rdb.entities.RdbPersistentEntity#setMetadata(java.util.Map)
+     */
+    @Override
     public void setMetadata(Map<String, String> metadata) {
 	this.metadata = metadata;
     }

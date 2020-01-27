@@ -117,14 +117,13 @@ public class BatchManagementPersistence extends Persistence {
      * {@link IBatchOperationCreateRequest} format.
      * 
      * @param request
-     * @param uuid
      * @return
      * @throws SiteWhereException
      */
-    public static IBatchOperationCreateRequest batchCommandInvocationCreateLogic(IBatchCommandInvocationRequest request,
-	    String uuid) throws SiteWhereException {
+    public static IBatchOperationCreateRequest batchCommandInvocationCreateLogic(IBatchCommandInvocationRequest request)
+	    throws SiteWhereException {
 	BatchOperationCreateRequest batch = new BatchOperationCreateRequest();
-	batch.setToken(uuid);
+	batch.setToken(request.getToken());
 	batch.setOperationType(BatchOperationTypes.OPERATION_BATCH_COMMAND_INVOCATION);
 	batch.setDeviceTokens(request.getDeviceTokens());
 	batch.getParameters().put(IBatchCommandInvocationRequest.PARAM_COMMAND_TOKEN, request.getCommandToken());

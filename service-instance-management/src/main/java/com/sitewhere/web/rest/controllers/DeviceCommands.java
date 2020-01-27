@@ -118,7 +118,7 @@ public class DeviceCommands {
     }
 
     protected IDeviceManagement getDeviceManagement() {
-	return getMicroservice().getDeviceManagementApiChannel();
+	return getMicroservice().getDeviceManagement();
     }
 
     protected IInstanceManagementMicroservice<?> getMicroservice() {

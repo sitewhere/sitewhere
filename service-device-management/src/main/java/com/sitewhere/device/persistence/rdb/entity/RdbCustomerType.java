@@ -27,6 +27,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -36,7 +37,7 @@ import com.sitewhere.rdb.entities.RdbBrandedEntity;
 import com.sitewhere.spi.customer.ICustomerType;
 
 @Entity
-@Table(name = "customer_type")
+@Table(name = "customer_type", uniqueConstraints = @UniqueConstraint(columnNames = { "token" }))
 @NamedQuery(name = Queries.QUERY_CUSTOMER_TYPE_BY_TOKEN, query = "SELECT c FROM RdbCustomerType c WHERE c.token = :token")
 public class RdbCustomerType extends RdbBrandedEntity implements ICustomerType {
 
@@ -118,6 +119,11 @@ public class RdbCustomerType extends RdbBrandedEntity implements ICustomerType {
 	return metadata;
     }
 
+    /*
+     * @see
+     * com.sitewhere.rdb.entities.RdbPersistentEntity#setMetadata(java.util.Map)
+     */
+    @Override
     public void setMetadata(Map<String, String> metadata) {
 	this.metadata = metadata;
     }

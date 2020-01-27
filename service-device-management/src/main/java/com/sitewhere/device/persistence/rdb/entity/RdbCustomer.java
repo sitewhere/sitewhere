@@ -25,6 +25,7 @@ import javax.persistence.MapKeyColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -34,7 +35,7 @@ import com.sitewhere.rdb.entities.RdbBrandedEntity;
 import com.sitewhere.spi.customer.ICustomer;
 
 @Entity
-@Table(name = "customer")
+@Table(name = "customer", uniqueConstraints = @UniqueConstraint(columnNames = { "token" }))
 @NamedQueries({
 	@NamedQuery(name = Queries.QUERY_CUSTOMER_BY_TOKEN, query = "SELECT c FROM RdbCustomer c WHERE c.token = :token"),
 	@NamedQuery(name = Queries.QUERY_CUSTOMER_BY_PARENT_ID, query = "SELECT c FROM RdbCustomer c WHERE c.parentId = :parentId") })
@@ -147,6 +148,11 @@ public class RdbCustomer extends RdbBrandedEntity implements ICustomer {
 	return metadata;
     }
 
+    /*
+     * @see
+     * com.sitewhere.rdb.entities.RdbPersistentEntity#setMetadata(java.util.Map)
+     */
+    @Override
     public void setMetadata(Map<String, String> metadata) {
 	this.metadata = metadata;
     }

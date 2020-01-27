@@ -1091,7 +1091,7 @@ public class Assignments {
     }
 
     protected IDeviceManagement getDeviceManagement() {
-	return getMicroservice().getDeviceManagementApiChannel();
+	return getMicroservice().getDeviceManagement();
     }
 
     protected IDeviceEventManagementApiChannel<?> getDeviceEventManagement() {
@@ -1099,7 +1099,7 @@ public class Assignments {
     }
 
     protected IAssetManagement getAssetManagement() {
-	return getMicroservice().getAssetManagementApiChannel();
+	return getMicroservice().getAssetManagement();
     }
 
     protected IScheduleManagement getScheduleManagement() {

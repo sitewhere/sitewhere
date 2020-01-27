@@ -18,6 +18,8 @@ create table devicemanagement.area (
 );
 
 alter table if exists devicemanagement.area 
+	add constraint UKrudrrgb0fm0h55dg080db0tsb unique (token);
+alter table if exists devicemanagement.area 
 	add constraint FK2dmtr5518yrmeswf3hau5ksik foreign key (parent_id) references devicemanagement.area;
 	
 create table devicemanagement.area_boundary (
@@ -58,6 +60,8 @@ create table devicemanagement.area_type (
 	primary key (id)
 );
 
+alter table if exists devicemanagement.area_type 
+	add constraint UKebow8w7gya5xo9tv0st5di3t8 unique (token);
 alter table if exists devicemanagement.area 
 	add constraint FKnthup5wgq7m7rk8dkpoewbuyv foreign key (area_type_id) references devicemanagement.area_type;
 
@@ -113,6 +117,8 @@ create table devicemanagement.customer (
 );
 
 alter table if exists devicemanagement.customer 
+	add constraint UKi1p08swb0onyuxes5tjx73rqg unique (token);
+alter table if exists devicemanagement.customer 
 	add constraint FK70184a6yqo1yjbbi9x18mvftc foreign key (parent_id) references devicemanagement.customer;
 
 create table devicemanagement.customer_metadata (
@@ -142,6 +148,8 @@ create table devicemanagement.customer_type (
 	primary key (id)
 );
 
+alter table if exists devicemanagement.customer_type 
+	add constraint UK584b1s9rv7yquuttuu5bx0puk unique (token);
 alter table if exists devicemanagement.customer 
 	add constraint FKn8vf9jf3m29plqn6rx45p2pl7 foreign key (customer_type_id) references devicemanagement.customer_type;
 alter table if exists devicemanagement.contained_customer_types 
@@ -173,6 +181,8 @@ create table devicemanagement.device (
 	primary key (id)
 );
 
+alter table if exists devicemanagement.device 
+	add constraint UKn1ybpxp03vbsysx83ex0dj6xl unique (token);
 alter table if exists devicemanagement.device 
 	add constraint FK407b76lvky0edm9leklkxf0u6 foreign key (parent_device_id) references devicemanagement.device;
 
@@ -227,6 +237,8 @@ create table devicemanagement.device_assignment (
 );
 
 alter table if exists devicemanagement.device_assignment 
+	add constraint UKgj18sxfpuna7qjnlpwl2h3lkn unique (token);
+alter table if exists devicemanagement.device_assignment 
 	add constraint FK2jqk0lrnqbdkqrdkyqlp2ibf7 foreign key (device_id) references devicemanagement.device;
 alter table if exists devicemanagement.device_assignment 
 	add constraint FK43mo11770ycicj2e6xst18q76 foreign key (area_id) references devicemanagement.area;
@@ -259,6 +271,8 @@ create table devicemanagement.device_command (
 	primary key (id)
 );
 
+alter table if exists devicemanagement.device_command 
+	add constraint UK7o1v1vlo4n9r7trps66yorv20 unique (token);
 alter table if exists devicemanagement.command_parameter 
 	add constraint FK545gd0i40baxsq153ntqnhrub foreign key (device_command_id) references devicemanagement.device_command;
 
@@ -295,6 +309,9 @@ create table devicemanagement.device_element_schema (
 	primary key (id)
 );
 
+alter table if exists devicemanagement.device_element_schema 
+	add constraint UKr1ew8sprwxdg7o2aonjvjx20p unique (token);
+
 create table devicemanagement.device_element_schema_metadata (
 	device_element_schema_id uuid not null, 
 	prop_value varchar(255), 
@@ -320,6 +337,9 @@ create table devicemanagement.device_group (
 	name varchar(255), 
 	primary key (id)
 );
+
+alter table if exists devicemanagement.device_group 
+	add constraint UK87pdlj3liy1i32bh5idtgveef unique (token);
 
 create table devicemanagement.device_group_element (
 	id uuid not null, 
@@ -387,6 +407,8 @@ create table devicemanagement.device_slot (
 );
 
 alter table if exists devicemanagement.device_slot 
+	add constraint UKlf3syhy3acwjoica1jibcxxd3 unique (token);
+alter table if exists devicemanagement.device_slot 
 	add constraint FK9qcpg8r7rvlj3us0wh5e86489 foreign key (device_element_schema_id) references devicemanagement.device_element_schema;
 
 create table devicemanagement.device_slot_metadata (
@@ -415,6 +437,9 @@ create table devicemanagement.device_status (
 	name varchar(255), 
 	primary key (id)
 );
+
+alter table if exists devicemanagement.device_status 
+	add constraint UKod5de1uet0qwq9lbpndti2ph2 unique (token);
 
 create table devicemanagement.device_status_metadata (
 	device_status_id uuid not null, 
@@ -445,6 +470,8 @@ create table devicemanagement.device_type (
 	primary key (id)
 );
 
+alter table if exists devicemanagement.device_type 
+	add constraint UKt560kejuxj38tdgu7vpd7pjd3 unique (token);
 alter table if exists devicemanagement.device_type 
 	add constraint FKt81gytf4cc97fyhdwl64c0tin foreign key (device_element_schema_id) references devicemanagement.device_element_schema;
 alter table if exists devicemanagement.device 
@@ -478,6 +505,8 @@ create table devicemanagement.device_unit (
 	primary key (id)
 );
 
+alter table if exists devicemanagement.device_unit 
+	add constraint UKluuwl77ih7apqm9o04gwcdnvc unique (token);
 alter table if exists devicemanagement.device_unit 
 	add constraint FKfwbctd10qtda4iqe38p5hlpa4 foreign key (parent_id) references devicemanagement.device;
 alter table if exists devicemanagement.device_unit 
@@ -524,6 +553,8 @@ create table devicemanagement.zone (
 	primary key (id)
 );
 
+alter table if exists devicemanagement.zone 
+	add constraint UKi2v17tnrc10ri0oxuvv8prlri unique (token);
 alter table if exists devicemanagement.location 
 	add constraint FKairbravxei9ggr7lysb7c6bu0 foreign key (zone_id) references devicemanagement.zone;
 

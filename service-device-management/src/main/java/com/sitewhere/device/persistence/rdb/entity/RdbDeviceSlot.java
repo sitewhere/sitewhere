@@ -24,6 +24,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -32,7 +33,7 @@ import com.sitewhere.rdb.entities.RdbPersistentEntity;
 import com.sitewhere.spi.device.element.IDeviceSlot;
 
 @Entity
-@Table(name = "device_slot")
+@Table(name = "device_slot", uniqueConstraints = @UniqueConstraint(columnNames = { "token" }))
 public class RdbDeviceSlot extends RdbPersistentEntity implements IDeviceSlot, Serializable {
 
     /** Serial version UID */
@@ -105,6 +106,11 @@ public class RdbDeviceSlot extends RdbPersistentEntity implements IDeviceSlot, S
 	return metadata;
     }
 
+    /*
+     * @see
+     * com.sitewhere.rdb.entities.RdbPersistentEntity#setMetadata(java.util.Map)
+     */
+    @Override
     public void setMetadata(Map<String, String> metadata) {
 	this.metadata = metadata;
     }

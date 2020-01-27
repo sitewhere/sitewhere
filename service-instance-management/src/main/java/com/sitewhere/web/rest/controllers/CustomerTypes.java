@@ -190,7 +190,7 @@ public class CustomerTypes {
     }
 
     protected IDeviceManagement getDeviceManagement() {
-	return getMicroservice().getDeviceManagementApiChannel();
+	return getMicroservice().getDeviceManagement();
     }
 
     protected ILabelGeneration getLabelGeneration() {

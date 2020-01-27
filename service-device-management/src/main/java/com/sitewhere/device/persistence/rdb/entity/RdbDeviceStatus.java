@@ -23,6 +23,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -32,7 +33,7 @@ import com.sitewhere.rdb.entities.RdbPersistentEntity;
 import com.sitewhere.spi.device.IDeviceStatus;
 
 @Entity
-@Table(name = "device_status")
+@Table(name = "device_status", uniqueConstraints = @UniqueConstraint(columnNames = { "token" }))
 @NamedQuery(name = Queries.QUERY_DEVICE_STATUS_BY_TOKEN, query = "SELECT s FROM RdbDeviceStatus s WHERE s.token = :token")
 public class RdbDeviceStatus extends RdbPersistentEntity implements IDeviceStatus {
 
@@ -182,6 +183,11 @@ public class RdbDeviceStatus extends RdbPersistentEntity implements IDeviceStatu
 	return metadata;
     }
 
+    /*
+     * @see
+     * com.sitewhere.rdb.entities.RdbPersistentEntity#setMetadata(java.util.Map)
+     */
+    @Override
     public void setMetadata(Map<String, String> metadata) {
 	this.metadata = metadata;
     }

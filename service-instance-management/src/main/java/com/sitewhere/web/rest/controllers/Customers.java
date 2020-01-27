@@ -610,7 +610,7 @@ public class Customers {
     }
 
     protected IDeviceManagement getDeviceManagement() {
-	return getMicroservice().getDeviceManagementApiChannel();
+	return getMicroservice().getDeviceManagement();
     }
 
     protected IDeviceEventManagement getDeviceEventManagement() {
@@ -618,7 +618,7 @@ public class Customers {
     }
 
     protected IAssetManagement getAssetManagement() {
-	return getMicroservice().getAssetManagementApiChannel();
+	return getMicroservice().getAssetManagement();
     }
 
     protected ILabelGeneration getLabelGeneration() {

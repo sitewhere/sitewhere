@@ -27,6 +27,7 @@ import javax.persistence.MapKeyColumn;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -36,7 +37,7 @@ import com.sitewhere.rdb.entities.RdbPersistentEntity;
 import com.sitewhere.spi.area.IZone;
 
 @Entity
-@Table(name = "zone")
+@Table(name = "zone", uniqueConstraints = @UniqueConstraint(columnNames = { "token" }))
 @NamedQuery(name = Queries.QUERY_ZONE_BY_TOKEN, query = "SELECT z FROM RdbZone z WHERE z.token = :token")
 public class RdbZone extends RdbPersistentEntity implements IZone {
 
@@ -188,6 +189,11 @@ public class RdbZone extends RdbPersistentEntity implements IZone {
 	return metadata;
     }
 
+    /*
+     * @see
+     * com.sitewhere.rdb.entities.RdbPersistentEntity#setMetadata(java.util.Map)
+     */
+    @Override
     public void setMetadata(Map<String, String> metadata) {
 	this.metadata = metadata;
     }
