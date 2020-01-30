@@ -7,6 +7,8 @@
  */
 package com.sitewhere.schedule;
 
+import java.util.UUID;
+
 import com.sitewhere.microservice.api.schedule.IScheduleManagement;
 import com.sitewhere.schedule.spi.IScheduleManager;
 import com.sitewhere.spi.SiteWhereException;
@@ -29,10 +31,8 @@ public class ScheduleManagementTriggers extends ScheduleManagementDecorator {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.server.scheduling.ScheduleManagementDecorator#
-     * createSchedule(com. sitewhere.spi.scheduling.request.IScheduleCreateRequest)
+     * @see com.sitewhere.schedule.ScheduleManagementDecorator#createSchedule(com.
+     * sitewhere.spi.scheduling.request.IScheduleCreateRequest)
      */
     @Override
     public ISchedule createSchedule(IScheduleCreateRequest request) throws SiteWhereException {
@@ -43,22 +43,20 @@ public class ScheduleManagementTriggers extends ScheduleManagementDecorator {
 
     /*
      * @see
-     * com.sitewhere.schedule.ScheduleManagementDecorator#deleteSchedule(java.lang.
-     * String)
+     * com.sitewhere.schedule.ScheduleManagementDecorator#deleteSchedule(java.util.
+     * UUID)
      */
     @Override
-    public ISchedule deleteSchedule(String token) throws SiteWhereException {
-	ISchedule schedule = super.deleteSchedule(token);
+    public ISchedule deleteSchedule(UUID scheduleId) throws SiteWhereException {
+	ISchedule schedule = super.deleteSchedule(scheduleId);
 	getScheduleManager().scheduleRemoved(schedule);
 	return schedule;
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.server.scheduling.ScheduleManagementDecorator#
-     * createScheduledJob(
-     * com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest)
+     * @see
+     * com.sitewhere.schedule.ScheduleManagementDecorator#createScheduledJob(com.
+     * sitewhere.spi.scheduling.request.IScheduledJobCreateRequest)
      */
     @Override
     public IScheduledJob createScheduledJob(IScheduledJobCreateRequest request) throws SiteWhereException {
@@ -70,11 +68,11 @@ public class ScheduleManagementTriggers extends ScheduleManagementDecorator {
     /*
      * @see
      * com.sitewhere.schedule.ScheduleManagementDecorator#deleteScheduledJob(java.
-     * lang.String)
+     * util.UUID)
      */
     @Override
-    public IScheduledJob deleteScheduledJob(String token) throws SiteWhereException {
-	IScheduledJob job = super.deleteScheduledJob(token);
+    public IScheduledJob deleteScheduledJob(UUID scheduledJobId) throws SiteWhereException {
+	IScheduledJob job = super.deleteScheduledJob(scheduledJobId);
 	getScheduleManager().unscheduleJob(job);
 	return job;
     }

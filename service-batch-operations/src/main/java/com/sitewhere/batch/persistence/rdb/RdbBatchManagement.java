@@ -45,7 +45,7 @@ import com.sitewhere.spi.search.batch.IBatchOperationSearchCriteria;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 
 /**
- * Impplementation of {@link IBatchManagement} that stores data in RDB.
+ * Implementation of {@link IBatchManagement} that stores data in RDB.
  */
 public class RdbBatchManagement extends RdbTenantComponent implements IBatchManagement {
 

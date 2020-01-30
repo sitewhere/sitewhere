@@ -9,8 +9,22 @@ package com.sitewhere.schedule.configuration;
 
 import com.sitewhere.spi.microservice.IMicroserviceConfiguration;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 /**
  * Maps schedule management microservice YAML configuration to objects.
  */
+@RegisterForReflection
 public class ScheduleManagementConfiguration implements IMicroserviceConfiguration {
+
+    /** Test field */
+    private String test;
+
+    public String getTest() {
+	return test;
+    }
+
+    public void setTest(String test) {
+	this.test = test;
+    }
 }

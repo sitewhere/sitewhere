@@ -7,18 +7,27 @@
  */
 package com.sitewhere.schedule.microservice;
 
+import com.sitewhere.datastore.DatastoreDefinition;
 import com.sitewhere.grpc.service.ScheduleManagementGrpc;
 import com.sitewhere.microservice.api.schedule.IScheduleManagement;
+import com.sitewhere.microservice.api.schedule.ScheduleManagementRequestBuilder;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
+import com.sitewhere.microservice.scripting.Binding;
+import com.sitewhere.rdb.RdbPersistenceOptions;
+import com.sitewhere.rdb.RdbTenantEngine;
 import com.sitewhere.schedule.configuration.ScheduleManagementTenantConfiguration;
 import com.sitewhere.schedule.configuration.ScheduleManagementTenantEngineModule;
+import com.sitewhere.schedule.grpc.ScheduleManagementImpl;
+import com.sitewhere.schedule.persistence.rdb.entity.RdbSchedule;
+import com.sitewhere.schedule.persistence.rdb.entity.RdbScheduledJob;
+import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
+import com.sitewhere.spi.microservice.scripting.IScriptVariables;
 
 import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
@@ -26,7 +35,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
  * Implementation of {@link IMicroserviceTenantEngine} that implements schedule
  * management functionality.
  */
-public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine<ScheduleManagementTenantConfiguration>
+public class ScheduleManagementTenantEngine extends RdbTenantEngine<ScheduleManagementTenantConfiguration>
 	implements IScheduleManagementTenantEngine {
 
     /** Schedule management persistence API */
@@ -58,18 +67,60 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine<Sch
     }
 
     /*
+     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getDatastoreDefinition()
+     */
+    @Override
+    public DatastoreDefinition getDatastoreDefinition() {
+	return getActiveConfiguration().getDatastore();
+    }
+
+    /*
+     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getEntityClasses()
+     */
+    @Override
+    public Class<?>[] getEntityClasses() {
+	return new Class<?>[] { RdbSchedule.class, RdbScheduledJob.class };
+    }
+
+    /*
+     * @see com.sitewhere.rdb.RdbTenantEngine#getPersistenceOptions()
+     */
+    @Override
+    public RdbPersistenceOptions getPersistenceOptions() {
+	RdbPersistenceOptions options = new RdbPersistenceOptions();
+	// options.setHbmToDdlAuto("update");
+	return options;
+    }
+
+    /*
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * setDatasetBootstrapBindings(com.sitewhere.microservice.scripting.Binding)
+     */
+    @Override
+    public void setDatasetBootstrapBindings(Binding binding) throws SiteWhereException {
+	binding.setVariable(IScriptVariables.VAR_SCHEDULE_MANAGEMENT_BUILDER,
+		new ScheduleManagementRequestBuilder(getScheduleManagement()));
+    }
+
+    /*
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * loadEngineComponents()
+     */
+    @Override
+    public void loadEngineComponents() throws SiteWhereException {
+	this.scheduleManagement = getInjector().getInstance(IScheduleManagement.class);
+	this.scheduleManagementImpl = new ScheduleManagementImpl((IScheduleManagementMicroservice) getMicroservice(),
+		getScheduleManagement());
+    }
+
+    /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
      * tenantInitialize(com.sitewhere.spi.microservice.lifecycle.
      * ILifecycleProgressMonitor)
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// // Create management interfaces.
-	// this.scheduleManagement = (IScheduleManagement) getModuleContext()
-	// .getBean(ScheduleManagementBeans.BEAN_SCHEDULE_MANAGEMENT);
-	// this.scheduleManagementImpl = new
-	// ScheduleManagementImpl((IScheduleManagementMicroservice) getMicroservice(),
-	// getScheduleManagement());
+	super.tenantInitialize(monitor);
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
@@ -88,6 +139,8 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine<Sch
      */
     @Override
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.tenantStart(monitor);
+
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
 
@@ -105,6 +158,8 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine<Sch
      */
     @Override
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.tenantStop(monitor);
+
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
 
@@ -124,10 +179,6 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine<Sch
 	return scheduleManagement;
     }
 
-    protected void setScheduleManagement(IScheduleManagement scheduleManagement) {
-	this.scheduleManagement = scheduleManagement;
-    }
-
     /*
      * @see com.sitewhere.schedule.spi.microservice.IScheduleManagementTenantEngine#
      * getScheduleManagementImpl()
@@ -135,9 +186,5 @@ public class ScheduleManagementTenantEngine extends MicroserviceTenantEngine<Sch
     @Override
     public ScheduleManagementGrpc.ScheduleManagementImplBase getScheduleManagementImpl() {
 	return scheduleManagementImpl;
-    }
-
-    protected void setScheduleManagementImpl(ScheduleManagementGrpc.ScheduleManagementImplBase scheduleManagementImpl) {
-	this.scheduleManagementImpl = scheduleManagementImpl;
     }
 }

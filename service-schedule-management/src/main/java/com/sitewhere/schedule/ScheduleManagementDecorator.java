@@ -7,6 +7,8 @@
  */
 package com.sitewhere.schedule;
 
+import java.util.UUID;
+
 import com.sitewhere.microservice.api.schedule.IScheduleManagement;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponentDecorator;
 import com.sitewhere.spi.SiteWhereException;
@@ -29,10 +31,9 @@ public class ScheduleManagementDecorator extends TenantEngineLifecycleComponentD
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.scheduling.IScheduleManagement#createSchedule(com.
-     * sitewhere.spi .scheduling.request.IScheduleCreateRequest)
+     * @see
+     * com.sitewhere.microservice.api.schedule.IScheduleManagement#createSchedule(
+     * com.sitewhere.spi.scheduling.request.IScheduleCreateRequest)
      */
     @Override
     public ISchedule createSchedule(IScheduleCreateRequest request) throws SiteWhereException {
@@ -40,23 +41,28 @@ public class ScheduleManagementDecorator extends TenantEngineLifecycleComponentD
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.scheduling.IScheduleManagement#updateSchedule(java.lang
-     * .String, com.sitewhere.spi.scheduling.request.IScheduleCreateRequest)
+     * com.sitewhere.microservice.api.schedule.IScheduleManagement#updateSchedule(
+     * java.util.UUID, com.sitewhere.spi.scheduling.request.IScheduleCreateRequest)
      */
     @Override
-    public ISchedule updateSchedule(String token, IScheduleCreateRequest request) throws SiteWhereException {
-	return getDelegate().updateSchedule(token, request);
+    public ISchedule updateSchedule(UUID scheduleId, IScheduleCreateRequest request) throws SiteWhereException {
+	return getDelegate().updateSchedule(scheduleId, request);
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.scheduling.IScheduleManagement#getScheduleByToken(java.
-     * lang.String )
+     * com.sitewhere.microservice.api.schedule.IScheduleManagement#getSchedule(java.
+     * util.UUID)
+     */
+    @Override
+    public ISchedule getSchedule(UUID scheduleId) throws SiteWhereException {
+	return getDelegate().getSchedule(scheduleId);
+    }
+
+    /*
+     * @see com.sitewhere.microservice.api.schedule.IScheduleManagement#
+     * getScheduleByToken(java.lang.String)
      */
     @Override
     public ISchedule getScheduleByToken(String token) throws SiteWhereException {
@@ -64,31 +70,29 @@ public class ScheduleManagementDecorator extends TenantEngineLifecycleComponentD
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.scheduling.IScheduleManagement#listSchedules(com.
-     * sitewhere.spi .search.ISearchCriteria)
+     * @see
+     * com.sitewhere.microservice.api.schedule.IScheduleManagement#listSchedules(com
+     * .sitewhere.spi.search.ISearchCriteria)
      */
     @Override
-    public ISearchResults<ISchedule> listSchedules(ISearchCriteria criteria) throws SiteWhereException {
+    public ISearchResults<? extends ISchedule> listSchedules(ISearchCriteria criteria) throws SiteWhereException {
 	return getDelegate().listSchedules(criteria);
     }
 
     /*
      * @see
-     * com.sitewhere.spi.scheduling.IScheduleManagement#deleteSchedule(java.lang.
-     * String)
+     * com.sitewhere.microservice.api.schedule.IScheduleManagement#deleteSchedule(
+     * java.util.UUID)
      */
     @Override
-    public ISchedule deleteSchedule(String token) throws SiteWhereException {
-	return getDelegate().deleteSchedule(token);
+    public ISchedule deleteSchedule(UUID scheduleId) throws SiteWhereException {
+	return getDelegate().deleteSchedule(scheduleId);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.scheduling.IScheduleManagement#createScheduledJob(com.
-     * sitewhere .spi.scheduling.request.IScheduledJobCreateRequest)
+     * @see com.sitewhere.microservice.api.schedule.IScheduleManagement#
+     * createScheduledJob(com.sitewhere.spi.scheduling.request.
+     * IScheduledJobCreateRequest)
      */
     @Override
     public IScheduledJob createScheduledJob(IScheduledJobCreateRequest request) throws SiteWhereException {
@@ -96,24 +100,29 @@ public class ScheduleManagementDecorator extends TenantEngineLifecycleComponentD
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.sitewhere.spi.scheduling.IScheduleManagement#updateScheduledJob(java.
-     * lang.String ,
+     * @see com.sitewhere.microservice.api.schedule.IScheduleManagement#
+     * updateScheduledJob(java.util.UUID,
      * com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest)
      */
     @Override
-    public IScheduledJob updateScheduledJob(String token, IScheduledJobCreateRequest request)
+    public IScheduledJob updateScheduledJob(UUID scheduledJobId, IScheduledJobCreateRequest request)
 	    throws SiteWhereException {
-	return getDelegate().updateScheduledJob(token, request);
+	return getDelegate().updateScheduledJob(scheduledJobId, request);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.scheduling.IScheduleManagement#getScheduledJobByToken(
-     * java.lang .String)
+     * @see
+     * com.sitewhere.microservice.api.schedule.IScheduleManagement#getScheduledJob(
+     * java.util.UUID)
+     */
+    @Override
+    public IScheduledJob getScheduledJob(UUID scheduledJobId) throws SiteWhereException {
+	return getDelegate().getScheduledJob(scheduledJobId);
+    }
+
+    /*
+     * @see com.sitewhere.microservice.api.schedule.IScheduleManagement#
+     * getScheduledJobByToken(java.lang.String)
      */
     @Override
     public IScheduledJob getScheduledJobByToken(String token) throws SiteWhereException {
@@ -121,23 +130,22 @@ public class ScheduleManagementDecorator extends TenantEngineLifecycleComponentD
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.scheduling.IScheduleManagement#listScheduledJobs(com.
-     * sitewhere .spi.search.ISearchCriteria)
+     * @see
+     * com.sitewhere.microservice.api.schedule.IScheduleManagement#listScheduledJobs
+     * (com.sitewhere.spi.search.ISearchCriteria)
      */
     @Override
-    public ISearchResults<IScheduledJob> listScheduledJobs(ISearchCriteria criteria) throws SiteWhereException {
+    public ISearchResults<? extends IScheduledJob> listScheduledJobs(ISearchCriteria criteria)
+	    throws SiteWhereException {
 	return getDelegate().listScheduledJobs(criteria);
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.scheduling.IScheduleManagement#deleteScheduledJob(java.lang
-     * .String)
+     * @see com.sitewhere.microservice.api.schedule.IScheduleManagement#
+     * deleteScheduledJob(java.util.UUID)
      */
     @Override
-    public IScheduledJob deleteScheduledJob(String token) throws SiteWhereException {
-	return getDelegate().deleteScheduledJob(token);
+    public IScheduledJob deleteScheduledJob(UUID scheduledJobId) throws SiteWhereException {
+	return getDelegate().deleteScheduledJob(scheduledJobId);
     }
 }

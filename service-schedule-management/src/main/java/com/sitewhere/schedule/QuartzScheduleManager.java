@@ -9,6 +9,7 @@ package com.sitewhere.schedule;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -51,7 +52,7 @@ public class QuartzScheduleManager extends TenantEngineLifecycleComponent implem
     private int numProcessingThreads = DEFAULT_THREAD_COUNT;
 
     /** Cache schedules by token */
-    private Map<String, ISchedule> schedulesByToken = new HashMap<String, ISchedule>();
+    private Map<UUID, ISchedule> schedulesById = new HashMap<UUID, ISchedule>();
 
     public QuartzScheduleManager(IScheduleManagement scheduleManagement) {
 	super(LifecycleComponentType.ScheduleManager);
@@ -99,13 +100,13 @@ public class QuartzScheduleManager extends TenantEngineLifecycleComponent implem
      * @throws SiteWhereException
      */
     protected void cacheSchedules() throws SiteWhereException {
-	Map<String, ISchedule> updated = new HashMap<String, ISchedule>();
-	ISearchResults<ISchedule> schedules = getScheduleManagement().listSchedules(SearchCriteria.ALL);
+	Map<UUID, ISchedule> updated = new HashMap<UUID, ISchedule>();
+	ISearchResults<? extends ISchedule> schedules = getScheduleManagement().listSchedules(SearchCriteria.ALL);
 	for (ISchedule schedule : schedules.getResults()) {
-	    updated.put(schedule.getToken(), schedule);
+	    updated.put(schedule.getId(), schedule);
 	}
-	this.schedulesByToken = updated;
-	getLogger().info("Updated cache with " + getSchedulesByToken().size() + " schedules.");
+	this.schedulesById = updated;
+	getLogger().info("Updated cache with " + getSchedulesById().size() + " schedules.");
     }
 
     /**
@@ -114,7 +115,7 @@ public class QuartzScheduleManager extends TenantEngineLifecycleComponent implem
      * @throws SiteWhereException
      */
     protected void scheduleJobs() throws SiteWhereException {
-	ISearchResults<IScheduledJob> jobs = getScheduleManagement().listScheduledJobs(SearchCriteria.ALL);
+	ISearchResults<? extends IScheduledJob> jobs = getScheduleManagement().listScheduledJobs(SearchCriteria.ALL);
 	for (IScheduledJob job : jobs.getResults()) {
 	    scheduleJob(job);
 	}
@@ -168,9 +169,10 @@ public class QuartzScheduleManager extends TenantEngineLifecycleComponent implem
     @Override
     public void scheduleJob(IScheduledJob job) throws SiteWhereException {
 	JobDetail detail = QuartzBuilder.buildJobDetail(job);
-	ISchedule schedule = getSchedulesByToken().get(job.getScheduleToken());
+	ISchedule schedule = getSchedulesById().get(job.getScheduleId());
 	if (schedule == null) {
-	    throw new SiteWhereException("Job references unknown schedule: " + job.getScheduleToken());
+	    throw new SiteWhereException(
+		    String.format("Job references unknown schedule: %s", job.getScheduleId().toString()));
 	}
 
 	getLogger().info("Scheduling job " + job.getToken() + " for '" + schedule.getName() + "'.");
@@ -213,27 +215,15 @@ public class QuartzScheduleManager extends TenantEngineLifecycleComponent implem
 	}
     }
 
-    public IScheduleManagement getScheduleManagement() {
+    protected IScheduleManagement getScheduleManagement() {
 	return scheduleManagement;
     }
 
-    public void setScheduleManagement(IScheduleManagement scheduleManagement) {
-	this.scheduleManagement = scheduleManagement;
-    }
-
-    public int getNumProcessingThreads() {
+    protected int getNumProcessingThreads() {
 	return numProcessingThreads;
     }
 
-    public void setNumProcessingThreads(int numProcessingThreads) {
-	this.numProcessingThreads = numProcessingThreads;
-    }
-
-    public Map<String, ISchedule> getSchedulesByToken() {
-	return schedulesByToken;
-    }
-
-    public void setSchedulesByToken(Map<String, ISchedule> schedulesByToken) {
-	this.schedulesByToken = schedulesByToken;
+    protected Map<UUID, ISchedule> getSchedulesById() {
+	return schedulesById;
     }
 }

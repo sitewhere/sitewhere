@@ -35,6 +35,9 @@ import com.sitewhere.rest.model.scheduling.request.ScheduledJobCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.web.rest.marshaling.ScheduledJobMarshalHelper;
@@ -102,7 +105,11 @@ public class ScheduledJobs {
     @ApiOperation(value = "Update existing scheduled job")
     public Response updateScheduledJob(@RequestBody ScheduledJobCreateRequest request,
 	    @ApiParam(value = "Token", required = true) @PathParam("token") String token) throws SiteWhereException {
-	return Response.ok(getScheduleManagement().updateScheduledJob(token, request)).build();
+	IScheduledJob job = getScheduleManagement().getScheduledJobByToken(token);
+	if (job == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidScheduledJobToken, ErrorLevel.ERROR);
+	}
+	return Response.ok(getScheduleManagement().updateScheduledJob(job.getId(), request)).build();
     }
 
     /**
@@ -122,7 +129,7 @@ public class ScheduledJobs {
 	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
-	ISearchResults<IScheduledJob> results = getScheduleManagement().listScheduledJobs(criteria);
+	ISearchResults<? extends IScheduledJob> results = getScheduleManagement().listScheduledJobs(criteria);
 	if (!includeContext) {
 	    return Response.ok(results).build();
 	} else {
@@ -148,7 +155,11 @@ public class ScheduledJobs {
     @ApiOperation(value = "Delete scheduled job")
     public Response deleteScheduledJob(@ApiParam(value = "Token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
-	return Response.ok(getScheduleManagement().deleteScheduledJob(token)).build();
+	IScheduledJob job = getScheduleManagement().getScheduledJobByToken(token);
+	if (job == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidScheduledJobToken, ErrorLevel.ERROR);
+	}
+	return Response.ok(getScheduleManagement().deleteScheduledJob(job.getId())).build();
     }
 
     protected IScheduleManagement getScheduleManagement() {

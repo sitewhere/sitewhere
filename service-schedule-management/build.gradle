@@ -4,8 +4,9 @@ dependencies {
 	// SiteWhere microservice library including gRPC support.	
     compile group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
 
-	// SiteWhere MongoDB integration.	
-    compile group: 'com.sitewhere', name: 'sitewhere-mongodb', version: "${rootProject.ext['sitewhere.integration.api.version']}"
+	// SiteWhere RDB integration.	
+    compile group: 'com.sitewhere', name: 'sitewhere-rdb', version: "${rootProject.ext['sitewhere.integration.api.version']}"
 	
+	// Quartz.
     compile group: 'org.quartz-scheduler', name: 'quartz', version:'2.2.2'
 }

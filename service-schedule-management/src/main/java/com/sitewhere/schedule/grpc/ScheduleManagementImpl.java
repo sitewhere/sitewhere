@@ -8,6 +8,7 @@
 package com.sitewhere.schedule.grpc;
 
 import com.sitewhere.grpc.client.GrpcUtils;
+import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
 import com.sitewhere.grpc.client.schedule.ScheduleModelConverter;
 import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
 import com.sitewhere.grpc.model.ScheduleModel.GScheduleSearchResults;
@@ -22,8 +23,12 @@ import com.sitewhere.grpc.service.GDeleteScheduledJobRequest;
 import com.sitewhere.grpc.service.GDeleteScheduledJobResponse;
 import com.sitewhere.grpc.service.GGetScheduleByTokenRequest;
 import com.sitewhere.grpc.service.GGetScheduleByTokenResponse;
+import com.sitewhere.grpc.service.GGetScheduleRequest;
+import com.sitewhere.grpc.service.GGetScheduleResponse;
 import com.sitewhere.grpc.service.GGetScheduledJobByTokenRequest;
 import com.sitewhere.grpc.service.GGetScheduledJobByTokenResponse;
+import com.sitewhere.grpc.service.GGetScheduledJobRequest;
+import com.sitewhere.grpc.service.GGetScheduledJobResponse;
 import com.sitewhere.grpc.service.GListScheduledJobsRequest;
 import com.sitewhere.grpc.service.GListScheduledJobsResponse;
 import com.sitewhere.grpc.service.GListSchedulesRequest;
@@ -99,7 +104,8 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, ScheduleManagementGrpc.getUpdateScheduleMethod());
 	    IScheduleCreateRequest apiRequest = ScheduleModelConverter.asApiScheduleCreateRequest(request.getRequest());
-	    ISchedule apiResult = getScheduleManagement().updateSchedule(request.getToken(), apiRequest);
+	    ISchedule apiResult = getScheduleManagement()
+		    .updateSchedule(CommonModelConverter.asApiUuid(request.getId()), apiRequest);
 	    GUpdateScheduleResponse.Builder response = GUpdateScheduleResponse.newBuilder();
 	    response.setSchedule(ScheduleModelConverter.asGrpcSchedule(apiResult));
 	    responseObserver.onNext(response.build());
@@ -109,6 +115,30 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 		    responseObserver);
 	} finally {
 	    GrpcUtils.handleServerMethodExit(ScheduleManagementGrpc.getUpdateScheduleMethod());
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.ScheduleManagementGrpc.ScheduleManagementImplBase#
+     * getSchedule(com.sitewhere.grpc.service.GGetScheduleRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getSchedule(GGetScheduleRequest request, StreamObserver<GGetScheduleResponse> responseObserver) {
+	try {
+	    GrpcUtils.handleServerMethodEntry(this, ScheduleManagementGrpc.getGetScheduleMethod());
+	    ISchedule apiResult = getScheduleManagement().getSchedule(CommonModelConverter.asApiUuid(request.getId()));
+	    GGetScheduleResponse.Builder response = GGetScheduleResponse.newBuilder();
+	    if (apiResult != null) {
+		response.setSchedule(ScheduleModelConverter.asGrpcSchedule(apiResult));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.getGetScheduleMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(ScheduleManagementGrpc.getGetScheduleMethod());
 	}
     }
 
@@ -148,7 +178,7 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
     public void listSchedules(GListSchedulesRequest request, StreamObserver<GListSchedulesResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, ScheduleManagementGrpc.getListSchedulesMethod());
-	    ISearchResults<ISchedule> apiResult = getScheduleManagement()
+	    ISearchResults<? extends ISchedule> apiResult = getScheduleManagement()
 		    .listSchedules(ScheduleModelConverter.asApiScheduleSearchCrtieria(request.getCriteria()));
 	    GListSchedulesResponse.Builder response = GListSchedulesResponse.newBuilder();
 	    GScheduleSearchResults.Builder results = GScheduleSearchResults.newBuilder();
@@ -177,7 +207,8 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    StreamObserver<GDeleteScheduleResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, ScheduleManagementGrpc.getDeleteScheduleMethod());
-	    ISchedule apiResult = getScheduleManagement().deleteSchedule(request.getToken());
+	    ISchedule apiResult = getScheduleManagement()
+		    .deleteSchedule(CommonModelConverter.asApiUuid(request.getId()));
 	    GDeleteScheduleResponse.Builder response = GDeleteScheduleResponse.newBuilder();
 	    response.setSchedule(ScheduleModelConverter.asGrpcSchedule(apiResult));
 	    responseObserver.onNext(response.build());
@@ -229,7 +260,8 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    GrpcUtils.handleServerMethodEntry(this, ScheduleManagementGrpc.getUpdateScheduledJobMethod());
 	    IScheduledJobCreateRequest apiRequest = ScheduleModelConverter
 		    .asApiScheduledJobCreateRequest(request.getRequest());
-	    IScheduledJob apiResult = getScheduleManagement().updateScheduledJob(request.getToken(), apiRequest);
+	    IScheduledJob apiResult = getScheduleManagement()
+		    .updateScheduledJob(CommonModelConverter.asApiUuid(request.getId()), apiRequest);
 	    GUpdateScheduledJobResponse.Builder response = GUpdateScheduledJobResponse.newBuilder();
 	    response.setScheduledJob(ScheduleModelConverter.asGrpcScheduledJob(apiResult));
 	    responseObserver.onNext(response.build());
@@ -239,6 +271,33 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 		    responseObserver);
 	} finally {
 	    GrpcUtils.handleServerMethodExit(ScheduleManagementGrpc.getUpdateScheduledJobMethod());
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.ScheduleManagementGrpc.ScheduleManagementImplBase#
+     * getScheduledJob(com.sitewhere.grpc.service.GGetScheduledJobRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getScheduledJob(GGetScheduledJobRequest request,
+	    StreamObserver<GGetScheduledJobResponse> responseObserver) {
+	try {
+	    GrpcUtils.handleServerMethodEntry(this, ScheduleManagementGrpc.getGetScheduledJobMethod());
+	    IScheduledJob apiResult = getScheduleManagement()
+		    .getScheduledJob(CommonModelConverter.asApiUuid(request.getId()));
+	    GGetScheduledJobResponse.Builder response = GGetScheduledJobResponse.newBuilder();
+	    if (apiResult != null) {
+		response.setScheduledJob(ScheduleModelConverter.asGrpcScheduledJob(apiResult));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(ScheduleManagementGrpc.getGetScheduledJobMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(ScheduleManagementGrpc.getGetScheduledJobMethod());
 	}
     }
 
@@ -279,7 +338,7 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    StreamObserver<GListScheduledJobsResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, ScheduleManagementGrpc.getListScheduledJobsMethod());
-	    ISearchResults<IScheduledJob> apiResult = getScheduleManagement()
+	    ISearchResults<? extends IScheduledJob> apiResult = getScheduleManagement()
 		    .listScheduledJobs(ScheduleModelConverter.asApiScheduledJobSearchCrtieria(request.getCriteria()));
 	    GListScheduledJobsResponse.Builder response = GListScheduledJobsResponse.newBuilder();
 	    GScheduledJobSearchResults.Builder results = GScheduledJobSearchResults.newBuilder();
@@ -309,7 +368,8 @@ public class ScheduleManagementImpl extends ScheduleManagementGrpc.ScheduleManag
 	    StreamObserver<GDeleteScheduledJobResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, ScheduleManagementGrpc.getDeleteScheduledJobMethod());
-	    IScheduledJob apiResult = getScheduleManagement().deleteScheduledJob(request.getToken());
+	    IScheduledJob apiResult = getScheduleManagement()
+		    .deleteScheduledJob(CommonModelConverter.asApiUuid(request.getId()));
 	    GDeleteScheduledJobResponse.Builder response = GDeleteScheduledJobResponse.newBuilder();
 	    response.setScheduledJob(ScheduleModelConverter.asGrpcScheduledJob(apiResult));
 	    responseObserver.onNext(response.build());

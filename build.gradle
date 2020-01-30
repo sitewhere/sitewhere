@@ -3,8 +3,7 @@ plugins {
     id 'checkstyle'
     id 'distribution'
     id 'com.sitewhere' version '3.0.0.alpha2' apply false
-    id 'io.quarkus' version '1.0.1.Final' 
-    id "com.google.protobuf" version "0.8.10"
+    id 'io.quarkus' version '1.2.0.Final' 
     id 'com.bmuschko.docker-remote-api' version '5.3.0' 
     id 'org.ajoberstar.grgit' version '2.2.1' 
     id 'com.github.hierynomus.license' version '0.15.0' 
@@ -21,8 +20,8 @@ ext['git.revision.abbrev'] = ext.git.head().abbreviatedId
 ext['docker.base.image'] = 'openjdk:8-jre-alpine'
 ext['docker.maintainer'] = 'admin@sitewhere.com'
 
-ext['sitewhere.microservice.api.version'] = '3.0.0.alpha18'
-ext['sitewhere.integration.api.version'] = '3.0.0.alpha13'
+ext['sitewhere.microservice.api.version'] = '3.0.0.alpha19'
+ext['sitewhere.integration.api.version'] = '3.0.0.alpha14'
 ext['kafka.version'] = '2.0.0'
 ext['protobuf.version'] = '3.5.1'
 ext['grpc.version'] = '1.25.0'
@@ -102,9 +101,9 @@ subprojects {
     targetCompatibility = 1.8
     
     // Common dependencies used for all projects.
-    dependencies {	
+    dependencies {
 		// Confirm to Quarkus BOM.
-	    compile enforcedPlatform('io.quarkus:quarkus-bom:1.0.1.Final')
+	    compile platform('io.quarkus:quarkus-bom:1.2.0.Final')
 	    
     	// Testing dependencies.
 		testCompile group: 'junit', name: 'junit', version: '4.12'

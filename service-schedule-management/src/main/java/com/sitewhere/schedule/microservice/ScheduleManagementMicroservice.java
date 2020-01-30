@@ -145,8 +145,4 @@ public class ScheduleManagementMicroservice extends
     public IScheduleManagementGrpcServer getScheduleManagementGrpcServer() {
 	return scheduleManagementGrpcServer;
     }
-
-    protected void setScheduleManagementGrpcServer(IScheduleManagementGrpcServer scheduleManagementGrpcServer) {
-	this.scheduleManagementGrpcServer = scheduleManagementGrpcServer;
-    }
 }

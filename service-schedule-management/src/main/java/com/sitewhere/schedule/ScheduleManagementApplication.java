@@ -7,14 +7,19 @@
  */
 package com.sitewhere.schedule;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import com.sitewhere.microservice.MicroserviceApplication;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
 
 /**
- * Spring Boot application for schedule management microservice.
+ * Main application which runs the schedule management microservice.
  */
+@ApplicationScoped
 public class ScheduleManagementApplication extends MicroserviceApplication<IScheduleManagementMicroservice> {
 
+    @Inject
     private IScheduleManagementMicroservice microservice;
 
     /*

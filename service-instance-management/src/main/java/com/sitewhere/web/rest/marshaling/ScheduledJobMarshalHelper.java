@@ -88,13 +88,13 @@ public class ScheduledJobMarshalHelper {
 	PersistentEntity.copy(source, job);
 
 	job.setToken(source.getToken());
-	job.setScheduleToken(source.getScheduleToken());
+	job.setScheduleId(source.getScheduleId());
 	job.setJobType(source.getJobType());
 	job.getJobConfiguration().putAll(source.getJobConfiguration());
 
 	if (isIncludeContextInfo()) {
 	    job.setContext(new HashMap<String, Object>());
-	    ISchedule schedule = getScheduleManagement().getScheduleByToken(job.getScheduleToken());
+	    ISchedule schedule = getScheduleManagement().getSchedule(job.getScheduleId());
 	    if (schedule != null) {
 		job.getContext().put("schedule", schedule);
 	    }

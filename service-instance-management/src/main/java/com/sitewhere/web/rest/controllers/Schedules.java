@@ -29,6 +29,10 @@ import com.sitewhere.microservice.api.schedule.IScheduleManagement;
 import com.sitewhere.rest.model.scheduling.request.ScheduleCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.scheduling.ISchedule;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -91,7 +95,11 @@ public class Schedules {
     @ApiOperation(value = "Update an existing schedule")
     public Response updateSchedule(@RequestBody ScheduleCreateRequest request,
 	    @ApiParam(value = "Token", required = true) @PathParam("token") String token) throws SiteWhereException {
-	return Response.ok(getScheduleManagement().updateSchedule(token, request)).build();
+	ISchedule schedule = getScheduleManagement().getScheduleByToken(token);
+	if (schedule == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidScheduleToken, ErrorLevel.ERROR);
+	}
+	return Response.ok(getScheduleManagement().updateSchedule(schedule.getId(), request)).build();
     }
 
     /**
@@ -124,7 +132,11 @@ public class Schedules {
     @ApiOperation(value = "Delete a schedule")
     public Response deleteSchedule(@ApiParam(value = "Token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
-	return Response.ok(getScheduleManagement().deleteSchedule(token)).build();
+	ISchedule schedule = getScheduleManagement().getScheduleByToken(token);
+	if (schedule == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidScheduleToken, ErrorLevel.ERROR);
+	}
+	return Response.ok(getScheduleManagement().deleteSchedule(schedule.getId())).build();
     }
 
     protected IScheduleManagement getScheduleManagement() {
