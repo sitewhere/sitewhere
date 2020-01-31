@@ -33,6 +33,7 @@ import com.sitewhere.rest.model.device.event.kafka.EnrichedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.kafka.IEnrichedEventPayload;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleStatus;
 
 /**
@@ -150,7 +151,7 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
     public void process(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records) {
 	if (getOutboundConnector().getLifecycleStatus() == LifecycleStatus.Started) {
 	    if (records.size() > 0) {
-		getBatchProcessors().execute(new TopicBatchProcessor(topicPartition, records));
+		getBatchProcessors().execute(new TopicBatchProcessor(this, topicPartition, records));
 
 		// Send new offset information.
 		getConsumer().commitAsync(new OffsetCommitCallback() {
@@ -186,8 +187,9 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
 	/** Records to process */
 	private List<ConsumerRecord<String, byte[]>> records;
 
-	public TopicBatchProcessor(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records) {
-	    super(getTenantEngine().getMicroservice(), getTenantEngine().getTenantResource());
+	public TopicBatchProcessor(ITenantEngineLifecycleComponent component, TopicPartition topicPartition,
+		List<ConsumerRecord<String, byte[]>> records) {
+	    super(component);
 	    this.topicPartition = topicPartition;
 	    this.records = records;
 	}

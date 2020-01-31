@@ -7,14 +7,19 @@
  */
 package com.sitewhere.inbound;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
 
 /**
- * Spring Boot application for inbound processing microservice.
+ * Main application which runs the inbound processing microservice.
  */
+@ApplicationScoped
 public class InboundProcessingApplication extends MicroserviceApplication<IInboundProcessingMicroservice> {
 
+    @Inject
     private IInboundProcessingMicroservice microservice;
 
     /*

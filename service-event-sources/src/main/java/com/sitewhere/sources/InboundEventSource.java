@@ -186,8 +186,8 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
     @Override
     public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encoded, Map<String, Object> metadata) {
 	if (getLogger().isDebugEnabled()) {
-	    getLogger().debug(
-		    String.format("Received encoded event payload on receiver '%s'.", receiver.getDisplayName()));
+	    getLogger()
+		    .info(String.format("Received encoded event payload on receiver '%s'.", receiver.getDisplayName()));
 	}
 	List<IDecodedDeviceRequest<?>> requests = decodeEvent(encoded, metadata);
 	if (requests != null) {

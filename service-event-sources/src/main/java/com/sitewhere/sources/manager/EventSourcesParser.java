@@ -8,6 +8,7 @@
 package com.sitewhere.sources.manager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -22,9 +23,14 @@ import com.sitewhere.sources.decoder.json.JsonDeviceRequestDecoder;
 import com.sitewhere.sources.decoder.protobuf.ProtobufDeviceEventDecoder;
 import com.sitewhere.sources.mqtt.MqttInboundEventReceiver;
 import com.sitewhere.sources.spi.IDeviceEventDecoder;
+import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.sources.spi.IInboundEventSource;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
+/**
+ * Supports parsing event sources configuration into event source components.
+ */
 public class EventSourcesParser {
 
     /** Static logger instance */
@@ -40,13 +46,13 @@ public class EventSourcesParser {
      * @return
      * @throws SiteWhereException
      */
-    public static List<IInboundEventSource<?>> parse(EventSourcesTenantConfiguration configuration)
-	    throws SiteWhereException {
+    public static List<IInboundEventSource<?>> parse(ITenantEngineLifecycleComponent component,
+	    EventSourcesTenantConfiguration configuration) throws SiteWhereException {
 	List<IInboundEventSource<?>> sources = new ArrayList<>();
 	for (EventSourceGenericConfiguration sourceConfig : configuration.getEventSources()) {
 	    switch (sourceConfig.getType()) {
 	    case "mqtt": {
-		sources.add(createMqttEventSource(sourceConfig));
+		sources.add(createMqttEventSource(component, sourceConfig));
 		break;
 	    }
 	    default: {
@@ -59,23 +65,37 @@ public class EventSourcesParser {
     }
 
     /**
+     * Create a binary event source based on the given internals.
+     * 
+     * @param sourceConfig
+     * @param receivers
+     * @return
+     * @throws SiteWhereException
+     */
+    protected static IInboundEventSource<?> binaryEventSourceFor(EventSourceGenericConfiguration sourceConfig,
+	    List<IInboundEventReceiver<byte[]>> receivers) throws SiteWhereException {
+	BinaryInboundEventSource source = new BinaryInboundEventSource();
+	source.getInboundEventReceivers().addAll(receivers);
+	source.setDeviceEventDecoder(parseBinaryDecoder(sourceConfig));
+	source.setSourceId(sourceConfig.getId());
+	return source;
+    }
+
+    /**
      * Create an MQTT event source.
      * 
      * @param sourceConfig
      * @return
      * @throws SiteWhereException
      */
-    protected static IInboundEventSource<?> createMqttEventSource(EventSourceGenericConfiguration sourceConfig)
-	    throws SiteWhereException {
-	MqttEventSourceConfiguration mqttConfig = new MqttEventSourceConfiguration();
+    protected static IInboundEventSource<?> createMqttEventSource(ITenantEngineLifecycleComponent component,
+	    EventSourceGenericConfiguration sourceConfig) throws SiteWhereException {
+	MqttEventSourceConfiguration mqttConfig = new MqttEventSourceConfiguration(component);
 	mqttConfig.apply(sourceConfig);
 	LOGGER.info(String.format("Creating MQTT event source with configuration:\n%s\n\n",
 		MarshalUtils.marshalJsonAsPrettyString(mqttConfig)));
 	MqttInboundEventReceiver receiver = new MqttInboundEventReceiver(mqttConfig);
-	BinaryInboundEventSource source = new BinaryInboundEventSource();
-	source.getInboundEventReceivers().add(receiver);
-	source.setDeviceEventDecoder(parseBinaryDecoder(sourceConfig));
-	return source;
+	return binaryEventSourceFor(sourceConfig, Collections.singletonList(receiver));
     }
 
     /**

@@ -13,10 +13,9 @@ package com.sitewhere.inbound.spi.processing;
 public interface IInboundProcessingConfiguration {
 
     /**
-     * Get number of threads used to parallelize processing of decoded event
-     * payloads.
+     * Get number of threads used for concurrent processing of event payloads.
      * 
      * @return
      */
-    public int getProcessingThreadCount();
+    int getProcessingThreadCount();
 }

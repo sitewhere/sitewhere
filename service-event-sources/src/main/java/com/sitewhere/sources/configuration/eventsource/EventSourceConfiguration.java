@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.microservice.configuration.json.JsonConfiguration;
 import com.sitewhere.sources.configuration.EventSourceGenericConfiguration;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Base class for common event source configuration.
@@ -22,6 +23,10 @@ public abstract class EventSourceConfiguration extends JsonConfiguration {
 
     /** Decoder type */
     private String decoder;
+
+    public EventSourceConfiguration(ITenantEngineLifecycleComponent component) {
+	super(component);
+    }
 
     public void apply(EventSourceGenericConfiguration configuration) throws SiteWhereException {
 	this.id = configuration.getId();

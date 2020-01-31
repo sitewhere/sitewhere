@@ -7,6 +7,9 @@
  */
 package com.sitewhere.devicestate.kafka;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
@@ -21,14 +24,25 @@ public class DeviceStatePipeline extends KafkaStreamPipeline {
 
     /*
      * @see
+     * com.sitewhere.spi.microservice.kafka.IKafkaStreamPipeline#getSourceTopicNames
+     * ()
+     */
+    @Override
+    public List<String> getSourceTopicNames() {
+	List<String> topics = new ArrayList<>();
+	topics.add(
+		getMicroservice().getKafkaTopicNaming().getOutboundEventsTopic(getTenantEngine().getTenantResource()));
+	return topics;
+    }
+
+    /*
+     * @see
      * com.sitewhere.spi.microservice.kafka.IKafkaStreamPipeline#buildStreams(org.
      * apache.kafka.streams.StreamsBuilder)
      */
     @Override
     public void buildStreams(StreamsBuilder builder) {
-	builder.stream(
-		getMicroservice().getKafkaTopicNaming().getOutboundEventsTopic(getTenantEngine().getTenantResource()),
-		Consumed.with(Serdes.String(), SiteWhereSerdes.forEnrichedEventPayload()))
+	builder.stream(getSourceTopicNames(), Consumed.with(Serdes.String(), SiteWhereSerdes.forEnrichedEventPayload()))
 		.process(new DeviceStatePersistenceProcessorSupplier(), new String[0]);
     }
 }

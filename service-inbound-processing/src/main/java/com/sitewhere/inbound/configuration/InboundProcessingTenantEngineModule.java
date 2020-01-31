@@ -7,6 +7,7 @@
  */
 package com.sitewhere.inbound.configuration;
 
+import com.sitewhere.inbound.spi.processing.IInboundProcessingConfiguration;
 import com.sitewhere.microservice.multitenant.TenantEngineModule;
 
 /**
@@ -17,5 +18,13 @@ public class InboundProcessingTenantEngineModule extends TenantEngineModule<Inbo
 
     public InboundProcessingTenantEngineModule(InboundProcessingTenantConfiguration configuration) {
 	super(configuration);
+    }
+
+    /*
+     * @see com.google.inject.AbstractModule#configure()
+     */
+    @Override
+    protected void configure() {
+	bind(IInboundProcessingConfiguration.class).toInstance(getConfiguration());
     }
 }

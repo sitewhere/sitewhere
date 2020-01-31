@@ -9,7 +9,10 @@ package com.sitewhere.inbound.microservice;
 
 import com.sitewhere.inbound.configuration.InboundProcessingTenantConfiguration;
 import com.sitewhere.inbound.configuration.InboundProcessingTenantEngineModule;
-import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
+import com.sitewhere.inbound.kafka.DecodedEventsPipeline;
+import com.sitewhere.inbound.kafka.InboundEventsProducer;
+import com.sitewhere.inbound.kafka.UnregisteredEventsProducer;
+import com.sitewhere.inbound.spi.kafka.IDecodedEventsPipeline;
 import com.sitewhere.inbound.spi.kafka.IInboundEventsProducer;
 import com.sitewhere.inbound.spi.kafka.IUnregisteredEventsProducer;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
@@ -30,8 +33,8 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 public class InboundProcessingTenantEngine extends MicroserviceTenantEngine<InboundProcessingTenantConfiguration>
 	implements IInboundProcessingTenantEngine {
 
-    /** Kafka consumer that received inbound decoded events */
-    private IDecodedEventsConsumer decodedEventsConsumer;
+    /** Kafka Streams pipeline that handles inbound decoded events */
+    private IDecodedEventsPipeline decodedEventsPipeline;
 
     /** Kafka producer for events sent to unregistered devices */
     private IUnregisteredEventsProducer unregisteredDeviceEventsProducer;
@@ -62,26 +65,28 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine<Inbo
     }
 
     /*
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * loadEngineComponents()
+     */
+    @Override
+    public void loadEngineComponents() throws SiteWhereException {
+	this.decodedEventsPipeline = new DecodedEventsPipeline();
+	this.unregisteredDeviceEventsProducer = new UnregisteredEventsProducer();
+	this.inboundEventsProducer = new InboundEventsProducer();
+    }
+
+    /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
      * tenantInitialize(com.sitewhere.spi.microservice.lifecycle.
      * ILifecycleProgressMonitor)
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Load core configuration parameters.
-	// IInboundProcessingConfiguration configuration =
-	// (IInboundProcessingConfiguration) getModuleContext()
-	// .getBean(InboundProcessingBeans.BEAN_INBOUND_PROCESSING_CONFIGURATION);
-
-	// this.decodedEventsConsumer = new DecodedEventsConsumer(configuration);
-	// this.unregisteredDeviceEventsProducer = new UnregisteredEventsProducer();
-	// this.inboundEventsProducer = new InboundEventsProducer();
-
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
 
-	// Initialize decoded events consumer.
-	init.addInitializeStep(this, getDecodedEventsConsumer(), true);
+	// Initialize decoded events pipeline.
+	init.addInitializeStep(this, getDecodedEventsPipeline(), true);
 
 	// Initialize unregistered device events producer.
 	init.addInitializeStep(this, getUnregisteredDeviceEventsProducer(), true);
@@ -106,8 +111,8 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine<Inbo
 	// Start unregistered device events producer.
 	start.addStartStep(this, getUnregisteredDeviceEventsProducer(), true);
 
-	// Start decoded events consumer.
-	start.addStartStep(this, getDecodedEventsConsumer(), true);
+	// Start decoded events pipeline.
+	start.addStartStep(this, getDecodedEventsPipeline(), true);
 
 	// Start inbound events producer.
 	start.addStartStep(this, getInboundEventsProducer(), true);
@@ -126,8 +131,8 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine<Inbo
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
 
-	// Stop decoded events consumer.
-	stop.addStopStep(this, getDecodedEventsConsumer());
+	// Stop decoded events pipeline.
+	stop.addStopStep(this, getDecodedEventsPipeline());
 
 	// Stop unregistered device events producer.
 	stop.addStopStep(this, getUnregisteredDeviceEventsProducer());
@@ -141,15 +146,11 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine<Inbo
 
     /*
      * @see com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine#
-     * getDecodedEventsConsumer()
+     * getDecodedEventsPipeline()
      */
     @Override
-    public IDecodedEventsConsumer getDecodedEventsConsumer() {
-	return decodedEventsConsumer;
-    }
-
-    public void setDecodedEventsConsumer(IDecodedEventsConsumer decodedEventsConsumer) {
-	this.decodedEventsConsumer = decodedEventsConsumer;
+    public IDecodedEventsPipeline getDecodedEventsPipeline() {
+	return decodedEventsPipeline;
     }
 
     /*
@@ -161,10 +162,6 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine<Inbo
 	return unregisteredDeviceEventsProducer;
     }
 
-    public void setUnregisteredDeviceEventsProducer(IUnregisteredEventsProducer unregisteredDeviceEventsProducer) {
-	this.unregisteredDeviceEventsProducer = unregisteredDeviceEventsProducer;
-    }
-
     /*
      * @see com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine#
      * getInboundEventsProducer()
@@ -172,9 +169,5 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine<Inbo
     @Override
     public IInboundEventsProducer getInboundEventsProducer() {
 	return inboundEventsProducer;
-    }
-
-    public void setInboundEventsProducer(IInboundEventsProducer inboundEventsProducer) {
-	this.inboundEventsProducer = inboundEventsProducer;
     }
 }

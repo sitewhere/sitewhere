@@ -10,6 +10,7 @@ package com.sitewhere.sources.configuration.eventsource;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.communication.mqtt.IMqttConfiguration;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Configuration for an MQTT event source.
@@ -75,6 +76,10 @@ public class MqttEventSourceConfiguration extends EventSourceConfiguration imple
 
     /** Clean session flag */
     private boolean cleanSession = true;
+
+    public MqttEventSourceConfiguration(ITenantEngineLifecycleComponent component) {
+	super(component);
+    }
 
     /*
      * @see

@@ -65,7 +65,7 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getLogger().info(String.format("About to initialize event sources manager with configuration:\n%s\n\n",
 		MarshalUtils.marshalJsonAsPrettyString(getConfiguration().getEventSources())));
-	this.eventSources = EventSourcesParser.parse(getConfiguration());
+	this.eventSources = EventSourcesParser.parse(this, getConfiguration());
 
 	// Create Kafka components.
 	createKafkaComponents();

@@ -306,8 +306,7 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 	private IUnprocessedBatchOperation unprocessed;
 
 	public BatchOperationInitializer(IUnprocessedBatchOperation unprocessed) {
-	    super(BatchOperationManager.this.getMicroservice(),
-		    BatchOperationManager.this.getTenantEngine().getTenantResource());
+	    super(BatchOperationManager.this);
 	    this.unprocessed = unprocessed;
 	}
 
@@ -392,8 +391,7 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 	private IUnprocessedBatchElement unprocessed;
 
 	public BatchElementProcessor(IUnprocessedBatchElement unprocessed) {
-	    super(BatchOperationManager.this.getMicroservice(),
-		    BatchOperationManager.this.getTenantEngine().getTenantResource());
+	    super(BatchOperationManager.this);
 	    this.unprocessed = unprocessed;
 	}
 

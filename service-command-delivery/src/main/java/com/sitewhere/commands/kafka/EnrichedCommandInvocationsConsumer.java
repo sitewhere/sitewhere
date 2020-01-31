@@ -32,7 +32,7 @@ import com.sitewhere.rest.model.device.event.kafka.EnrichedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Consumes command invocations from a well-known Kafka topic and makes them
@@ -130,7 +130,7 @@ public class EnrichedCommandInvocationsConsumer extends DirectKafkaConsumer
     }
 
     public void received(String key, byte[] message) throws SiteWhereException {
-	executor.execute(new CommandInvocationProcessor(getTenantEngine(), message));
+	executor.execute(new CommandInvocationProcessor(this, message));
     }
 
     /**
@@ -142,8 +142,8 @@ public class EnrichedCommandInvocationsConsumer extends DirectKafkaConsumer
 	/** Encoded payload */
 	private byte[] encoded;
 
-	public CommandInvocationProcessor(IMicroserviceTenantEngine<?> tenantEngine, byte[] encoded) {
-	    super(tenantEngine.getMicroservice(), tenantEngine.getTenantResource());
+	public CommandInvocationProcessor(ITenantEngineLifecycleComponent component, byte[] encoded) {
+	    super(component);
 	    this.encoded = encoded;
 	}
 

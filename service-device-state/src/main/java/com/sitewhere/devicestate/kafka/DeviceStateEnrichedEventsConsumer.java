@@ -26,7 +26,7 @@ import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Kafka consumer that consumes records from the inbound enriched events topic
@@ -144,7 +144,7 @@ public class DeviceStateEnrichedEventsConsumer extends MicroserviceKafkaConsumer
      */
     @Override
     public void process(TopicPartition topicPartition, List<ConsumerRecord<String, byte[]>> records) {
-	new DeviceStateProcessor(getTenantEngine(), records).run();
+	new DeviceStateProcessor(this, records).run();
     }
 
     /*
@@ -169,9 +169,9 @@ public class DeviceStateEnrichedEventsConsumer extends MicroserviceKafkaConsumer
 	/** List of records to process for partition */
 	private List<ConsumerRecord<String, byte[]>> records;
 
-	public DeviceStateProcessor(IMicroserviceTenantEngine<?> tenantEngine,
+	public DeviceStateProcessor(ITenantEngineLifecycleComponent component,
 		List<ConsumerRecord<String, byte[]>> records) {
-	    super(tenantEngine.getMicroservice(), tenantEngine.getTenantResource());
+	    super(component);
 	    this.records = records;
 	}
 

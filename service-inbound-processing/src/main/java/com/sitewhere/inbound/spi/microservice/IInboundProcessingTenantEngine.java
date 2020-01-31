@@ -8,7 +8,7 @@
 package com.sitewhere.inbound.spi.microservice;
 
 import com.sitewhere.inbound.configuration.InboundProcessingTenantConfiguration;
-import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
+import com.sitewhere.inbound.spi.kafka.IDecodedEventsPipeline;
 import com.sitewhere.inbound.spi.kafka.IInboundEventsProducer;
 import com.sitewhere.inbound.spi.kafka.IUnregisteredEventsProducer;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
@@ -17,14 +17,15 @@ import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
  * Extends {@link IMicroserviceTenantEngine} with features specific to inbound
  * event processing.
  */
-public interface IInboundProcessingTenantEngine extends IMicroserviceTenantEngine<InboundProcessingTenantConfiguration> {
+public interface IInboundProcessingTenantEngine
+	extends IMicroserviceTenantEngine<InboundProcessingTenantConfiguration> {
 
     /**
-     * Get Kafka consumer that receives inbound decoded events for processing.
+     * Get Kafka Streams pipeline that handles decoded event processing.
      * 
      * @return
      */
-    public IDecodedEventsConsumer getDecodedEventsConsumer();
+    public IDecodedEventsPipeline getDecodedEventsPipeline();
 
     /**
      * Get Kafka producer that sends events for unregistered devices to an

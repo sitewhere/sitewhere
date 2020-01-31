@@ -30,7 +30,7 @@ import com.sitewhere.registration.spi.microservice.IDeviceRegistrationTenantEngi
 import com.sitewhere.rest.model.device.event.kafka.DeviceRegistrationPayload;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Listens on Kafka topic for device registration events, forwarding them to the
@@ -127,7 +127,7 @@ public class DeviceRegistrationEventsConsumer extends DirectKafkaConsumer implem
     }
 
     public void received(String key, byte[] message) throws SiteWhereException {
-	executor.execute(new DeviceRegistrationProcessor(getTenantEngine(), message));
+	executor.execute(new DeviceRegistrationProcessor(this, message));
     }
 
     /**
@@ -139,8 +139,8 @@ public class DeviceRegistrationEventsConsumer extends DirectKafkaConsumer implem
 	/** Encoded payload */
 	private byte[] encoded;
 
-	public DeviceRegistrationProcessor(IMicroserviceTenantEngine<?> tenantEngine, byte[] encoded) {
-	    super(tenantEngine.getMicroservice(), tenantEngine.getTenantResource());
+	public DeviceRegistrationProcessor(ITenantEngineLifecycleComponent component, byte[] encoded) {
+	    super(component);
 	    this.encoded = encoded;
 	}
 

@@ -13,12 +13,12 @@ import org.apache.kafka.streams.processor.ProcessorSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sitewhere.rest.model.device.event.kafka.EnrichedEventPayload;
+import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
 
 /**
  * Processes event stream and persists deltas into device state storage.
  */
-public class DeviceStatePersistenceProcessorSupplier implements ProcessorSupplier<String, EnrichedEventPayload> {
+public class DeviceStatePersistenceProcessorSupplier implements ProcessorSupplier<String, GEnrichedEventPayload> {
 
     /** Static logger instance */
     private static Logger LOGGER = LoggerFactory.getLogger(DeviceStatePersistenceProcessorSupplier.class);
@@ -27,8 +27,8 @@ public class DeviceStatePersistenceProcessorSupplier implements ProcessorSupplie
      * @see org.apache.kafka.streams.processor.ProcessorSupplier#get()
      */
     @Override
-    public Processor<String, EnrichedEventPayload> get() {
-	return new Processor<String, EnrichedEventPayload>() {
+    public Processor<String, GEnrichedEventPayload> get() {
+	return new Processor<String, GEnrichedEventPayload>() {
 
 	    @SuppressWarnings("unused")
 	    private ProcessorContext context;
@@ -48,7 +48,7 @@ public class DeviceStatePersistenceProcessorSupplier implements ProcessorSupplie
 	     * java.lang.Object)
 	     */
 	    @Override
-	    public void process(String key, EnrichedEventPayload value) {
+	    public void process(String key, GEnrichedEventPayload value) {
 		LOGGER.info("Processing device state persistence.");
 	    }
 

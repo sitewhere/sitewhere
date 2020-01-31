@@ -33,12 +33,9 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.state.PresenceState;
 import com.sitewhere.spi.device.state.IDeviceState;
-import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.search.ISearchResults;
-
-import io.sitewhere.k8s.crd.tenant.SiteWhereTenant;
 
 /**
  * Monitors assignment state to detect device presence information.
@@ -83,7 +80,7 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	this.executor = Executors.newSingleThreadExecutor();
-	executor.execute(new PresenceChecker(getMicroservice(), getTenantEngine().getTenantResource()));
+	executor.execute(new PresenceChecker());
     }
 
     /*
@@ -103,8 +100,8 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
      */
     private class PresenceChecker extends SystemUserRunnable {
 
-	public PresenceChecker(IMicroservice<?, ?> microservice, SiteWhereTenant tenant) {
-	    super(microservice, tenant);
+	public PresenceChecker() {
+	    super(DevicePresenceManager.this);
 	}
 
 	@Override

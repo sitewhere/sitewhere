@@ -37,6 +37,7 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Kafka host container that reads from the enriched events topic and forwards
@@ -147,7 +148,7 @@ public class KafkaRuleProcessorHost extends DirectKafkaConsumer {
     }
 
     public void received(String key, byte[] message) throws SiteWhereException {
-	executor.execute(new EventPayloadProcessor(message));
+	executor.execute(new EventPayloadProcessor(this, message));
     }
 
     public IRuleProcessor getRuleProcessor() {
@@ -167,8 +168,8 @@ public class KafkaRuleProcessorHost extends DirectKafkaConsumer {
 	/** Encoded event payload */
 	private byte[] encoded;
 
-	public EventPayloadProcessor(byte[] encoded) {
-	    super(getTenantEngine().getMicroservice(), getTenantEngine().getTenantResource());
+	public EventPayloadProcessor(ITenantEngineLifecycleComponent component, byte[] encoded) {
+	    super(component);
 	    this.encoded = encoded;
 	}
 
