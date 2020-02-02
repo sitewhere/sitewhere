@@ -5,12 +5,12 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.registration.spi.kafka;
+package com.sitewhere.commands.spi.kafka;
 
-import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer;
+import com.sitewhere.spi.microservice.kafka.IKafkaStreamPipeline;
 
 /**
- * Kafka consumer that receives events for unregistered devices.
+ * Kafka pipeline that processes command invocation events.
  */
-public interface IUnregisteredEventsConsumer extends IMicroserviceKafkaConsumer {
+public interface IEnrichedCommandInvocationsPipeline extends IKafkaStreamPipeline {
 }

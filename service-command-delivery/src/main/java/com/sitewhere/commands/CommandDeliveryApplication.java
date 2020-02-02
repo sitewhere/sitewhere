@@ -7,14 +7,19 @@
  */
 package com.sitewhere.commands;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
 
 /**
- * Spring Boot application for command delivery microservice.
+ * Main application which runs the command delivery microservice.
  */
+@ApplicationScoped
 public class CommandDeliveryApplication extends MicroserviceApplication<ICommandDeliveryMicroservice> {
 
+    @Inject
     private ICommandDeliveryMicroservice microservice;
 
     /*

@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.inbound.kafka;
+package com.sitewhere.commands.kafka;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,27 +14,27 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
 
+import com.sitewhere.commands.spi.kafka.IEnrichedCommandInvocationsPipeline;
 import com.sitewhere.grpc.kafka.serdes.SiteWhereSerdes;
-import com.sitewhere.inbound.spi.kafka.IDecodedEventsPipeline;
-import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.microservice.kafka.KafkaStreamPipeline;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
- * Kafka pipeline for handling decoded events (usually from event sources).
+ * Kafka Streams pipeline for handling command invocation events.
  */
-public class DecodedEventsPipeline extends KafkaStreamPipeline implements IDecodedEventsPipeline {
+public class EnrichedCommandInvocationsPipeline extends KafkaStreamPipeline
+	implements IEnrichedCommandInvocationsPipeline {
 
-    /** Applies event processing logic to inbound event streams */
-    private InboundEventProcessingSupplier inboundEventProcessingSupplier;
+    /** Handles command invocation events from stream */
+    private CommandInvocationsProcessorSupplier commandInvocationsProcessorSupplier;
 
     /*
      * @see com.sitewhere.microservice.kafka.KafkaStreamPipeline#getPipelineName()
      */
     @Override
     public String getPipelineName() {
-	return "decoded";
+	return "events";
     }
 
     /*
@@ -46,9 +46,7 @@ public class DecodedEventsPipeline extends KafkaStreamPipeline implements IDecod
     public List<String> getSourceTopicNames() {
 	List<String> topics = new ArrayList<>();
 	topics.add(getMicroservice().getKafkaTopicNaming()
-		.getEventSourceDecodedEventsTopic(getTenantEngine().getTenantResource()));
-	topics.add(getMicroservice().getKafkaTopicNaming()
-		.getInboundReprocessEventsTopic(getTenantEngine().getTenantResource()));
+		.getOutboundCommandInvocationsTopic(getTenantEngine().getTenantResource()));
 	return topics;
     }
 
@@ -59,9 +57,8 @@ public class DecodedEventsPipeline extends KafkaStreamPipeline implements IDecod
      */
     @Override
     public void buildStreams(StreamsBuilder builder) {
-	// Pipeline handles both event source decoded events and reprocess events.
-	builder.stream(getSourceTopicNames(), Consumed.with(Serdes.String(), SiteWhereSerdes.forDecodedEventPayload()))
-		.process(getInboundEventProcessingSupplier(), new String[0]);
+	builder.stream(getSourceTopicNames(), Consumed.with(Serdes.String(), SiteWhereSerdes.forEnrichedEventPayload()))
+		.process(getCommandInvocationsProcessorSupplier(), new String[0]);
     }
 
     /*
@@ -71,11 +68,10 @@ public class DecodedEventsPipeline extends KafkaStreamPipeline implements IDecod
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.inboundEventProcessingSupplier = new InboundEventProcessingSupplier(
-		((IInboundProcessingTenantEngine) getTenantEngine()).getActiveConfiguration());
+	this.commandInvocationsProcessorSupplier = new CommandInvocationsProcessorSupplier();
 
 	super.initialize(monitor);
-	initializeNestedComponent(getInboundEventProcessingSupplier(), monitor, true);
+	initializeNestedComponent(getCommandInvocationsProcessorSupplier(), monitor, true);
     }
 
     /*
@@ -86,7 +82,7 @@ public class DecodedEventsPipeline extends KafkaStreamPipeline implements IDecod
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.start(monitor);
-	startNestedComponent(getInboundEventProcessingSupplier(), monitor, true);
+	startNestedComponent(getCommandInvocationsProcessorSupplier(), monitor, true);
     }
 
     /*
@@ -97,10 +93,10 @@ public class DecodedEventsPipeline extends KafkaStreamPipeline implements IDecod
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.stop(monitor);
-	stopNestedComponent(getInboundEventProcessingSupplier(), monitor);
+	stopNestedComponent(getCommandInvocationsProcessorSupplier(), monitor);
     }
 
-    protected InboundEventProcessingSupplier getInboundEventProcessingSupplier() {
-	return inboundEventProcessingSupplier;
+    protected CommandInvocationsProcessorSupplier getCommandInvocationsProcessorSupplier() {
+	return commandInvocationsProcessorSupplier;
     }
 }

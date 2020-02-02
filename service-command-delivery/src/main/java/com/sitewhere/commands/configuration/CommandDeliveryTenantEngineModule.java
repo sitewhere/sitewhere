@@ -7,6 +7,10 @@
  */
 package com.sitewhere.commands.configuration;
 
+import com.sitewhere.commands.configuration.destinations.CommandDestinationsManagerProvider;
+import com.sitewhere.commands.configuration.destinations.OutboundCommandRouterProvider;
+import com.sitewhere.commands.spi.ICommandDestinationsManager;
+import com.sitewhere.commands.spi.IOutboundCommandRouter;
 import com.sitewhere.microservice.multitenant.TenantEngineModule;
 
 /**
@@ -17,5 +21,15 @@ public class CommandDeliveryTenantEngineModule extends TenantEngineModule<Comman
 
     public CommandDeliveryTenantEngineModule(CommandDeliveryTenantConfiguration configuration) {
 	super(configuration);
+    }
+
+    /*
+     * @see com.google.inject.AbstractModule#configure()
+     */
+    @Override
+    protected void configure() {
+	bind(CommandDeliveryTenantConfiguration.class).toInstance(getConfiguration());
+	bind(ICommandDestinationsManager.class).toProvider(CommandDestinationsManagerProvider.class);
+	bind(IOutboundCommandRouter.class).toProvider(OutboundCommandRouterProvider.class);
     }
 }

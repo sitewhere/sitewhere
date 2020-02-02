@@ -8,7 +8,7 @@
 package com.sitewhere.commands.spi.microservice;
 
 import com.sitewhere.commands.configuration.CommandDeliveryConfiguration;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
@@ -23,5 +23,5 @@ public interface ICommandDeliveryMicroservice extends
      * 
      * @return
      */
-    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel();
+    public IDeviceManagement getDeviceManagement();
 }

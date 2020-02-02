@@ -49,7 +49,7 @@ public class RdbCustomer extends RdbBrandedEntity implements ICustomer {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "customer_type_id", insertable = false, updatable = false, nullable = false)
+    @Column(name = "customer_type_id", nullable = false)
     private UUID customerTypeId;
 
     @JsonIgnore

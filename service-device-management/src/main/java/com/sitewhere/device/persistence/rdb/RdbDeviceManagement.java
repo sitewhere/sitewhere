@@ -1144,8 +1144,6 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	Customer customer = DeviceManagementPersistence.customerCreateLogic(request, customerType, parentCustomer);
 	RdbCustomer created = new RdbCustomer();
 	RdbCustomer.copy(customer, created);
-	created.setCustomerType(customerType);
-	created.setParent(parentCustomer);
 	getEntityManagerProvider().persist(created);
 	return created;
     }
@@ -1197,7 +1195,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
     public ICustomer updateCustomer(UUID id, ICustomerCreateRequest request) throws SiteWhereException {
 	RdbCustomer existing = getEntityManagerProvider().findById(id, RdbCustomer.class);
 	if (existing != null) {
-	    // Require customer type.
+	    // Look up customer type if updated.
 	    RdbCustomerType customerType = null;
 	    if (request.getCustomerTypeToken() != null) {
 		customerType = getCustomerTypeByToken(request.getCustomerTypeToken());
@@ -1217,14 +1215,8 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 
 	    // Use common update logic.
 	    Customer updates = new Customer();
-	    DeviceManagementPersistence.customerUpdateLogic(request, updates);
+	    DeviceManagementPersistence.customerUpdateLogic(request, customerType, parentCustomer, updates);
 	    RdbCustomer.copy(updates, existing);
-	    if (customerType != null) {
-		existing.setCustomerType(customerType);
-	    }
-	    if (parentCustomer != null) {
-		existing.setParent(parentCustomer);
-	    }
 	    return getEntityManagerProvider().merge(existing);
 	}
 	return null;
@@ -1456,8 +1448,6 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	Area area = DeviceManagementPersistence.areaCreateLogic(request, areaType, parentArea);
 	RdbArea created = new RdbArea();
 	RdbArea.copy(area, created);
-	created.setAreaType(areaType);
-	created.setParent(parentArea);
 	getEntityManagerProvider().persist(created);
 	return created;
     }
@@ -1509,7 +1499,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
     public RdbArea updateArea(UUID id, IAreaCreateRequest request) throws SiteWhereException {
 	RdbArea existing = getEntityManagerProvider().findById(id, RdbArea.class);
 	if (existing != null) {
-	    // Require customer type.
+	    // Look up area type if updated.
 	    RdbAreaType areaType = null;
 	    if (request.getAreaTypeToken() != null) {
 		areaType = getAreaTypeByToken(request.getAreaTypeToken());
@@ -1529,14 +1519,8 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 
 	    // Use common update logic.
 	    Area updates = new Area();
-	    DeviceManagementPersistence.areaUpdateLogic(request, updates);
+	    DeviceManagementPersistence.areaUpdateLogic(request, areaType, parentArea, updates);
 	    RdbArea.copy(updates, existing);
-	    if (areaType != null) {
-		existing.setAreaType(areaType);
-	    }
-	    if (parentArea != null) {
-		existing.setParent(parentArea);
-	    }
 	    return getEntityManagerProvider().merge(existing);
 	}
 	return null;

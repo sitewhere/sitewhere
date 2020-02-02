@@ -23,6 +23,14 @@ import com.sitewhere.microservice.kafka.KafkaStreamPipeline;
 public class DeviceStatePipeline extends KafkaStreamPipeline {
 
     /*
+     * @see com.sitewhere.microservice.kafka.KafkaStreamPipeline#getPipelineName()
+     */
+    @Override
+    public String getPipelineName() {
+	return "events";
+    }
+
+    /*
      * @see
      * com.sitewhere.spi.microservice.kafka.IKafkaStreamPipeline#getSourceTopicNames
      * ()

@@ -12,7 +12,7 @@ import java.util.List;
 
 import com.sitewhere.commands.spi.ICommandTargetResolver;
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryMicroservice;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -38,14 +38,13 @@ public class DefaultCommandTargetResolver extends TenantEngineLifecycleComponent
      */
     @Override
     public List<IDeviceAssignment> resolveTargets(IDeviceCommandInvocation invocation) throws SiteWhereException {
-	IDeviceAssignment assignment = getDeviceManagementApiChannel()
-		.getDeviceAssignment(invocation.getDeviceAssignmentId());
+	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(invocation.getDeviceAssignmentId());
 	List<IDeviceAssignment> results = new ArrayList<IDeviceAssignment>();
 	results.add(assignment);
 	return results;
     }
 
-    private IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
-	return ((ICommandDeliveryMicroservice) getMicroservice()).getDeviceManagementApiChannel();
+    private IDeviceManagement getDeviceManagement() {
+	return ((ICommandDeliveryMicroservice) getMicroservice()).getDeviceManagement();
     }
 }

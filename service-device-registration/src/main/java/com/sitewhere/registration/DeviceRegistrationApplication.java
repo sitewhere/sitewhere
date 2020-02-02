@@ -7,14 +7,19 @@
  */
 package com.sitewhere.registration;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import com.sitewhere.microservice.MicroserviceApplication;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice;
 
 /**
- * Spring Boot application for device registration microservice.
+ * Main application which runs the device registration microservice.
  */
+@ApplicationScoped
 public class DeviceRegistrationApplication extends MicroserviceApplication<IDeviceRegistrationMicroservice> {
 
+    @Inject
     private IDeviceRegistrationMicroservice microservice;
 
     /*

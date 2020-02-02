@@ -13,4 +13,29 @@ import com.sitewhere.spi.microservice.multitenant.ITenantEngineConfiguration;
  * Maps device registration YAML configuration to objects.
  */
 public class DeviceRegistrationTenantConfiguration implements ITenantEngineConfiguration {
+
+    /** Default setting for whether new devices are allowed */
+    private static final boolean DEFAULT_ALLOW_NEW_DEVICES = false;
+
+    /** Indicates whether new devices are allowed */
+    private boolean allowNewDevices = DEFAULT_ALLOW_NEW_DEVICES;
+
+    /** Assignment defaults */
+    private AssignmentDefaults assignmentDefaults = new AssignmentDefaults();
+
+    public boolean isAllowNewDevices() {
+	return allowNewDevices;
+    }
+
+    public void setAllowNewDevices(boolean allowNewDevices) {
+	this.allowNewDevices = allowNewDevices;
+    }
+
+    public AssignmentDefaults getAssignmentDefaults() {
+	return assignmentDefaults;
+    }
+
+    public void setAssignmentDefaults(AssignmentDefaults assignmentDefaults) {
+	this.assignmentDefaults = assignmentDefaults;
+    }
 }

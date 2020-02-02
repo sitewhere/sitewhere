@@ -7,10 +7,10 @@
  */
 package com.sitewhere.registration.spi.kafka;
 
-import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer;
+import com.sitewhere.spi.microservice.kafka.IKafkaStreamPipeline;
 
 /**
- * Kafka consumer that receives events for new device registrations.
+ * Kafka pipeline that processes events for unregistered devices.
  */
-public interface IDeviceRegistrationEventsConsumer extends IMicroserviceKafkaConsumer {
+public interface IUnregisteredEventsPipeline extends IKafkaStreamPipeline {
 }

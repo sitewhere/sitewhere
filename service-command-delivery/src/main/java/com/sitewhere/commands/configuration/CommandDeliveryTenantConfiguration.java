@@ -7,10 +7,37 @@
  */
 package com.sitewhere.commands.configuration;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.sitewhere.commands.configuration.destinations.GenericCommandDestinationConfiguration;
+import com.sitewhere.commands.configuration.router.GenericRouterConfiguration;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineConfiguration;
 
 /**
  * Maps command delivery tenant engine YAML configuration to objects.
  */
 public class CommandDeliveryTenantConfiguration implements ITenantEngineConfiguration {
+
+    /** Router configuration */
+    private GenericRouterConfiguration router;
+
+    /** List of command destination configurations */
+    private List<GenericCommandDestinationConfiguration> commandDestinations = new ArrayList<>();
+
+    public GenericRouterConfiguration getRouter() {
+	return router;
+    }
+
+    public void setRouter(GenericRouterConfiguration router) {
+	this.router = router;
+    }
+
+    public List<GenericCommandDestinationConfiguration> getCommandDestinations() {
+	return commandDestinations;
+    }
+
+    public void setCommandDestinations(List<GenericCommandDestinationConfiguration> commandDestinations) {
+	this.commandDestinations = commandDestinations;
+    }
 }

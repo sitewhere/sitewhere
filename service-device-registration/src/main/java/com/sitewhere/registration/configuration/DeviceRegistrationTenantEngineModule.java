@@ -8,6 +8,8 @@
 package com.sitewhere.registration.configuration;
 
 import com.sitewhere.microservice.multitenant.TenantEngineModule;
+import com.sitewhere.registration.DeviceRegistrationManager;
+import com.sitewhere.registration.spi.IRegistrationManager;
 
 /**
  * Guice module used for configuring components associated with a device
@@ -17,5 +19,14 @@ public class DeviceRegistrationTenantEngineModule extends TenantEngineModule<Dev
 
     public DeviceRegistrationTenantEngineModule(DeviceRegistrationTenantConfiguration configuration) {
 	super(configuration);
+    }
+
+    /*
+     * @see com.google.inject.AbstractModule#configure()
+     */
+    @Override
+    protected void configure() {
+	bind(DeviceRegistrationTenantConfiguration.class).toInstance(getConfiguration());
+	bind(IRegistrationManager.class).to(DeviceRegistrationManager.class);
     }
 }

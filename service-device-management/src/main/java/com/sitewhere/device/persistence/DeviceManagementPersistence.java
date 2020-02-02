@@ -135,16 +135,15 @@ public class DeviceManagementPersistence extends Persistence {
      */
     public static Customer customerCreateLogic(ICustomerCreateRequest request, ICustomerType customerType,
 	    ICustomer parentCustomer) throws SiteWhereException {
-	Customer area = new Customer();
-	Persistence.brandedEntityCreateLogic(request, area);
+	Customer customer = new Customer();
+	Persistence.brandedEntityCreateLogic(request, customer);
 
-	area.setCustomerTypeId(customerType.getId());
-	area.setParentId(parentCustomer != null ? parentCustomer.getId() : null);
-	area.setName(request.getName());
-	area.setDescription(request.getDescription());
-	area.setImageUrl(request.getImageUrl());
+	customer.setCustomerTypeId(customerType.getId());
+	customer.setParentId(parentCustomer != null ? parentCustomer.getId() : null);
+	customer.setName(request.getName());
+	customer.setDescription(request.getDescription());
 
-	return area;
+	return customer;
     }
 
     /**
@@ -152,20 +151,26 @@ public class DeviceManagementPersistence extends Persistence {
      * customer.
      * 
      * @param request
+     * @param customerType
+     * @param parentCustomer
      * @param target
      * @throws SiteWhereException
      */
-    public static void customerUpdateLogic(ICustomerCreateRequest request, Customer target) throws SiteWhereException {
+    public static void customerUpdateLogic(ICustomerCreateRequest request, ICustomerType customerType,
+	    ICustomer parentCustomer, Customer target) throws SiteWhereException {
 	Persistence.brandedEntityUpdateLogic(request, target);
 
+	if (request.getCustomerTypeToken() != null) {
+	    target.setCustomerTypeId(customerType.getId());
+	}
+	if (request.getParentToken() != null) {
+	    target.setParentId(parentCustomer != null ? parentCustomer.getId() : null);
+	}
 	if (request.getName() != null) {
 	    target.setName(request.getName());
 	}
 	if (request.getDescription() != null) {
 	    target.setDescription(request.getDescription());
-	}
-	if (request.getImageUrl() != null) {
-	    target.setImageUrl(request.getImageUrl());
 	}
     }
 
@@ -228,7 +233,6 @@ public class DeviceManagementPersistence extends Persistence {
 	area.setParentId(parentArea != null ? parentArea.getId() : null);
 	area.setName(request.getName());
 	area.setDescription(request.getDescription());
-	area.setImageUrl(request.getImageUrl());
 	area.setBounds(Location.copy(request.getBounds()));
 
 	return area;
@@ -238,20 +242,26 @@ public class DeviceManagementPersistence extends Persistence {
      * Common logic for copying data from area update request to existing area.
      * 
      * @param request
+     * @param areaType
+     * @param parentArea
      * @param target
      * @throws SiteWhereException
      */
-    public static void areaUpdateLogic(IAreaCreateRequest request, Area target) throws SiteWhereException {
+    public static void areaUpdateLogic(IAreaCreateRequest request, IAreaType areaType, IArea parentArea, Area target)
+	    throws SiteWhereException {
 	Persistence.brandedEntityUpdateLogic(request, target);
 
+	if (request.getAreaTypeToken() != null) {
+	    target.setAreaTypeId(areaType.getId());
+	}
+	if (request.getParentToken() != null) {
+	    target.setParentId(parentArea != null ? parentArea.getId() : null);
+	}
 	if (request.getName() != null) {
 	    target.setName(request.getName());
 	}
 	if (request.getDescription() != null) {
 	    target.setDescription(request.getDescription());
-	}
-	if (request.getImageUrl() != null) {
-	    target.setImageUrl(request.getImageUrl());
 	}
 	if (request.getBounds() != null) {
 	    target.setBounds(Location.copy(request.getBounds()));
@@ -548,14 +558,14 @@ public class DeviceManagementPersistence extends Persistence {
 	    Device target) throws SiteWhereException {
 	Persistence.entityUpdateLogic(request, target);
 
-	if (deviceType != null) {
+	if (request.getDeviceTypeToken() != null) {
 	    target.setDeviceTypeId(deviceType.getId());
 	}
 	if (request.isRemoveParentHardwareId() == Boolean.TRUE) {
 	    target.setParentDeviceId(null);
 	}
-	if (parent != null) {
-	    target.setParentDeviceId(parent.getId());
+	if (request.getParentDeviceToken() != null) {
+	    target.setParentDeviceId(parent != null ? parent.getId() : null);
 	}
 	if (request.getDeviceElementMappings() != null) {
 	    List<DeviceElementMapping> mappings = new ArrayList<DeviceElementMapping>();

@@ -9,8 +9,10 @@ package com.sitewhere.registration.microservice;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.registration.configuration.DeviceRegistrationConfiguration;
@@ -34,7 +36,7 @@ public class DeviceRegistrationMicroservice extends
 	implements IDeviceRegistrationMicroservice {
 
     /** Device management API channel */
-    private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
+    private CachedDeviceManagementApiChannel deviceManagement;
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
@@ -94,7 +96,7 @@ public class DeviceRegistrationMicroservice extends
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
 	// Initialize device management API channel.
-	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
+	init.addInitializeStep(this, getDeviceManagement(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -113,7 +115,7 @@ public class DeviceRegistrationMicroservice extends
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
 	// Start device mangement API channel.
-	start.addStartStep(this, getDeviceManagementApiChannel(), true);
+	start.addStartStep(this, getDeviceManagement(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -129,7 +131,7 @@ public class DeviceRegistrationMicroservice extends
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop device mangement API channel.
-	stop.addStopStep(this, getDeviceManagementApiChannel());
+	stop.addStopStep(this, getDeviceManagement());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -142,20 +144,18 @@ public class DeviceRegistrationMicroservice extends
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
+	IDeviceManagementApiChannel<?> wrapped = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagement = new CachedDeviceManagementApiChannel(wrapped,
+		new CachedDeviceManagementApiChannel.CacheSettings());
     }
 
     /*
      * @see
      * com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice#
-     * getDeviceManagementApiChannel()
+     * getDeviceManagement()
      */
     @Override
-    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
-	return deviceManagementApiChannel;
-    }
-
-    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
-	this.deviceManagementApiChannel = deviceManagementApiChannel;
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
     }
 }

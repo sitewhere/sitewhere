@@ -213,6 +213,6 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
     }
 
     private IDeviceManagement getDeviceManagement() {
-	return ((ICommandDeliveryMicroservice) getMicroservice()).getDeviceManagementApiChannel();
+	return ((ICommandDeliveryMicroservice) getMicroservice()).getDeviceManagement();
     }
 }
