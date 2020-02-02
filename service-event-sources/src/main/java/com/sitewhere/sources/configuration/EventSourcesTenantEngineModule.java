@@ -26,7 +26,7 @@ public class EventSourcesTenantEngineModule extends TenantEngineModule<EventSour
      */
     @Override
     protected void configure() {
-	bind(IEventSourcesManager.class).to(EventSourcesManager.class);
 	bind(EventSourcesTenantConfiguration.class).toInstance(getConfiguration());
+	bind(IEventSourcesManager.class).to(EventSourcesManager.class);
     }
 }

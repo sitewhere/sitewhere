@@ -13,10 +13,12 @@ import com.sitewhere.connectors.configuration.OutboundConnectorsConfiguration;
 import com.sitewhere.connectors.configuration.OutboundConnectorsModule;
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsMicroservice;
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsTenantEngine;
+import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
@@ -35,8 +37,8 @@ public class OutboundConnectorsMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, OutboundConnectorsConfiguration, IOutboundConnectorsTenantEngine>
 	implements IOutboundConnectorsMicroservice {
 
-    /** Device management API demux */
-    private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
+    /** Device management API channel */
+    private CachedDeviceManagementApiChannel deviceManagement;
 
     /** Device event management API demux */
     private IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel;
@@ -99,7 +101,7 @@ public class OutboundConnectorsMicroservice extends
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
 	// Initialize device management API channel.
-	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
+	init.addInitializeStep(this, getDeviceManagement(), true);
 
 	// Initialize device event management API channel.
 	init.addInitializeStep(this, getDeviceEventManagementApiChannel(), true);
@@ -121,7 +123,7 @@ public class OutboundConnectorsMicroservice extends
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
 	// Start device mangement API channel.
-	start.addStartStep(this, getDeviceManagementApiChannel(), true);
+	start.addStartStep(this, getDeviceManagement(), true);
 
 	// Start device event mangement API channel.
 	start.addStartStep(this, getDeviceEventManagementApiChannel(), true);
@@ -140,7 +142,7 @@ public class OutboundConnectorsMicroservice extends
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop device mangement API channel.
-	stop.addStopStep(this, getDeviceManagementApiChannel());
+	stop.addStopStep(this, getDeviceManagement());
 
 	// Stop device event mangement API channel.
 	stop.addStopStep(this, getDeviceEventManagementApiChannel());
@@ -156,7 +158,9 @@ public class OutboundConnectorsMicroservice extends
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
+	IDeviceManagementApiChannel<?> wrapped = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagement = new CachedDeviceManagementApiChannel(wrapped,
+		new CachedDeviceManagementApiChannel.CacheSettings());
 
 	// Device event management.
 	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(getInstanceSettings());
@@ -165,15 +169,11 @@ public class OutboundConnectorsMicroservice extends
     /*
      * @see
      * com.sitewhere.connectors.spi.microservice.IOutboundConnectorsMicroservice#
-     * getDeviceManagementApiChannel()
+     * getDeviceManagement()
      */
     @Override
-    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
-	return deviceManagementApiChannel;
-    }
-
-    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
-	this.deviceManagementApiChannel = deviceManagementApiChannel;
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
     }
 
     /*
@@ -184,10 +184,5 @@ public class OutboundConnectorsMicroservice extends
     @Override
     public IDeviceEventManagementApiChannel<?> getDeviceEventManagementApiChannel() {
 	return deviceEventManagementApiChannel;
-    }
-
-    public void setDeviceEventManagementApiChannel(
-	    IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel) {
-	this.deviceEventManagementApiChannel = deviceEventManagementApiChannel;
     }
 }

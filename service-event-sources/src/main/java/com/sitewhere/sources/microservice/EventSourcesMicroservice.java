@@ -9,10 +9,12 @@ package com.sitewhere.sources.microservice;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.sources.configuration.EventSourcesConfiguration;
@@ -36,7 +38,7 @@ public class EventSourcesMicroservice
 	implements IEventSourcesMicroservice {
 
     /** Device management API channel */
-    private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
+    private CachedDeviceManagementApiChannel deviceManagement;
 
     /** Device event management API channel */
     private IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel;
@@ -101,7 +103,7 @@ public class EventSourcesMicroservice
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
 	// Initialize device management API channel.
-	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
+	init.addInitializeStep(this, getDeviceManagement(), true);
 
 	// Initialize device event management API channel.
 	init.addInitializeStep(this, getDeviceEventManagementApiChannel(), true);
@@ -123,7 +125,7 @@ public class EventSourcesMicroservice
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
 	// Start device mangement API channel.
-	start.addStartStep(this, getDeviceManagementApiChannel(), true);
+	start.addStartStep(this, getDeviceManagement(), true);
 
 	// Start device event mangement API channel.
 	start.addStartStep(this, getDeviceEventManagementApiChannel(), true);
@@ -142,7 +144,7 @@ public class EventSourcesMicroservice
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop device mangement API channel.
-	stop.addStopStep(this, getDeviceManagementApiChannel());
+	stop.addStopStep(this, getDeviceManagement());
 
 	// Stop device event mangement API channel.
 	stop.addStopStep(this, getDeviceEventManagementApiChannel());
@@ -158,7 +160,9 @@ public class EventSourcesMicroservice
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
+	IDeviceManagementApiChannel<?> wrapped = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagement = new CachedDeviceManagementApiChannel(wrapped,
+		new CachedDeviceManagementApiChannel.CacheSettings());
 
 	// Device event management.
 	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(getInstanceSettings());
@@ -166,15 +170,11 @@ public class EventSourcesMicroservice
 
     /*
      * @see com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice#
-     * getDeviceManagementApiChannel()
+     * getDeviceManagement()
      */
     @Override
-    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
-	return deviceManagementApiChannel;
-    }
-
-    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
-	this.deviceManagementApiChannel = deviceManagementApiChannel;
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
     }
 
     /*
@@ -184,10 +184,5 @@ public class EventSourcesMicroservice
     @Override
     public IDeviceEventManagementApiChannel<?> getDeviceEventManagementApiChannel() {
 	return deviceEventManagementApiChannel;
-    }
-
-    public void setDeviceEventManagementApiChannel(
-	    IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel) {
-	this.deviceEventManagementApiChannel = deviceEventManagementApiChannel;
     }
 }

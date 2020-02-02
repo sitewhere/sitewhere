@@ -58,7 +58,7 @@ public class ScriptedEventDeduplicator extends ScriptingComponent<Boolean> imple
     }
 
     private IDeviceManagement getDeviceManagement() {
-	return ((IEventSourcesMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
+	return ((IEventSourcesMicroservice) getTenantEngine().getMicroservice()).getDeviceManagement();
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {

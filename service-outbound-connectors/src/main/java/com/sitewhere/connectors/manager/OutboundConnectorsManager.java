@@ -5,15 +5,18 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.connectors;
+package com.sitewhere.connectors.manager;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.inject.Inject;
+import com.sitewhere.connectors.configuration.OutboundConnectorsTenantConfiguration;
 import com.sitewhere.connectors.kafka.KafkaOutboundConnectorHost;
 import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.connectors.spi.IOutboundConnectorsManager;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
@@ -23,11 +26,19 @@ import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
  */
 public class OutboundConnectorsManager extends TenantEngineLifecycleComponent implements IOutboundConnectorsManager {
 
+    /** Outbound connectors configuration */
+    private OutboundConnectorsTenantConfiguration configuration;
+
     /** List of connectors */
     private List<IOutboundConnector> outboundConnectors;
 
     /** List of host wrappers for outbound connectors */
     private List<KafkaOutboundConnectorHost> connectorHosts = new ArrayList<KafkaOutboundConnectorHost>();
+
+    @Inject
+    public OutboundConnectorsManager(OutboundConnectorsTenantConfiguration configuration) {
+	this.configuration = configuration;
+    }
 
     /*
      * @see
@@ -36,6 +47,10 @@ public class OutboundConnectorsManager extends TenantEngineLifecycleComponent im
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	getLogger().info(String.format("About to initialize outbound connectors manager with configuration:\n%s\n\n",
+		MarshalUtils.marshalJsonAsPrettyString(getConfiguration())));
+	this.outboundConnectors = OutboundConnectorsParser.parse(this, getConfiguration());
+
 	getConnectorHosts().clear();
 	getLogger().info(String.format("Initializing %d outbound connectors...", getOutboundConnectors().size()));
 	for (IOutboundConnector processor : getOutboundConnectors()) {
@@ -94,15 +109,11 @@ public class OutboundConnectorsManager extends TenantEngineLifecycleComponent im
 	return outboundConnectors;
     }
 
-    public void setOutboundConnectors(List<IOutboundConnector> outboundConnectors) {
-	this.outboundConnectors = outboundConnectors;
-    }
-
-    public List<KafkaOutboundConnectorHost> getConnectorHosts() {
+    protected List<KafkaOutboundConnectorHost> getConnectorHosts() {
 	return connectorHosts;
     }
 
-    public void setConnectorHosts(List<KafkaOutboundConnectorHost> connectorHosts) {
-	this.connectorHosts = connectorHosts;
+    protected OutboundConnectorsTenantConfiguration getConfiguration() {
+	return configuration;
     }
 }

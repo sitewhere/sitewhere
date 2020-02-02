@@ -42,6 +42,7 @@ public class EventSourcesParser {
     /**
      * Parse event source configurations in order to build event source instances.
      * 
+     * @param component
      * @param configuration
      * @return
      * @throws SiteWhereException
@@ -51,7 +52,7 @@ public class EventSourcesParser {
 	List<IInboundEventSource<?>> sources = new ArrayList<>();
 	for (EventSourceGenericConfiguration sourceConfig : configuration.getEventSources()) {
 	    switch (sourceConfig.getType()) {
-	    case "mqtt": {
+	    case TYPE_MQTT: {
 		sources.add(createMqttEventSource(component, sourceConfig));
 		break;
 	    }

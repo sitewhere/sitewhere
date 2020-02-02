@@ -7,6 +7,8 @@
  */
 package com.sitewhere.connectors.configuration;
 
+import com.sitewhere.connectors.manager.OutboundConnectorsManager;
+import com.sitewhere.connectors.spi.IOutboundConnectorsManager;
 import com.sitewhere.microservice.multitenant.TenantEngineModule;
 
 /**
@@ -17,5 +19,14 @@ public class OutboundConnectorsTenantEngineModule extends TenantEngineModule<Out
 
     public OutboundConnectorsTenantEngineModule(OutboundConnectorsTenantConfiguration configuration) {
 	super(configuration);
+    }
+
+    /*
+     * @see com.google.inject.AbstractModule#configure()
+     */
+    @Override
+    protected void configure() {
+	bind(OutboundConnectorsTenantConfiguration.class).toInstance(getConfiguration());
+	bind(IOutboundConnectorsManager.class).to(OutboundConnectorsManager.class);
     }
 }

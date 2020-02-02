@@ -16,7 +16,7 @@ import com.sitewhere.spi.microservice.multitenant.ITenantEngineConfiguration;
  */
 public class EventSourcesTenantConfiguration implements ITenantEngineConfiguration {
 
-    /** Event source configurations indexed by id */
+    /** Event source configurations */
     private List<EventSourceGenericConfiguration> eventSources;
 
     public List<EventSourceGenericConfiguration> getEventSources() {

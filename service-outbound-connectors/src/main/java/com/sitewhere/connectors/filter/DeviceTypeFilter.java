@@ -31,7 +31,7 @@ public class DeviceTypeFilter extends DeviceEventFilter {
      */
     @Override
     public boolean isFiltered(IDeviceEventContext context, IDeviceEvent event) throws SiteWhereException {
-	IDeviceType deviceType = getDeviceManagementApiChannel().getDeviceType(context.getDeviceTypeId());
+	IDeviceType deviceType = getDeviceManagement().getDeviceType(context.getDeviceTypeId());
 	if (deviceType == null) {
 	    throw new SiteWhereException("Event filter unable to process event for unknown device type.");
 	}

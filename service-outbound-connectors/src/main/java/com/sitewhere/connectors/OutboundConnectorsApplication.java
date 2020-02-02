@@ -7,14 +7,19 @@
  */
 package com.sitewhere.connectors;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
 
 /**
- * Spring Boot application for outbound connectors microservice.
+ * Main application which runs the outbound connectors microservice.
  */
+@ApplicationScoped
 public class OutboundConnectorsApplication extends MicroserviceApplication<IOutboundConnectorsMicroservice> {
 
+    @Inject
     private IOutboundConnectorsMicroservice microservice;
 
     /*

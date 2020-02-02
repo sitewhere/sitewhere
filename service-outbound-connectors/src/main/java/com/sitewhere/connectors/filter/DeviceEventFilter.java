@@ -10,7 +10,7 @@ package com.sitewhere.connectors.filter;
 import com.sitewhere.connectors.spi.IDeviceEventFilter;
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsMicroservice;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
@@ -28,8 +28,8 @@ public abstract class DeviceEventFilter extends TenantEngineLifecycleComponent i
      * 
      * @return
      */
-    protected IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
-	return ((IOutboundConnectorsMicroservice) getMicroservice()).getDeviceManagementApiChannel();
+    protected IDeviceManagement getDeviceManagement() {
+	return ((IOutboundConnectorsMicroservice) getMicroservice()).getDeviceManagement();
     }
 
     /**

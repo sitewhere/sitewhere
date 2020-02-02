@@ -77,7 +77,7 @@ public abstract class OutboundConnector extends TenantEngineLifecycleComponent i
      */
     @Override
     public IDeviceManagement getDeviceManagement() {
-	return ((IOutboundConnectorsMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
+	return ((IOutboundConnectorsMicroservice) getTenantEngine().getMicroservice()).getDeviceManagement();
     }
 
     /*

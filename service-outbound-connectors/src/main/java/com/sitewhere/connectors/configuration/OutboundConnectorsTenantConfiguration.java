@@ -7,10 +7,23 @@
  */
 package com.sitewhere.connectors.configuration;
 
+import java.util.List;
+
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineConfiguration;
 
 /**
  * Maps outbound connectors tenant engine YAML configuration to objects.
  */
 public class OutboundConnectorsTenantConfiguration implements ITenantEngineConfiguration {
+
+    /** Outbound connector configurations */
+    private List<OutboundConnectorGenericConfiguration> outboundConnectors;
+
+    public List<OutboundConnectorGenericConfiguration> getOutboundConnectors() {
+	return outboundConnectors;
+    }
+
+    public void setOutboundConnectors(List<OutboundConnectorGenericConfiguration> outboundConnectors) {
+	this.outboundConnectors = outboundConnectors;
+    }
 }
