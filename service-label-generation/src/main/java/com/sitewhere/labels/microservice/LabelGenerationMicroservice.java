@@ -10,6 +10,8 @@ package com.sitewhere.labels.microservice;
 import javax.enterprise.context.ApplicationScoped;
 
 import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
+import com.sitewhere.grpc.client.asset.CachedAssetManagementApiChannel;
+import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
@@ -19,6 +21,8 @@ import com.sitewhere.labels.grpc.LabelGenerationGrpcServer;
 import com.sitewhere.labels.spi.grpc.ILabelGenerationGrpcServer;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationMicroservice;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationTenantEngine;
+import com.sitewhere.microservice.api.asset.IAssetManagement;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
@@ -38,10 +42,10 @@ public class LabelGenerationMicroservice extends
 	implements ILabelGenerationMicroservice {
 
     /** Device management API channel */
-    private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
+    private CachedDeviceManagementApiChannel deviceManagement;
 
     /** Asset management API channel */
-    private IAssetManagementApiChannel<?> assetManagementApiChannel;
+    private CachedAssetManagementApiChannel assetManagement;
 
     /** Provides server for label generation GRPC requests */
     private ILabelGenerationGrpcServer labelGenerationGrpcServer;
@@ -110,10 +114,10 @@ public class LabelGenerationMicroservice extends
 	init.addInitializeStep(this, getLabelGenerationGrpcServer(), true);
 
 	// Initialize device management API channel.
-	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
+	init.addInitializeStep(this, getDeviceManagement(), true);
 
 	// Initialize asset management API channel.
-	init.addInitializeStep(this, getAssetManagementApiChannel(), true);
+	init.addInitializeStep(this, getAssetManagement(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -135,10 +139,10 @@ public class LabelGenerationMicroservice extends
 	start.addStartStep(this, getLabelGenerationGrpcServer(), true);
 
 	// Start device mangement API channel.
-	start.addStartStep(this, getDeviceManagementApiChannel(), true);
+	start.addStartStep(this, getDeviceManagement(), true);
 
 	// Start asset mangement API channel.
-	start.addStartStep(this, getAssetManagementApiChannel(), true);
+	start.addStartStep(this, getAssetManagement(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -157,10 +161,10 @@ public class LabelGenerationMicroservice extends
 	stop.addStopStep(this, getLabelGenerationGrpcServer());
 
 	// Stop device mangement API channel.
-	stop.addStopStep(this, getDeviceManagementApiChannel());
+	stop.addStopStep(this, getDeviceManagement());
 
 	// Stop asset mangement API channel.
-	stop.addStopStep(this, getAssetManagementApiChannel());
+	stop.addStopStep(this, getAssetManagement());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -173,10 +177,14 @@ public class LabelGenerationMicroservice extends
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
+	IDeviceManagementApiChannel<?> deviceImpl = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagement = new CachedDeviceManagementApiChannel(deviceImpl,
+		new CachedDeviceManagementApiChannel.CacheSettings());
 
 	// Asset management.
-	this.assetManagementApiChannel = new AssetManagementApiChannel(getInstanceSettings());
+	IAssetManagementApiChannel<?> assetImpl = new AssetManagementApiChannel(getInstanceSettings());
+	this.assetManagement = new CachedAssetManagementApiChannel(assetImpl,
+		new CachedAssetManagementApiChannel.CacheSettings());
     }
 
     /*
@@ -188,33 +196,21 @@ public class LabelGenerationMicroservice extends
 	return labelGenerationGrpcServer;
     }
 
-    public void setLabelGenerationGrpcServer(ILabelGenerationGrpcServer labelGenerationGrpcServer) {
-	this.labelGenerationGrpcServer = labelGenerationGrpcServer;
+    /*
+     * @see com.sitewhere.labels.spi.microservice.ILabelGenerationMicroservice#
+     * getDeviceManagement()
+     */
+    @Override
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
     }
 
     /*
      * @see com.sitewhere.labels.spi.microservice.ILabelGenerationMicroservice#
-     * getDeviceManagementApiChannel()
+     * getAssetManagement()
      */
     @Override
-    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
-	return deviceManagementApiChannel;
-    }
-
-    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
-	this.deviceManagementApiChannel = deviceManagementApiChannel;
-    }
-
-    /*
-     * @see com.sitewhere.labels.spi.microservice.ILabelGenerationMicroservice#
-     * getAssetManagementApiChannel()
-     */
-    @Override
-    public IAssetManagementApiChannel<?> getAssetManagementApiChannel() {
-	return assetManagementApiChannel;
-    }
-
-    public void setAssetManagementApiChannel(IAssetManagementApiChannel<?> assetManagementApiChannel) {
-	this.assetManagementApiChannel = assetManagementApiChannel;
+    public IAssetManagement getAssetManagement() {
+	return assetManagement;
     }
 }

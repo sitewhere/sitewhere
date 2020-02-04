@@ -10,16 +10,16 @@ package com.sitewhere.connectors.mqtt;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.fusesource.hawtdispatch.Dispatch;
-import org.fusesource.hawtdispatch.DispatchQueue;
 import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
 
 import com.sitewhere.communication.mqtt.IMqttConfiguration;
+import com.sitewhere.communication.mqtt.MqttConfigurer;
 import com.sitewhere.communication.mqtt.MqttLifecycleComponent;
 import com.sitewhere.connectors.SerialOutboundConnector;
+import com.sitewhere.connectors.configuration.connector.MqttOutboundConnectorConfiguration;
 import com.sitewhere.connectors.spi.IMulticastingOutboundConnector;
 import com.sitewhere.connectors.spi.multicast.IDeviceEventMulticaster;
 import com.sitewhere.connectors.spi.routing.IRouteBuilder;
@@ -41,14 +41,17 @@ import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
  */
 public class MqttOutboundConnector extends SerialOutboundConnector implements IMulticastingOutboundConnector<String> {
 
+    /** Default outbound topic */
+    private static final String DEFAULT_OUTBOUND_TOPIC = "SiteWhere/%s/outbound/%s";
+
     /** Configuration */
-    private IMqttConfiguration configuration;
+    private MqttOutboundConnectorConfiguration configuration;
+
+    /** Topic */
+    private String topic;
 
     /** MQTT client */
     private MQTT mqtt;
-
-    /** Hawtdispatch queue */
-    private DispatchQueue queue;
 
     /** Shared MQTT connection */
     private FutureConnection connection;
@@ -59,7 +62,7 @@ public class MqttOutboundConnector extends SerialOutboundConnector implements IM
     /** Route builder for generating topics */
     private IRouteBuilder<String> routeBuilder;
 
-    public MqttOutboundConnector(IMqttConfiguration configuration) {
+    public MqttOutboundConnector(MqttOutboundConnectorConfiguration configuration) {
 	this.configuration = configuration;
     }
 
@@ -71,13 +74,11 @@ public class MqttOutboundConnector extends SerialOutboundConnector implements IM
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if ((getConfiguration().getTopic() == null) && (getMulticaster() == null) && (getRouteBuilder() == null)) {
-	    // this.topic = String.format("SiteWhere/%1$s/outbound/%2$s",
-	    // getTenantEngine().getTenantResource().getMetadata().getName(),
-	    // getConnectorId());
-	    // getLogger().warn(String.format(
-	    // "No topic specified and no multicaster or route builder configured.
-	    // Defaulting to topic '%s'",
-	    // getTopic()));
+	    this.topic = String.format(DEFAULT_OUTBOUND_TOPIC,
+		    getTenantEngine().getTenantResource().getMetadata().getName(), getConnectorId());
+	    getLogger().warn(String.format(
+		    "No topic specified and no multicaster or route builder configured. Defaulting to topic '%s'",
+		    getTopic()));
 	}
 
 	// Required for filters.
@@ -94,8 +95,7 @@ public class MqttOutboundConnector extends SerialOutboundConnector implements IM
 	}
 
 	// Use common MQTT configuration setup.
-	this.queue = Dispatch.createQueue(getComponentId().toString());
-	// this.mqtt = configure(getConfiguration(), queue);
+	this.mqtt = MqttConfigurer.configure(getConfiguration());
 
 	getLogger().info(String.format("Connecting to MQTT broker at %s:%s ...", getConfiguration().getHostname(),
 		getConfiguration().getPort()));
@@ -133,9 +133,6 @@ public class MqttOutboundConnector extends SerialOutboundConnector implements IM
 	    } catch (Exception e) {
 		getLogger().error("Error shutting down MQTT device event receiver.", e);
 	    }
-	}
-	if (queue != null) {
-	    queue.suspend();
 	}
 	super.stop(monitor);
     }
@@ -240,10 +237,6 @@ public class MqttOutboundConnector extends SerialOutboundConnector implements IM
 	return multicaster;
     }
 
-    public void setMulticaster(IDeviceEventMulticaster<String> multicaster) {
-	this.multicaster = multicaster;
-    }
-
     /*
      * @see
      * com.sitewhere.connectors.spi.IMulticastingOutboundConnector#getRouteBuilder()
@@ -253,11 +246,11 @@ public class MqttOutboundConnector extends SerialOutboundConnector implements IM
 	return routeBuilder;
     }
 
-    public void setRouteBuilder(IRouteBuilder<String> routeBuilder) {
-	this.routeBuilder = routeBuilder;
-    }
-
     protected IMqttConfiguration getConfiguration() {
 	return configuration;
+    }
+
+    protected String getTopic() {
+	return topic;
     }
 }

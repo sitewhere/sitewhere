@@ -7,10 +7,36 @@
  */
 package com.sitewhere.labels.configuration;
 
+import java.util.List;
+
+import com.sitewhere.labels.configuration.manager.LabelGenerationManagerConfiguration;
+import com.sitewhere.labels.configuration.manager.LabelGeneratorGenericConfiguration;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineConfiguration;
 
 /**
  * Maps label generation tenant engine YAML configuration to objects.
  */
 public class LabelGenerationTenantConfiguration implements ITenantEngineConfiguration {
+
+    /** Manager configuration */
+    private LabelGenerationManagerConfiguration manager;
+
+    /** List of configured generators */
+    private List<LabelGeneratorGenericConfiguration> generators;
+
+    public LabelGenerationManagerConfiguration getManager() {
+	return manager;
+    }
+
+    public void setManager(LabelGenerationManagerConfiguration manager) {
+	this.manager = manager;
+    }
+
+    public List<LabelGeneratorGenericConfiguration> getGenerators() {
+	return generators;
+    }
+
+    public void setGenerators(List<LabelGeneratorGenericConfiguration> generators) {
+	this.generators = generators;
+    }
 }

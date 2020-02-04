@@ -9,7 +9,7 @@ package com.sitewhere.labels.spi.microservice;
 
 import com.sitewhere.grpc.service.LabelGenerationGrpc;
 import com.sitewhere.labels.configuration.LabelGenerationTenantConfiguration;
-import com.sitewhere.microservice.api.label.ILabelGeneratorManager;
+import com.sitewhere.labels.spi.manager.ILabelGeneratorManager;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**

@@ -5,12 +5,13 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.labels.symbology;
+package com.sitewhere.labels.qrcode;
 
 import java.net.URI;
 
-import com.sitewhere.microservice.api.label.IEntityUriProvider;
-import com.sitewhere.microservice.api.label.ILabelGenerator;
+import com.sitewhere.labels.configuration.qrcode.QrCodeGeneratorConfiguration;
+import com.sitewhere.labels.spi.IEntityUriProvider;
+import com.sitewhere.labels.spi.ILabelGenerator;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
@@ -34,26 +35,28 @@ import net.glxn.qrgen.javase.QRCode;
  */
 public class QrCodeGenerator extends TenantEngineLifecycleComponent implements ILabelGenerator {
 
-    /** Generator id */
-    private String id;
+    /** Configuration */
+    private QrCodeGeneratorConfiguration configuration;
 
-    /** Generator name */
-    private String name;
-
-    /** Image width in pixels */
-    private int width = 200;
-
-    /** Image height in pixels */
-    private int height = 200;
-
-    /** Foreground color */
-    private int foregroundColor = 0xff333333;
-
-    /** Background color */
-    private int backgroundColor = 0xffffffff;
-
-    public QrCodeGenerator() {
+    public QrCodeGenerator(QrCodeGeneratorConfiguration configuration) {
 	super(LifecycleComponentType.LabelGenerator);
+	this.configuration = configuration;
+    }
+
+    /*
+     * @see com.sitewhere.microservice.api.label.ILabelGenerator#getId()
+     */
+    @Override
+    public String getId() throws SiteWhereException {
+	return getConfiguration().getId();
+    }
+
+    /*
+     * @see com.sitewhere.microservice.api.label.ILabelGenerator#getName()
+     */
+    @Override
+    public String getName() throws SiteWhereException {
+	return getConfiguration().getName();
     }
 
     /*
@@ -65,8 +68,7 @@ public class QrCodeGenerator extends TenantEngineLifecycleComponent implements I
     public byte[] getCustomerTypeLabel(ICustomerType customerType, IEntityUriProvider provider)
 	    throws SiteWhereException {
 	URI uri = provider.getCustomerTypeIdentifier(customerType);
-	return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
-		.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
+	return toQrCodeImage(uri);
     }
 
     /*
@@ -77,8 +79,7 @@ public class QrCodeGenerator extends TenantEngineLifecycleComponent implements I
     @Override
     public byte[] getCustomerLabel(ICustomer customer, IEntityUriProvider provider) throws SiteWhereException {
 	URI uri = provider.getCustomerIdentifier(customer);
-	return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
-		.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
+	return toQrCodeImage(uri);
     }
 
     /*
@@ -89,8 +90,7 @@ public class QrCodeGenerator extends TenantEngineLifecycleComponent implements I
     @Override
     public byte[] getAreaTypeLabel(IAreaType areaType, IEntityUriProvider provider) throws SiteWhereException {
 	URI uri = provider.getAreaTypeIdentifier(areaType);
-	return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
-		.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
+	return toQrCodeImage(uri);
     }
 
     /*
@@ -101,8 +101,7 @@ public class QrCodeGenerator extends TenantEngineLifecycleComponent implements I
     @Override
     public byte[] getAreaLabel(IArea area, IEntityUriProvider provider) throws SiteWhereException {
 	URI uri = provider.getAreaIdentifier(area);
-	return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
-		.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
+	return toQrCodeImage(uri);
     }
 
     /*
@@ -113,8 +112,7 @@ public class QrCodeGenerator extends TenantEngineLifecycleComponent implements I
     @Override
     public byte[] getDeviceTypeLabel(IDeviceType deviceType, IEntityUriProvider provider) throws SiteWhereException {
 	URI uri = provider.getDeviceTypeIdentifier(deviceType);
-	return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
-		.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
+	return toQrCodeImage(uri);
     }
 
     /*
@@ -125,8 +123,7 @@ public class QrCodeGenerator extends TenantEngineLifecycleComponent implements I
     @Override
     public byte[] getDeviceLabel(IDevice device, IEntityUriProvider provider) throws SiteWhereException {
 	URI uri = provider.getDeviceIdentifier(device);
-	return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
-		.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
+	return toQrCodeImage(uri);
     }
 
     /*
@@ -137,8 +134,7 @@ public class QrCodeGenerator extends TenantEngineLifecycleComponent implements I
     @Override
     public byte[] getDeviceGroupLabel(IDeviceGroup group, IEntityUriProvider provider) throws SiteWhereException {
 	URI uri = provider.getDeviceGroupIdentifier(group);
-	return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
-		.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
+	return toQrCodeImage(uri);
     }
 
     /*
@@ -150,8 +146,7 @@ public class QrCodeGenerator extends TenantEngineLifecycleComponent implements I
     public byte[] getDeviceAssignmentLabel(IDeviceAssignment assignment, IEntityUriProvider provider)
 	    throws SiteWhereException {
 	URI uri = provider.getDeviceAssignmentIdentifier(assignment);
-	return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
-		.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
+	return toQrCodeImage(uri);
     }
 
     /*
@@ -162,8 +157,7 @@ public class QrCodeGenerator extends TenantEngineLifecycleComponent implements I
     @Override
     public byte[] getAssetTypeLabel(IAssetType assetType, IEntityUriProvider provider) throws SiteWhereException {
 	URI uri = provider.getAssetTypeIdentifier(assetType);
-	return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
-		.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
+	return toQrCodeImage(uri);
     }
 
     /*
@@ -174,66 +168,18 @@ public class QrCodeGenerator extends TenantEngineLifecycleComponent implements I
     @Override
     public byte[] getAssetLabel(IAsset asset, IEntityUriProvider provider) throws SiteWhereException {
 	URI uri = provider.getAssetIdentifier(asset);
-	return QRCode.from(uri.toString()).withSize(getWidth(), getHeight())
-		.withColor(getForegroundColor(), getBackgroundColor()).to(ImageType.PNG).stream().toByteArray();
+	return toQrCodeImage(uri);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.symbology.ISymbolGenerator#getId()
-     */
-    public String getId() {
-	return id;
+    protected QrCodeGeneratorConfiguration getConfiguration() {
+	return configuration;
     }
 
-    public void setId(String id) {
-	this.id = id;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.device.symbology.ISymbolGenerator#getName()
-     */
-    public String getName() {
-	return name;
-    }
-
-    public void setName(String name) {
-	this.name = name;
-    }
-
-    public int getWidth() {
-	return width;
-    }
-
-    public void setWidth(int width) {
-	this.width = width;
-    }
-
-    public int getHeight() {
-	return height;
-    }
-
-    public void setHeight(int height) {
-	this.height = height;
-    }
-
-    public int getForegroundColor() {
-	return foregroundColor;
-    }
-
-    public void setForegroundColor(String foregroundColor) {
-	this.foregroundColor = parse(foregroundColor);
-    }
-
-    public int getBackgroundColor() {
-	return backgroundColor;
-    }
-
-    public void setBackgroundColor(String backgroundColor) {
-	this.backgroundColor = parse(backgroundColor);
+    protected byte[] toQrCodeImage(URI uri) {
+	return QRCode.from(uri.toString()).withSize(getConfiguration().getWidth(), getConfiguration().getHeight())
+		.withColor(parse(getConfiguration().getForegroundColor()),
+			parse(getConfiguration().getBackgroundColor()))
+		.to(ImageType.PNG).stream().toByteArray();
     }
 
     /**
@@ -243,6 +189,9 @@ public class QrCodeGenerator extends TenantEngineLifecycleComponent implements I
      * @return
      */
     protected static int parse(String argb) {
+	if (argb.startsWith("0x")) {
+	    argb = argb.substring(2);
+	}
 	if (argb.length() != 8) {
 	    return 0;
 	}

@@ -32,13 +32,13 @@ import com.sitewhere.grpc.service.GGetDeviceLabelResponse;
 import com.sitewhere.grpc.service.GGetDeviceTypeLabelRequest;
 import com.sitewhere.grpc.service.GGetDeviceTypeLabelResponse;
 import com.sitewhere.grpc.service.LabelGenerationGrpc;
+import com.sitewhere.labels.manager.DefaultEntityUriProvider;
+import com.sitewhere.labels.spi.IEntityUriProvider;
+import com.sitewhere.labels.spi.ILabelGenerator;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationMicroservice;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationTenantEngine;
-import com.sitewhere.labels.symbology.DefaultEntityUriProvider;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
-import com.sitewhere.microservice.api.label.IEntityUriProvider;
-import com.sitewhere.microservice.api.label.ILabelGenerator;
 import com.sitewhere.rest.model.label.Label;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -371,7 +371,7 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
      */
     protected IDeviceManagement getDeviceManagement() throws SiteWhereException {
 	return ((ILabelGenerationMicroservice) getLabelGenerationTenantEngine().getMicroservice())
-		.getDeviceManagementApiChannel();
+		.getDeviceManagement();
     }
 
     /**
@@ -381,8 +381,7 @@ public class LabelGenerationImpl extends LabelGenerationGrpc.LabelGenerationImpl
      * @throws SiteWhereException
      */
     protected IAssetManagement getAssetManagement() throws SiteWhereException {
-	return ((ILabelGenerationMicroservice) getLabelGenerationTenantEngine().getMicroservice())
-		.getAssetManagementApiChannel();
+	return ((ILabelGenerationMicroservice) getLabelGenerationTenantEngine().getMicroservice()).getAssetManagement();
     }
 
     /**

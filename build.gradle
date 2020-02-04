@@ -20,8 +20,8 @@ ext['git.revision.abbrev'] = ext.git.head().abbreviatedId
 ext['docker.base.image'] = 'openjdk:8-jre-alpine'
 ext['docker.maintainer'] = 'admin@sitewhere.com'
 
-ext['sitewhere.microservice.api.version'] = '3.0.0.alpha21'
-ext['sitewhere.integration.api.version'] = '3.0.0.alpha16'
+ext['sitewhere.microservice.api.version'] = '3.0.0.alpha22'
+ext['sitewhere.integration.api.version'] = '3.0.0.alpha18'
 ext['kafka.version'] = '2.0.0'
 ext['protobuf.version'] = '3.5.1'
 ext['grpc.version'] = '1.25.0'

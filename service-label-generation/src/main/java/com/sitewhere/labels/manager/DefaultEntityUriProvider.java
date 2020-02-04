@@ -5,12 +5,12 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.labels.symbology;
+package com.sitewhere.labels.manager;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import com.sitewhere.microservice.api.label.IEntityUriProvider;
+import com.sitewhere.labels.spi.IEntityUriProvider;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.area.IAreaType;

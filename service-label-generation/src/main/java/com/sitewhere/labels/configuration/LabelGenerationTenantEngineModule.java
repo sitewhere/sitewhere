@@ -7,6 +7,8 @@
  */
 package com.sitewhere.labels.configuration;
 
+import com.sitewhere.labels.manager.LabelGeneratorManager;
+import com.sitewhere.labels.spi.manager.ILabelGeneratorManager;
 import com.sitewhere.microservice.multitenant.TenantEngineModule;
 
 /**
@@ -17,5 +19,14 @@ public class LabelGenerationTenantEngineModule extends TenantEngineModule<LabelG
 
     public LabelGenerationTenantEngineModule(LabelGenerationTenantConfiguration configuration) {
 	super(configuration);
+    }
+
+    /*
+     * @see com.google.inject.AbstractModule#configure()
+     */
+    @Override
+    protected void configure() {
+	bind(LabelGenerationTenantConfiguration.class).toInstance(getConfiguration());
+	bind(ILabelGeneratorManager.class).to(LabelGeneratorManager.class);
     }
 }

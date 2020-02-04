@@ -6,7 +6,6 @@ dependencies {
 
 	// SiteWhere database integrations.	
     compile group: 'com.sitewhere', name: 'sitewhere-warp10', version: "${rootProject.ext['sitewhere.integration.api.version']}"
-    compile group: 'com.sitewhere', name: 'sitewhere-mongodb', version: "${rootProject.ext['sitewhere.integration.api.version']}"
     compile group: 'com.sitewhere', name: 'sitewhere-cassandra', version: "${rootProject.ext['sitewhere.integration.api.version']}"
     compile group: 'com.sitewhere', name: 'sitewhere-influxdb', version: "${rootProject.ext['sitewhere.integration.api.version']}"
 

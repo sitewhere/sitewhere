@@ -5,15 +5,17 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.labels.symbology;
+package com.sitewhere.labels.manager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.microservice.api.label.ILabelGenerator;
-import com.sitewhere.microservice.api.label.ILabelGeneratorManager;
+import com.google.inject.Inject;
+import com.sitewhere.labels.configuration.LabelGenerationTenantConfiguration;
+import com.sitewhere.labels.spi.ILabelGenerator;
+import com.sitewhere.labels.spi.manager.ILabelGeneratorManager;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
@@ -24,14 +26,32 @@ import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
  */
 public class LabelGeneratorManager extends TenantEngineLifecycleComponent implements ILabelGeneratorManager {
 
+    /** Configuration */
+    private LabelGenerationTenantConfiguration configuration;
+
     /** List of label generators */
     private List<ILabelGenerator> labelGenerators = new ArrayList<ILabelGenerator>();
 
     /** Map of label generators by unique id */
     private Map<String, ILabelGenerator> generatorsById = new HashMap<String, ILabelGenerator>();
 
-    public LabelGeneratorManager() {
+    @Inject
+    public LabelGeneratorManager(LabelGenerationTenantConfiguration configuration) {
 	super(LifecycleComponentType.LabelGeneratorManager);
+	this.configuration = configuration;
+    }
+
+    /*
+     * @see com.sitewhere.microservice.lifecycle.LifecycleComponent#initialize(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	this.labelGenerators = LabelGeneratorsParser.parse(this, configuration);
+
+	for (ILabelGenerator generator : getLabelGenerators()) {
+	    initializeNestedComponent(generator, monitor, true);
+	}
     }
 
     /*
@@ -58,7 +78,7 @@ public class LabelGeneratorManager extends TenantEngineLifecycleComponent implem
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	for (ILabelGenerator generator : getLabelGenerators()) {
-	    generator.lifecycleStop(monitor);
+	    stopNestedComponent(generator, monitor);
 	}
     }
 
@@ -68,10 +88,6 @@ public class LabelGeneratorManager extends TenantEngineLifecycleComponent implem
     @Override
     public List<ILabelGenerator> getLabelGenerators() {
 	return labelGenerators;
-    }
-
-    public void setLabelGenerators(List<ILabelGenerator> labelGenerators) {
-	this.labelGenerators = labelGenerators;
     }
 
     /*
@@ -84,11 +100,7 @@ public class LabelGeneratorManager extends TenantEngineLifecycleComponent implem
 	return getGeneratorsById().get(id);
     }
 
-    public Map<String, ILabelGenerator> getGeneratorsById() {
+    protected Map<String, ILabelGenerator> getGeneratorsById() {
 	return generatorsById;
-    }
-
-    public void setGeneratorsById(Map<String, ILabelGenerator> generatorsById) {
-	this.generatorsById = generatorsById;
     }
 }
