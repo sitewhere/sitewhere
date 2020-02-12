@@ -12,7 +12,7 @@ import java.util.List;
 import com.sitewhere.commands.spi.ICommandDestination;
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
 import com.sitewhere.commands.spi.kafka.IUndeliveredCommandInvocationsProducer;
-import com.sitewhere.grpc.client.event.EventModelMarshaler;
+import com.sitewhere.grpc.event.EventModelMarshaler;
 import com.sitewhere.rest.model.device.event.kafka.EnrichedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;

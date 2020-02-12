@@ -8,9 +8,8 @@
 package com.sitewhere.instance.grpc.tenant;
 
 import com.sitewhere.grpc.client.GrpcUtils;
-import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
 import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
-import com.sitewhere.grpc.client.tenant.TenantModelConverter;
+import com.sitewhere.grpc.common.CommonModelConverter;
 import com.sitewhere.grpc.service.GCreateTenantRequest;
 import com.sitewhere.grpc.service.GCreateTenantResponse;
 import com.sitewhere.grpc.service.GDeleteTenantRequest;
@@ -24,6 +23,7 @@ import com.sitewhere.grpc.service.GListTenantsResponse;
 import com.sitewhere.grpc.service.GUpdateTenantRequest;
 import com.sitewhere.grpc.service.GUpdateTenantResponse;
 import com.sitewhere.grpc.service.TenantManagementGrpc;
+import com.sitewhere.grpc.tenant.TenantModelConverter;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.microservice.tenant.ITenantManagement;

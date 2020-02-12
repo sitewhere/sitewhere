@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
-import com.sitewhere.grpc.client.device.DeviceModelMarshaler;
-import com.sitewhere.grpc.client.event.EventModelMarshaler;
+import com.sitewhere.grpc.device.DeviceModelMarshaler;
+import com.sitewhere.grpc.event.EventModelMarshaler;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.microservice.util.MarshalUtils;

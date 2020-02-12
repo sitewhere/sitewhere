@@ -11,7 +11,6 @@ import java.util.List;
 
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
-import com.sitewhere.grpc.client.user.UserModelConverter;
 import com.sitewhere.grpc.service.GAddGrantedAuthoritiesRequest;
 import com.sitewhere.grpc.service.GAddGrantedAuthoritiesResponse;
 import com.sitewhere.grpc.service.GAuthenticateRequest;
@@ -43,6 +42,7 @@ import com.sitewhere.grpc.service.GUpdateGrantedAuthorityResponse;
 import com.sitewhere.grpc.service.GUpdateUserRequest;
 import com.sitewhere.grpc.service.GUpdateUserResponse;
 import com.sitewhere.grpc.service.UserManagementGrpc;
+import com.sitewhere.grpc.user.UserModelConverter;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.rest.model.search.user.UserSearchCriteria;

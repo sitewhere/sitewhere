@@ -8,10 +8,10 @@
 package com.sitewhere.batch.grpc;
 
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
+import com.sitewhere.grpc.batch.BatchModelConverter;
 import com.sitewhere.grpc.client.GrpcUtils;
-import com.sitewhere.grpc.client.batch.BatchModelConverter;
-import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
 import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
+import com.sitewhere.grpc.common.CommonModelConverter;
 import com.sitewhere.grpc.model.BatchModel.GBatchElementSearchResults;
 import com.sitewhere.grpc.model.BatchModel.GBatchOperationSearchResults;
 import com.sitewhere.grpc.service.BatchManagementGrpc;

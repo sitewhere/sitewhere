@@ -9,9 +9,9 @@ package com.sitewhere.devicestate.grpc;
 
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.grpc.client.GrpcUtils;
-import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
-import com.sitewhere.grpc.client.devicestate.DeviceStateModelConverter;
 import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
+import com.sitewhere.grpc.common.CommonModelConverter;
+import com.sitewhere.grpc.devicestate.DeviceStateModelConverter;
 import com.sitewhere.grpc.model.DeviceStateModel.GDeviceStateSearchResults;
 import com.sitewhere.grpc.model.DeviceStateModel.GRecentStateEventSearchResults;
 import com.sitewhere.grpc.service.DeviceStateGrpc;

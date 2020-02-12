@@ -12,7 +12,7 @@ import org.apache.kafka.streams.processor.ProcessorContext;
 
 import com.sitewhere.commands.spi.ICommandProcessingStrategy;
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine;
-import com.sitewhere.grpc.client.event.EventModelConverter;
+import com.sitewhere.grpc.event.EventModelConverter;
 import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
 import com.sitewhere.microservice.kafka.ProcessorSupplierComponent;
 import com.sitewhere.rest.model.device.event.kafka.EnrichedEventPayload;

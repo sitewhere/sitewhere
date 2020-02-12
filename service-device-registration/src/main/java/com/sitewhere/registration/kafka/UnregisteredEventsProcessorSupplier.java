@@ -10,7 +10,7 @@ package com.sitewhere.registration.kafka;
 import org.apache.kafka.streams.processor.Processor;
 import org.apache.kafka.streams.processor.ProcessorContext;
 
-import com.sitewhere.grpc.client.event.EventModelConverter;
+import com.sitewhere.grpc.event.EventModelConverter;
 import com.sitewhere.grpc.model.DeviceEventModel.GDecodedEventPayload;
 import com.sitewhere.microservice.kafka.ProcessorSupplierComponent;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationTenantEngine;

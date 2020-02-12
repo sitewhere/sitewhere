@@ -19,9 +19,9 @@ import org.apache.kafka.common.TopicPartition;
 
 import com.sitewhere.event.spi.kafka.IInboundEventsConsumer;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
-import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
-import com.sitewhere.grpc.client.event.EventModelConverter;
-import com.sitewhere.grpc.client.event.EventModelMarshaler;
+import com.sitewhere.grpc.common.CommonModelConverter;
+import com.sitewhere.grpc.event.EventModelConverter;
+import com.sitewhere.grpc.event.EventModelMarshaler;
 import com.sitewhere.grpc.model.DeviceEventModel.GAnyDeviceEventCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GPreprocessedEventPayload;
 import com.sitewhere.microservice.api.event.IDeviceEventManagement;

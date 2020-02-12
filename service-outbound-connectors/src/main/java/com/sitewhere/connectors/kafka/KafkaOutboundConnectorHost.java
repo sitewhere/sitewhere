@@ -23,8 +23,8 @@ import org.apache.kafka.clients.consumer.OffsetCommitCallback;
 import org.apache.kafka.common.TopicPartition;
 
 import com.sitewhere.connectors.spi.IOutboundConnector;
-import com.sitewhere.grpc.client.event.EventModelConverter;
-import com.sitewhere.grpc.client.event.EventModelMarshaler;
+import com.sitewhere.grpc.event.EventModelConverter;
+import com.sitewhere.grpc.event.EventModelMarshaler;
 import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;

@@ -8,10 +8,10 @@
 package com.sitewhere.asset.grpc;
 
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
+import com.sitewhere.grpc.asset.AssetModelConverter;
 import com.sitewhere.grpc.client.GrpcUtils;
-import com.sitewhere.grpc.client.asset.AssetModelConverter;
-import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
 import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
+import com.sitewhere.grpc.common.CommonModelConverter;
 import com.sitewhere.grpc.model.AssetModel.GAssetSearchResults;
 import com.sitewhere.grpc.model.AssetModel.GAssetTypeSearchResults;
 import com.sitewhere.grpc.service.AssetManagementGrpc;

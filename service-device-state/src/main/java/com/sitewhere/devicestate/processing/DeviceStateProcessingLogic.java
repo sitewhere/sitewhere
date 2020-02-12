@@ -14,8 +14,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
 import com.sitewhere.devicestate.spi.processing.IDeviceStateProcessingLogic;
-import com.sitewhere.grpc.client.event.EventModelConverter;
-import com.sitewhere.grpc.client.event.EventModelMarshaler;
+import com.sitewhere.grpc.event.EventModelConverter;
+import com.sitewhere.grpc.event.EventModelMarshaler;
 import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
 import com.sitewhere.microservice.api.state.IDeviceStateManagement;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;

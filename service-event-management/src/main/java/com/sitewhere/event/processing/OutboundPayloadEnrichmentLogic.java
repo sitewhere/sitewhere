@@ -12,8 +12,8 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
-import com.sitewhere.grpc.client.event.EventModelConverter;
-import com.sitewhere.grpc.client.event.EventModelMarshaler;
+import com.sitewhere.grpc.event.EventModelConverter;
+import com.sitewhere.grpc.event.EventModelMarshaler;
 import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.rest.model.device.event.DeviceEventContext;

@@ -11,9 +11,9 @@ import java.util.List;
 
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.grpc.client.GrpcUtils;
-import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
-import com.sitewhere.grpc.client.device.DeviceModelConverter;
 import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
+import com.sitewhere.grpc.common.CommonModelConverter;
+import com.sitewhere.grpc.device.DeviceModelConverter;
 import com.sitewhere.grpc.model.DeviceModel.GAreaSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GAreaTypeSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GCustomerSearchResults;

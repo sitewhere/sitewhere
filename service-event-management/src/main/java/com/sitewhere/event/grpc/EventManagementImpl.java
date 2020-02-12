@@ -11,9 +11,9 @@ import java.util.List;
 
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.grpc.client.GrpcUtils;
-import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
-import com.sitewhere.grpc.client.event.EventModelConverter;
 import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
+import com.sitewhere.grpc.common.CommonModelConverter;
+import com.sitewhere.grpc.event.EventModelConverter;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceAlertSearchResults;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceCommandInvocationSearchResults;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceCommandResponseSearchResults;

@@ -11,7 +11,7 @@ import java.util.UUID;
 
 import com.sitewhere.device.spi.kafka.IDeviceInteractionEventsProducer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
-import com.sitewhere.grpc.client.event.EventModelMarshaler;
+import com.sitewhere.grpc.event.EventModelMarshaler;
 import com.sitewhere.microservice.api.device.DeviceManagementDecorator;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.rest.model.device.event.kafka.DecodedEventPayload;

@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 import org.apache.kafka.streams.processor.Processor;
 import org.apache.kafka.streams.processor.ProcessorContext;
 
-import com.sitewhere.grpc.client.event.EventModelMarshaler;
+import com.sitewhere.grpc.event.EventModelMarshaler;
 import com.sitewhere.grpc.model.DeviceEventModel.GDecodedEventPayload;
 import com.sitewhere.inbound.spi.kafka.IInboundEventsProducer;
 import com.sitewhere.inbound.spi.kafka.IUnregisteredEventsProducer;
