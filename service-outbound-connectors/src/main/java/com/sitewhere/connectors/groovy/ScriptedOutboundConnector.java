@@ -25,8 +25,6 @@ import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.scripting.IScriptVariables;
-import com.sitewhere.spi.microservice.scripting.ScriptScope;
-import com.sitewhere.spi.microservice.scripting.ScriptType;
 
 /**
  * Outbound event processor that uses a Groovy script to process events.
@@ -180,7 +178,7 @@ public class ScriptedOutboundConnector extends SerialOutboundConnector {
 	    binding.setVariable(IScriptVariables.VAR_DEVICE_MANAGEMENT_BUILDER, deviceBuilder);
 	    binding.setVariable(IScriptVariables.VAR_EVENT_MANAGEMENT_BUILDER, eventsBuilder);
 
-	    run(ScriptScope.TenantEngine, ScriptType.Managed, binding);
+	    run(binding);
 	}
     }
 

@@ -25,8 +25,6 @@ import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.microservice.scripting.IScriptVariables;
-import com.sitewhere.spi.microservice.scripting.ScriptScope;
-import com.sitewhere.spi.microservice.scripting.ScriptType;
 
 /**
  * Implementation of {@link IDeviceEventDecoder} that uses a script to decode a
@@ -59,7 +57,7 @@ public class ScriptedEventDecoder extends ScriptingComponent<List<IDecodedDevice
 	    binding.setVariable(IScriptVariables.VAR_PAYLOAD, payload);
 	    binding.setVariable(IScriptVariables.VAR_PAYLOAD_METADATA, metadata);
 	    binding.setVariable(IScriptVariables.VAR_LOGGER, getLogger());
-	    return run(ScriptScope.TenantEngine, ScriptType.Managed, binding);
+	    return run(binding);
 	} catch (SiteWhereException e) {
 	    throw new EventDecodeException("Unable to execute event decoder script.", e);
 	}

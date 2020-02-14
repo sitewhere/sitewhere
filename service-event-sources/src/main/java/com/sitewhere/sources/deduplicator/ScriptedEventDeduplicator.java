@@ -21,8 +21,6 @@ import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.microservice.scripting.IScriptVariables;
-import com.sitewhere.spi.microservice.scripting.ScriptScope;
-import com.sitewhere.spi.microservice.scripting.ScriptType;
 
 /**
  * Implementation of {@link IDeviceEventDeduplicator} that uses a script to
@@ -51,7 +49,7 @@ public class ScriptedEventDeduplicator extends ScriptingComponent<Boolean> imple
 		    new DeviceEventRequestBuilder(getDeviceManagement(), getDeviceEventManagement()));
 	    binding.setVariable(IScriptVariables.VAR_DECODED_DEVICE_REQUEST, request);
 	    binding.setVariable(IScriptVariables.VAR_LOGGER, getLogger());
-	    return run(ScriptScope.TenantEngine, ScriptType.Managed, binding);
+	    return run(binding);
 	} catch (SiteWhereException e) {
 	    throw new EventDecodeException("Unable to run deduplicator script.", e);
 	}

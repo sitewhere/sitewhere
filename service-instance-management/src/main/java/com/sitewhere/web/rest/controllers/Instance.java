@@ -236,167 +236,6 @@ public class Instance {
     }
 
     /**
-     * Get a list of global script metadata.
-     * 
-     * @param identifier
-     * @return
-     * @throws SiteWhereException
-     */
-    @GET
-    @Path("/microservice/{identifier}/scripting/scripts")
-    @ApiOperation(value = "Get list of global script metadata")
-    public Response listGlobalScriptMetadata(
-	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier)
-	    throws SiteWhereException {
-	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return Response.ok(getScriptManagement().getScriptMetadataList(msid, null)).build();
-    }
-
-    /**
-     * Get metadata for a global script based on unique script id.
-     * 
-     * @param identifier
-     * @param scriptId
-     * @return
-     * @throws SiteWhereException
-     */
-    @GET
-    @Path("/microservice/{identifier}/scripting/scripts/{scriptId}")
-    @ApiOperation(value = "Get metadata for a tenant script based on unique script id")
-    public Response getGlobalScriptMetadata(
-	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId)
-	    throws SiteWhereException {
-	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return Response.ok(getScriptManagement().getScriptMetadata(msid, null, scriptId)).build();
-    }
-
-    /**
-     * Create a global script.
-     * 
-     * @param identifier
-     * @param request
-     * @return
-     * @throws SiteWhereException
-     */
-    @POST
-    @Path("/microservice/{identifier}/scripting/scripts")
-    @ApiOperation(value = "Create a new global script")
-    public Response createGlobalScript(
-	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
-	    @RequestBody ScriptCreateRequest request) throws SiteWhereException {
-	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return Response.ok(getScriptManagement().createScript(msid, null, request)).build();
-    }
-
-    /**
-     * Get global script content based on unique script id and version identifier.
-     * 
-     * @param identifier
-     * @param scriptId
-     * @param versionId
-     * @return
-     * @throws SiteWhereException
-     */
-    @GET
-    @Path("/microservice/{identifier}/scripting/scripts/{scriptId}/versions/{versionId}/content")
-    @ApiOperation(value = "Get content for a global script based on unique script id and version id")
-    public Response getGlobalScriptContent(
-	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId,
-	    @ApiParam(value = "Version id", required = true) @PathParam("versionId") String versionId)
-	    throws SiteWhereException {
-	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return Response.ok(new String(getScriptManagement().getScriptContent(msid, null, scriptId, versionId))).build();
-    }
-
-    /**
-     * Update an existing global script.
-     * 
-     * @param identifier
-     * @param scriptId
-     * @param versionId
-     * @param request
-     * @return
-     * @throws SiteWhereException
-     */
-    @POST
-    @Path("/microservice/{identifier}/scripting/scripts/{scriptId}/versions/{versionId}")
-    @ApiOperation(value = "Update an existing global script")
-    public Response updateGlobalScript(
-	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId,
-	    @ApiParam(value = "Version id", required = true) @PathParam("versionId") String versionId,
-	    @RequestBody ScriptCreateRequest request) throws SiteWhereException {
-	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return Response.ok(getScriptManagement().updateScript(msid, null, scriptId, versionId, request)).build();
-    }
-
-    /**
-     * Clone an existing global script version to create a new version.
-     * 
-     * @param identifier
-     * @param scriptId
-     * @param versionId
-     * @param request
-     * @return
-     * @throws SiteWhereException
-     */
-    @POST
-    @Path("/microservice/{identifier}/scripting/scripts/{scriptId}/versions/{versionId}/clone")
-    @ApiOperation(value = "Clone an existing global script version to create a new version")
-    public Response cloneGlobalScript(
-	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId,
-	    @ApiParam(value = "Version id", required = true) @PathParam("versionId") String versionId,
-	    @RequestBody ScriptCloneRequest request) throws SiteWhereException {
-	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return Response.ok(getScriptManagement().cloneScript(msid, null, scriptId, versionId, request.getComment()))
-		.build();
-    }
-
-    /**
-     * Activate a global script. This action causes the given version to become the
-     * active script and pushes the content out to all listening microservices.
-     * 
-     * @param identifier
-     * @param scriptId
-     * @param versionId
-     * @return
-     */
-    @POST
-    @Path("/microservice/{identifier}/scripting/scripts/{scriptId}/versions/{versionId}/activate")
-    @ApiOperation(value = "Activate a global script version")
-    public Response activateGlobalScript(
-	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId,
-	    @ApiParam(value = "Version id", required = true) @PathParam("versionId") String versionId)
-	    throws SiteWhereException {
-	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return Response.ok(getScriptManagement().activateScript(msid, null, scriptId, versionId)).build();
-    }
-
-    /**
-     * Delete a global script. This action causes the script metadata, content, and
-     * all version information to be deleted.
-     * 
-     * @param identifier
-     * @param scriptId
-     * @return
-     * @throws SiteWhereException
-     */
-    @DELETE
-    @Path("/microservice/{identifier}/scripting/scripts/{scriptId}")
-    @ApiOperation(value = "Delete a global script and version history")
-    public Response deleteGlobalScript(
-	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId)
-	    throws SiteWhereException {
-	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return Response.ok(getScriptManagement().deleteScript(msid, null, scriptId)).build();
-    }
-
-    /**
      * Get a list of script metadata for the given tenant.
      * 
      * @param tenantToken
@@ -414,7 +253,7 @@ public class Instance {
 	    throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantToken);
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return Response.ok(getScriptManagement().getScriptMetadataList(msid, null)).build();
+	return Response.ok(getScriptManagement().getScriptMetadataList(msid, tenantToken)).build();
     }
 
     /**
@@ -435,7 +274,7 @@ public class Instance {
 	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId)
 	    throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return Response.ok(getScriptManagement().getScriptMetadata(msid, null, scriptId)).build();
+	return Response.ok(getScriptManagement().getScriptMetadata(msid, tenantToken, scriptId)).build();
     }
 
     /**
@@ -455,7 +294,7 @@ public class Instance {
 	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
 	    @RequestBody ScriptCreateRequest request) throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return Response.ok(getScriptManagement().createScript(msid, null, request)).build();
+	return Response.ok(getScriptManagement().createScript(msid, tenantToken, request)).build();
     }
 
     /**
@@ -478,7 +317,8 @@ public class Instance {
 	    @ApiParam(value = "Version id", required = true) @PathParam("versionId") String versionId)
 	    throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return Response.ok(new String(getScriptManagement().getScriptContent(msid, null, scriptId, versionId))).build();
+	return Response.ok(new String(getScriptManagement().getScriptContent(msid, tenantToken, scriptId, versionId)))
+		.build();
     }
 
     /**
@@ -502,7 +342,7 @@ public class Instance {
 	    @ApiParam(value = "Version id", required = true) @PathParam("versionId") String versionId,
 	    @RequestBody ScriptCreateRequest request) throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return Response.ok(getScriptManagement().updateScript(msid, null, scriptId, versionId, request)).build();
+	return Response.ok(getScriptManagement().updateScript(msid, tenantToken, scriptId, versionId, request)).build();
     }
 
     /**
@@ -526,7 +366,8 @@ public class Instance {
 	    @ApiParam(value = "Version id", required = true) @PathParam("versionId") String versionId,
 	    @RequestBody ScriptCloneRequest request) throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return Response.ok(getScriptManagement().cloneScript(msid, null, scriptId, versionId, request.getComment()))
+	return Response
+		.ok(getScriptManagement().cloneScript(msid, tenantToken, scriptId, versionId, request.getComment()))
 		.build();
     }
 
@@ -551,7 +392,7 @@ public class Instance {
 	    @ApiParam(value = "Version id", required = true) @PathParam("versionId") String versionId)
 	    throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return Response.ok(getScriptManagement().activateScript(msid, null, scriptId, versionId)).build();
+	return Response.ok(getScriptManagement().activateScript(msid, tenantToken, scriptId, versionId)).build();
     }
 
     /**
@@ -573,7 +414,7 @@ public class Instance {
 	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId)
 	    throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
-	return Response.ok(getScriptManagement().deleteScript(msid, null, scriptId)).build();
+	return Response.ok(getScriptManagement().deleteScript(msid, tenantToken, scriptId)).build();
     }
 
     /**

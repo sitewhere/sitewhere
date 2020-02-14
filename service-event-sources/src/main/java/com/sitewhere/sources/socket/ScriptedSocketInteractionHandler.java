@@ -16,8 +16,6 @@ import com.sitewhere.sources.spi.socket.ISocketInteractionHandler;
 import com.sitewhere.sources.spi.socket.ISocketInteractionHandlerFactory;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.microservice.scripting.ScriptScope;
-import com.sitewhere.spi.microservice.scripting.ScriptType;
 
 /**
  * Implementation of {@link ISocketInteractionHandler} that defers processing
@@ -52,7 +50,7 @@ public class ScriptedSocketInteractionHandler extends ScriptingComponent<Void>
 	    Binding binding = createBindingFor(this);
 	    binding.setVariable(VAR_SOCKET, socket);
 	    binding.setVariable(VAR_EVENT_RECEIVER, receiver);
-	    factory.run(ScriptScope.TenantEngine, ScriptType.Managed, binding);
+	    factory.run(binding);
 	} catch (SiteWhereException e) {
 	    throw new SiteWhereException("Unable to run socket interaction handler script.", e);
 	}

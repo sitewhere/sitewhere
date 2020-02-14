@@ -17,8 +17,6 @@ import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder.IMessageMetadataEx
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.microservice.scripting.IScriptVariables;
-import com.sitewhere.spi.microservice.scripting.ScriptScope;
-import com.sitewhere.spi.microservice.scripting.ScriptType;
 
 /**
  * Implements {@link IMessageMetadataExtractor} by using a script to extract
@@ -44,7 +42,7 @@ public class ScriptedMessageMetadataExtractor extends ScriptingComponent<IMessag
 	    // getDeviceManagement());
 	    binding.setVariable(IScriptVariables.VAR_PAYLOAD, payload);
 	    binding.setVariable(IScriptVariables.VAR_PAYLOAD_METADATA, eventSourceMetadata);
-	    return (IMessageMetadata<byte[]>) run(ScriptScope.TenantEngine, ScriptType.Managed, binding);
+	    return (IMessageMetadata<byte[]>) run(binding);
 	} catch (SiteWhereException e) {
 	    throw new EventDecodeException("Unable to run metadata extractor.", e);
 	}

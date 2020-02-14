@@ -8,19 +8,22 @@
 package com.sitewhere.instance.microservice;
 
 import com.sitewhere.instance.spi.microservice.IInstanceBootstrapper;
-import com.sitewhere.instance.tenant.ScriptedTenantModelInitializer;
-import com.sitewhere.instance.user.ScriptedUserModelInitializer;
 import com.sitewhere.microservice.api.user.IUserManagement;
+import com.sitewhere.microservice.api.user.UserManagementRequestBuilder;
 import com.sitewhere.microservice.instance.InstanceStatusUpdateOperation;
 import com.sitewhere.microservice.lifecycle.AsyncStartLifecycleComponent;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.microservice.lifecycle.SimpleLifecycleStep;
+import com.sitewhere.microservice.scripting.Binding;
+import com.sitewhere.microservice.scripting.ScriptingUtils;
+import com.sitewhere.microservice.tenant.TenantManagementRequestBuilder;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.IAsyncStartLifecycleComponent;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.scripting.IScriptVariables;
 import com.sitewhere.spi.microservice.tenant.ITenantManagement;
 
 import io.sitewhere.k8s.crd.common.BootstrapState;
@@ -40,33 +43,8 @@ public class InstanceBootstrapper extends AsyncStartLifecycleComponent implement
     /** Functional area for user management */
     public static final String FA_USER_MANGEMENT = "userManagement";
 
-    /** Tenant model initializer */
-    private ScriptedTenantModelInitializer tenantModelInitializer = new ScriptedTenantModelInitializer();
-
-    /** User model initializer */
-    private ScriptedUserModelInitializer userModelInitializer = new ScriptedUserModelInitializer();
-
     public InstanceBootstrapper() {
 	super(LifecycleComponentType.Other);
-    }
-
-    /*
-     * @see com.sitewhere.microservice.lifecycle.LifecycleComponent#initialize(com.
-     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	super.initialize(monitor);
-	ICompositeLifecycleStep initialize = new CompositeLifecycleStep("Initialize");
-
-	// Initialize tenant model initializer.
-	initialize.addInitializeStep(this, getTenantModelInitializer(), true);
-
-	// Initialize user model initializer.
-	initialize.addInitializeStep(this, getUserModelInitializer(), true);
-
-	// Execute initialization steps.
-	initialize.execute(monitor);
     }
 
     /*
@@ -77,12 +55,6 @@ public class InstanceBootstrapper extends AsyncStartLifecycleComponent implement
     public void asyncStart() throws SiteWhereException {
 	ILifecycleProgressMonitor monitor = LifecycleProgressMonitor.createFor("Start", getMicroservice());
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start");
-
-	// Start tenant model initializer.
-	start.addStartStep(this, getTenantModelInitializer(), true);
-
-	// Start user model initializer.
-	start.addStartStep(this, getUserModelInitializer(), true);
 
 	// Execute bootstrap logic.
 	start.addStep(new SimpleLifecycleStep("Bootstrap") {
@@ -165,9 +137,13 @@ public class InstanceBootstrapper extends AsyncStartLifecycleComponent implement
 	    if (tenantManagement != null) {
 		getLogger().info(String.format("Initializing tenant management from template '%s'.",
 			template.getMetadata().getName()));
-		getMicroservice().getScriptManager().addBootstrapScript(FA_TENANT_MANGEMENT, tenantManagement);
-		getTenantModelInitializer().setScriptId(FA_TENANT_MANGEMENT);
-		getTenantModelInitializer().initialize(tenants);
+
+		Binding binding = new Binding();
+		binding.setVariable(IScriptVariables.VAR_LOGGER, getLogger());
+		binding.setVariable(IScriptVariables.VAR_TENANT_MANAGEMENT_BUILDER,
+			new TenantManagementRequestBuilder(getTenantManagement()));
+		ScriptingUtils.run(tenantManagement, binding);
+
 		getLogger().info(String.format("Completed execution of tenant management template '%s'.",
 			template.getMetadata().getName()));
 	    }
@@ -227,9 +203,12 @@ public class InstanceBootstrapper extends AsyncStartLifecycleComponent implement
 	    if (userManagement != null) {
 		getLogger().info(String.format("Initializing user management from template '%s'.",
 			template.getMetadata().getName()));
-		getMicroservice().getScriptManager().addBootstrapScript(FA_USER_MANGEMENT, userManagement);
-		getUserModelInitializer().setScriptId(FA_USER_MANGEMENT);
-		getUserModelInitializer().initialize(getUserManagement());
+
+		Binding binding = new Binding();
+		binding.setVariable(IScriptVariables.VAR_LOGGER, getLogger());
+		binding.setVariable("userBuilder", new UserManagementRequestBuilder(getUserManagement()));
+		ScriptingUtils.run(userManagement, binding);
+
 		getLogger().info(String.format("Completed execution of user management template '%s'.",
 			template.getMetadata().getName()));
 	    }
@@ -276,12 +255,8 @@ public class InstanceBootstrapper extends AsyncStartLifecycleComponent implement
 	});
     }
 
-    protected ScriptedTenantModelInitializer getTenantModelInitializer() {
-	return tenantModelInitializer;
-    }
-
-    protected ScriptedUserModelInitializer getUserModelInitializer() {
-	return userModelInitializer;
+    protected ITenantManagement getTenantManagement() {
+	return ((InstanceManagementMicroservice) getMicroservice()).getTenantManagement();
     }
 
     protected IUserManagement getUserManagement() {

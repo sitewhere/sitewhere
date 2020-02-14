@@ -18,8 +18,6 @@ import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.microservice.scripting.IScriptVariables;
-import com.sitewhere.spi.microservice.scripting.ScriptScope;
-import com.sitewhere.spi.microservice.scripting.ScriptType;
 
 /**
  * Common base class for scripted command delivery parameter extractors.
@@ -45,7 +43,7 @@ public class ScriptedParameterExtractor<T> extends ScriptingComponent<T>
 	    Binding binding = createBindingFor(this);
 	    binding.setVariable(IScriptVariables.VAR_NESTING_CONTEXT, nesting);
 	    binding.setVariable(IScriptVariables.VAR_ACTIVE_ASSIGNMENTS, assignments);
-	    return run(ScriptScope.TenantEngine, ScriptType.Managed, binding);
+	    return run(binding);
 	} catch (SiteWhereException e) {
 	    throw new SiteWhereException("Unable to run parameter extractor script.", e);
 	}

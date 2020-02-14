@@ -20,8 +20,6 @@ import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.microservice.scripting.IScriptVariables;
-import com.sitewhere.spi.microservice.scripting.ScriptScope;
-import com.sitewhere.spi.microservice.scripting.ScriptType;
 
 /**
  * Implementation of {@link ICommandExecutionEncoder} that defers encoding to a
@@ -49,7 +47,7 @@ public class ScriptedStringCommandExecutionEncoder extends ScriptingComponent<St
 	    binding.setVariable(IScriptVariables.VAR_COMMAND_EXECUTION, command);
 	    binding.setVariable(IScriptVariables.VAR_NESTING_CONTEXT, nested);
 	    binding.setVariable(IScriptVariables.VAR_ACTIVE_ASSIGNMENTS, assignments);
-	    return (String) run(ScriptScope.TenantEngine, ScriptType.Managed, binding);
+	    return (String) run(binding);
 	} catch (SiteWhereException e) {
 	    throw new CommandEncodeException("Unable to run command encoder script.", e);
 	}
@@ -69,7 +67,7 @@ public class ScriptedStringCommandExecutionEncoder extends ScriptingComponent<St
 	    binding.setVariable(IScriptVariables.VAR_SYSTEM_COMMAND, command);
 	    binding.setVariable(IScriptVariables.VAR_NESTING_CONTEXT, nested);
 	    binding.setVariable(IScriptVariables.VAR_ACTIVE_ASSIGNMENTS, assignments);
-	    return (String) run(ScriptScope.TenantEngine, ScriptType.Managed, binding);
+	    return (String) run(binding);
 	} catch (SiteWhereException e) {
 	    throw new CommandEncodeException("Unable to run command encoder script.", e);
 	}

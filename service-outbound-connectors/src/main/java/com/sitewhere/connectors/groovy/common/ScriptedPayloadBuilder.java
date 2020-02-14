@@ -17,8 +17,6 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.microservice.scripting.IScriptVariables;
-import com.sitewhere.spi.microservice.scripting.ScriptScope;
-import com.sitewhere.spi.microservice.scripting.ScriptType;
 
 /**
  * Implementation of {@link IPayloadBuilder} that uses a script to generate the
@@ -46,6 +44,6 @@ public class ScriptedPayloadBuilder extends ScriptingComponent<byte[]> implement
 	binding.setVariable(IScriptVariables.VAR_EVENT, event);
 	binding.setVariable(IScriptVariables.VAR_ASSIGNMENT, assignment);
 	binding.setVariable(IScriptVariables.VAR_DEVICE, device);
-	return run(ScriptScope.TenantEngine, ScriptType.Managed, binding);
+	return run(binding);
     }
 }

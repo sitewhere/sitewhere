@@ -21,8 +21,6 @@ import com.sitewhere.sources.spi.IDeviceEventDecoder;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.microservice.scripting.IScriptVariables;
-import com.sitewhere.spi.microservice.scripting.ScriptScope;
-import com.sitewhere.spi.microservice.scripting.ScriptType;
 
 /**
  * Implementation of {@link IDeviceEventDecoder} that delegates parsing of a
@@ -47,7 +45,7 @@ public class ScriptedJsonDecoder extends ScriptingComponent<List<IDecodedDeviceR
 	    List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();
 	    binding.setVariable(IScriptVariables.VAR_DECODED_EVENTS, events);
 	    binding.setVariable(IScriptVariables.VAR_PAYLOAD, payload);
-	    return run(ScriptScope.TenantEngine, ScriptType.Managed, binding);
+	    return run(binding);
 	} catch (SiteWhereException e) {
 	    throw new EventDecodeException("Unable to run JSON decoder script.", e);
 	}

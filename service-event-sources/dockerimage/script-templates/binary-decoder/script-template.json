@@ -1,6 +1,0 @@
-{
-	"id": "binary-decoder",
-	"name": "Binary Event Decoder",
-	"description": "Decodes a binary payload into zero or more device events",
-	"type": "groovy"
-}
