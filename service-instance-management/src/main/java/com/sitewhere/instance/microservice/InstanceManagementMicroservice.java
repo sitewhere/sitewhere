@@ -33,7 +33,6 @@ import com.sitewhere.instance.spi.microservice.IInstanceBootstrapper;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.instance.spi.tenant.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.instance.spi.user.grpc.IUserManagementGrpcServer;
-import com.sitewhere.instance.user.persistence.SyncopeUserManagement;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.api.user.IUserManagement;
@@ -183,7 +182,7 @@ public class InstanceManagementMicroservice
      * Create management implementations.
      */
     protected void createManagementImplementations() {
-	this.userManagement = new SyncopeUserManagement();
+	this.userManagement = getInjector().getInstance(IUserManagement.class);
     }
 
     /**

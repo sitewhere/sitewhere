@@ -47,6 +47,8 @@ import com.evanlennick.retry4j.Status;
 import com.evanlennick.retry4j.config.RetryConfig;
 import com.evanlennick.retry4j.config.RetryConfigBuilder;
 import com.evanlennick.retry4j.listener.RetryListener;
+import com.google.inject.Inject;
+import com.sitewhere.instance.configuration.InstanceManagementConfiguration;
 import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.microservice.lifecycle.AsyncStartLifecycleComponent;
 import com.sitewhere.microservice.util.MarshalUtils;
@@ -58,7 +60,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.search.ISearchResults;
@@ -98,6 +99,9 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
     /** Time in minutes to wait between token refreshes */
     private static final int TOKEN_REFRESH_IN_MINUTES = 5;
 
+    /** Configuration settings */
+    private InstanceManagementConfiguration configuration;
+
     /** Client for interacting with Syncope */
     private SyncopeClient client;
 
@@ -125,8 +129,10 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
     /** AnyType service */
     private AnyTypeClassService anyTypeClassService;
 
-    public SyncopeUserManagement() {
+    @Inject
+    public SyncopeUserManagement(InstanceManagementConfiguration configuration) {
 	super(LifecycleComponentType.DataStore);
+	this.configuration = configuration;
     }
 
     /*
@@ -164,10 +170,10 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	    throw new SiteWhereException("Connection to Syncope could not be established.");
 	}
 
-	IInstanceSettings settings = getMicroservice().getInstanceSettings();
 	String domain = getClient().getDomain();
-	getLogger().info(String.format("Syncope client connected to %s:%d using domain %s.", settings.getSyncopeHost(),
-		settings.getSyncopePort(), domain));
+	getLogger().info(String.format("Syncope client connected to %s:%d using domain %s.",
+		getConfiguration().getUserManagement().getSyncopeHost(),
+		getConfiguration().getUserManagement().getSyncopePort(), domain));
 	this.applicationService = client.getService(ApplicationService.class);
 	this.userService = client.getService(UserService.class);
 	this.schemaService = client.getService(SchemaService.class);
@@ -571,13 +577,14 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void run() {
-	    IInstanceSettings settings = getMicroservice().getInstanceSettings();
-	    String syncopeUrl = String.format("http://%s:%d/syncope/rest", settings.getSyncopeHost(),
-		    settings.getSyncopePort());
+	    String syncopeUrl = String.format("http://%s:%d/syncope/rest",
+		    getConfiguration().getUserManagement().getSyncopeHost(),
+		    getConfiguration().getUserManagement().getSyncopePort());
 	    SyncopeClientFactoryBean clientFactory = new SyncopeClientFactoryBean().setAddress(syncopeUrl);
 
 	    getLogger().info(String.format("Attempting to connect to Syncope at '%s:%d' as '%s'...",
-		    settings.getSyncopeHost(), settings.getSyncopePort(), SYNCOPE_USERNAME));
+		    getConfiguration().getUserManagement().getSyncopeHost(),
+		    getConfiguration().getUserManagement().getSyncopePort(), SYNCOPE_USERNAME));
 	    Callable<Boolean> connectCheck = () -> {
 		SyncopeUserManagement.this.client = clientFactory.create(SYNCOPE_USERNAME, SYNCOPE_PASSWORD);
 		getSyncopeAvailable().countDown();
@@ -653,5 +660,9 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 
     protected AnyTypeClassService getAnyTypeClassService() {
 	return anyTypeClassService;
+    }
+
+    protected InstanceManagementConfiguration getConfiguration() {
+	return configuration;
     }
 }

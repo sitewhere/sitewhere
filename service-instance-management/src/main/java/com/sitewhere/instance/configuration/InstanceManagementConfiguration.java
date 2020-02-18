@@ -17,13 +17,14 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class InstanceManagementConfiguration implements IMicroserviceConfiguration {
 
-    private String example;
+    /** User management configuration */
+    private UserManagementConfiguration userManagement;
 
-    public String getExample() {
-	return example;
+    public UserManagementConfiguration getUserManagement() {
+	return userManagement;
     }
 
-    public void setExample(String example) {
-	this.example = example;
+    public void setUserManagement(UserManagementConfiguration userManagement) {
+	this.userManagement = userManagement;
     }
 }

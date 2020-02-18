@@ -7,6 +7,8 @@
  */
 package com.sitewhere.instance.configuration;
 
+import com.sitewhere.instance.user.persistence.SyncopeUserManagement;
+import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.microservice.configuration.MicroserviceModule;
 
 /**
@@ -17,5 +19,14 @@ public class InstanceManagementModule extends MicroserviceModule<InstanceManagem
 
     public InstanceManagementModule(InstanceManagementConfiguration configuration) {
 	super(configuration);
+    }
+
+    /*
+     * @see com.google.inject.AbstractModule#configure()
+     */
+    @Override
+    protected void configure() {
+	bind(InstanceManagementConfiguration.class).toInstance(getConfiguration());
+	bind(IUserManagement.class).to(SyncopeUserManagement.class);
     }
 }
