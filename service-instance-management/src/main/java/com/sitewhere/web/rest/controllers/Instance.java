@@ -426,7 +426,7 @@ public class Instance {
      */
     protected SiteWhereMicroservice getMicroserviceForIdentifier(IFunctionIdentifier identifier)
 	    throws SiteWhereException {
-	String instanceId = getMicroservice().getInstanceSettings().getInstanceId();
+	String instanceId = getMicroservice().getInstanceSettings().getKubernetesNamespace();
 	SiteWhereMicroserviceList list = getMicroservice().getSiteWhereKubernetesClient().getMicroservices().list();
 	for (SiteWhereMicroservice microservice : list.getItems()) {
 	    if (MicroserviceUtils.getInstanceName(microservice).equals(instanceId)

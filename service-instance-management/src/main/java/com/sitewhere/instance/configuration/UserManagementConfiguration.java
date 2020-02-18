@@ -18,6 +18,9 @@ public class UserManagementConfiguration {
     /** Syncope port */
     private int syncopePort;
 
+    /** Number of minutes before JWT expires */
+    private int jwtExpirationInMinutes;
+
     public String getSyncopeHost() {
 	return syncopeHost;
     }
@@ -32,5 +35,13 @@ public class UserManagementConfiguration {
 
     public void setSyncopePort(int syncopePort) {
 	this.syncopePort = syncopePort;
+    }
+
+    public int getJwtExpirationInMinutes() {
+	return jwtExpirationInMinutes;
+    }
+
+    public void setJwtExpirationInMinutes(int jwtExpirationInMinutes) {
+	this.jwtExpirationInMinutes = jwtExpirationInMinutes;
     }
 }
