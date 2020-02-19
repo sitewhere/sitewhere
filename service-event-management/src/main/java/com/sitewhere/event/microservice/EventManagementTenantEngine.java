@@ -247,6 +247,6 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
     }
 
     protected IDeviceManagement getDeviceManagement() {
-	return ((IEventManagementMicroservice) getMicroservice()).getDeviceManagementApiChannel();
+	return ((IEventManagementMicroservice) getMicroservice()).getDeviceManagement();
     }
 }

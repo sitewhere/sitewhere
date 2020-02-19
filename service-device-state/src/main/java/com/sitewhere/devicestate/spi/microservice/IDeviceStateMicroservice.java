@@ -9,9 +9,9 @@ package com.sitewhere.devicestate.spi.microservice;
 
 import com.sitewhere.devicestate.configuration.DeviceStateConfiguration;
 import com.sitewhere.devicestate.spi.grpc.IDeviceStateGrpcServer;
-import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.microservice.api.asset.IAssetManagement;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
@@ -33,14 +33,14 @@ public interface IDeviceStateMicroservice
      * 
      * @return
      */
-    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel();
+    public IDeviceManagement getDeviceManagement();
 
     /**
      * Get asset management API access via GRPC channel.
      * 
      * @return
      */
-    public IAssetManagementApiChannel<?> getAssetManagementApiChannel();
+    public IAssetManagement getAssetManagement();
 
     /**
      * Get device event management API access via GRPC channel.

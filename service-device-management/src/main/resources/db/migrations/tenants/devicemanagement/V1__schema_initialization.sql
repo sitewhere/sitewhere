@@ -343,6 +343,11 @@ alter table if exists devicemanagement.device_group
 
 create table devicemanagement.device_group_element (
 	id uuid not null, 
+	created_by varchar(255), 
+	created_date timestamp, 
+	token varchar(255), 
+	updated_by varchar(255), 
+	updated_date timestamp, 
 	device_id uuid, 
 	group_id uuid not null, 
 	nested_group_id uuid, 
@@ -363,6 +368,16 @@ create table devicemanagement.device_group_element_roles (
 
 alter table if exists devicemanagement.device_group_element_roles 
 	add constraint FKn2mvogw0gomknvurg09n18jel foreign key (device_group_element_id) references devicemanagement.device_group_element;
+
+create table devicemanagement.device_group_element_metadata (
+	device_group_element_id uuid not null, 
+	prop_value varchar(255), 
+	prop_key varchar(255) not null, 
+	primary key (device_group_element_id, prop_key)
+);
+
+alter table if exists devicemanagement.device_group_element_metadata 
+	add constraint FKc2ydrlermch5a33986iuycahm foreign key (device_group_element_id) references devicemanagement.device_group_element;
 
 create table devicemanagement.device_group_metadata (
 	device_group_id uuid not null, 

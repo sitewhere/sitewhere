@@ -417,7 +417,7 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     }
 
     protected IDeviceManagement getDeviceManagement() {
-	return ((IEventManagementMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
+	return ((IEventManagementMicroservice) getTenantEngine().getMicroservice()).getDeviceManagement();
     }
 
     public InfluxDbClient getClient() {

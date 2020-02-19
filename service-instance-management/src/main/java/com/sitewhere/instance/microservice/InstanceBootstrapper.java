@@ -17,6 +17,8 @@ import com.sitewhere.microservice.lifecycle.LifecycleProgressMonitor;
 import com.sitewhere.microservice.lifecycle.SimpleLifecycleStep;
 import com.sitewhere.microservice.scripting.Binding;
 import com.sitewhere.microservice.scripting.ScriptingUtils;
+import com.sitewhere.microservice.security.SiteWhereAuthentication;
+import com.sitewhere.microservice.security.UserContext;
 import com.sitewhere.microservice.tenant.TenantManagementRequestBuilder;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.IAsyncStartLifecycleComponent;
@@ -125,6 +127,8 @@ public class InstanceBootstrapper extends AsyncStartLifecycleComponent implement
      * @throws SiteWhereException
      */
     protected void runTenantManagementInitializer(InstanceDatasetTemplate template) throws SiteWhereException {
+	SiteWhereAuthentication previous = UserContext.getCurrentUser();
+	UserContext.setContext(getMicroservice().getSystemUser().getAuthentication());
 	try {
 	    setTenantBootstrapState(BootstrapState.Bootstrapping);
 	    ITenantManagement tenants = getMicroservice().getTenantManagement();
@@ -151,6 +155,8 @@ public class InstanceBootstrapper extends AsyncStartLifecycleComponent implement
 	} catch (Throwable t) {
 	    setTenantBootstrapState(BootstrapState.BootstrapFailed);
 	    throw t;
+	} finally {
+	    UserContext.setContext(previous);
 	}
     }
 
@@ -191,6 +197,8 @@ public class InstanceBootstrapper extends AsyncStartLifecycleComponent implement
      * @throws SiteWhereException
      */
     protected void runUserManagementInitializer(InstanceDatasetTemplate template) throws SiteWhereException {
+	SiteWhereAuthentication previous = UserContext.getCurrentUser();
+	UserContext.setContext(getMicroservice().getSystemUser().getAuthentication());
 	try {
 	    setUserBootstrapState(BootstrapState.Bootstrapping);
 	    IUserManagement users = getUserManagement();
@@ -216,6 +224,8 @@ public class InstanceBootstrapper extends AsyncStartLifecycleComponent implement
 	} catch (Throwable t) {
 	    setUserBootstrapState(BootstrapState.BootstrapFailed);
 	    throw t;
+	} finally {
+	    UserContext.setContext(previous);
 	}
     }
 

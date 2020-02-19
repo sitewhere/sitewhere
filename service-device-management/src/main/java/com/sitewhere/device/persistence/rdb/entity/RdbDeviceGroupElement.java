@@ -8,7 +8,9 @@
 package com.sitewhere.device.persistence.rdb.entity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.persistence.CollectionTable;
@@ -21,17 +23,22 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sitewhere.rdb.entities.RdbPersistentEntity;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 
 @Entity
 @Table(name = "device_group_element")
-public class RdbDeviceGroupElement implements IDeviceGroupElement {
+public class RdbDeviceGroupElement extends RdbPersistentEntity implements IDeviceGroupElement {
+
+    /** Serial version UID */
+    private static final long serialVersionUID = -3439614608465612991L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -58,7 +65,7 @@ public class RdbDeviceGroupElement implements IDeviceGroupElement {
     private UUID nestedGroupId;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "nested_group_id")
     private RdbDeviceGroup nestedGroup;
 
@@ -69,8 +76,15 @@ public class RdbDeviceGroupElement implements IDeviceGroupElement {
     @Column(name = "role")
     private List<String> roles = new ArrayList<String>();
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @CollectionTable(name = "device_group_element_metadata", joinColumns = @JoinColumn(name = "device_group_element_id"))
+    @MapKeyColumn(name = "prop_key")
+    @Column(name = "prop_value")
+    private Map<String, String> metadata = new HashMap<>();
+
     /*
-     * @see com.sitewhere.spi.device.group.IDeviceGroupElement#getId()
+     * @see com.sitewhere.spi.common.IPersistentEntity#getId()
      */
     @Override
     public UUID getId() {
@@ -153,15 +167,21 @@ public class RdbDeviceGroupElement implements IDeviceGroupElement {
 	this.nestedGroup = nestedGroup;
     }
 
+    public Map<String, String> getMetadata() {
+	return metadata;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+	this.metadata = metadata;
+    }
+
     public static void copy(IDeviceGroupElement source, RdbDeviceGroupElement target) {
-	if (source.getId() != null) {
-	    target.setId(source.getId());
-	}
 	if (source.getDeviceId() != null) {
 	    target.setDeviceId(source.getDeviceId());
 	}
 	if (source.getNestedGroupId() != null) {
 	    target.setNestedGroupId(source.getNestedGroupId());
 	}
+	RdbPersistentEntity.copy(source, target);
     }
 }

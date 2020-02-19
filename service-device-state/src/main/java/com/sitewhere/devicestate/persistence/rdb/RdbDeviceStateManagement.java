@@ -405,7 +405,7 @@ public class RdbDeviceStateManagement extends RdbTenantComponent implements IDev
      * @return
      */
     public IDeviceManagement getDeviceManagement() {
-	return ((DeviceStateMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
+	return ((DeviceStateMicroservice) getTenantEngine().getMicroservice()).getDeviceManagement();
     }
 
     /**
@@ -414,6 +414,6 @@ public class RdbDeviceStateManagement extends RdbTenantComponent implements IDev
      * @return
      */
     public IAssetManagement getAssetManagement() {
-	return ((DeviceStateMicroservice) getTenantEngine().getMicroservice()).getAssetManagementApiChannel();
+	return ((DeviceStateMicroservice) getTenantEngine().getMicroservice()).getAssetManagement();
     }
 }

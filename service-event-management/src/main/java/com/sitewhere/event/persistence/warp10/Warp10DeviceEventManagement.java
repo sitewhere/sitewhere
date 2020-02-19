@@ -476,7 +476,7 @@ public class Warp10DeviceEventManagement extends TenantEngineLifecycleComponent 
     }
 
     protected IDeviceManagement getDeviceManagement() {
-	return ((IEventManagementMicroservice) getMicroservice()).getDeviceManagementApiChannel();
+	return ((IEventManagementMicroservice) getMicroservice()).getDeviceManagement();
     }
 
     protected static String getFieldForIndex(DeviceEventIndex index) throws SiteWhereException {

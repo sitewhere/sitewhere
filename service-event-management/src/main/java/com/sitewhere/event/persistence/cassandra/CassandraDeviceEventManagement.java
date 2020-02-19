@@ -572,7 +572,7 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     }
 
     protected IDeviceManagement getDeviceManagement() {
-	return ((IEventManagementMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
+	return ((IEventManagementMicroservice) getTenantEngine().getMicroservice()).getDeviceManagement();
     }
 
     public CassandraClient getClient() {

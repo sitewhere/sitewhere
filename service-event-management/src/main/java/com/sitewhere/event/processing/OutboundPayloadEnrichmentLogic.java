@@ -45,7 +45,7 @@ public class OutboundPayloadEnrichmentLogic {
 	try {
 	    LOGGER.debug("Looking up device assignment.");
 	    IEventManagementMicroservice microservice = (IEventManagementMicroservice) engine.getMicroservice();
-	    IDeviceManagement deviceManagement = microservice.getDeviceManagementApiChannel();
+	    IDeviceManagement deviceManagement = microservice.getDeviceManagement();
 	    IDeviceAssignment assignment = deviceManagement.getDeviceAssignment(event.getDeviceAssignmentId());
 	    if (assignment == null) {
 		// TODO: Is there a separate topic for these events?

@@ -385,7 +385,6 @@ public class DeviceManagementPersistence extends Persistence {
 
 	command.setNamespace(request.getNamespace());
 	command.setDescription(request.getDescription());
-	command.getParameters().addAll(request.getParameters());
 
 	return command;
     }
@@ -1037,6 +1036,7 @@ public class DeviceManagementPersistence extends Persistence {
     public static DeviceGroupElement deviceGroupElementCreateLogic(IDeviceGroupElementCreateRequest request,
 	    IDeviceGroup group, IDevice device, IDeviceGroup nested) throws SiteWhereException {
 	DeviceGroupElement element = new DeviceGroupElement();
+	Persistence.entityCreateLogic(request, element);
 
 	element.setGroupId(group.getId());
 	element.setDeviceId(device != null ? device.getId() : null);

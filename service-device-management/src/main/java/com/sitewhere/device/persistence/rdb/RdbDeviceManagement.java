@@ -28,6 +28,7 @@ import com.sitewhere.device.persistence.TreeBuilder;
 import com.sitewhere.device.persistence.rdb.entity.Queries;
 import com.sitewhere.device.persistence.rdb.entity.RdbArea;
 import com.sitewhere.device.persistence.rdb.entity.RdbAreaType;
+import com.sitewhere.device.persistence.rdb.entity.RdbCommandParameter;
 import com.sitewhere.device.persistence.rdb.entity.RdbCustomer;
 import com.sitewhere.device.persistence.rdb.entity.RdbCustomerType;
 import com.sitewhere.device.persistence.rdb.entity.RdbDevice;
@@ -86,6 +87,7 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.IDeviceType;
+import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
@@ -237,6 +239,17 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	RdbDeviceCommand created = new RdbDeviceCommand();
 	RdbDeviceCommand.copy(command, created);
 	getEntityManagerProvider().persist(created);
+
+	// Create and add parameters.
+	for (ICommandParameter param : request.getParameters()) {
+	    RdbCommandParameter rdbParam = new RdbCommandParameter(null, param.getName(), param.getType(),
+		    param.isRequired());
+	    rdbParam.setDeviceCommand(created);
+	    getEntityManagerProvider().persist(rdbParam);
+	    created.getParameters().add(rdbParam);
+	}
+	getEntityManagerProvider().persist(created);
+
 	return created;
     }
 
@@ -1904,12 +1917,19 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 		}
 	    }
 
+	    // Create element and associate it with group.
 	    RdbDeviceGroupElement created = new RdbDeviceGroupElement();
 	    DeviceGroupElement element = DeviceManagementPersistence.deviceGroupElementCreateLogic(request, group,
 		    device, nested);
 	    RdbDeviceGroupElement.copy(element, created);
+	    created.setDeviceGroup(group);
+	    created.setDevice(device);
+	    created.setNestedGroup(nested);
+	    getEntityManagerProvider().persist(created);
+
 	    results.add(created);
 	}
+
 	group.setElements(results);
 	getEntityManagerProvider().persist(group);
 	return results;
@@ -1961,7 +1981,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	    @Override
 	    public CriteriaQuery<RdbDeviceGroupElement> addSort(CriteriaBuilder cb, Root<RdbDeviceGroupElement> root,
 		    CriteriaQuery<RdbDeviceGroupElement> query) {
-		return query.orderBy(cb.asc(root.get("name")));
+		return query.orderBy(cb.desc(root.get("createdDate")));
 	    }
 	}, RdbDeviceGroupElement.class);
     }

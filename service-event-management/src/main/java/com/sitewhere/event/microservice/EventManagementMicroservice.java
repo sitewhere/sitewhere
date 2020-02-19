@@ -15,8 +15,10 @@ import com.sitewhere.event.grpc.EventManagementGrpcServer;
 import com.sitewhere.event.spi.grpc.IEventManagementGrpcServer;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
+import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
@@ -39,7 +41,7 @@ public class EventManagementMicroservice extends
     private IEventManagementGrpcServer eventManagementGrpcServer;
 
     /** Device management API channel */
-    private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
+    private IDeviceManagement deviceManagement;
 
     /*
      * (non-Javadoc)
@@ -104,7 +106,7 @@ public class EventManagementMicroservice extends
 	init.addInitializeStep(this, getEventManagementGrpcServer(), true);
 
 	// Initialize device management API channel.
-	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
+	init.addInitializeStep(this, getDeviceManagement(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -126,7 +128,7 @@ public class EventManagementMicroservice extends
 	start.addStartStep(this, getEventManagementGrpcServer(), true);
 
 	// Start device mangement API channel.
-	start.addStartStep(this, getDeviceManagementApiChannel(), true);
+	start.addStartStep(this, getDeviceManagement(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -145,7 +147,7 @@ public class EventManagementMicroservice extends
 	stop.addStopStep(this, getEventManagementGrpcServer());
 
 	// Stop device mangement API channel.
-	stop.addStopStep(this, getDeviceManagementApiChannel());
+	stop.addStopStep(this, getDeviceManagement());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -161,27 +163,21 @@ public class EventManagementMicroservice extends
 	this.eventManagementGrpcServer = new EventManagementGrpcServer(this);
 
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
+	IDeviceManagementApiChannel<?> dmWrapped = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagement = new CachedDeviceManagementApiChannel(dmWrapped,
+		new CachedDeviceManagementApiChannel.CacheSettings());
     }
 
     /*
      * @see com.sitewhere.event.spi.microservice.IEventManagementMicroservice#
-     * getDeviceManagementApiChannel()
+     * getDeviceManagement()
      */
     @Override
-    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
-	return deviceManagementApiChannel;
-    }
-
-    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
-	this.deviceManagementApiChannel = deviceManagementApiChannel;
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
     }
 
     public IEventManagementGrpcServer getEventManagementGrpcServer() {
 	return eventManagementGrpcServer;
-    }
-
-    public void setEventManagementGrpcServer(IEventManagementGrpcServer eventManagementGrpcServer) {
-	this.eventManagementGrpcServer = eventManagementGrpcServer;
     }
 }

@@ -16,11 +16,15 @@ import com.sitewhere.devicestate.spi.grpc.IDeviceStateGrpcServer;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
 import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
+import com.sitewhere.grpc.client.asset.CachedAssetManagementApiChannel;
+import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.microservice.api.asset.IAssetManagement;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
@@ -43,10 +47,10 @@ public class DeviceStateMicroservice
     private IDeviceStateGrpcServer deviceStateGrpcServer;
 
     /** Device management API channel */
-    private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
+    private CachedDeviceManagementApiChannel deviceManagement;
 
     /** Asset management API channel */
-    private IAssetManagementApiChannel<?> assetManagementApiChannel;
+    private CachedAssetManagementApiChannel assetManagement;
 
     /** Device event management API channel */
     private IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel;
@@ -112,10 +116,10 @@ public class DeviceStateMicroservice
 	init.addInitializeStep(this, getDeviceStateGrpcServer(), true);
 
 	// Initialize device management API channel.
-	init.addInitializeStep(this, getDeviceManagementApiChannel(), true);
+	init.addInitializeStep(this, getDeviceManagement(), true);
 
 	// Initialize asset management API channel.
-	init.addInitializeStep(this, getAssetManagementApiChannel(), true);
+	init.addInitializeStep(this, getAssetManagement(), true);
 
 	// Initialize device event management API channel.
 	init.addInitializeStep(this, getDeviceEventManagementApiChannel(), true);
@@ -140,10 +144,10 @@ public class DeviceStateMicroservice
 	start.addStartStep(this, getDeviceStateGrpcServer(), true);
 
 	// Start device mangement API channel.
-	start.addStartStep(this, getDeviceManagementApiChannel(), true);
+	start.addStartStep(this, getDeviceManagement(), true);
 
 	// Start asset mangement API channel.
-	start.addStartStep(this, getAssetManagementApiChannel(), true);
+	start.addStartStep(this, getAssetManagement(), true);
 
 	// Start device event mangement API channel.
 	start.addStartStep(this, getDeviceEventManagementApiChannel(), true);
@@ -162,10 +166,10 @@ public class DeviceStateMicroservice
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop device mangement API channel.
-	stop.addStopStep(this, getDeviceManagementApiChannel());
+	stop.addStopStep(this, getDeviceManagement());
 
 	// Stop asset mangement API channel.
-	stop.addStopStep(this, getAssetManagementApiChannel());
+	stop.addStopStep(this, getAssetManagement());
 
 	// Stop device event mangement API channel.
 	stop.addStopStep(this, getDeviceEventManagementApiChannel());
@@ -187,10 +191,14 @@ public class DeviceStateMicroservice
 	this.deviceStateGrpcServer = new DeviceStateGrpcServer(this);
 
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
+	IDeviceManagementApiChannel<?> dmWrapped = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagement = new CachedDeviceManagementApiChannel(dmWrapped,
+		new CachedDeviceManagementApiChannel.CacheSettings());
 
 	// Asset management.
-	this.assetManagementApiChannel = new AssetManagementApiChannel(getInstanceSettings());
+	IAssetManagementApiChannel<?> amWrapped = new AssetManagementApiChannel(getInstanceSettings());
+	this.assetManagement = new CachedAssetManagementApiChannel(amWrapped,
+		new CachedAssetManagementApiChannel.CacheSettings());
 
 	// Device event management.
 	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(getInstanceSettings());
@@ -207,20 +215,20 @@ public class DeviceStateMicroservice
 
     /*
      * @see com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice#
-     * getDeviceManagementApiChannel()
+     * getDeviceManagement()
      */
     @Override
-    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
-	return deviceManagementApiChannel;
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
     }
 
     /*
      * @see com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice#
-     * getAssetManagementApiChannel()
+     * getAssetManagement()
      */
     @Override
-    public IAssetManagementApiChannel<?> getAssetManagementApiChannel() {
-	return assetManagementApiChannel;
+    public IAssetManagement getAssetManagement() {
+	return assetManagement;
     }
 
     /*
