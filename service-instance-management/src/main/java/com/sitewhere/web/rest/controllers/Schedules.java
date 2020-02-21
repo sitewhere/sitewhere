@@ -23,6 +23,9 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -38,9 +41,6 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.scheduling.ISchedule;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for schedule operations.
@@ -69,7 +69,7 @@ public class Schedules {
      * @return
      */
     @POST
-    @ApiOperation(value = "Create new schedule")
+    @Operation(summary = "Create new schedule", description = "Create new schedule")
     public Response createSchedule(@RequestBody ScheduleCreateRequest request) throws SiteWhereException {
 	return Response.ok(getScheduleManagement().createSchedule(request)).build();
     }
@@ -83,8 +83,9 @@ public class Schedules {
      */
     @GET
     @Path("/{token}")
-    @ApiOperation(value = "Get schedule by token")
-    public Response getScheduleByToken(@ApiParam(value = "Token", required = true) @PathParam("token") String token)
+    @Operation(summary = "Get schedule by token", description = "Get schedule by token")
+    public Response getScheduleByToken(
+	    @Parameter(description = "Token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
 	return Response.ok(getScheduleManagement().getScheduleByToken(token)).build();
     }
@@ -99,9 +100,10 @@ public class Schedules {
      */
     @PUT
     @Path("/{token}")
-    @ApiOperation(value = "Update an existing schedule")
+    @Operation(summary = "Update an existing schedule", description = "Update an existing schedule")
     public Response updateSchedule(@RequestBody ScheduleCreateRequest request,
-	    @ApiParam(value = "Token", required = true) @PathParam("token") String token) throws SiteWhereException {
+	    @Parameter(description = "Token", required = true) @PathParam("token") String token)
+	    throws SiteWhereException {
 	ISchedule schedule = getScheduleManagement().getScheduleByToken(token);
 	if (schedule == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidScheduleToken, ErrorLevel.ERROR);
@@ -118,10 +120,10 @@ public class Schedules {
      * @throws SiteWhereException
      */
     @GET
-    @ApiOperation(value = "List schedules matching criteria")
+    @Operation(summary = "List schedules matching criteria", description = "List schedules matching criteria")
     public Response listSchedules(
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	return Response.ok(getScheduleManagement().listSchedules(criteria)).build();
@@ -136,8 +138,8 @@ public class Schedules {
      */
     @DELETE
     @Path("/{token}")
-    @ApiOperation(value = "Delete a schedule")
-    public Response deleteSchedule(@ApiParam(value = "Token", required = true) @PathParam("token") String token)
+    @Operation(summary = "Delete a schedule", description = "Delete a schedule")
+    public Response deleteSchedule(@Parameter(description = "Token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
 	ISchedule schedule = getScheduleManagement().getScheduleByToken(token);
 	if (schedule == null) {

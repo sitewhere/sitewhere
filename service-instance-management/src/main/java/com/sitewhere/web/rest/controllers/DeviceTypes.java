@@ -27,6 +27,9 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -51,9 +54,6 @@ import com.sitewhere.spi.label.ILabel;
 import com.sitewhere.spi.search.ISearchResults;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for device specification operations.
@@ -82,7 +82,7 @@ public class DeviceTypes {
      * @return
      */
     @POST
-    @ApiOperation(value = "Create new device type")
+    @Operation(summary = "Create new device type", description = "Create new device type")
     public Response createDeviceType(@RequestBody DeviceTypeCreateRequest request) throws SiteWhereException {
 	IDeviceType result = getDeviceManagement().createDeviceType(request);
 	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getDeviceManagement());
@@ -99,9 +99,10 @@ public class DeviceTypes {
      */
     @GET
     @Path("/{token}")
-    @ApiOperation(value = "Get device type by unique token")
-    public Response getDeviceTypeByToken(@ApiParam(value = "Token", required = true) @PathParam("token") String token,
-	    @ApiParam(value = "Include detailed asset information", required = false) @QueryParam("includeAsset") @DefaultValue("true") boolean includeAsset)
+    @Operation(summary = "Get device type by unique token", description = "Get device type by unique token")
+    public Response getDeviceTypeByToken(
+	    @Parameter(description = "Token", required = true) @PathParam("token") String token,
+	    @Parameter(description = "Include detailed asset information", required = false) @QueryParam("includeAsset") @DefaultValue("true") boolean includeAsset)
 	    throws SiteWhereException {
 	IDeviceType result = assertDeviceTypeByToken(token);
 	DeviceTypeMarshalHelper helper = new DeviceTypeMarshalHelper(getDeviceManagement());
@@ -118,8 +119,9 @@ public class DeviceTypes {
      */
     @PUT
     @Path("/{token}")
-    @ApiOperation(value = "Update existing device type")
-    public Response updateDeviceType(@ApiParam(value = "Token", required = true) @PathParam("token") String token,
+    @Operation(summary = "Update existing device type", description = "Update existing device type")
+    public Response updateDeviceType(
+	    @Parameter(description = "Token", required = true) @PathParam("token") String token,
 	    @RequestBody DeviceTypeCreateRequest request) throws SiteWhereException {
 	IDeviceType deviceType = assertDeviceTypeByToken(token);
 	IDeviceType result = getDeviceManagement().updateDeviceType(deviceType.getId(), request);
@@ -137,9 +139,10 @@ public class DeviceTypes {
      */
     @GET
     @Path("/{token}/label/{generatorId}")
-    @ApiOperation(value = "Get label for device type")
-    public Response getDeviceTypeLabel(@ApiParam(value = "Token", required = true) @PathParam("token") String token,
-	    @ApiParam(value = "Generator id", required = true) @PathParam("generatorId") String generatorId)
+    @Operation(summary = "Get label for device type", description = "Get label for device type")
+    public Response getDeviceTypeLabel(
+	    @Parameter(description = "Token", required = true) @PathParam("token") String token,
+	    @Parameter(description = "Generator id", required = true) @PathParam("generatorId") String generatorId)
 	    throws SiteWhereException {
 	IDeviceType deviceType = assertDeviceTypeByToken(token);
 	ILabel label = getLabelGeneration().getDeviceTypeLabel(generatorId, deviceType.getId());
@@ -159,10 +162,10 @@ public class DeviceTypes {
      * @throws SiteWhereException
      */
     @GET
-    @ApiOperation(value = "List device types that match criteria")
+    @Operation(summary = "List device types that match criteria", description = "List device types that match criteria")
     public Response listDeviceTypes(
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<? extends IDeviceType> results = getDeviceManagement().listDeviceTypes(criteria);
@@ -183,8 +186,9 @@ public class DeviceTypes {
      */
     @DELETE
     @Path("/{token}")
-    @ApiOperation(value = "Delete existing device type")
-    public Response deleteDeviceType(@ApiParam(value = "Token", required = true) @PathParam("token") String token)
+    @Operation(summary = "Delete existing device type", description = "Delete existing device type")
+    public Response deleteDeviceType(
+	    @Parameter(description = "Token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
 	IDeviceType existing = assertDeviceTypeByToken(token);
 	IDeviceType result = getDeviceManagement().deleteDeviceType(existing.getId());
@@ -202,8 +206,9 @@ public class DeviceTypes {
      */
     @POST
     @Path("/{token}/commands")
-    @ApiOperation(value = "Create device command.")
-    public Response createDeviceCommand(@ApiParam(value = "Token", required = true) @PathParam("token") String token,
+    @Operation(summary = "Create device command", description = "Create device command")
+    public Response createDeviceCommand(
+	    @Parameter(description = "Token", required = true) @PathParam("token") String token,
 	    @RequestBody DeviceCommandCreateRequest request) throws SiteWhereException {
 	return Response.ok(getDeviceManagement().createDeviceCommand(request)).build();
     }
@@ -218,10 +223,10 @@ public class DeviceTypes {
      */
     @GET
     @Path("/{token}/commands/{commandToken}")
-    @ApiOperation(value = "Get device command by unique token")
+    @Operation(summary = "Get device command by unique token", description = "Get device command by unique token")
     public Response getDeviceCommandByToken(
-	    @ApiParam(value = "Token", required = true) @PathParam("token") String token,
-	    @ApiParam(value = "Command Token", required = true) @PathParam("commandToken") String commandToken)
+	    @Parameter(description = "Token", required = true) @PathParam("token") String token,
+	    @Parameter(description = "Command Token", required = true) @PathParam("commandToken") String commandToken)
 	    throws SiteWhereException {
 	IDeviceType existing = assertDeviceTypeByToken(token);
 	IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(existing.getId(), commandToken);
@@ -239,9 +244,10 @@ public class DeviceTypes {
      */
     @PUT
     @Path("/{token}/commands/{commandToken}")
-    @ApiOperation(value = "Update an existing device command")
-    public Response updateDeviceCommand(@ApiParam(value = "Token", required = true) @PathParam("token") String token,
-	    @ApiParam(value = "Command Token", required = true) @PathParam("commandToken") String commandToken,
+    @Operation(summary = "Update an existing device command", description = "Update an existing device command")
+    public Response updateDeviceCommand(
+	    @Parameter(description = "Token", required = true) @PathParam("token") String token,
+	    @Parameter(description = "Command Token", required = true) @PathParam("commandToken") String commandToken,
 	    @RequestBody DeviceCommandCreateRequest request) throws SiteWhereException {
 	IDeviceType existing = assertDeviceTypeByToken(token);
 	IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(existing.getId(), commandToken);
@@ -258,9 +264,10 @@ public class DeviceTypes {
      */
     @DELETE
     @Path("/{token}/commands/{commandToken}")
-    @ApiOperation(value = "Delete device command by unique token")
-    public Response deleteDeviceCommand(@ApiParam(value = "Token", required = true) @PathParam("token") String token,
-	    @ApiParam(value = "Command Token", required = true) @PathParam("commandToken") String commandToken)
+    @Operation(summary = "Delete device command", description = "Delete device command by unique token")
+    public Response deleteDeviceCommand(
+	    @Parameter(description = "Token", required = true) @PathParam("token") String token,
+	    @Parameter(description = "Command Token", required = true) @PathParam("commandToken") String commandToken)
 	    throws SiteWhereException {
 	IDeviceType existing = assertDeviceTypeByToken(token);
 	IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(existing.getId(), commandToken);
@@ -277,8 +284,9 @@ public class DeviceTypes {
      */
     @POST
     @Path("/{token}/statuses")
-    @ApiOperation(value = "Create device status.")
-    public Response createDeviceStatus(@ApiParam(value = "Token", required = true) @PathParam("token") String token,
+    @Operation(summary = "Create device status", description = "Create device status")
+    public Response createDeviceStatus(
+	    @Parameter(description = "Token", required = true) @PathParam("token") String token,
 	    @RequestBody DeviceStatusCreateRequest request) throws SiteWhereException {
 	return Response.ok(getDeviceManagement().createDeviceStatus(request)).build();
     }
@@ -293,9 +301,10 @@ public class DeviceTypes {
      */
     @GET
     @Path("/{token}/statuses/{statusToken}")
-    @ApiOperation(value = "Get device status by unique token")
-    public Response getDeviceStatusByToken(@ApiParam(value = "Token", required = true) @PathParam("token") String token,
-	    @ApiParam(value = "Status Token", required = true) @PathParam("statusToken") String statusToken)
+    @Operation(summary = "Get device status by unique token", description = "Get device status by unique token")
+    public Response getDeviceStatusByToken(
+	    @Parameter(description = "Token", required = true) @PathParam("token") String token,
+	    @Parameter(description = "Status Token", required = true) @PathParam("statusToken") String statusToken)
 	    throws SiteWhereException {
 	IDeviceType existing = assertDeviceTypeByToken(token);
 	IDeviceStatus status = getDeviceManagement().getDeviceStatusByToken(existing.getId(), statusToken);
@@ -313,9 +322,10 @@ public class DeviceTypes {
      */
     @PUT
     @Path("/{token}/statuses/{statusToken}")
-    @ApiOperation(value = "Update an existing device command")
-    public Response updateDeviceStatus(@ApiParam(value = "Token", required = true) @PathParam("token") String token,
-	    @ApiParam(value = "Status Token", required = true) @PathParam("statusToken") String statusToken,
+    @Operation(summary = "Update an existing device status", description = "Update an existing device status")
+    public Response updateDeviceStatus(
+	    @Parameter(description = "Token", required = true) @PathParam("token") String token,
+	    @Parameter(description = "Status Token", required = true) @PathParam("statusToken") String statusToken,
 	    @RequestBody DeviceStatusCreateRequest request) throws SiteWhereException {
 	IDeviceType existing = assertDeviceTypeByToken(token);
 	IDeviceStatus status = getDeviceManagement().getDeviceStatusByToken(existing.getId(), statusToken);
@@ -332,9 +342,10 @@ public class DeviceTypes {
      */
     @DELETE
     @Path("/{token}/statuses/{statusToken}")
-    @ApiOperation(value = "Delete device command by unique token")
-    public Response deleteDeviceStatus(@ApiParam(value = "Token", required = true) @PathParam("token") String token,
-	    @ApiParam(value = "Status Token", required = true) @PathParam("statusToken") String statusToken)
+    @Operation(summary = "Delete device status", description = "Delete device status by unique token")
+    public Response deleteDeviceStatus(
+	    @Parameter(description = "Token", required = true) @PathParam("token") String token,
+	    @Parameter(description = "Status Token", required = true) @PathParam("statusToken") String statusToken)
 	    throws SiteWhereException {
 	IDeviceType existing = assertDeviceTypeByToken(token);
 	IDeviceStatus status = getDeviceManagement().getDeviceStatusByToken(existing.getId(), statusToken);

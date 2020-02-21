@@ -16,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -25,7 +26,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.system.IVersion;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 
 /**
  * Controller for system operations.
@@ -55,7 +55,7 @@ public class System {
      */
     @GET
     @Path("/version")
-    @ApiOperation(value = "Get version information")
+    @Operation(summary = "Get version information", description = "Get version information")
     public IVersion getVersion() throws SiteWhereException {
 	return getMicroservice().getVersion();
     }

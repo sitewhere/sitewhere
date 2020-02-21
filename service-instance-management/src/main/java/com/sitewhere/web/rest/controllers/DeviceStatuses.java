@@ -17,6 +17,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -27,8 +29,6 @@ import com.sitewhere.rest.model.search.device.DeviceStatusSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 
 /**
  * Controller for device status operations.
@@ -57,12 +57,12 @@ public class DeviceStatuses {
      * @throws SiteWhereException
      */
     @GET
-    @ApiOperation(value = "List device statuses that match criteria.")
+    @Operation(summary = "List device statuses that match criteria.", description = "List device statuses that match criteria.")
     public Response listDeviceStatuses(
-	    @ApiParam(value = "Device type token", required = false) @QueryParam("deviceTypeToken") String deviceTypeToken,
-	    @ApiParam(value = "Status code", required = false) @QueryParam("code") String code,
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+	    @Parameter(description = "Device type token", required = false) @QueryParam("deviceTypeToken") String deviceTypeToken,
+	    @Parameter(description = "Status code", required = false) @QueryParam("code") String code,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	DeviceStatusSearchCriteria criteria = new DeviceStatusSearchCriteria(page, pageSize);
 	criteria.setDeviceTypeToken(deviceTypeToken);

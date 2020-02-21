@@ -25,6 +25,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -45,9 +48,6 @@ import com.sitewhere.spi.label.ILabel;
 import com.sitewhere.spi.search.ISearchResults;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for customer type operations.
@@ -73,7 +73,7 @@ public class CustomerTypes {
      * @throws SiteWhereException
      */
     @POST
-    @ApiOperation(value = "Create new customer type")
+    @Operation(summary = "Create new customer type", description = "Create new customer type")
     public Response createCustomerType(@RequestBody CustomerTypeCreateRequest input) throws SiteWhereException {
 	return Response.ok(getDeviceManagement().createCustomerType(input)).build();
     }
@@ -87,9 +87,9 @@ public class CustomerTypes {
      */
     @GET
     @Path("/{customerTypeToken}")
-    @ApiOperation(value = "Get customer type by token")
+    @Operation(summary = "Get customer type by token", description = "Get customer type by token")
     public Response getCustomerTypeByToken(
-	    @ApiParam(value = "Token that identifies customer type", required = true) @PathParam("customerTypeToken") String customerTypeToken)
+	    @Parameter(description = "Token that identifies customer type", required = true) @PathParam("customerTypeToken") String customerTypeToken)
 	    throws SiteWhereException {
 	return Response.ok(assertCustomerType(customerTypeToken)).build();
     }
@@ -104,9 +104,9 @@ public class CustomerTypes {
      */
     @PUT
     @Path("/{customerTypeToken}")
-    @ApiOperation(value = "Update existing customer type")
+    @Operation(summary = "Update existing customer type", description = "Update existing customer type")
     public Response updateCustomerType(
-	    @ApiParam(value = "Token that identifies customer type", required = true) @PathParam("customerTypeToken") String customerTypeToken,
+	    @Parameter(description = "Token that identifies customer type", required = true) @PathParam("customerTypeToken") String customerTypeToken,
 	    @RequestBody CustomerTypeCreateRequest request) throws SiteWhereException {
 	ICustomerType existing = assertCustomerType(customerTypeToken);
 	return Response.ok(getDeviceManagement().updateCustomerType(existing.getId(), request)).build();
@@ -123,10 +123,10 @@ public class CustomerTypes {
     @GET
     @Path("/{customerTypeToken}/label/{generatorId}")
     @Produces("image/png")
-    @ApiOperation(value = "Get label for customer type")
+    @Operation(summary = "Get label for customer type", description = "Get label for customer type")
     public Response getCustomerTypeLabel(
-	    @ApiParam(value = "Token that identifies customer type", required = true) @PathParam("customerTypeToken") String customerTypeToken,
-	    @ApiParam(value = "Generator id", required = true) @PathParam("generatorId") String generatorId)
+	    @Parameter(description = "Token that identifies customer type", required = true) @PathParam("customerTypeToken") String customerTypeToken,
+	    @Parameter(description = "Generator id", required = true) @PathParam("generatorId") String generatorId)
 	    throws SiteWhereException {
 	ICustomerType existing = assertCustomerType(customerTypeToken);
 	ILabel label = getLabelGeneration().getCustomerTypeLabel(generatorId, existing.getId());
@@ -146,11 +146,11 @@ public class CustomerTypes {
      * @throws SiteWhereException
      */
     @GET
-    @ApiOperation(value = "List customer types matching criteria")
+    @Operation(summary = "List customer types matching criteria", description = "List customer types matching criteria")
     public Response listCustomerTypes(
-	    @ApiParam(value = "Include contained customer types", required = false) @QueryParam("includeContainedCustomerTypes") @DefaultValue("false") boolean includeContainedCustomerTypes,
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+	    @Parameter(description = "Include contained customer types", required = false) @QueryParam("includeContainedCustomerTypes") @DefaultValue("false") boolean includeContainedCustomerTypes,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<? extends ICustomerType> matches = getDeviceManagement().listCustomerTypes(criteria);
@@ -174,9 +174,9 @@ public class CustomerTypes {
      */
     @DELETE
     @Path("/{customerTypeToken}")
-    @ApiOperation(value = "Delete customer type by token")
+    @Operation(summary = "Delete customer type by token", description = "Delete customer type by token")
     public Response deleteCustomerType(
-	    @ApiParam(value = "Token that identifies customer type", required = true) @PathParam("customerTypeToken") String customerTypeToken)
+	    @Parameter(description = "Token that identifies customer type", required = true) @PathParam("customerTypeToken") String customerTypeToken)
 	    throws SiteWhereException {
 	ICustomerType existing = assertCustomerType(customerTypeToken);
 	return Response.ok(getDeviceManagement().deleteCustomerType(existing.getId())).build();

@@ -20,6 +20,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -38,9 +41,6 @@ import com.sitewhere.spi.device.state.IDeviceState;
 import com.sitewhere.spi.search.ISearchResults;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /*
  * Controller for device state operations.
@@ -74,15 +74,15 @@ public class DeviceStates {
      */
     @POST
     @Path("/search")
-    @ApiOperation(value = "List device states matching criteria")
+    @Operation(summary = "List device states matching criteria", description = "List device states matching criteria")
     public Response searchDeviceStates(
-	    @ApiParam(value = "Include device information", required = false) @QueryParam("includeDevice") @DefaultValue("false") boolean includeDevice,
-	    @ApiParam(value = "Include device type information", required = false) @QueryParam("includeDeviceType") @DefaultValue("false") boolean includeDeviceType,
-	    @ApiParam(value = "Include device assignment information", required = false) @QueryParam("includeDeviceAssignment") @DefaultValue("false") boolean includeDeviceAssignment,
-	    @ApiParam(value = "Include customer information", required = false) @QueryParam("includeCustomer") @DefaultValue("false") boolean includeCustomer,
-	    @ApiParam(value = "Include area information", required = false) @QueryParam("includeArea") @DefaultValue("false") boolean includeArea,
-	    @ApiParam(value = "Include asset information", required = false) @QueryParam("includeAsset") @DefaultValue("false") boolean includeAsset,
-	    @ApiParam(value = "Include recent events", required = false) @QueryParam("includeRecentEvents") @DefaultValue("false") boolean includeRecentEvents,
+	    @Parameter(description = "Include device information", required = false) @QueryParam("includeDevice") @DefaultValue("false") boolean includeDevice,
+	    @Parameter(description = "Include device type information", required = false) @QueryParam("includeDeviceType") @DefaultValue("false") boolean includeDeviceType,
+	    @Parameter(description = "Include device assignment information", required = false) @QueryParam("includeDeviceAssignment") @DefaultValue("false") boolean includeDeviceAssignment,
+	    @Parameter(description = "Include customer information", required = false) @QueryParam("includeCustomer") @DefaultValue("false") boolean includeCustomer,
+	    @Parameter(description = "Include area information", required = false) @QueryParam("includeArea") @DefaultValue("false") boolean includeArea,
+	    @Parameter(description = "Include asset information", required = false) @QueryParam("includeAsset") @DefaultValue("false") boolean includeAsset,
+	    @Parameter(description = "Include recent events", required = false) @QueryParam("includeRecentEvents") @DefaultValue("false") boolean includeRecentEvents,
 	    @RequestBody DeviceStateSearchCriteria criteria) throws SiteWhereException {
 
 	// Perform search.

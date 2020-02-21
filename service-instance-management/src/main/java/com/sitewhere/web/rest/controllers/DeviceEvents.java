@@ -20,6 +20,8 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -30,8 +32,6 @@ import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.spi.SiteWhereException;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 
 /**
  * Controller for event operations.
@@ -62,8 +62,9 @@ public class DeviceEvents {
      */
     @GET
     @Path("/id/{eventId}")
-    @ApiOperation(value = "Get event by unique id")
-    public Response getEventById(@ApiParam(value = "Event id", required = true) @PathParam("eventId") String eventId)
+    @Operation(summary = "Get event by unique id", description = "Get event by unique id")
+    public Response getEventById(
+	    @Parameter(description = "Event id", required = true) @PathParam("eventId") String eventId)
 	    throws SiteWhereException {
 	return Response.ok(getDeviceEventManagement().getDeviceEventById(UUID.fromString(eventId))).build();
     }
@@ -77,9 +78,9 @@ public class DeviceEvents {
      */
     @GET
     @Path("/alternate/{alternateId}")
-    @ApiOperation(value = "Get event by alternate (external) id")
+    @Operation(summary = "Get event by alternate (external) id", description = "Get event by alternate (external) id")
     public Response getEventByAlternateId(
-	    @ApiParam(value = "Alternate id", required = true) @PathParam("alternateId") String alternateId)
+	    @Parameter(description = "Alternate id", required = true) @PathParam("alternateId") String alternateId)
 	    throws SiteWhereException {
 	return Response.ok(getDeviceEventManagement().getDeviceEventByAlternateId(alternateId)).build();
     }

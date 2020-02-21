@@ -28,6 +28,9 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -54,9 +57,6 @@ import com.sitewhere.spi.label.ILabel;
 import com.sitewhere.spi.search.ISearchResults;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for device group operations.
@@ -86,7 +86,7 @@ public class DeviceGroups {
      * @throws SiteWhereException
      */
     @POST
-    @ApiOperation(value = "Create new device group")
+    @Operation(summary = "Create new device group", description = "Create new device group")
     public Response createDeviceGroup(@RequestBody DeviceGroupCreateRequest request) throws SiteWhereException {
 	return Response.ok(getDeviceManagement().createDeviceGroup(request)).build();
     }
@@ -100,9 +100,9 @@ public class DeviceGroups {
      */
     @GET
     @Path("/{groupToken}")
-    @ApiOperation(value = "Get a device group by unique token")
+    @Operation(summary = "Get device group by token", description = "Get a device group by unique token")
     public Response getDeviceGroupByToken(
-	    @ApiParam(value = "Unique token that identifies group", required = true) @PathParam("groupToken") String groupToken)
+	    @Parameter(description = "Unique token that identifies group", required = true) @PathParam("groupToken") String groupToken)
 	    throws SiteWhereException {
 	return Response.ok(assureDeviceGroup(groupToken)).build();
     }
@@ -117,9 +117,9 @@ public class DeviceGroups {
      */
     @PUT
     @Path("/{groupToken}")
-    @ApiOperation(value = "Update an existing device group")
+    @Operation(summary = "Update an existing device group", description = "Update an existing device group")
     public Response updateDeviceGroup(
-	    @ApiParam(value = "Device group token", required = true) @PathParam("groupToken") String groupToken,
+	    @Parameter(description = "Device group token", required = true) @PathParam("groupToken") String groupToken,
 	    @RequestBody DeviceGroupCreateRequest request) throws SiteWhereException {
 	IDeviceGroup group = assureDeviceGroup(groupToken);
 	return Response.ok(getDeviceManagement().updateDeviceGroup(group.getId(), request)).build();
@@ -136,10 +136,10 @@ public class DeviceGroups {
     @GET
     @Path("/{groupToken}/label/{generatorId}")
     @Produces("image/png")
-    @ApiOperation(value = "Get label for area")
+    @Operation(summary = "Get label for device group", description = "Get label for device group")
     public Response getDeviceGroupLabel(
-	    @ApiParam(value = "Device group token", required = true) @PathParam("groupToken") String groupToken,
-	    @ApiParam(value = "Generator id", required = true) @PathParam("generatorId") String generatorId)
+	    @Parameter(description = "Device group token", required = true) @PathParam("groupToken") String groupToken,
+	    @Parameter(description = "Generator id", required = true) @PathParam("generatorId") String generatorId)
 	    throws SiteWhereException {
 	IDeviceGroup group = assureDeviceGroup(groupToken);
 	ILabel label = getLabelGeneration().getDeviceGroupLabel(generatorId, group.getId());
@@ -158,9 +158,9 @@ public class DeviceGroups {
      */
     @DELETE
     @Path("/{groupToken}")
-    @ApiOperation(value = "Delete device group by unique token")
+    @Operation(summary = "Delete device group", description = "Delete device group by unique token")
     public Response deleteDeviceGroup(
-	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathParam("groupToken") String groupToken)
+	    @Parameter(description = "Unique token that identifies device group", required = true) @PathParam("groupToken") String groupToken)
 	    throws SiteWhereException {
 	IDeviceGroup group = assureDeviceGroup(groupToken);
 	return Response.ok(getDeviceManagement().deleteDeviceGroup(group.getId())).build();
@@ -176,10 +176,10 @@ public class DeviceGroups {
      * @throws SiteWhereException
      */
     @GET
-    @ApiOperation(value = "List device groups that match criteria")
-    public Response listDeviceGroups(@ApiParam(value = "Role", required = false) @QueryParam("role") String role,
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+    @Operation(summary = "List device groups that match criteria", description = "List device groups that match criteria")
+    public Response listDeviceGroups(@Parameter(description = "Role", required = false) @QueryParam("role") String role,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<? extends IDeviceGroup> results;
@@ -208,12 +208,12 @@ public class DeviceGroups {
      */
     @GET
     @Path("/{groupToken}/elements")
-    @ApiOperation(value = "List elements in a device group")
+    @Operation(summary = "List elements in a device group", description = "List elements in a device group")
     public Response listDeviceGroupElements(
-	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathParam("groupToken") String groupToken,
-	    @ApiParam(value = "Include detailed element information", required = false) @QueryParam("includeDetails") @DefaultValue("false") boolean includeDetails,
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+	    @Parameter(description = "Unique token that identifies device group", required = true) @PathParam("groupToken") String groupToken,
+	    @Parameter(description = "Include detailed element information", required = false) @QueryParam("includeDetails") @DefaultValue("false") boolean includeDetails,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getDeviceManagement())
 		.setIncludeDetails(includeDetails);
@@ -240,9 +240,9 @@ public class DeviceGroups {
     @POST
     @Path("/{groupToken}/elements")
     @SuppressWarnings("unchecked")
-    @ApiOperation(value = "Add elements to device group")
+    @Operation(summary = "Add elements to device group", description = "Add elements to device group")
     public Response addDeviceGroupElements(
-	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathParam("groupToken") String groupToken,
+	    @Parameter(description = "Unique token that identifies device group", required = true) @PathParam("groupToken") String groupToken,
 	    @RequestBody List<DeviceGroupElementCreateRequest> request) throws SiteWhereException {
 	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getDeviceManagement())
 		.setIncludeDetails(false);
@@ -296,10 +296,10 @@ public class DeviceGroups {
      */
     @DELETE
     @Path("/{groupToken}/elements/{elementId}")
-    @ApiOperation(value = "Delete elements from device group")
+    @Operation(summary = "Delete one element from device group", description = "Delete one element from device group")
     public Response deleteDeviceGroupElement(
-	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathParam("groupToken") String groupToken,
-	    @ApiParam(value = "Element id", required = true) @PathParam("elementId") UUID elementId)
+	    @Parameter(description = "Unique token that identifies device group", required = true) @PathParam("groupToken") String groupToken,
+	    @Parameter(description = "Element id", required = true) @PathParam("elementId") UUID elementId)
 	    throws SiteWhereException {
 	List<UUID> elements = new ArrayList<>();
 	elements.add(elementId);
@@ -316,9 +316,9 @@ public class DeviceGroups {
      */
     @DELETE
     @Path("/{groupToken}/elements")
-    @ApiOperation(value = "Delete elements from device group")
+    @Operation(summary = "Delete elements from device group", description = "Delete elements from device group")
     public Response deleteDeviceGroupElements(
-	    @ApiParam(value = "Unique token that identifies device group", required = true) @PathParam("groupToken") String groupToken,
+	    @Parameter(description = "Unique token that identifies device group", required = true) @PathParam("groupToken") String groupToken,
 	    @RequestBody List<UUID> elementIds) throws SiteWhereException {
 	DeviceGroupElementMarshalHelper helper = new DeviceGroupElementMarshalHelper(getDeviceManagement())
 		.setIncludeDetails(false);

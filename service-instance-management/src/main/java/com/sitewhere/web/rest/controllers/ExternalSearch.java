@@ -19,6 +19,9 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -28,9 +31,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for search operations.
@@ -59,7 +59,7 @@ public class ExternalSearch {
      * @throws SiteWhereException
      */
     @GET
-    @ApiOperation(value = "List available search providers")
+    @Operation(summary = "List available search providers", description = "List available search providers")
     public Response listSearchProviders() throws SiteWhereException {
 	// List<ISearchProvider> providers =
 	// getSearchProviderManager().getSearchProviders();
@@ -81,9 +81,9 @@ public class ExternalSearch {
      */
     @GET
     @Path("/{providerId}/events")
-    @ApiOperation(value = "Search for events in provider")
+    @Operation(summary = "Search for events in provider", description = "Search for events in provider")
     public Response searchDeviceEvents(
-	    @ApiParam(value = "Search provider id", required = true) @PathParam("providerId") String providerId)
+	    @Parameter(description = "Search provider id", required = true) @PathParam("providerId") String providerId)
 	    throws SiteWhereException {
 	// ISearchProvider provider =
 	// getSearchProviderManager().getSearchProvider(providerId);
@@ -112,9 +112,9 @@ public class ExternalSearch {
      */
     @POST
     @Path("/{providerId}/raw")
-    @ApiOperation(value = "Execute search and return raw results")
+    @Operation(summary = "Execute search and return raw results", description = "Execute search and return raw results")
     public Response rawSearch(
-	    @ApiParam(value = "Search provider id", required = true) @PathParam("providerId") String providerId,
+	    @Parameter(description = "Search provider id", required = true) @PathParam("providerId") String providerId,
 	    @RequestBody String query) throws SiteWhereException {
 	// ISearchProvider provider =
 	// getSearchProviderManager().getSearchProvider(providerId);

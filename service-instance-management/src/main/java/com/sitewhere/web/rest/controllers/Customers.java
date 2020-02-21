@@ -31,6 +31,9 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -73,9 +76,6 @@ import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for customer operations.
@@ -105,7 +105,7 @@ public class Customers {
      * @throws SiteWhereException
      */
     @POST
-    @ApiOperation(value = "Create new customer")
+    @Operation(summary = "Create new customer", description = "Create new customer")
     public Response createCustomer(@RequestBody CustomerCreateRequest input) throws SiteWhereException {
 	return Response.ok(getDeviceManagement().createCustomer(input)).build();
     }
@@ -121,11 +121,11 @@ public class Customers {
      */
     @GET
     @Path("/{customerToken}")
-    @ApiOperation(value = "Get customer by token")
+    @Operation(summary = "Get customer by token", description = "Get customer by token")
     public Response getCustomerByToken(
-	    @ApiParam(value = "Token that identifies customer", required = true) @PathParam("customerToken") String customerToken,
-	    @ApiParam(value = "Include customer type", required = false) @QueryParam("includeCustomerType") @DefaultValue("true") boolean includeCustomerType,
-	    @ApiParam(value = "Include parent customer information", required = false) @QueryParam("includeParentCustomer") @DefaultValue("true") boolean includeParentCustomer)
+	    @Parameter(description = "Token that identifies customer", required = true) @PathParam("customerToken") String customerToken,
+	    @Parameter(description = "Include customer type", required = false) @QueryParam("includeCustomerType") @DefaultValue("true") boolean includeCustomerType,
+	    @Parameter(description = "Include parent customer information", required = false) @QueryParam("includeParentCustomer") @DefaultValue("true") boolean includeParentCustomer)
 	    throws SiteWhereException {
 	ICustomer existing = assertCustomer(customerToken);
 	CustomerMarshalHelper helper = new CustomerMarshalHelper(getDeviceManagement(), getAssetManagement());
@@ -144,9 +144,9 @@ public class Customers {
      */
     @PUT
     @Path("/{customerToken}")
-    @ApiOperation(value = "Update existing customer")
+    @Operation(summary = "Update existing customer", description = "Update existing customer")
     public Response updateCustomer(
-	    @ApiParam(value = "Token that identifies customer", required = true) @PathParam("customerToken") String customerToken,
+	    @Parameter(description = "Token that identifies customer", required = true) @PathParam("customerToken") String customerToken,
 	    @RequestBody CustomerCreateRequest request) throws SiteWhereException {
 	ICustomer existing = assertCustomer(customerToken);
 	return Response.ok(getDeviceManagement().updateCustomer(existing.getId(), request)).build();
@@ -165,10 +165,10 @@ public class Customers {
     @GET
     @Path("/{customerToken}/label/{generatorId}")
     @Produces("image/png")
-    @ApiOperation(value = "Get label for customer")
+    @Operation(summary = "Get label for customer", description = "Get label for customer")
     public Response getCustomerLabel(
-	    @ApiParam(value = "Token that identifies customer", required = true) @PathParam("customerToken") String customerToken,
-	    @ApiParam(value = "Generator id", required = true) @PathParam("generatorId") String generatorId)
+	    @Parameter(description = "Token that identifies customer", required = true) @PathParam("customerToken") String customerToken,
+	    @Parameter(description = "Generator id", required = true) @PathParam("generatorId") String generatorId)
 	    throws SiteWhereException {
 	ICustomer existing = assertCustomer(customerToken);
 	ILabel label = getLabelGeneration().getCustomerLabel(generatorId, existing.getId());
@@ -191,14 +191,14 @@ public class Customers {
      * @throws SiteWhereException
      */
     @GET
-    @ApiOperation(value = "List customers matching criteria")
+    @Operation(summary = "List customers matching criteria", description = "List customers matching criteria")
     public Response listCustomers(
-	    @ApiParam(value = "Limit to root elements", required = false) @QueryParam("rootOnly") @DefaultValue("true") Boolean rootOnly,
-	    @ApiParam(value = "Limit by parent customer token", required = false) @QueryParam("parentCustomerToken") String parentCustomerToken,
-	    @ApiParam(value = "Limit by customer type token", required = false) @QueryParam("customerTypeToken") String customerTypeToken,
-	    @ApiParam(value = "Include customer type", required = false) @QueryParam("includeCustomerType") @DefaultValue("false") boolean includeCustomerType,
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+	    @Parameter(description = "Limit to root elements", required = false) @QueryParam("rootOnly") @DefaultValue("true") Boolean rootOnly,
+	    @Parameter(description = "Limit by parent customer token", required = false) @QueryParam("parentCustomerToken") String parentCustomerToken,
+	    @Parameter(description = "Limit by customer type token", required = false) @QueryParam("customerTypeToken") String customerTypeToken,
+	    @Parameter(description = "Include customer type", required = false) @QueryParam("includeCustomerType") @DefaultValue("false") boolean includeCustomerType,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	// Build criteria.
 	CustomerSearchCriteria criteria = buildCustomerSearchCriteria(page, pageSize, rootOnly, parentCustomerToken,
@@ -224,7 +224,7 @@ public class Customers {
      */
     @GET
     @Path("/tree")
-    @ApiOperation(value = "List all customers in tree format")
+    @Operation(summary = "List all customers in tree format", description = "List all customers in tree format")
     public Response getCustomersTree() throws SiteWhereException {
 	return Response.ok(getDeviceManagement().getCustomersTree()).build();
     }
@@ -259,9 +259,9 @@ public class Customers {
      */
     @DELETE
     @Path("/{customerToken}")
-    @ApiOperation(value = "Delete customer by token")
+    @Operation(summary = "Delete customer by token", description = "Delete customer by token")
     public Response deleteCustomer(
-	    @ApiParam(value = "Token that identifies customer", required = true) @PathParam("customerToken") String customerToken)
+	    @Parameter(description = "Token that identifies customer", required = true) @PathParam("customerToken") String customerToken)
 	    throws SiteWhereException {
 	ICustomer existing = assertCustomer(customerToken);
 	return Response.ok(getDeviceManagement().deleteCustomer(existing.getId())).build();
@@ -280,13 +280,13 @@ public class Customers {
      */
     @GET
     @Path("/{customerToken}/measurements")
-    @ApiOperation(value = "List measurements for a customer")
+    @Operation(summary = "List measurements for a customer", description = "List measurements for a customer")
     public Response listDeviceMeasurementsForCustomer(
-	    @ApiParam(value = "Token that identifies customer", required = true) @PathParam("customerToken") String customerToken,
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
-	    @ApiParam(value = "Start date", required = false) @QueryParam("startDate") String startDate,
-	    @ApiParam(value = "End date", required = false) @QueryParam("endDate") String endDate)
+	    @Parameter(description = "Token that identifies customer", required = true) @PathParam("customerToken") String customerToken,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
+	    @Parameter(description = "Start date", required = false) @QueryParam("startDate") String startDate,
+	    @Parameter(description = "End date", required = false) @QueryParam("endDate") String endDate)
 	    throws SiteWhereException {
 	List<UUID> customers = resolveCustomerIdsRecursive(customerToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
@@ -313,13 +313,13 @@ public class Customers {
      */
     @GET
     @Path("/{customerToken}/locations")
-    @ApiOperation(value = "List locations for a customer")
+    @Operation(summary = "List locations for a customer", description = "List locations for a customer")
     public Response listDeviceLocationsForCustomer(
-	    @ApiParam(value = "Token that identifies customer", required = true) @PathParam("customerToken") String customerToken,
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
-	    @ApiParam(value = "Start date", required = false) @QueryParam("startDate") String startDate,
-	    @ApiParam(value = "End date", required = false) @QueryParam("endDate") String endDate)
+	    @Parameter(description = "Token that identifies customer", required = true) @PathParam("customerToken") String customerToken,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
+	    @Parameter(description = "Start date", required = false) @QueryParam("startDate") String startDate,
+	    @Parameter(description = "End date", required = false) @QueryParam("endDate") String endDate)
 	    throws SiteWhereException {
 	List<UUID> customers = resolveCustomerIdsRecursive(customerToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
@@ -348,13 +348,13 @@ public class Customers {
      */
     @GET
     @Path("/{customerToken}/alerts")
-    @ApiOperation(value = "List alerts for a customer")
+    @Operation(summary = "List alerts for a customer", description = "List alerts for a customer")
     public Response listDeviceAlertsForCustomer(
-	    @ApiParam(value = "Token that identifies customer", required = true) @PathParam("customerToken") String customerToken,
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
-	    @ApiParam(value = "Start date", required = false) @QueryParam("startDate") String startDate,
-	    @ApiParam(value = "End date", required = false) @QueryParam("endDate") String endDate)
+	    @Parameter(description = "Token that identifies customer", required = true) @PathParam("customerToken") String customerToken,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
+	    @Parameter(description = "Start date", required = false) @QueryParam("startDate") String startDate,
+	    @Parameter(description = "End date", required = false) @QueryParam("endDate") String endDate)
 	    throws SiteWhereException {
 	List<UUID> customers = resolveCustomerIdsRecursive(customerToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
@@ -383,13 +383,13 @@ public class Customers {
      */
     @GET
     @Path("/{customerToken}/invocations")
-    @ApiOperation(value = "List command invocations for a customer")
+    @Operation(summary = "List command invocations for a customer", description = "List command invocations for a customer")
     public Response listDeviceCommandInvocationsForCustomer(
-	    @ApiParam(value = "Token that identifies customer", required = true) @PathParam("customerToken") String customerToken,
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
-	    @ApiParam(value = "Start date", required = false) @QueryParam("startDate") String startDate,
-	    @ApiParam(value = "End date", required = false) @QueryParam("endDate") String endDate)
+	    @Parameter(description = "Token that identifies customer", required = true) @PathParam("customerToken") String customerToken,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
+	    @Parameter(description = "Start date", required = false) @QueryParam("startDate") String startDate,
+	    @Parameter(description = "End date", required = false) @QueryParam("endDate") String endDate)
 	    throws SiteWhereException {
 	List<UUID> customers = resolveCustomerIdsRecursive(customerToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
@@ -418,13 +418,13 @@ public class Customers {
      */
     @GET
     @Path("/{customerToken}/responses")
-    @ApiOperation(value = "List command responses for a customer")
+    @Operation(summary = "List command responses for a customer", description = "List command responses for a customer")
     public Response listDeviceCommandResponsesForCustomer(
-	    @ApiParam(value = "Token that identifies customer", required = true) @PathParam("customerToken") String customerToken,
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
-	    @ApiParam(value = "Start date", required = false) @QueryParam("startDate") String startDate,
-	    @ApiParam(value = "End date", required = false) @QueryParam("endDate") String endDate)
+	    @Parameter(description = "Token that identifies customer", required = true) @PathParam("customerToken") String customerToken,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
+	    @Parameter(description = "Start date", required = false) @QueryParam("startDate") String startDate,
+	    @Parameter(description = "End date", required = false) @QueryParam("endDate") String endDate)
 	    throws SiteWhereException {
 	List<UUID> customers = resolveCustomerIdsRecursive(customerToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
@@ -453,13 +453,13 @@ public class Customers {
      */
     @GET
     @Path("/{customerToken}/statechanges")
-    @ApiOperation(value = "List state changes associated with a customer")
+    @Operation(summary = "List state changes associated with a customer", description = "List state changes associated with a customer")
     public Response listDeviceStateChangesForCustomer(
-	    @ApiParam(value = "Token that identifies customer", required = true) @PathParam("customerToken") String customerToken,
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
-	    @ApiParam(value = "Start date", required = false) @QueryParam("startDate") String startDate,
-	    @ApiParam(value = "End date", required = false) @QueryParam("endDate") String endDate)
+	    @Parameter(description = "Token that identifies customer", required = true) @PathParam("customerToken") String customerToken,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
+	    @Parameter(description = "Start date", required = false) @QueryParam("startDate") String startDate,
+	    @Parameter(description = "End date", required = false) @QueryParam("endDate") String endDate)
 	    throws SiteWhereException {
 	List<UUID> customers = resolveCustomerIdsRecursive(customerToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
@@ -491,16 +491,16 @@ public class Customers {
      */
     @GET
     @Path("/{customerToken}/assignments")
-    @ApiOperation(value = "List device assignments for a customer")
+    @Operation(summary = "List device assignments for a customer", description = "List device assignments for a customer")
     public Response listAssignmentsForCustomer(
-	    @ApiParam(value = "Token that identifies customer", required = true) @PathParam("customerToken") String customerToken,
-	    @ApiParam(value = "Limit results to the given status", required = false) @QueryParam("status") String status,
-	    @ApiParam(value = "Include device information", required = false) @QueryParam("includeDevice") @DefaultValue("false") boolean includeDevice,
-	    @ApiParam(value = "Include customer information", required = false) @QueryParam("includeCustomer") @DefaultValue("false") boolean includeCustomer,
-	    @ApiParam(value = "Include area information", required = false) @QueryParam("includeArea") @DefaultValue("false") boolean includeArea,
-	    @ApiParam(value = "Include asset information", required = false) @QueryParam("includeAsset") @DefaultValue("false") boolean includeAsset,
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+	    @Parameter(description = "Token that identifies customer", required = true) @PathParam("customerToken") String customerToken,
+	    @Parameter(description = "Limit results to the given status", required = false) @QueryParam("status") String status,
+	    @Parameter(description = "Include device information", required = false) @QueryParam("includeDevice") @DefaultValue("false") boolean includeDevice,
+	    @Parameter(description = "Include customer information", required = false) @QueryParam("includeCustomer") @DefaultValue("false") boolean includeCustomer,
+	    @Parameter(description = "Include area information", required = false) @QueryParam("includeArea") @DefaultValue("false") boolean includeArea,
+	    @Parameter(description = "Include asset information", required = false) @QueryParam("includeAsset") @DefaultValue("false") boolean includeAsset,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(page, pageSize);
 	DeviceAssignmentStatus decodedStatus = (status != null) ? DeviceAssignmentStatus.valueOf(status) : null;

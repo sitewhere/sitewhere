@@ -31,6 +31,9 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -70,9 +73,6 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for device operations.
@@ -102,7 +102,7 @@ public class Devices {
      * @throws SiteWhereException
      */
     @POST
-    @ApiOperation(value = "Create new device")
+    @Operation(summary = "Create new device", description = "Create new device")
     public Response createDevice(@RequestBody DeviceCreateRequest request) throws SiteWhereException {
 	IDevice result = getDeviceManagement().createDevice(request);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
@@ -122,12 +122,12 @@ public class Devices {
      */
     @GET
     @Path("/{deviceToken}")
-    @ApiOperation(value = "Get device by token")
+    @Operation(summary = "Get device by token", description = "Get device by unique token")
     public Response getDeviceByToken(
-	    @ApiParam(value = "Device token", required = true) @PathParam("deviceToken") String deviceToken,
-	    @ApiParam(value = "Include device type information", required = false) @QueryParam("includeDeviceType") @DefaultValue("true") boolean includeDeviceType,
-	    @ApiParam(value = "Include assignment if associated", required = false) @QueryParam("includeAssignment") @DefaultValue("true") boolean includeAssignment,
-	    @ApiParam(value = "Include detailed nested device information", required = false) @QueryParam("includeNested") @DefaultValue("false") boolean includeNested)
+	    @Parameter(description = "Device token", required = true) @PathParam("deviceToken") String deviceToken,
+	    @Parameter(description = "Include device type information", required = false) @QueryParam("includeDeviceType") @DefaultValue("true") boolean includeDeviceType,
+	    @Parameter(description = "Include assignment if associated", required = false) @QueryParam("includeAssignment") @DefaultValue("true") boolean includeAssignment,
+	    @Parameter(description = "Include detailed nested device information", required = false) @QueryParam("includeNested") @DefaultValue("false") boolean includeNested)
 	    throws SiteWhereException {
 	IDevice result = assertDeviceByToken(deviceToken);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
@@ -147,9 +147,9 @@ public class Devices {
      */
     @PUT
     @Path("/{deviceToken}")
-    @ApiOperation(value = "Update an existing device")
+    @Operation(summary = "Update an existing device", description = "Update an existing device")
     public Response updateDevice(
-	    @ApiParam(value = "Device token", required = true) @PathParam("deviceToken") String deviceToken,
+	    @Parameter(description = "Device token", required = true) @PathParam("deviceToken") String deviceToken,
 	    @RequestBody DeviceCreateRequest request) throws SiteWhereException {
 	IDevice existing = assertDeviceByToken(deviceToken);
 	IDevice result = getDeviceManagement().updateDevice(existing.getId(), request);
@@ -169,10 +169,10 @@ public class Devices {
     @GET
     @Path("/{deviceToken}/label/{generatorId}")
     @Produces("image/png")
-    @ApiOperation(value = "Get label for device")
+    @Operation(summary = "Get label for device", description = "Get label for device")
     public Response getDeviceLabel(
-	    @ApiParam(value = "Device token", required = true) @PathParam("deviceToken") String deviceToken,
-	    @ApiParam(value = "Generator id", required = true) @PathParam("generatorId") String generatorId)
+	    @Parameter(description = "Device token", required = true) @PathParam("deviceToken") String deviceToken,
+	    @Parameter(description = "Generator id", required = true) @PathParam("generatorId") String generatorId)
 	    throws SiteWhereException {
 	IDevice existing = assertDeviceByToken(deviceToken);
 	ILabel label = getLabelGeneration().getDeviceLabel(generatorId, existing.getId());
@@ -191,9 +191,9 @@ public class Devices {
      */
     @DELETE
     @Path("/{deviceToken}")
-    @ApiOperation(value = "Delete device based on unique hardware id")
+    @Operation(summary = "Delete device", description = "Delete device by unique token")
     public Response deleteDevice(
-	    @ApiParam(value = "Device token", required = true) @PathParam("deviceToken") String deviceToken)
+	    @Parameter(description = "Device token", required = true) @PathParam("deviceToken") String deviceToken)
 	    throws SiteWhereException {
 	IDevice existing = assertDeviceByToken(deviceToken);
 	IDevice result = getDeviceManagement().deleteDevice(existing.getId());
@@ -216,13 +216,13 @@ public class Devices {
      */
     @GET
     @Path("/{deviceToken}/assignments/active")
-    @ApiOperation(value = "Get active assignments for device")
+    @Operation(summary = "Get active assignments for device", description = "Get active assignments for device")
     public Response getActiveDeviceAssignments(
-	    @ApiParam(value = "Device token", required = true) @PathParam("deviceToken") String deviceToken,
-	    @ApiParam(value = "Include device information", required = false) @QueryParam("includeDevice") @DefaultValue("false") boolean includeDevice,
-	    @ApiParam(value = "Include customer information", required = false) @QueryParam("includeCustomer") @DefaultValue("false") boolean includeCustomer,
-	    @ApiParam(value = "Include area information", required = false) @QueryParam("includeArea") @DefaultValue("false") boolean includeArea,
-	    @ApiParam(value = "Include asset information", required = false) @QueryParam("includeAsset") @DefaultValue("false") boolean includeAsset)
+	    @Parameter(description = "Device token", required = true) @PathParam("deviceToken") String deviceToken,
+	    @Parameter(description = "Include device information", required = false) @QueryParam("includeDevice") @DefaultValue("false") boolean includeDevice,
+	    @Parameter(description = "Include customer information", required = false) @QueryParam("includeCustomer") @DefaultValue("false") boolean includeCustomer,
+	    @Parameter(description = "Include area information", required = false) @QueryParam("includeArea") @DefaultValue("false") boolean includeArea,
+	    @Parameter(description = "Include asset information", required = false) @QueryParam("includeAsset") @DefaultValue("false") boolean includeAsset)
 	    throws SiteWhereException {
 	IDevice existing = assertDeviceByToken(deviceToken);
 	List<? extends IDeviceAssignment> assignments = getDeviceManagement()
@@ -256,15 +256,15 @@ public class Devices {
      */
     @GET
     @Path("/{deviceToken}/assignments")
-    @ApiOperation(value = "List assignment history for device")
+    @Operation(summary = "List assignment history for device", description = "List assignment history for device")
     public Response listDeviceAssignmentHistory(
-	    @ApiParam(value = "Device token", required = true) @PathParam("deviceToken") String deviceToken,
-	    @ApiParam(value = "Include device information", required = false) @QueryParam("includeDevice") @DefaultValue("false") boolean includeDevice,
-	    @ApiParam(value = "Include customer information", required = false) @QueryParam("includeCustomer") @DefaultValue("false") boolean includeCustomer,
-	    @ApiParam(value = "Include area information", required = false) @QueryParam("includeArea") @DefaultValue("false") boolean includeArea,
-	    @ApiParam(value = "Include asset information", required = false) @QueryParam("includeAsset") @DefaultValue("false") boolean includeAsset,
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+	    @Parameter(description = "Device token", required = true) @PathParam("deviceToken") String deviceToken,
+	    @Parameter(description = "Include device information", required = false) @QueryParam("includeDevice") @DefaultValue("false") boolean includeDevice,
+	    @Parameter(description = "Include customer information", required = false) @QueryParam("includeCustomer") @DefaultValue("false") boolean includeCustomer,
+	    @Parameter(description = "Include area information", required = false) @QueryParam("includeArea") @DefaultValue("false") boolean includeArea,
+	    @Parameter(description = "Include asset information", required = false) @QueryParam("includeAsset") @DefaultValue("false") boolean includeAsset,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	// Create search criteria.
 	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(page, pageSize);
@@ -294,9 +294,9 @@ public class Devices {
      */
     @GET
     @Path("/{deviceToken}/mappings")
-    @ApiOperation(value = "Create new device element mapping")
+    @Operation(summary = "Create new device element mapping", description = "Create new device element mapping")
     public Response addDeviceElementMapping(
-	    @ApiParam(value = "Device token", required = true) @PathParam("deviceToken") String deviceToken,
+	    @Parameter(description = "Device token", required = true) @PathParam("deviceToken") String deviceToken,
 	    @RequestBody DeviceElementMapping request) throws SiteWhereException {
 	IDevice existing = assertDeviceByToken(deviceToken);
 	IDevice updated = getDeviceManagement().createDeviceElementMapping(existing.getId(), request);
@@ -315,10 +315,10 @@ public class Devices {
      */
     @DELETE
     @Path("/{deviceToken}/mappings/{path}")
-    @ApiOperation(value = "Delete existing device element mapping")
+    @Operation(summary = "Delete existing device element mapping", description = "Delete existing device element mapping")
     public Response deleteDeviceElementMapping(
-	    @ApiParam(value = "Device token", required = true) @PathParam("deviceToken") String deviceToken,
-	    @ApiParam(value = "Device element path", required = true) @PathParam("path") String path)
+	    @Parameter(description = "Device token", required = true) @PathParam("deviceToken") String deviceToken,
+	    @Parameter(description = "Device element path", required = true) @PathParam("path") String path)
 	    throws SiteWhereException {
 	IDevice existing = assertDeviceByToken(deviceToken);
 	IDevice updated = getDeviceManagement().deleteDeviceElementMapping(existing.getId(), path);
@@ -342,16 +342,16 @@ public class Devices {
      * @throws SiteWhereException
      */
     @GET
-    @ApiOperation(value = "List devices that match criteria")
+    @Operation(summary = "List devices that match criteria", description = "List devices that match criteria")
     public Response listDevices(
-	    @ApiParam(value = "Device type filter", required = false) @QueryParam("deviceType") String deviceType,
-	    @ApiParam(value = "Exclude assigned devices", required = false) @QueryParam("excludeAssigned") @DefaultValue("false") boolean excludeAssigned,
-	    @ApiParam(value = "Include device type information", required = false) @QueryParam("includeDeviceType") @DefaultValue("false") boolean includeDeviceType,
-	    @ApiParam(value = "Include assignment information if associated", required = false) @QueryParam("includeAssignment") @DefaultValue("false") boolean includeAssignment,
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
-	    @ApiParam(value = "Start date", required = false) @QueryParam("startDate") String startDate,
-	    @ApiParam(value = "End date", required = false) @QueryParam("endDate") String endDate)
+	    @Parameter(description = "Device type filter", required = false) @QueryParam("deviceType") String deviceType,
+	    @Parameter(description = "Exclude assigned devices", required = false) @QueryParam("excludeAssigned") @DefaultValue("false") boolean excludeAssigned,
+	    @Parameter(description = "Include device type information", required = false) @QueryParam("includeDeviceType") @DefaultValue("false") boolean includeDeviceType,
+	    @Parameter(description = "Include assignment information if associated", required = false) @QueryParam("includeAssignment") @DefaultValue("false") boolean includeAssignment,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
+	    @Parameter(description = "Start date", required = false) @QueryParam("startDate") String startDate,
+	    @Parameter(description = "End date", required = false) @QueryParam("endDate") String endDate)
 	    throws SiteWhereException {
 	IDeviceSearchCriteria criteria = new DeviceSearchCriteria(deviceType, excludeAssigned, page, pageSize,
 		Assignments.parseDateOrFail(startDate), Assignments.parseDateOrFail(endDate));
@@ -384,18 +384,18 @@ public class Devices {
      */
     @GET
     @Path("/group/{groupToken}")
-    @ApiOperation(value = "List devices in device group")
+    @Operation(summary = "List devices in device group", description = "List devices in device group")
     public Response listDevicesForGroup(
-	    @ApiParam(value = "Group token", required = true) @PathParam("groupToken") String groupToken,
-	    @ApiParam(value = "Device type filter", required = false) @QueryParam("deviceType") String deviceType,
-	    @ApiParam(value = "Include deleted devices", required = false) @QueryParam("includeDeleted") @DefaultValue("false") boolean includeDeleted,
-	    @ApiParam(value = "Exclude assigned devices", required = false) @QueryParam("excludeAssigned") @DefaultValue("false") boolean excludeAssigned,
-	    @ApiParam(value = "Include device type information", required = false) @QueryParam("includeDeviceType") @DefaultValue("false") boolean includeDeviceType,
-	    @ApiParam(value = "Include assignment information if associated", required = false) @QueryParam("includeAssignment") @DefaultValue("false") boolean includeAssignment,
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
-	    @ApiParam(value = "Start date", required = false) @QueryParam("startDate") String startDate,
-	    @ApiParam(value = "End date", required = false) @QueryParam("endDate") String endDate)
+	    @Parameter(description = "Group token", required = true) @PathParam("groupToken") String groupToken,
+	    @Parameter(description = "Device type filter", required = false) @QueryParam("deviceType") String deviceType,
+	    @Parameter(description = "Include deleted devices", required = false) @QueryParam("includeDeleted") @DefaultValue("false") boolean includeDeleted,
+	    @Parameter(description = "Exclude assigned devices", required = false) @QueryParam("excludeAssigned") @DefaultValue("false") boolean excludeAssigned,
+	    @Parameter(description = "Include device type information", required = false) @QueryParam("includeDeviceType") @DefaultValue("false") boolean includeDeviceType,
+	    @Parameter(description = "Include assignment information if associated", required = false) @QueryParam("includeAssignment") @DefaultValue("false") boolean includeAssignment,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
+	    @Parameter(description = "Start date", required = false) @QueryParam("startDate") String startDate,
+	    @Parameter(description = "End date", required = false) @QueryParam("endDate") String endDate)
 	    throws SiteWhereException {
 	IDeviceSearchCriteria criteria = new DeviceSearchCriteria(deviceType, excludeAssigned, page, pageSize,
 		Assignments.parseDateOrFail(startDate), Assignments.parseDateOrFail(endDate));
@@ -430,18 +430,18 @@ public class Devices {
      */
     @GET
     @Path("/grouprole/{role}")
-    @ApiOperation(value = "List devices in device groups with role")
+    @Operation(summary = "List devices in device groups with role", description = "List devices in device groups with role")
     public Response listDevicesForGroupsWithRole(
-	    @ApiParam(value = "Group role", required = true) @PathParam("role") String role,
-	    @ApiParam(value = "Device type filter", required = false) @QueryParam("deviceType") String deviceType,
-	    @ApiParam(value = "Include deleted devices", required = false) @QueryParam("includeDeleted") @DefaultValue("false") boolean includeDeleted,
-	    @ApiParam(value = "Exclude assigned devices", required = false) @QueryParam("excludeAssigned") @DefaultValue("false") boolean excludeAssigned,
-	    @ApiParam(value = "Include device type information", required = false) @QueryParam("includeDeviceType") @DefaultValue("false") boolean includeDeviceType,
-	    @ApiParam(value = "Include assignment information if associated", required = false) @QueryParam("includeAssignment") @DefaultValue("false") boolean includeAssignment,
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
-	    @ApiParam(value = "Start date", required = false) @QueryParam("startDate") String startDate,
-	    @ApiParam(value = "End date", required = false) @QueryParam("endDate") String endDate)
+	    @Parameter(description = "Group role", required = true) @PathParam("role") String role,
+	    @Parameter(description = "Device type filter", required = false) @QueryParam("deviceType") String deviceType,
+	    @Parameter(description = "Include deleted devices", required = false) @QueryParam("includeDeleted") @DefaultValue("false") boolean includeDeleted,
+	    @Parameter(description = "Exclude assigned devices", required = false) @QueryParam("excludeAssigned") @DefaultValue("false") boolean excludeAssigned,
+	    @Parameter(description = "Include device type information", required = false) @QueryParam("includeDeviceType") @DefaultValue("false") boolean includeDeviceType,
+	    @Parameter(description = "Include assignment information if associated", required = false) @QueryParam("includeAssignment") @DefaultValue("false") boolean includeAssignment,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
+	    @Parameter(description = "Start date", required = false) @QueryParam("startDate") String startDate,
+	    @Parameter(description = "End date", required = false) @QueryParam("endDate") String endDate)
 	    throws SiteWhereException {
 	IDeviceSearchCriteria criteria = new DeviceSearchCriteria(deviceType, excludeAssigned, page, pageSize,
 		Assignments.parseDateOrFail(startDate), Assignments.parseDateOrFail(endDate));
@@ -469,9 +469,9 @@ public class Devices {
      */
     @POST
     @Path("/{deviceToken}/batch")
-    @ApiOperation(value = "Add multiple events for device")
+    @Operation(summary = "Add multiple events for device", description = "Add multiple events for device")
     public Response addDeviceEventBatch(
-	    @ApiParam(value = "Device token", required = true) @PathParam("deviceToken") String deviceToken,
+	    @Parameter(description = "Device token", required = true) @PathParam("deviceToken") String deviceToken,
 	    @RequestBody DeviceEventBatch batch) throws SiteWhereException {
 	IDevice device = assertDeviceByToken(deviceToken);
 	List<? extends IDeviceAssignment> active = getDeviceManagement().getActiveDeviceAssignments(device.getId());

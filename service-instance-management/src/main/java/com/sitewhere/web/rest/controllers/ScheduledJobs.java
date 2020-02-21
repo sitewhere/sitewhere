@@ -26,6 +26,9 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -46,9 +49,6 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.web.rest.marshaling.ScheduledJobMarshalHelper;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for scheduled jobs.
@@ -79,7 +79,7 @@ public class ScheduledJobs {
      * @throws SiteWhereException
      */
     @POST
-    @ApiOperation(value = "Create new scheduled job")
+    @Operation(summary = "Create new scheduled job", description = "Create new scheduled job")
     public Response createScheduledJob(@RequestBody ScheduledJobCreateRequest request) throws SiteWhereException {
 	return Response.ok(getScheduleManagement().createScheduledJob(request)).build();
     }
@@ -93,8 +93,9 @@ public class ScheduledJobs {
      */
     @GET
     @Path("/{token}")
-    @ApiOperation(value = "Get scheduled job by token")
-    public Response getScheduledJobByToken(@ApiParam(value = "Token", required = true) @PathParam("token") String token)
+    @Operation(summary = "Get scheduled job by token", description = "Get scheduled job by token")
+    public Response getScheduledJobByToken(
+	    @Parameter(description = "Token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
 	return Response.ok(getScheduleManagement().getScheduledJobByToken(token)).build();
     }
@@ -109,9 +110,10 @@ public class ScheduledJobs {
      */
     @PUT
     @Path("/{token}")
-    @ApiOperation(value = "Update existing scheduled job")
+    @Operation(summary = "Update existing scheduled job", description = "Update existing scheduled job")
     public Response updateScheduledJob(@RequestBody ScheduledJobCreateRequest request,
-	    @ApiParam(value = "Token", required = true) @PathParam("token") String token) throws SiteWhereException {
+	    @Parameter(description = "Token", required = true) @PathParam("token") String token)
+	    throws SiteWhereException {
 	IScheduledJob job = getScheduleManagement().getScheduledJobByToken(token);
 	if (job == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidScheduledJobToken, ErrorLevel.ERROR);
@@ -129,11 +131,11 @@ public class ScheduledJobs {
      * @throws SiteWhereException
      */
     @GET
-    @ApiOperation(value = "List scheduled jobs matching criteria")
+    @Operation(summary = "List scheduled jobs matching criteria", description = "List scheduled jobs matching criteria")
     public Response listScheduledJobs(
-	    @ApiParam(value = "Include context information", required = false) @QueryParam("includeContext") @DefaultValue("false") boolean includeContext,
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+	    @Parameter(description = "Include context information", required = false) @QueryParam("includeContext") @DefaultValue("false") boolean includeContext,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<? extends IScheduledJob> results = getScheduleManagement().listScheduledJobs(criteria);
@@ -159,8 +161,9 @@ public class ScheduledJobs {
      */
     @DELETE
     @Path("/{token}")
-    @ApiOperation(value = "Delete scheduled job")
-    public Response deleteScheduledJob(@ApiParam(value = "Token", required = true) @PathParam("token") String token)
+    @Operation(summary = "Delete scheduled job", description = "Delete scheduled job")
+    public Response deleteScheduledJob(
+	    @Parameter(description = "Token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
 	IScheduledJob job = getScheduleManagement().getScheduledJobByToken(token);
 	if (job == null) {

@@ -25,6 +25,9 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -44,9 +47,6 @@ import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for user operations.
@@ -76,9 +76,8 @@ public class Users {
      * @throws SiteWhereException
      */
     @POST
-    @ApiOperation(value = "Create new user")
+    @Operation(summary = "Create new user", description = "Create new user")
     public Response createUser(@RequestBody UserCreateRequest input) throws SiteWhereException {
-	// checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	if ((input.getUsername() == null) || (input.getPassword() == null) || (input.getFirstName() == null)
 		|| (input.getLastName() == null)) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidUserInformation, ErrorLevel.ERROR);
@@ -99,11 +98,10 @@ public class Users {
      */
     @PUT
     @Path("/{username}")
-    @ApiOperation(value = "Update existing user.")
+    @Operation(summary = "Update existing user", description = "Update existing user")
     public Response updateUser(
-	    @ApiParam(value = "Unique username", required = true) @PathParam("username") String username,
+	    @Parameter(description = "Unique username", required = true) @PathParam("username") String username,
 	    @RequestBody UserCreateRequest input) throws SiteWhereException {
-	checkForAdminOrEditSelf(username);
 	return Response.ok(getUserManagement().updateUser(username, input, true)).build();
     }
 
@@ -116,11 +114,10 @@ public class Users {
      */
     @GET
     @Path("/{username}")
-    @ApiOperation(value = "Get user by username")
+    @Operation(summary = "Get user by username", description = "Get user by username")
     public Response getUserByUsername(
-	    @ApiParam(value = "Unique username", required = true) @PathParam("username") String username)
+	    @Parameter(description = "Unique username", required = true) @PathParam("username") String username)
 	    throws SiteWhereException {
-	checkForAdminOrEditSelf(username);
 	IUser user = getUserManagement().getUserByUsername(username);
 	if (user == null) {
 	    return Response.status(Status.NOT_FOUND).build();
@@ -137,11 +134,10 @@ public class Users {
      */
     @DELETE
     @Path("/{username}")
-    @ApiOperation(value = "Delete user by username")
+    @Operation(summary = "Delete user by username", description = "Delete user by username")
     public Response deleteUserByUsername(
-	    @ApiParam(value = "Unique username", required = true) @PathParam("username") String username)
+	    @Parameter(description = "Unique username", required = true) @PathParam("username") String username)
 	    throws SiteWhereException {
-	// checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	return Response.ok(getUserManagement().deleteUser(username)).build();
     }
 
@@ -154,11 +150,10 @@ public class Users {
      */
     @GET
     @Path("/{username}/authorities")
-    @ApiOperation(value = "Get authorities for user")
+    @Operation(summary = "Get authorities for user", description = "Get authorities for user")
     public Response getAuthoritiesForUsername(
-	    @ApiParam(value = "Unique username", required = true) @PathParam("username") String username)
+	    @Parameter(description = "Unique username", required = true) @PathParam("username") String username)
 	    throws SiteWhereException {
-	checkForAdminOrEditSelf(username);
 	List<IGrantedAuthority> matches = getUserManagement().getGrantedAuthorities(username);
 	List<GrantedAuthority> converted = new ArrayList<GrantedAuthority>();
 	for (IGrantedAuthority auth : matches) {
@@ -174,29 +169,10 @@ public class Users {
      * @throws SiteWhereException
      */
     @GET
-    @ApiOperation(value = "List users matching criteria")
+    @Operation(summary = "List users matching criteria", description = "List users matching criteria")
     public Response listUsers() throws SiteWhereException {
 	UserSearchCriteria criteria = new UserSearchCriteria();
 	return Response.ok(getUserManagement().listUsers(criteria)).build();
-    }
-
-    /**
-     * Check for privileges to use REST services + either admin all users or admin
-     * self on the currently logged in user.
-     * 
-     * @param username
-     * @throws SiteWhereException
-     */
-    public static void checkForAdminOrEditSelf(String username) throws SiteWhereException {
-	// checkAuthFor(SiteWhereAuthority.REST, true);
-	// if (!checkAuthFor(SiteWhereAuthority.AdminUsers, false)) {
-	// IUser loggedIn = UserContextManager.getCurrentlyLoggedInUser();
-	// if ((loggedIn == null) || (!loggedIn.getUsername().equals(username))) {
-	// throw operationNotPermitted();
-	// } else {
-	// checkAuthFor(SiteWhereAuthority.AdminSelf, true);
-	// }
-	// }
     }
 
     protected IUserManagement getUserManagement() throws SiteWhereException {

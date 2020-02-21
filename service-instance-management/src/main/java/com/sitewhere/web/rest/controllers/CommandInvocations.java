@@ -40,7 +40,6 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.web.rest.view.DeviceInvocationSummaryBuilder;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiParam;
 
 /**
  * Controller for command invocation operations.
@@ -72,8 +71,8 @@ public class CommandInvocations {
     @GET
     @Path("/id/{id}")
     @Operation(summary = "Get command invocation by unique id", description = "Get command invocation by unique id")
-    public Response getDeviceCommandInvocation(@ApiParam(value = "Unique id", required = true) @PathParam("id") UUID id)
-	    throws SiteWhereException {
+    public Response getDeviceCommandInvocation(
+	    @Parameter(description = "Unique id", required = true) @PathParam("id") UUID id) throws SiteWhereException {
 	IDeviceEvent found = getDeviceEventManagement().getDeviceEventById(id);
 	if (!(found instanceof IDeviceCommandInvocation)) {
 	    throw new SiteWhereException("Event with the corresponding id is not a command invocation.");
@@ -119,7 +118,7 @@ public class CommandInvocations {
     @Path("/id/{invocationId}/responses")
     @Operation(summary = "List responses for command invocation", description = "List responses for command invocation")
     public Response listCommandInvocationResponses(
-	    @ApiParam(value = "Invocation id", required = true) @PathParam("invocationId") UUID invocationId)
+	    @Parameter(description = "Invocation id", required = true) @PathParam("invocationId") UUID invocationId)
 	    throws SiteWhereException {
 	return Response.ok(getDeviceEventManagement().listDeviceCommandInvocationResponses(invocationId)).build();
     }

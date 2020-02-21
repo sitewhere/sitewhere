@@ -24,6 +24,9 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -40,9 +43,6 @@ import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.SiteWhereAuthority;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for tenant operations.
@@ -72,9 +72,8 @@ public class Tenants {
      * @throws SiteWhereException
      */
     @POST
-    @ApiOperation(value = "Create new tenant")
+    @Operation(summary = "Create new tenant", description = "Create new tenant")
     public Response createTenant(@RequestBody TenantCreateRequest request) throws SiteWhereException {
-	// checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
 	return Response.ok(getTenantManagement().createTenant(request)).build();
     }
 
@@ -88,9 +87,9 @@ public class Tenants {
      */
     @PUT
     @Path("/{tenantToken}")
-    @ApiOperation(value = "Update an existing tenant.")
+    @Operation(summary = "Update an existing tenant", description = "Update an existing tenant")
     public Response updateTenant(
-	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
+	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
 	    @RequestBody TenantCreateRequest request) throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantToken);
 	checkForAdminOrEditSelf(tenant);
@@ -106,9 +105,9 @@ public class Tenants {
      */
     @GET
     @Path("/{tenantToken}")
-    @ApiOperation(value = "Get tenant by token")
+    @Operation(summary = "Get tenant by token", description = "Get tenant by token")
     public Response getTenantByToken(
-	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken)
+	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken)
 	    throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantToken);
 	checkForAdminOrEditSelf(tenant);
@@ -123,13 +122,13 @@ public class Tenants {
      * @throws SiteWhereException
      */
     @GET
-    @ApiOperation(value = "List tenants that match criteria")
+    @Operation(summary = "List tenants that match criteria", description = "List tenants that match criteria")
     public Response listTenants(
-	    @ApiParam(value = "Text search (partial id or name)", required = false) @QueryParam("textSearch") String textSearch,
-	    @ApiParam(value = "Authorized user id", required = false) @QueryParam("authUserId") String authUserId,
-	    @ApiParam(value = "Include runtime info", required = false) @QueryParam("includeRuntimeInfo") @DefaultValue("true") boolean includeRuntimeInfo,
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+	    @Parameter(description = "Text search (partial id or name)", required = false) @QueryParam("textSearch") String textSearch,
+	    @Parameter(description = "Authorized user id", required = false) @QueryParam("authUserId") String authUserId,
+	    @Parameter(description = "Include runtime info", required = false) @QueryParam("includeRuntimeInfo") @DefaultValue("true") boolean includeRuntimeInfo,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	checkAuthFor(SiteWhereAuthority.REST, true);
 
@@ -166,9 +165,9 @@ public class Tenants {
      */
     @DELETE
     @Path("/{tenantToken}")
-    @ApiOperation(value = "Delete existing tenant")
+    @Operation(summary = "Delete existing tenant", description = "Delete existing tenant")
     public Response deleteTenantById(
-	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken)
+	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken)
 	    throws SiteWhereException {
 	// checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
 	ITenant tenant = assureTenant(tenantToken);
@@ -184,7 +183,7 @@ public class Tenants {
      */
     @GET
     @Path("/templates")
-    @ApiOperation(value = "List templates available for creating tenants")
+    @Operation(summary = "List templates available for creating tenants", description = "List templates available for creating tenants")
     public Response listTenantConfigurationTemplates() throws SiteWhereException {
 	checkAuthFor(SiteWhereAuthority.REST, true);
 	if (checkAuthFor(SiteWhereAuthority.AdminTenants, false)
@@ -202,7 +201,7 @@ public class Tenants {
      */
     @GET
     @Path("/datasets")
-    @ApiOperation(value = "List datasets available for creating tenants")
+    @Operation(summary = "List datasets available for creating tenants", description = "List datasets available for creating tenants")
     public Response listTenantDatasetTemplates() throws SiteWhereException {
 	checkAuthFor(SiteWhereAuthority.REST, true);
 	if (checkAuthFor(SiteWhereAuthority.AdminTenants, false)

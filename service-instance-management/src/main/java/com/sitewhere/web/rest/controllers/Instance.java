@@ -20,6 +20,9 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -44,8 +47,6 @@ import io.sitewhere.k8s.crd.tenant.SiteWhereTenant;
 import io.sitewhere.k8s.crd.tenant.SiteWhereTenantList;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for instance management.
@@ -68,147 +69,6 @@ public class Instance {
     private IInstanceManagementMicroservice<?> microservice;
 
     /**
-     * Get most recent instance topology (includes both global and tenant
-     * microservices).
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    @GET
-    @Path("/topology")
-    @ApiOperation(value = "Get current instance topology")
-    public Response getInstanceTopology() throws SiteWhereException {
-	return Response.ok().build();
-    }
-
-    /**
-     * Get most recent instance topology (includes only global microservices).
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    @GET
-    @Path("/topology/global")
-    @ApiOperation(value = "Get global microservices in current instance topology")
-    public Response getGlobalInstanceTopology() throws SiteWhereException {
-	return Response.ok().build();
-    }
-
-    /**
-     * Get most recent instance topology (includes only tenant microservices).
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    @GET
-    @Path("/topology/tenant")
-    @ApiOperation(value = "Get tenant microservices in current instance topology")
-    public Response getTenantInstanceTopology() throws SiteWhereException {
-	return Response.ok().build();
-    }
-
-    /**
-     * For a given microservice identifier, find the state of all tenant engines
-     * (across all microservice instances) for a given tenant id.
-     * 
-     * @param identifier
-     * @param tenantToken
-     * @return
-     * @throws SiteWhereException
-     */
-    @GET
-    @Path("/microservice/{identifier}/tenants/{tenantToken}/state")
-    @ApiOperation(value = "Get state information for specific tenant engine across all microservice instances")
-    public Response getMicroserviceTenantRuntimeState(
-	    @ApiParam(value = "Service identifier", required = true) @PathParam("identifier") String identifier,
-	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken)
-	    throws SiteWhereException {
-	return Response.ok().build();
-    }
-
-    /**
-     * Get configuration model for microservice based on service identifier.
-     * 
-     * @param identifier
-     * @return
-     * @throws SiteWhereException
-     */
-    @GET
-    @Path("/microservice/{identifier}/configuration/model")
-    @ApiOperation(value = "Get configuration model based on service identifier")
-    public Response getMicroserviceConfigurationModel(
-	    @ApiParam(value = "Service identifier", required = true) @PathParam("identifier") String identifier)
-	    throws SiteWhereException {
-	return null;
-    }
-
-    /**
-     * Get global configuration for microservice based on service identifier.
-     * 
-     * @param identifier
-     * @return
-     * @throws SiteWhereException
-     */
-    @GET
-    @Path("/microservice/{identifier}/configuration")
-    @ApiOperation(value = "Get global configuration based on service identifier")
-    public Response getInstanceConfiguration(
-	    @ApiParam(value = "Service identifier", required = true) @PathParam("identifier") String identifier)
-	    throws SiteWhereException {
-	return null;
-    }
-
-    /**
-     * Update global configuration for microservice based on service identifier.
-     * 
-     * @param identifier
-     * @param content
-     * @throws SiteWhereException
-     */
-    @POST
-    @Path("/microservice/{identifier}/configuration")
-    @ApiOperation(value = "Update global configuration based on service identifier.")
-    public void updateInstanceConfiguration(
-	    @ApiParam(value = "Service identifier", required = true) @PathParam("identifier") String identifier)
-	    throws SiteWhereException {
-    }
-
-    /**
-     * Get tenant configuration for microservice based on service identifier.
-     * 
-     * @param identifier
-     * @param tenantToken
-     * @return
-     * @throws SiteWhereException
-     */
-    @GET
-    @Path("/microservice/{identifier}/tenants/{tenantToken}/configuration")
-    @ApiOperation(value = "Get tenant configuration based on service identifier")
-    public Response getTenantEngineConfiguration(
-	    @ApiParam(value = "Service identifier", required = true) @PathParam("identifier") String identifier,
-	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken)
-	    throws SiteWhereException {
-	return null;
-    }
-
-    /**
-     * Update tenant configuration for microservice based on service identifier.
-     * 
-     * @param identifier
-     * @param tenantToken
-     * @param content
-     * @throws SiteWhereException
-     */
-    @POST
-    @Path("/microservice/{identifier}/tenants/{tenantToken}/configuration")
-    @ApiOperation(value = "Update global configuration based on service identifier.")
-    public void updateTenantEngineConfiguration(
-	    @ApiParam(value = "Service identifier", required = true) @PathParam("identifier") String identifier,
-	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken)
-	    throws SiteWhereException {
-    }
-
-    /**
      * Get list of script templates for a given microservice.
      * 
      * @param identifier
@@ -217,9 +77,9 @@ public class Instance {
      */
     @GET
     @Path("/microservice/{identifier}/scripting/templates")
-    @ApiOperation(value = "Get list of script templates for a given microservice")
+    @Operation(summary = "Get list of script templates for a given microservice", description = "Get list of script templates for a given microservice")
     public Response getScriptTemplates(
-	    @ApiParam(value = "Service identifier", required = true) @PathParam("identifier") String identifier)
+	    @Parameter(description = "Service identifier", required = true) @PathParam("identifier") String identifier)
 	    throws SiteWhereException {
 	return Response.ok().build();
     }
@@ -235,9 +95,10 @@ public class Instance {
     @GET
     @Path("/microservice/{identifier}/scripting/templates/{templateId}")
     @ApiOperation(value = "Get list of script templates for a given microservice")
+    @Operation(summary = "Get list of script templates for a given microservice", description = "Get list of script templates for a given microservice")
     public Response getScriptTemplateContent(
-	    @ApiParam(value = "Service identifier", required = true) @PathParam("identifier") String identifier,
-	    @ApiParam(value = "Template id", required = true) @PathParam("templateId") String templateId)
+	    @Parameter(description = "Service identifier", required = true) @PathParam("identifier") String identifier,
+	    @Parameter(description = "Template id", required = true) @PathParam("templateId") String templateId)
 	    throws SiteWhereException {
 	return null;
     }
@@ -253,10 +114,10 @@ public class Instance {
     @GET
     @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts")
     @SuppressWarnings("unused")
-    @ApiOperation(value = "Get list of script metadata for the given tenant")
+    @Operation(summary = "Get list of script metadata for the given tenant", description = "Get list of script metadata for the given tenant")
     public Response listTenantScriptMetadata(
-	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
-	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier)
+	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
+	    @Parameter(description = "Function identifier", required = true) @PathParam("identifier") String identifier)
 	    throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantToken);
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
@@ -274,11 +135,11 @@ public class Instance {
      */
     @GET
     @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}")
-    @ApiOperation(value = "Get metadata for a tenant script based on unique script id")
+    @Operation(summary = "Get metadata for a tenant script based on unique script id", description = "Get metadata for a tenant script based on unique script id")
     public Response getTenantScriptMetadata(
-	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
-	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId)
+	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
+	    @Parameter(description = "Function identifier", required = true) @PathParam("identifier") String identifier,
+	    @Parameter(description = "Script id", required = true) @PathParam("scriptId") String scriptId)
 	    throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
 	return Response.ok(getScriptManagement().getScriptMetadata(msid, tenantToken, scriptId)).build();
@@ -295,10 +156,10 @@ public class Instance {
      */
     @POST
     @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts")
-    @ApiOperation(value = "Create a new tenant script")
+    @Operation(summary = "Create a new tenant script", description = "Create a new tenant script")
     public Response createTenantScript(
-	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
-	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
+	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
+	    @Parameter(description = "Function identifier", required = true) @PathParam("identifier") String identifier,
 	    @RequestBody ScriptCreateRequest request) throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
 	return Response.ok(getScriptManagement().createScript(msid, tenantToken, request)).build();
@@ -316,12 +177,12 @@ public class Instance {
      */
     @GET
     @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}/content")
-    @ApiOperation(value = "Get content for a tenant script based on unique script id and version id")
+    @Operation(summary = "Get content for a tenant script", description = "Get content for a tenant script based on unique script id and version id")
     public Response getTenantScriptContent(
-	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
-	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId,
-	    @ApiParam(value = "Version id", required = true) @PathParam("versionId") String versionId)
+	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
+	    @Parameter(description = "Function identifier", required = true) @PathParam("identifier") String identifier,
+	    @Parameter(description = "Script id", required = true) @PathParam("scriptId") String scriptId,
+	    @Parameter(description = "Version id", required = true) @PathParam("versionId") String versionId)
 	    throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
 	return Response.ok(new String(getScriptManagement().getScriptContent(msid, tenantToken, scriptId, versionId)))
@@ -341,12 +202,12 @@ public class Instance {
      */
     @POST
     @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}")
-    @ApiOperation(value = "Update an existing tenant script")
+    @Operation(summary = "Update an existing tenant script", description = "Update an existing tenant script")
     public Response updateTenantScript(
-	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
-	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId,
-	    @ApiParam(value = "Version id", required = true) @PathParam("versionId") String versionId,
+	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
+	    @Parameter(description = "Function identifier", required = true) @PathParam("identifier") String identifier,
+	    @Parameter(description = "Script id", required = true) @PathParam("scriptId") String scriptId,
+	    @Parameter(description = "Version id", required = true) @PathParam("versionId") String versionId,
 	    @RequestBody ScriptCreateRequest request) throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
 	return Response.ok(getScriptManagement().updateScript(msid, tenantToken, scriptId, versionId, request)).build();
@@ -365,12 +226,12 @@ public class Instance {
      */
     @POST
     @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}/clone")
-    @ApiOperation(value = "Clone an existing tenant script version to create a new version")
+    @Operation(summary = "Clone tenant script", description = "Clone an existing tenant script version to create a new version")
     public Response cloneTenantScript(
-	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
-	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId,
-	    @ApiParam(value = "Version id", required = true) @PathParam("versionId") String versionId,
+	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
+	    @Parameter(description = "Function identifier", required = true) @PathParam("identifier") String identifier,
+	    @Parameter(description = "Script id", required = true) @PathParam("scriptId") String scriptId,
+	    @Parameter(description = "Version id", required = true) @PathParam("versionId") String versionId,
 	    @RequestBody ScriptCloneRequest request) throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
 	return Response
@@ -391,12 +252,12 @@ public class Instance {
      */
     @POST
     @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}/activate")
-    @ApiOperation(value = "Activate a tenant script version")
+    @Operation(summary = "Activate a tenant script version", description = "Activate a tenant script version")
     public Response activateTenantScript(
-	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
-	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId,
-	    @ApiParam(value = "Version id", required = true) @PathParam("versionId") String versionId)
+	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
+	    @Parameter(description = "Function identifier", required = true) @PathParam("identifier") String identifier,
+	    @Parameter(description = "Script id", required = true) @PathParam("scriptId") String scriptId,
+	    @Parameter(description = "Version id", required = true) @PathParam("versionId") String versionId)
 	    throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
 	return Response.ok(getScriptManagement().activateScript(msid, tenantToken, scriptId, versionId)).build();
@@ -414,11 +275,11 @@ public class Instance {
      */
     @DELETE
     @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}")
-    @ApiOperation(value = "Delete a tenant script and version history")
+    @Operation(summary = "Delete a tenant script and version history", description = "Delete a tenant script and version history")
     public Response deleteTenantScript(
-	    @ApiParam(value = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
-	    @ApiParam(value = "Function identifier", required = true) @PathParam("identifier") String identifier,
-	    @ApiParam(value = "Script id", required = true) @PathParam("scriptId") String scriptId)
+	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
+	    @Parameter(description = "Function identifier", required = true) @PathParam("identifier") String identifier,
+	    @Parameter(description = "Script id", required = true) @PathParam("scriptId") String scriptId)
 	    throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
 	return Response.ok(getScriptManagement().deleteScript(msid, tenantToken, scriptId)).build();
