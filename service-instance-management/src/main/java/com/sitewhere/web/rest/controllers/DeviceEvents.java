@@ -20,6 +20,9 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
@@ -37,6 +40,10 @@ import io.swagger.annotations.ApiParam;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "events")
+@Tag(name = "Device Events", description = "Services used to interact with device events outside the context of a device assignment.")
+@SecurityRequirements({ @SecurityRequirement(name = "jwtAuth", scopes = {}),
+	@SecurityRequirement(name = "tenantIdHeader", scopes = {}),
+	@SecurityRequirement(name = "tenantAuthHeader", scopes = {}) })
 public class DeviceEvents {
 
     /** Static logger instance */

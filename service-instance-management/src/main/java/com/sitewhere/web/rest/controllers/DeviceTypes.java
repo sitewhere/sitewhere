@@ -27,6 +27,9 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.api.device.DeviceTypeMarshalHelper;
@@ -59,6 +62,10 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "devicetypes")
+@Tag(name = "Device Types", description = "Device types define common characteristics for related devices.")
+@SecurityRequirements({ @SecurityRequirement(name = "jwtAuth", scopes = {}),
+	@SecurityRequirement(name = "tenantIdHeader", scopes = {}),
+	@SecurityRequirement(name = "tenantAuthHeader", scopes = {}) })
 public class DeviceTypes {
 
     /** Static logger instance */

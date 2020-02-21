@@ -10,6 +10,8 @@ package com.sitewhere.event.configuration.providers;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.sitewhere.event.configuration.EventManagementTenantConfiguration;
+import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.warp10.Warp10Client;
 import com.sitewhere.warp10.Warp10Configuration;
 
@@ -18,11 +20,16 @@ import com.sitewhere.warp10.Warp10Configuration;
  */
 public class Warp10ClientProvider implements Provider<Warp10Client> {
 
+    /** Injected tenant engine */
+    private IEventManagementTenantEngine tenantEngine;
+
     /** Injected configuration */
     private EventManagementTenantConfiguration configuration;
 
     @Inject
-    public Warp10ClientProvider(EventManagementTenantConfiguration configuration) {
+    public Warp10ClientProvider(IEventManagementTenantEngine tenantEngine,
+	    EventManagementTenantConfiguration configuration) {
+	this.tenantEngine = tenantEngine;
 	this.configuration = configuration;
     }
 
@@ -31,14 +38,20 @@ public class Warp10ClientProvider implements Provider<Warp10Client> {
      */
     @Override
     public Warp10Client get() {
-	Warp10Configuration warp10 = new Warp10Configuration();
-	warp10.setApplication("sitewhere");
-	warp10.setTokenSecret("sitewhere");
-	warp10.setBaseUrl("http://sitewhere-warp10:8080/api/v0");
-	return new Warp10Client(warp10);
+	try {
+	    Warp10Configuration warp10 = new Warp10Configuration(getTenantEngine());
+	    warp10.loadFrom(getConfiguration().getDatastore().getConfiguration());
+	    return new Warp10Client(warp10);
+	} catch (SiteWhereException e) {
+	    throw new RuntimeException("Unable to load Warp 10 configuration.o", e);
+	}
     }
 
     protected EventManagementTenantConfiguration getConfiguration() {
 	return configuration;
+    }
+
+    protected IEventManagementTenantEngine getTenantEngine() {
+	return tenantEngine;
     }
 }

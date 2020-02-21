@@ -28,7 +28,6 @@ import com.sitewhere.microservice.security.UserContext;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
-import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.web.ISiteWhereWebConstants;
 
@@ -109,8 +108,11 @@ public class JwtAuthForApi implements ContainerRequestFilter {
 	Claims claims = getTokenManagement().getClaimsForToken(jwt);
 	String username = getTokenManagement().getUsernameFromClaims(claims);
 	IUser user = getUserManagement().getUserByUsername(username);
-	List<IGrantedAuthority> auths = getTokenManagement().getGrantedAuthoritiesFromClaims(claims);
-	return new SiteWhereAuthentication(user, auths, jwt);
+	if (user != null) {
+	    List<String> auths = getTokenManagement().getGrantedAuthoritiesFromClaims(claims);
+	    return new SiteWhereAuthentication(username, auths, jwt);
+	}
+	throw new SiteWhereException("User associated with JWT not found.");
     }
 
     protected InstanceManagementMicroservice getMicroservice() {

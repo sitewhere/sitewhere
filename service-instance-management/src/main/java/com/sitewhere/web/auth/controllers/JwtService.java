@@ -18,6 +18,8 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.sitewhere.microservice.security.SiteWhereAuthentication;
 import com.sitewhere.microservice.security.UserContext;
@@ -25,7 +27,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.web.ISiteWhereWebConstants;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
@@ -34,7 +35,8 @@ import io.swagger.annotations.ApiOperation;
 @Path("/authapi/jwt")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "jwt")
+@Tag(name = "JWT Authentication", description = "Supports authentication via JSON Web Token.")
+@SecurityRequirement(name = "basicAuth", scopes = {})
 public class JwtService {
 
     /** Static logger instance */

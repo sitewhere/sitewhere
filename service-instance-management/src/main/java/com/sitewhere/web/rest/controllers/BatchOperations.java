@@ -25,6 +25,12 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
@@ -52,9 +58,6 @@ import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 import com.sitewhere.spi.search.ISearchResults;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for batch operations.
@@ -63,6 +66,10 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "batch")
+@Tag(name = "Batch Operations", description = "Batch operations are used to interact with large groups of devices.")
+@SecurityRequirements({ @SecurityRequirement(name = "jwtAuth", scopes = {}),
+	@SecurityRequirement(name = "tenantIdHeader", scopes = {}),
+	@SecurityRequirement(name = "tenantAuthHeader", scopes = {}) })
 public class BatchOperations {
 
     @Inject
@@ -81,9 +88,9 @@ public class BatchOperations {
      */
     @GET
     @Path("/{batchToken}")
-    @ApiOperation(value = "Get batch operation by unique token")
+    @Operation(summary = "Get batch operation by unique token", description = "Get batch operation by unique token")
     public Response getBatchOperationByToken(
-	    @ApiParam(value = "Unique token that identifies batch operation", required = true) @PathParam("batchToken") String batchToken)
+	    @Parameter(description = "Unique token that identifies batch operation", required = true) @PathParam("batchToken") String batchToken)
 	    throws SiteWhereException {
 	IBatchOperation batch = getBatchManagement().getBatchOperationByToken(batchToken);
 	if (batch == null) {
@@ -102,10 +109,10 @@ public class BatchOperations {
      * @throws SiteWhereException
      */
     @GET
-    @ApiOperation(value = "List batch operations")
+    @Operation(summary = "List batch operations", description = "List batch operations")
     public Response listBatchOperations(
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	BatchOperationSearchCriteria criteria = new BatchOperationSearchCriteria(page, pageSize);
 
@@ -130,12 +137,12 @@ public class BatchOperations {
      */
     @GET
     @Path("/{operationToken}/elements")
-    @ApiOperation(value = "List batch operation elements")
+    @Operation(summary = "List batch operation elements", description = "List batch operation elements")
     public Response listBatchOperationElements(
-	    @ApiParam(value = "Unique batch operation token", required = true) @PathParam("operationToken") String operationToken,
-	    @ApiParam(value = "Include device information", required = false) @QueryParam("includeDevice") @DefaultValue("false") boolean includeDevice,
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+	    @Parameter(description = "Unique batch operation token", required = true) @PathParam("operationToken") String operationToken,
+	    @Parameter(description = "Include device information", required = false) @QueryParam("includeDevice") @DefaultValue("false") boolean includeDevice,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	IBatchOperation batchOperation = assureBatchOperation(operationToken);
 	BatchElementSearchCriteria criteria = new BatchElementSearchCriteria(page, pageSize);
@@ -160,7 +167,7 @@ public class BatchOperations {
      */
     @POST
     @Path("/command")
-    @ApiOperation(value = "Create new batch command invocation")
+    @Operation(summary = "Create new batch command invocation", description = "Create new batch command invocation")
     public Response createBatchCommandInvocation(@RequestBody BatchCommandInvocationRequest request)
 	    throws SiteWhereException {
 	IBatchOperation result = getBatchManagement().createBatchCommandInvocation(request);
@@ -179,9 +186,9 @@ public class BatchOperations {
      */
     @POST
     @Path("/command/criteria/device")
-    @ApiOperation(value = "Create batch command operation based on device criteria")
+    @Operation(summary = "Create batch command operation based on device criteria", description = "Create batch command operation based on device criteria")
     public Response createInvocationsByDeviceCriteria(@RequestBody InvocationByDeviceCriteriaRequest request,
-	    @ApiParam(value = "Schedule token", required = false) @QueryParam("scheduleToken") String scheduleToken)
+	    @Parameter(description = "Schedule token", required = false) @QueryParam("scheduleToken") String scheduleToken)
 	    throws SiteWhereException {
 	if (scheduleToken != null) {
 	    IScheduledJobCreateRequest job = ScheduledJobHelper
@@ -215,9 +222,9 @@ public class BatchOperations {
      */
     @POST
     @Path("/command/criteria/assignment")
-    @ApiOperation(value = "Create batch command invocation based on device assignment criteria")
+    @Operation(summary = "Create batch command invocation based on device assignment criteria", description = "Create batch command invocation based on device assignment criteria")
     public Response createInvocationsByAssignmentCriteria(@RequestBody InvocationByAssignmentCriteriaRequest request,
-	    @ApiParam(value = "Schedule token", required = false) @QueryParam("scheduleToken") String scheduleToken)
+	    @Parameter(description = "Schedule token", required = false) @QueryParam("scheduleToken") String scheduleToken)
 	    throws SiteWhereException {
 	if (scheduleToken != null) {
 	    IScheduledJobCreateRequest job = ScheduledJobHelper

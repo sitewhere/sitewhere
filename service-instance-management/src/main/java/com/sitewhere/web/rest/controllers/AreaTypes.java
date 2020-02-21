@@ -25,6 +25,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.api.device.AreaTypeMarshalHelper;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
@@ -40,10 +47,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.label.ILabel;
 import com.sitewhere.spi.search.ISearchResults;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for area type operations.
@@ -51,7 +55,10 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Path("/api/areatypes")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "areatypes")
+@Tag(name = "Area Types", description = "Area types define common characteristics for related areas.")
+@SecurityRequirements({ @SecurityRequirement(name = "jwtAuth", scopes = {}),
+	@SecurityRequirement(name = "tenantIdHeader", scopes = {}),
+	@SecurityRequirement(name = "tenantAuthHeader", scopes = {}) })
 public class AreaTypes {
 
     @Inject
@@ -65,7 +72,7 @@ public class AreaTypes {
      * @throws SiteWhereException
      */
     @POST
-    @ApiOperation(value = "Create new area type")
+    @Operation(summary = "Create area type", description = "Create new area type")
     public Response createAreaType(@RequestBody AreaTypeCreateRequest input) throws SiteWhereException {
 	return Response.ok(getDeviceManagement().createAreaType(input)).build();
     }
@@ -79,9 +86,9 @@ public class AreaTypes {
      */
     @GET
     @Path("/{areaTypeToken}")
-    @ApiOperation(value = "Get area type by token")
+    @Operation(summary = "Get area type by token", description = "Get area type by its unqiue token")
     public Response getAreaTypeByToken(
-	    @ApiParam(value = "Token that identifies area type", required = true) @PathParam("areaTypeToken") String areaTypeToken)
+	    @Parameter(description = "Token that identifies area type", required = true) @PathParam("areaTypeToken") String areaTypeToken)
 	    throws SiteWhereException {
 	return Response.ok(assertAreaType(areaTypeToken)).build();
     }
@@ -96,9 +103,9 @@ public class AreaTypes {
      */
     @PUT
     @Path("/{areaTypeToken}")
-    @ApiOperation(value = "Update existing area type")
+    @Operation(summary = "Update area type", description = "Update an existing area type")
     public Response updateAreaType(
-	    @ApiParam(value = "Token that identifies area type", required = true) @PathParam("areaTypeToken") String areaTypeToken,
+	    @Parameter(description = "Token that identifies area type", required = true) @PathParam("areaTypeToken") String areaTypeToken,
 	    @RequestBody AreaTypeCreateRequest request) throws SiteWhereException {
 	IAreaType existing = assertAreaType(areaTypeToken);
 	return Response.ok(getDeviceManagement().updateAreaType(existing.getId(), request)).build();
@@ -115,10 +122,10 @@ public class AreaTypes {
     @GET
     @Path("/{areaTypeToken}/label/{generatorId}")
     @Produces("image/png")
-    @ApiOperation(value = "Get label for area type")
+    @Operation(summary = "Get area type label", description = "Get label for an area type")
     public Response getAreaTypeLabel(
-	    @ApiParam(value = "Token that identifies area type", required = true) @PathParam("areaTypeToken") String areaTypeToken,
-	    @ApiParam(value = "Generator id", required = true) @PathParam("areaToken") String generatorId)
+	    @Parameter(description = "Token that identifies area type", required = true) @PathParam("areaTypeToken") String areaTypeToken,
+	    @Parameter(description = "Generator id", required = true) @PathParam("areaToken") String generatorId)
 	    throws SiteWhereException {
 	IAreaType existing = assertAreaType(areaTypeToken);
 	ILabel label = getLabelGeneration().getAreaTypeLabel(generatorId, existing.getId());
@@ -138,11 +145,11 @@ public class AreaTypes {
      * @throws SiteWhereException
      */
     @GET
-    @ApiOperation(value = "List area types matching criteria")
+    @Operation(summary = "List area types", description = "List area types matching criteria")
     public Response listAreaTypes(
-	    @ApiParam(value = "Include contained area types", required = false) @QueryParam("includeContainedAreaTypes") @DefaultValue("false") boolean includeContainedAreaTypes,
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+	    @Parameter(description = "Include contained area types", required = false) @QueryParam("includeContainedAreaTypes") @DefaultValue("false") boolean includeContainedAreaTypes,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<? extends IAreaType> matches = getDeviceManagement().listAreaTypes(criteria);
@@ -166,9 +173,10 @@ public class AreaTypes {
      */
     @DELETE
     @Path("/{areaTypeToken}")
-    @ApiOperation(value = "Delete area type by token")
+    @Operation(summary = "Delete area type by token", description = "Delete area type by token")
+    @ApiOperation(value = "")
     public Response deleteAreaType(
-	    @ApiParam(value = "Token that identifies area type", required = true) @PathParam("areaTypeToken") String areaTypeToken)
+	    @Parameter(description = "Token that identifies area type", required = true) @PathParam("areaTypeToken") String areaTypeToken)
 	    throws SiteWhereException {
 	IAreaType existing = assertAreaType(areaTypeToken);
 	return Response.ok(getDeviceManagement().deleteAreaType(existing.getId())).build();

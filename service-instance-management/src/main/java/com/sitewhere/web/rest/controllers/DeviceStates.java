@@ -20,6 +20,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
@@ -45,6 +49,10 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "devicestates")
+@Tag(name = "Device States", description = "Services used to query the current state of one or more devices.")
+@SecurityRequirements({ @SecurityRequirement(name = "jwtAuth", scopes = {}),
+	@SecurityRequirement(name = "tenantIdHeader", scopes = {}),
+	@SecurityRequirement(name = "tenantAuthHeader", scopes = {}) })
 public class DeviceStates {
 
     @Inject

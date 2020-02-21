@@ -25,6 +25,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.api.asset.AssetTypeMarshalHelper;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
@@ -41,9 +48,6 @@ import com.sitewhere.spi.label.ILabel;
 import com.sitewhere.spi.search.ISearchResults;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for asset type operations.
@@ -52,6 +56,10 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "assettypes")
+@Tag(name = "Asset Types", description = "Asset types define common characteristics for related assets.")
+@SecurityRequirements({ @SecurityRequirement(name = "jwtAuth", scopes = {}),
+	@SecurityRequirement(name = "tenantIdHeader", scopes = {}),
+	@SecurityRequirement(name = "tenantAuthHeader", scopes = {}) })
 public class AssetTypes {
 
     @Inject
@@ -65,7 +73,7 @@ public class AssetTypes {
      * @throws SiteWhereException
      */
     @POST
-    @ApiOperation(value = "Create a new asset type")
+    @Operation(summary = "Create a new asset type", description = "Create a new asset type")
     public Response createAssetType(@RequestBody AssetTypeCreateRequest request) throws SiteWhereException {
 	return Response.ok(getAssetManagement().createAssetType(request)).build();
     }
@@ -79,9 +87,9 @@ public class AssetTypes {
      */
     @GET
     @Path("/{assetTypeToken}")
-    @ApiOperation(value = "Get asset by token")
+    @Operation(summary = "Get asset type by token", description = "Get an asset type by unique token")
     public Response getAssetTypeByToken(
-	    @ApiParam(value = "Asset type token", required = true) @PathParam("assetTypeToken") String assetTypeToken)
+	    @Parameter(description = "Asset type token", required = true) @PathParam("assetTypeToken") String assetTypeToken)
 	    throws SiteWhereException {
 	IAssetType existing = assureAssetType(assetTypeToken);
 	AssetTypeMarshalHelper helper = new AssetTypeMarshalHelper(getAssetManagement());
@@ -98,9 +106,9 @@ public class AssetTypes {
      */
     @PUT
     @Path("/{assetTypeToken}")
-    @ApiOperation(value = "Update an existing asset type")
+    @Operation(summary = "Update an existing asset type", description = "Update an existing asset type")
     public Response updateAssetType(
-	    @ApiParam(value = "Asset type token", required = true) @PathParam("assetTypeToken") String assetTypeToken,
+	    @Parameter(description = "Asset type token", required = true) @PathParam("assetTypeToken") String assetTypeToken,
 	    @RequestBody AssetTypeCreateRequest request) throws SiteWhereException {
 	IAssetType existing = assureAssetType(assetTypeToken);
 	return Response.ok(getAssetManagement().updateAssetType(existing.getId(), request)).build();
@@ -117,10 +125,10 @@ public class AssetTypes {
     @GET
     @Path("/{areaTypeToken}/label/{generatorId}")
     @Produces("image/png")
-    @ApiOperation(value = "Get label for asset type")
+    @Operation(summary = "Get label for asset type", description = "Get label for asset type")
     public Response getAssignmentLabel(
-	    @ApiParam(value = "Asset type token", required = true) @PathParam("assetTypeToken") String assetTypeToken,
-	    @ApiParam(value = "Generator id", required = true) @PathParam("v") String generatorId)
+	    @Parameter(description = "Asset type token", required = true) @PathParam("assetTypeToken") String assetTypeToken,
+	    @Parameter(description = "Generator id", required = true) @PathParam("v") String generatorId)
 	    throws SiteWhereException {
 	IAssetType existing = assureAssetType(assetTypeToken);
 	ILabel label = getLabelGeneration().getAssetTypeLabel(generatorId, existing.getId());
@@ -139,10 +147,10 @@ public class AssetTypes {
      * @throws SiteWhereException
      */
     @GET
-    @ApiOperation(value = "List asset types matching criteria")
+    @Operation(summary = "List asset types matching criteria", description = "List asset types matching criteria")
     public Response listAssetTypes(
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	// Build criteria.
 	AssetTypeSearchCriteria criteria = new AssetTypeSearchCriteria(page, pageSize);
@@ -167,9 +175,9 @@ public class AssetTypes {
      */
     @DELETE
     @Path("/{assetTypeToken}")
-    @ApiOperation(value = "Delete asset type by token")
+    @Operation(summary = "Delete asset type by token", description = "Delete asset type by token")
     public Response deleteAsset(
-	    @ApiParam(value = "Asset type token", required = true) @PathParam("assetTypeToken") String assetTypeToken)
+	    @Parameter(description = "Asset type token", required = true) @PathParam("assetTypeToken") String assetTypeToken)
 	    throws SiteWhereException {
 	IAssetType existing = assureAssetType(assetTypeToken);
 	return Response.ok(getAssetManagement().deleteAssetType(existing.getId())).build();

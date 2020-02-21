@@ -211,6 +211,9 @@ public class RdbDeviceStatus extends RdbPersistentEntity implements IDeviceStatu
 	if (source.getForegroundColor() != null) {
 	    target.setForegroundColor(source.getForegroundColor());
 	}
+	if (source.getBorderColor() != null) {
+	    target.setBorderColor(source.getBorderColor());
+	}
 	if (source.getIcon() != null) {
 	    target.setIcon(source.getIcon());
 	}

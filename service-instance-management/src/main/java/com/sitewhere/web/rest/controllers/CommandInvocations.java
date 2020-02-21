@@ -20,6 +20,11 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
@@ -35,7 +40,6 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.web.rest.view.DeviceInvocationSummaryBuilder;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 /**
@@ -45,6 +49,10 @@ import io.swagger.annotations.ApiParam;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "invocations")
+@Tag(name = "Command Invocations", description = "Services used to provide more information about command invocation events.")
+@SecurityRequirements({ @SecurityRequirement(name = "jwtAuth", scopes = {}),
+	@SecurityRequirement(name = "tenantIdHeader", scopes = {}),
+	@SecurityRequirement(name = "tenantAuthHeader", scopes = {}) })
 public class CommandInvocations {
 
     @Inject
@@ -63,7 +71,7 @@ public class CommandInvocations {
      */
     @GET
     @Path("/id/{id}")
-    @ApiOperation(value = "Get command invocation by unique id.")
+    @Operation(summary = "Get command invocation by unique id", description = "Get command invocation by unique id")
     public Response getDeviceCommandInvocation(@ApiParam(value = "Unique id", required = true) @PathParam("id") UUID id)
 	    throws SiteWhereException {
 	IDeviceEvent found = getDeviceEventManagement().getDeviceEventById(id);
@@ -83,9 +91,9 @@ public class CommandInvocations {
      */
     @GET
     @Path("/id/{id}/summary")
-    @ApiOperation(value = "Get command invocation summary")
+    @Operation(summary = "Get command invocation summary", description = "Get command invocation summary")
     public Response getDeviceCommandInvocationSummary(
-	    @ApiParam(value = "Unique id", required = true) @PathParam("id") UUID id) throws SiteWhereException {
+	    @Parameter(description = "Unique id", required = true) @PathParam("id") UUID id) throws SiteWhereException {
 	IDeviceEvent found = getDeviceEventManagement().getDeviceEventById(id);
 	if (!(found instanceof IDeviceCommandInvocation)) {
 	    throw new SiteWhereException("Event with the corresponding id is not a command invocation.");
@@ -109,7 +117,7 @@ public class CommandInvocations {
      */
     @GET
     @Path("/id/{invocationId}/responses")
-    @ApiOperation(value = "List responses for command invocation")
+    @Operation(summary = "List responses for command invocation", description = "List responses for command invocation")
     public Response listCommandInvocationResponses(
 	    @ApiParam(value = "Invocation id", required = true) @PathParam("invocationId") UUID invocationId)
 	    throws SiteWhereException {

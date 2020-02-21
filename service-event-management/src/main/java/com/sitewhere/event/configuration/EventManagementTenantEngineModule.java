@@ -9,6 +9,7 @@ package com.sitewhere.event.configuration;
 
 import com.sitewhere.event.configuration.providers.Warp10ClientProvider;
 import com.sitewhere.event.persistence.warp10.Warp10DeviceEventManagement;
+import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
 import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.microservice.multitenant.TenantEngineModule;
 import com.sitewhere.warp10.Warp10Client;
@@ -19,8 +20,13 @@ import com.sitewhere.warp10.Warp10Client;
  */
 public class EventManagementTenantEngineModule extends TenantEngineModule<EventManagementTenantConfiguration> {
 
-    public EventManagementTenantEngineModule(EventManagementTenantConfiguration configuration) {
+    /** Tenant engine */
+    private IEventManagementTenantEngine tenantEngine;
+
+    public EventManagementTenantEngineModule(IEventManagementTenantEngine tenantEngine,
+	    EventManagementTenantConfiguration configuration) {
 	super(configuration);
+	this.tenantEngine = tenantEngine;
     }
 
     /*
@@ -28,8 +34,24 @@ public class EventManagementTenantEngineModule extends TenantEngineModule<EventM
      */
     @Override
     protected void configure() {
+	bind(IEventManagementTenantEngine.class).toInstance(getTenantEngine());
 	bind(EventManagementTenantConfiguration.class).toInstance(getConfiguration());
-	bind(Warp10Client.class).toProvider(Warp10ClientProvider.class);
-	bind(IDeviceEventManagement.class).to(Warp10DeviceEventManagement.class);
+
+	// Add bindings based on datastore chosen.
+	switch (getConfiguration().getDatastore().getType()) {
+	case "warp10": {
+	    bind(Warp10Client.class).toProvider(Warp10ClientProvider.class);
+	    bind(IDeviceEventManagement.class).to(Warp10DeviceEventManagement.class);
+	    break;
+	}
+	default: {
+	    throw new RuntimeException(String.format("Unknown event management provider: %s",
+		    getConfiguration().getDatastore().getType()));
+	}
+	}
+    }
+
+    protected IEventManagementTenantEngine getTenantEngine() {
+	return tenantEngine;
     }
 }

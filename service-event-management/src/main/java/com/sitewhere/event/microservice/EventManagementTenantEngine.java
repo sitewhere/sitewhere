@@ -78,7 +78,7 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
      */
     @Override
     public ITenantEngineModule<EventManagementTenantConfiguration> createConfigurationModule() {
-	return new EventManagementTenantEngineModule(getActiveConfiguration());
+	return new EventManagementTenantEngineModule(this, getActiveConfiguration());
     }
 
     /*

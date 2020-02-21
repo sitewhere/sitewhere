@@ -25,6 +25,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.api.asset.AssetMarshalHelper;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
@@ -41,9 +48,6 @@ import com.sitewhere.spi.label.ILabel;
 import com.sitewhere.spi.search.ISearchResults;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for asset operations.
@@ -52,6 +56,10 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "assets")
+@Tag(name = "Assets", description = "Assets are used to associate physical objects with device assignments.")
+@SecurityRequirements({ @SecurityRequirement(name = "jwtAuth", scopes = {}),
+	@SecurityRequirement(name = "tenantIdHeader", scopes = {}),
+	@SecurityRequirement(name = "tenantAuthHeader", scopes = {}) })
 public class Assets {
 
     @Inject
@@ -65,7 +73,7 @@ public class Assets {
      * @throws SiteWhereException
      */
     @POST
-    @ApiOperation(value = "Create a new asset")
+    @Operation(summary = "Create a new asset", description = "Create a new asset")
     public Response createAsset(@RequestBody AssetCreateRequest request) throws SiteWhereException {
 	return Response.ok(getAssetManagement().createAsset(request)).build();
     }
@@ -79,9 +87,9 @@ public class Assets {
      */
     @GET
     @Path("/{assetToken}")
-    @ApiOperation(value = "Get asset by token")
+    @Operation(summary = "Get asset by token", description = "Get asset by token")
     public Response getAssetByToken(
-	    @ApiParam(value = "Asset token", required = true) @PathParam("assetToken") String assetToken)
+	    @Parameter(description = "Asset token", required = true) @PathParam("assetToken") String assetToken)
 	    throws SiteWhereException {
 	IAsset existing = assureAsset(assetToken);
 	AssetMarshalHelper helper = new AssetMarshalHelper(getAssetManagement());
@@ -99,9 +107,9 @@ public class Assets {
      */
     @PUT
     @Path("/{assetToken}")
-    @ApiOperation(value = "Update an existing hardware asset in category")
+    @Operation(summary = "Update an existing asset", description = "Update details for an existing asset")
     public Response updateAsset(
-	    @ApiParam(value = "Asset token", required = true) @PathParam("assetToken") String assetToken,
+	    @Parameter(description = "Asset token", required = true) @PathParam("assetToken") String assetToken,
 	    @RequestBody AssetCreateRequest request) throws SiteWhereException {
 	IAsset existing = assureAsset(assetToken);
 	return Response.ok(getAssetManagement().updateAsset(existing.getId(), request)).build();
@@ -118,10 +126,10 @@ public class Assets {
     @GET
     @Path("/{assetToken}/label/{generatorId}")
     @Produces("image/png")
-    @ApiOperation(value = "Get label for asset")
+    @Operation(summary = "Get label for asset", description = "Get label for asset")
     public Response getAssetLabel(
-	    @ApiParam(value = "Asset token", required = true) @PathParam("assetToken") String assetToken,
-	    @ApiParam(value = "Generator id", required = true) @PathParam("generatorId") String generatorId)
+	    @Parameter(description = "Asset token", required = true) @PathParam("assetToken") String assetToken,
+	    @Parameter(description = "Generator id", required = true) @PathParam("generatorId") String generatorId)
 	    throws SiteWhereException {
 	IAsset existing = assureAsset(assetToken);
 	ILabel label = getLabelGeneration().getAssetLabel(generatorId, existing.getId());
@@ -142,12 +150,12 @@ public class Assets {
      * @throws SiteWhereException
      */
     @GET
-    @ApiOperation(value = "List assets matching criteria")
+    @Operation(summary = "List assets matching criteria", description = "List assets matching criteria")
     public Response listAssets(
-	    @ApiParam(value = "Limit by asset type", required = false) @QueryParam("assetTypeToken") String assetTypeToken,
-	    @ApiParam(value = "Include asset type", required = false) @QueryParam("includeAssetType") @DefaultValue("false") boolean includeAssetType,
-	    @ApiParam(value = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @ApiParam(value = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+	    @Parameter(description = "Limit by asset type", required = false) @QueryParam("assetTypeToken") String assetTypeToken,
+	    @Parameter(description = "Include asset type", required = false) @QueryParam("includeAssetType") @DefaultValue("false") boolean includeAssetType,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
 	// Build criteria.
 	AssetSearchCriteria criteria = new AssetSearchCriteria(page, pageSize);
@@ -174,9 +182,9 @@ public class Assets {
      */
     @DELETE
     @Path("/{assetToken}")
-    @ApiOperation(value = "Delete asset by token")
+    @Operation(summary = "Delete asset by token", description = "Delete asset by token")
     public Response deleteAsset(
-	    @ApiParam(value = "Asset token", required = true) @PathParam("assetToken") String assetToken)
+	    @Parameter(description = "Asset token", required = true) @PathParam("assetToken") String assetToken)
 	    throws SiteWhereException {
 	IAsset existing = assureAsset(assetToken);
 	return Response.ok(getAssetManagement().deleteAsset(existing.getId())).build();

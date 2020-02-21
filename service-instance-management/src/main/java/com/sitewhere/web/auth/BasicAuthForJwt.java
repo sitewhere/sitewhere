@@ -9,6 +9,7 @@ package com.sitewhere.web.auth;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -29,7 +30,7 @@ import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.microservice.security.SiteWhereAuthentication;
 import com.sitewhere.microservice.security.UserContext;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
@@ -53,10 +54,6 @@ public class BasicAuthForJwt implements ContainerRequestFilter {
     @Inject
     ITokenManagement tokenManagement;
 
-    /** Instance settings */
-    @Inject
-    IInstanceSettings instanceSettings;
-
     /*
      * @see
      * javax.ws.rs.container.ContainerRequestFilter#filter(javax.ws.rs.container.
@@ -64,6 +61,12 @@ public class BasicAuthForJwt implements ContainerRequestFilter {
      */
     @Override
     public void filter(ContainerRequestContext context) throws IOException {
+	// Do not service request if microservice is not completely started.
+	if (getMicroservice().getLifecycleStatus() != LifecycleStatus.Started) {
+	    LOGGER.info("JWT request attempted before service started.");
+	    context.abortWith(Response.status(Status.SERVICE_UNAVAILABLE).build());
+	    return;
+	}
 	// Only handle calls to the 'authapi' subpath.
 	List<PathSegment> paths = context.getUriInfo().getPathSegments();
 	if (paths.size() == 0 || !paths.get(0).getPath().equals("authapi")) {
@@ -105,9 +108,10 @@ public class BasicAuthForJwt implements ContainerRequestFilter {
 	    String username = parts[0];
 	    String password = parts[1];
 	    IUser user = getUserManagement().authenticate(username, password, false);
-	    List<IGrantedAuthority> auths = getUserManagement().getGrantedAuthorities(username);
+	    List<IGrantedAuthority> gauths = getUserManagement().getGrantedAuthorities(username);
+	    List<String> auths = gauths.stream().map(IGrantedAuthority::getAuthority).collect(Collectors.toList());
 	    String jwt = getTokenManagement().generateToken(user, userConfig.getJwtExpirationInMinutes());
-	    return new SiteWhereAuthentication(user, auths, jwt);
+	    return new SiteWhereAuthentication(username, auths, jwt);
 	}
 	throw new SiteWhereException(String.format("Invalid basic auth content: %s", decoded));
     }
@@ -118,10 +122,6 @@ public class BasicAuthForJwt implements ContainerRequestFilter {
 
     protected ITokenManagement getTokenManagement() {
 	return tokenManagement;
-    }
-
-    protected IInstanceSettings getInstanceSettings() {
-	return instanceSettings;
     }
 
     protected IUserManagement getUserManagement() {

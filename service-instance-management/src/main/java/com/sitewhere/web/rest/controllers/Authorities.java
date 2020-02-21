@@ -18,6 +18,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.rest.model.user.GrantedAuthority;
@@ -29,9 +36,6 @@ import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.web.rest.model.GrantedAuthorityHierarchyBuilder;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * Controller for user operations.
@@ -40,6 +44,10 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "authorities")
+@Tag(name = "User Granted Authorities", description = "Granted authorities define operations which are authorized for a user.")
+@SecurityRequirements({ @SecurityRequirement(name = "jwtAuth", scopes = {}),
+	@SecurityRequirement(name = "tenantIdHeader", scopes = {}),
+	@SecurityRequirement(name = "tenantAuthHeader", scopes = {}) })
 public class Authorities {
 
     @Inject
@@ -53,9 +61,8 @@ public class Authorities {
      * @throws SiteWhereException
      */
     @POST
-    @ApiOperation(value = "Create a new authority")
+    @Operation(summary = "Create a new authority", description = "Create a new authority")
     public Response createAuthority(@RequestBody GrantedAuthorityCreateRequest input) throws SiteWhereException {
-	// checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	IGrantedAuthority auth = getUserManagement().createGrantedAuthority(input);
 	return Response.ok(GrantedAuthority.copy(auth)).build();
     }
@@ -69,9 +76,9 @@ public class Authorities {
      */
     @GET
     @Path("/{name}")
-    @ApiOperation(value = "Get authority by id")
+    @Operation(summary = "Get authority by id", description = "Get authority by id")
     public Response getAuthorityByName(
-	    @ApiParam(value = "Authority name", required = true) @PathParam("name") String name)
+	    @Parameter(description = "Authority name", required = true) @PathParam("name") String name)
 	    throws SiteWhereException {
 	// checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	IGrantedAuthority auth = getUserManagement().getGrantedAuthorityByName(name);
@@ -88,9 +95,8 @@ public class Authorities {
      * @throws SiteWhereException
      */
     @GET
-    @ApiOperation(value = "List authorities that match criteria")
+    @Operation(summary = "List authorities that match criteria", description = "List authorities that match criteria")
     public Response listAuthorities() throws SiteWhereException {
-	// checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	GrantedAuthoritySearchCriteria criteria = new GrantedAuthoritySearchCriteria();
 	return Response.ok(getUserManagement().listGrantedAuthorities(criteria)).build();
     }
@@ -103,9 +109,8 @@ public class Authorities {
      */
     @GET
     @Path("/hierarchy")
-    @ApiOperation(value = "Get authorities hierarchy")
+    @Operation(summary = "Get authorities hierarchy", description = "Get authorities hierarchy")
     public Response getAuthoritiesHierarchy() throws SiteWhereException {
-	// checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
 	GrantedAuthoritySearchCriteria criteria = new GrantedAuthoritySearchCriteria(1, 0);
 	ISearchResults<IGrantedAuthority> auths = getUserManagement().listGrantedAuthorities(criteria);
 	return Response.ok(GrantedAuthorityHierarchyBuilder.build(auths.getResults())).build();

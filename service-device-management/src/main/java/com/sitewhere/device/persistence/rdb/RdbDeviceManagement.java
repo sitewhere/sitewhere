@@ -545,13 +545,13 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	if (existing != null) {
 	    // Look up device type.
 	    RdbDeviceType deviceType = null;
-	    if (request.getDeviceTypeToken() == null) {
+	    if (request.getDeviceTypeToken() != null) {
 		deviceType = getDeviceTypeByToken(request.getDeviceTypeToken());
 	    }
 
 	    // Look up parent device.
 	    RdbDevice parent = null;
-	    if (request.getParentDeviceToken() == null) {
+	    if (request.getParentDeviceToken() != null) {
 		parent = getDeviceByToken(request.getParentDeviceToken());
 	    }
 
@@ -561,7 +561,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	    RdbDevice.copy(updates, existing);
 	    return getEntityManagerProvider().merge(existing);
 	}
-	return null;
+	throw new SiteWhereSystemException(ErrorCode.InvalidDeviceId, ErrorLevel.ERROR);
     }
 
     /*
@@ -777,7 +777,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	    RdbDeviceAssignment.copy(updates, existing);
 	    return getEntityManagerProvider().merge(existing);
 	}
-	return null;
+	throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentId, ErrorLevel.ERROR);
     }
 
     /*
@@ -918,7 +918,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	    RdbDeviceAlarm.copy(updates, existing);
 	    return getEntityManagerProvider().merge(existing);
 	}
-	return null;
+	throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAlarmId, ErrorLevel.ERROR);
     }
 
     /*
@@ -1073,7 +1073,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	    }
 	    return getEntityManagerProvider().merge(existing);
 	}
-	return null;
+	throw new SiteWhereSystemException(ErrorCode.InvalidCustomerTypeToken, ErrorLevel.ERROR);
     }
 
     /*
@@ -1232,7 +1232,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	    RdbCustomer.copy(updates, existing);
 	    return getEntityManagerProvider().merge(existing);
 	}
-	return null;
+	throw new SiteWhereSystemException(ErrorCode.InvalidCustomerToken, ErrorLevel.ERROR);
     }
 
     /*
@@ -1377,7 +1377,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	    }
 	    return getEntityManagerProvider().merge(existing);
 	}
-	return null;
+	throw new SiteWhereSystemException(ErrorCode.InvalidAreaTypeToken, ErrorLevel.ERROR);
     }
 
     /*
@@ -1536,7 +1536,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	    RdbArea.copy(updates, existing);
 	    return getEntityManagerProvider().merge(existing);
 	}
-	return null;
+	throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
     }
 
     /*
@@ -1707,7 +1707,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 
 	    return getEntityManagerProvider().merge(existing);
 	}
-	return null;
+	throw new SiteWhereSystemException(ErrorCode.InvalidZoneToken, ErrorLevel.ERROR);
     }
 
     /*
@@ -1807,7 +1807,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	    RdbDeviceGroup.copy(updates, existing);
 	    return getEntityManagerProvider().merge(existing);
 	}
-	return null;
+	throw new SiteWhereSystemException(ErrorCode.InvalidDeviceGroupId, ErrorLevel.ERROR);
     }
 
     /*
