@@ -79,15 +79,29 @@ public class InstanceBootstrapper extends AsyncStartLifecycleComponent implement
     protected void bootstrap() throws SiteWhereException {
 	// Load latest instance configuration from k8s.
 	SiteWhereInstance instance = getMicroservice().loadInstanceResource();
-	setTenantBootstrapState(BootstrapState.NotBootstrapped);
-	setUserBootstrapState(BootstrapState.NotBootstrapped);
 
 	// Load template and bootstrap datasets.
 	InstanceDatasetTemplate template = getMicroservice().loadInstanceDatasetTemplate(instance);
 
-	// Bootstrap tenants and users.
-	bootstrapTenants(instance, template);
-	bootstrapUsers(instance, template);
+	// Bootstrap tenants if not already bootstrapped.
+	if (instance.getStatus().getTenantManagementBootstrapState() == null) {
+	    setTenantBootstrapState(BootstrapState.NotBootstrapped);
+	}
+	if (instance.getStatus().getTenantManagementBootstrapState() != BootstrapState.Bootstrapped) {
+	    bootstrapTenants(instance, template);
+	} else {
+	    getLogger().info("Instance tenants already bootstrapped.");
+	}
+
+	// Bootstrap users if not already bootstrapped.
+	if (instance.getStatus().getUserManagementBootstrapState() == null) {
+	    setUserBootstrapState(BootstrapState.NotBootstrapped);
+	}
+	if (instance.getStatus().getUserManagementBootstrapState() != BootstrapState.Bootstrapped) {
+	    bootstrapUsers(instance, template);
+	} else {
+	    getLogger().info("Instance users already bootstrapped.");
+	}
     }
 
     /**

@@ -7,16 +7,24 @@
  */
 package com.sitewhere.web.rest.controllers;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,9 +36,12 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
-import com.sitewhere.microservice.MicroserviceUtils;
+import com.sitewhere.microservice.configuration.model.instance.InstanceConfiguration;
+import com.sitewhere.microservice.kubernetes.K8sModelConverter;
 import com.sitewhere.microservice.scripting.ScriptCloneRequest;
 import com.sitewhere.microservice.scripting.ScriptCreateRequest;
+import com.sitewhere.microservice.util.MarshalUtils;
+import com.sitewhere.rest.model.microservice.MicroserviceSummary;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
@@ -39,12 +50,14 @@ import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.scripting.IScriptManagement;
 import com.sitewhere.spi.microservice.tenant.ITenantManagement;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.web.rest.model.TenantEngineConfiguration;
 
+import io.sitewhere.k8s.crd.exception.SiteWhereK8sException;
+import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
 import io.sitewhere.k8s.crd.microservice.SiteWhereMicroservice;
 import io.sitewhere.k8s.crd.microservice.SiteWhereMicroserviceList;
 import io.sitewhere.k8s.crd.tenant.SiteWhereTenant;
-import io.sitewhere.k8s.crd.tenant.SiteWhereTenantList;
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -68,6 +81,87 @@ public class Instance {
     @Inject
     private IInstanceManagementMicroservice<?> microservice;
 
+    @GET
+    @Path("/configuration")
+    @Operation(summary = "Get instance global configuration", description = "Get global configuration used by all microservices")
+    public Response getInstanceConfiguration() {
+	InstanceConfiguration configuration = getMicroservice().getInstanceConfiguration();
+	return Response.ok(configuration).build();
+    }
+
+    @PUT
+    @Path("/{configuration}")
+    @Operation(summary = "Update instance global configuration", description = "Update global configuration used by all microservices")
+    public Response updateInstanceConfiguration(@RequestBody InstanceConfiguration request) throws SiteWhereException {
+	try {
+	    SiteWhereInstance instance = getMicroservice().getLastInstanceResource();
+	    instance.getSpec().setConfiguration(MarshalUtils.marshalJsonNode(MarshalUtils.marshalJson(instance)));
+	    getMicroservice().updateInstanceResource(instance);
+	    return Response.ok(instance).build();
+	} catch (IOException e) {
+	    return Response.status(Status.BAD_REQUEST).build();
+	}
+    }
+
+    @GET
+    @Path("/microservices")
+    @Operation(summary = "Get list of instance microservices", description = "Get detailed list of instance microservices")
+    public Response getInstanceMicroservices() {
+	String namespace = getMicroservice().getInstanceSettings().getKubernetesNamespace();
+	SiteWhereMicroserviceList list = getMicroservice().getSiteWhereKubernetesClient()
+		.getAllMicroservices(namespace);
+	List<SiteWhereMicroservice> all = new ArrayList<>();
+	all.addAll(list.getItems());
+	Collections.sort(all, new Comparator<SiteWhereMicroservice>() {
+
+	    @Override
+	    public int compare(SiteWhereMicroservice arg0, SiteWhereMicroservice arg1) {
+		return arg0.getMetadata().getName().compareTo(arg1.getMetadata().getName());
+	    }
+	});
+	List<MicroserviceSummary> summaries = new ArrayList<>();
+	for (SiteWhereMicroservice microservice : all) {
+	    summaries.add(K8sModelConverter.convert(microservice));
+	}
+	return Response.ok(summaries).build();
+    }
+
+    /**
+     * Get a tenant engine configuration based on functional area and tenant id.
+     * 
+     * @param identifier
+     * @param token
+     * @return
+     */
+    @GET
+    @Path("/microservices/{identifier}/tenants/{token}/configuration")
+    @Operation(summary = "Get tenant engine configuration", description = "Get tenant engine configuration based on functional area and tenant token")
+    public Response getTenantEngineConfiguration(
+	    @Parameter(description = "Service identifier", required = true) @PathParam("identifier") String identifier,
+	    @Parameter(description = "Tenant token", required = true) @PathParam("token") String token) {
+	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
+	try {
+	    SiteWhereMicroservice microservice = getMicroserviceForIdentifier(msid);
+	    SiteWhereTenant tenant = getTenantForToken(token);
+	    SiteWhereTenantEngine engine = getMicroservice().getSiteWhereKubernetesClient()
+		    .getTenantEngine(microservice, tenant);
+	    if (engine == null) {
+		return Response.status(Status.NOT_FOUND).build();
+	    }
+	    TenantEngineConfiguration response = new TenantEngineConfiguration();
+	    response.setTenant(K8sModelConverter.convert(tenant));
+	    response.setMicroservice(K8sModelConverter.convert(microservice));
+	    response.setInstanceConfiguration(getMicroservice().getInstanceConfiguration());
+	    response.setMicroserviceConfiguration(microservice.getSpec().getConfiguration());
+	    response.setTenantConfiguration(engine.getSpec().getConfiguration());
+	    return Response.ok(response).build();
+	} catch (SiteWhereException e) {
+	    return Response.status(Status.BAD_REQUEST).build();
+	} catch (SiteWhereK8sException e) {
+	    return Response.status(Status.CONFLICT).build();
+	}
+    }
+
     /**
      * Get list of script templates for a given microservice.
      * 
@@ -76,7 +170,7 @@ public class Instance {
      * @throws SiteWhereException
      */
     @GET
-    @Path("/microservice/{identifier}/scripting/templates")
+    @Path("/microservices/{identifier}/scripting/templates")
     @Operation(summary = "Get list of script templates for a given microservice", description = "Get list of script templates for a given microservice")
     public Response getScriptTemplates(
 	    @Parameter(description = "Service identifier", required = true) @PathParam("identifier") String identifier)
@@ -93,7 +187,7 @@ public class Instance {
      * @throws SiteWhereException
      */
     @GET
-    @Path("/microservice/{identifier}/scripting/templates/{templateId}")
+    @Path("/microservices/{identifier}/scripting/templates/{templateId}")
     @ApiOperation(value = "Get list of script templates for a given microservice")
     @Operation(summary = "Get list of script templates for a given microservice", description = "Get list of script templates for a given microservice")
     public Response getScriptTemplateContent(
@@ -112,14 +206,12 @@ public class Instance {
      * @throws SiteWhereException
      */
     @GET
-    @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts")
-    @SuppressWarnings("unused")
+    @Path("/microservices/{identifier}/tenants/{tenantToken}/scripting/scripts")
     @Operation(summary = "Get list of script metadata for the given tenant", description = "Get list of script metadata for the given tenant")
     public Response listTenantScriptMetadata(
 	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
 	    @Parameter(description = "Function identifier", required = true) @PathParam("identifier") String identifier)
 	    throws SiteWhereException {
-	ITenant tenant = assureTenant(tenantToken);
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
 	return Response.ok(getScriptManagement().getScriptMetadataList(msid, tenantToken)).build();
     }
@@ -134,7 +226,7 @@ public class Instance {
      * @throws SiteWhereException
      */
     @GET
-    @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}")
+    @Path("/microservices/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}")
     @Operation(summary = "Get metadata for a tenant script based on unique script id", description = "Get metadata for a tenant script based on unique script id")
     public Response getTenantScriptMetadata(
 	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
@@ -155,7 +247,7 @@ public class Instance {
      * @throws SiteWhereException
      */
     @POST
-    @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts")
+    @Path("/microservices/{identifier}/tenants/{tenantToken}/scripting/scripts")
     @Operation(summary = "Create a new tenant script", description = "Create a new tenant script")
     public Response createTenantScript(
 	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
@@ -176,7 +268,7 @@ public class Instance {
      * @throws SiteWhereException
      */
     @GET
-    @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}/content")
+    @Path("/microservices/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}/content")
     @Operation(summary = "Get content for a tenant script", description = "Get content for a tenant script based on unique script id and version id")
     public Response getTenantScriptContent(
 	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
@@ -201,7 +293,7 @@ public class Instance {
      * @throws SiteWhereException
      */
     @POST
-    @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}")
+    @Path("/microservices/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}")
     @Operation(summary = "Update an existing tenant script", description = "Update an existing tenant script")
     public Response updateTenantScript(
 	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
@@ -225,7 +317,7 @@ public class Instance {
      * @throws SiteWhereException
      */
     @POST
-    @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}/clone")
+    @Path("/microservices/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}/clone")
     @Operation(summary = "Clone tenant script", description = "Clone an existing tenant script version to create a new version")
     public Response cloneTenantScript(
 	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
@@ -251,7 +343,7 @@ public class Instance {
      * @throws SiteWhereException
      */
     @POST
-    @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}/activate")
+    @Path("/microservices/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}/versions/{versionId}/activate")
     @Operation(summary = "Activate a tenant script version", description = "Activate a tenant script version")
     public Response activateTenantScript(
 	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
@@ -274,7 +366,7 @@ public class Instance {
      * @throws SiteWhereException
      */
     @DELETE
-    @Path("/microservice/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}")
+    @Path("/microservices/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}")
     @Operation(summary = "Delete a tenant script and version history", description = "Delete a tenant script and version history")
     public Response deleteTenantScript(
 	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
@@ -286,7 +378,7 @@ public class Instance {
     }
 
     /**
-     * Attempt to look up microservice based on instance id and function identifier.
+     * Attempt to locate microservice definition based on function identifier.
      * 
      * @param identifier
      * @return
@@ -294,47 +386,29 @@ public class Instance {
      */
     protected SiteWhereMicroservice getMicroserviceForIdentifier(IFunctionIdentifier identifier)
 	    throws SiteWhereException {
-	String instanceId = getMicroservice().getInstanceSettings().getKubernetesNamespace();
-	SiteWhereMicroserviceList list = getMicroservice().getSiteWhereKubernetesClient().getMicroservices().list();
-	for (SiteWhereMicroservice microservice : list.getItems()) {
-	    if (MicroserviceUtils.getInstanceName(microservice).equals(instanceId)
-		    && MicroserviceUtils.getFunctionalArea(microservice).equals(identifier.getPath())) {
-		return microservice;
-	    }
+	String namespace = getMicroservice().getInstanceSettings().getKubernetesNamespace();
+	SiteWhereMicroservice match = getMicroservice().getSiteWhereKubernetesClient()
+		.getMicroserviceForIdentifier(namespace, identifier.getPath());
+	if (match != null) {
+	    return match;
 	}
 	throw new SiteWhereSystemException(ErrorCode.InvalidMicroserviceIdentifier, ErrorLevel.ERROR);
     }
 
     /**
-     * Get tenant associated with token.
+     * Attempt to locate tenant definition based on token.
      * 
      * @param token
      * @return
      * @throws SiteWhereException
      */
     protected SiteWhereTenant getTenantForToken(String token) throws SiteWhereException {
-	SiteWhereTenantList list = getMicroservice().getSiteWhereKubernetesClient().getTenants().list();
-	for (SiteWhereTenant tenant : list.getItems()) {
-	    if (tenant.getMetadata().getName().equals(token)) {
-		return tenant;
-	    }
+	String namespace = getMicroservice().getInstanceSettings().getKubernetesNamespace();
+	SiteWhereTenant match = getMicroservice().getSiteWhereKubernetesClient().getTenantForToken(namespace, token);
+	if (match != null) {
+	    return match;
 	}
 	throw new SiteWhereSystemException(ErrorCode.InvalidTenantToken, ErrorLevel.ERROR);
-    }
-
-    /**
-     * Verify that a tenant exists based on reference token.
-     * 
-     * @param tenantToken
-     * @return
-     * @throws SiteWhereException
-     */
-    protected ITenant assureTenant(String tenantToken) throws SiteWhereException {
-	ITenant tenant = getTenantManagement().getTenantByToken(tenantToken);
-	if (tenant == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantToken, ErrorLevel.ERROR);
-	}
-	return tenant;
     }
 
     protected ITenantManagement getTenantManagement() {

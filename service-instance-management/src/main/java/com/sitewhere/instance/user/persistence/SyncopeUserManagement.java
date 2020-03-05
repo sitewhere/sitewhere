@@ -143,7 +143,7 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Wait for connection in background thread.
 	this.waiter = Executors.newSingleThreadExecutor(new SyncopeWaiterThreadFactory());
-	waiter.execute(new SyncopeConnectionWaiter());
+	getWaiter().execute(new SyncopeConnectionWaiter());
 
 	// Prepare executor for refreshing access token.
 	this.refresher = Executors.newSingleThreadScheduledExecutor();
@@ -597,9 +597,10 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 		@Override
 		public void onEvent(Status<Boolean> status) {
 		    getLogger().info(String.format(
-			    "Unable to connect to Syncope on attempt %d [%s] (total wait so far %dms). Retrying after fallback...",
-			    status.getTotalTries(), status.getLastExceptionThatCausedRetry().getMessage(),
+			    "Unable to connect to Syncope[%s] on attempt %d [%s] (total wait so far %dms). Retrying after fallback...",
+			    syncopeUrl, status.getTotalTries(), status.getLastExceptionThatCausedRetry().getMessage(),
 			    status.getTotalElapsedDuration().toMillis()));
+		    getLogger().error("Unable to connect.", status.getLastExceptionThatCausedRetry());
 		}
 	    };
 	    new CallExecutorBuilder().config(config).afterFailedTryListener(listener).build().execute(connectCheck);
@@ -613,15 +614,19 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 
 	@Override
 	public void run() {
-	    if (getSyncopeAvailable().getCount() == 0) {
-		getLogger().debug("Refreshing Syncope access token...");
-		try {
-		    getClient().refresh();
-		} catch (Throwable t) {
-		    getLogger().error("Unable to refresh Syncope access token.", t);
+	    try {
+		if (getSyncopeAvailable().getCount() == 0) {
+		    getLogger().debug("Refreshing Syncope access token...");
+		    try {
+			getClient().refresh();
+		    } catch (Throwable t) {
+			getLogger().error("Unable to refresh Syncope access token.", t);
+		    }
+		} else {
+		    getLogger().debug("Skipping Syncope token refresh until connection is established.");
 		}
-	    } else {
-		getLogger().debug("Skipping Syncope token refresh until connection is established.");
+	    } catch (Throwable t) {
+		getLogger().error("Exception refreshing Syncope access token.", t);
 	    }
 	}
     }
@@ -660,6 +665,14 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 
     protected AnyTypeClassService getAnyTypeClassService() {
 	return anyTypeClassService;
+    }
+
+    protected ExecutorService getWaiter() {
+	return waiter;
+    }
+
+    protected ScheduledExecutorService getRefresher() {
+	return refresher;
     }
 
     protected InstanceManagementConfiguration getConfiguration() {
