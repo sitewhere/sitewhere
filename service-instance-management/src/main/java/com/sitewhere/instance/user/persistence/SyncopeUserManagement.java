@@ -15,9 +15,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.codec.binary.Base64;
@@ -118,7 +116,7 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
     private ExecutorService waiter;
 
     /** Provides thread for refreshing access token */
-    private ScheduledExecutorService refresher;
+    private ExecutorService refresher;
 
     /** User service */
     private UserService userService;
@@ -146,9 +144,8 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	getWaiter().execute(new SyncopeConnectionWaiter());
 
 	// Prepare executor for refreshing access token.
-	this.refresher = Executors.newSingleThreadScheduledExecutor();
-	refresher.scheduleAtFixedRate(new SyncopeConnectionRefresher(), TOKEN_REFRESH_IN_MINUTES,
-		TOKEN_REFRESH_IN_MINUTES, TimeUnit.MINUTES);
+	this.refresher = Executors.newSingleThreadExecutor();
+	refresher.execute(new SyncopeConnectionRefresher());
     }
 
     /*
@@ -614,19 +611,27 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 
 	@Override
 	public void run() {
-	    try {
-		if (getSyncopeAvailable().getCount() == 0) {
-		    getLogger().debug("Refreshing Syncope access token...");
-		    try {
-			getClient().refresh();
-		    } catch (Throwable t) {
-			getLogger().error("Unable to refresh Syncope access token.", t);
+	    while (true) {
+		try {
+		    if (getSyncopeAvailable().getCount() == 0) {
+			getLogger().debug("Refreshing Syncope access token...");
+			try {
+			    getClient().refresh();
+			} catch (Throwable t) {
+			    getLogger().error("Unable to refresh Syncope access token.", t);
+			}
+		    } else {
+			getLogger().debug("Skipping Syncope token refresh until connection is established.");
 		    }
-		} else {
-		    getLogger().debug("Skipping Syncope token refresh until connection is established.");
+		} catch (Throwable t) {
+		    getLogger().error("Exception refreshing Syncope access token.", t);
 		}
-	    } catch (Throwable t) {
-		getLogger().error("Exception refreshing Syncope access token.", t);
+		try {
+		    Thread.sleep(TOKEN_REFRESH_IN_MINUTES * 60 * 1000);
+		} catch (InterruptedException e) {
+		    getLogger().info("Syncope token refresher thread stopped.");
+		    return;
+		}
 	    }
 	}
     }
@@ -671,7 +676,7 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	return waiter;
     }
 
-    protected ScheduledExecutorService getRefresher() {
+    protected ExecutorService getRefresher() {
 	return refresher;
     }
 

@@ -95,9 +95,9 @@ public class Instance {
     public Response updateInstanceConfiguration(@RequestBody InstanceConfiguration request) throws SiteWhereException {
 	try {
 	    SiteWhereInstance instance = getMicroservice().getLastInstanceResource();
-	    instance.getSpec().setConfiguration(MarshalUtils.marshalJsonNode(MarshalUtils.marshalJson(instance)));
+	    instance.getSpec().setConfiguration(MarshalUtils.marshalJsonNode(MarshalUtils.marshalJson(request)));
 	    getMicroservice().updateInstanceResource(instance);
-	    return Response.ok(instance).build();
+	    return Response.ok(request).build();
 	} catch (IOException e) {
 	    return Response.status(Status.BAD_REQUEST).build();
 	}
