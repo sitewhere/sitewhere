@@ -35,6 +35,7 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.configuration.model.instance.InstanceConfiguration;
 import com.sitewhere.microservice.kubernetes.K8sModelConverter;
@@ -148,6 +149,49 @@ public class Instance {
 	    if (engine == null) {
 		return Response.status(Status.NOT_FOUND).build();
 	    }
+	    TenantEngineConfiguration response = new TenantEngineConfiguration();
+	    response.setTenant(K8sModelConverter.convert(tenant));
+	    response.setMicroservice(K8sModelConverter.convert(microservice));
+	    response.setInstanceConfiguration(getMicroservice().getInstanceConfiguration());
+	    response.setMicroserviceConfiguration(microservice.getSpec().getConfiguration());
+	    response.setTenantConfiguration(engine.getSpec().getConfiguration());
+	    return Response.ok(response).build();
+	} catch (SiteWhereException e) {
+	    return Response.status(Status.BAD_REQUEST).build();
+	} catch (SiteWhereK8sException e) {
+	    return Response.status(Status.CONFLICT).build();
+	}
+    }
+
+    /**
+     * Get a tenant engine configuration based on functional area and tenant id.
+     * 
+     * @param identifier
+     * @param token
+     * @return
+     */
+    @POST
+    @Path("/microservices/{identifier}/tenants/{token}/configuration")
+    @Operation(summary = "Get tenant engine configuration", description = "Get tenant engine configuration based on functional area and tenant token")
+    public Response updateTenantEngineConfiguration(
+	    @Parameter(description = "Service identifier", required = true) @PathParam("identifier") String identifier,
+	    @Parameter(description = "Tenant token", required = true) @PathParam("token") String token,
+	    @RequestBody JsonNode configuration) {
+	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
+	try {
+	    SiteWhereMicroservice microservice = getMicroserviceForIdentifier(msid);
+	    SiteWhereTenant tenant = getTenantForToken(token);
+	    SiteWhereTenantEngine engine = getMicroservice().getSiteWhereKubernetesClient()
+		    .getTenantEngine(microservice, tenant);
+	    if (engine == null) {
+		return Response.status(Status.NOT_FOUND).build();
+	    }
+
+	    // Save configuration updates.
+	    engine.getSpec().setConfiguration(configuration);
+	    getMicroservice().getSiteWhereKubernetesClient().getTenantEngines()
+		    .inNamespace(engine.getMetadata().getNamespace()).createOrReplace(engine);
+
 	    TenantEngineConfiguration response = new TenantEngineConfiguration();
 	    response.setTenant(K8sModelConverter.convert(tenant));
 	    response.setMicroservice(K8sModelConverter.convert(microservice));

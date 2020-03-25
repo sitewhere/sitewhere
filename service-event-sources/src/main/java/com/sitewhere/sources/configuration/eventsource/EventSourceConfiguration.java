@@ -22,7 +22,7 @@ public abstract class EventSourceConfiguration extends JsonConfiguration {
     private String id;
 
     /** Decoder type */
-    private String decoder;
+    private JsonNode decoder;
 
     public EventSourceConfiguration(ITenantEngineLifecycleComponent component) {
 	super(component);
@@ -50,11 +50,11 @@ public abstract class EventSourceConfiguration extends JsonConfiguration {
 	this.id = id;
     }
 
-    public String getDecoder() {
+    public JsonNode getDecoder() {
 	return decoder;
     }
 
-    public void setDecoder(String decoder) {
+    public void setDecoder(JsonNode decoder) {
 	this.decoder = decoder;
     }
 }

@@ -5,17 +5,18 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.sources.configuration.eventsource;
+package com.sitewhere.sources.configuration.eventsource.mqtt;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.communication.mqtt.IMqttConfiguration;
+import com.sitewhere.sources.configuration.eventsource.EventSourceConfiguration;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Configuration for an MQTT event source.
  */
-public class MqttEventSourceConfiguration extends EventSourceConfiguration implements IMqttConfiguration {
+public class MqttConfiguration extends EventSourceConfiguration implements IMqttConfiguration {
 
     /** Default protocol for broker connection */
     public static final String DEFAULT_PROTOCOL = "tcp";
@@ -77,7 +78,7 @@ public class MqttEventSourceConfiguration extends EventSourceConfiguration imple
     /** Clean session flag */
     private boolean cleanSession = true;
 
-    public MqttEventSourceConfiguration(ITenantEngineLifecycleComponent component) {
+    public MqttConfiguration(ITenantEngineLifecycleComponent component) {
 	super(component);
     }
 

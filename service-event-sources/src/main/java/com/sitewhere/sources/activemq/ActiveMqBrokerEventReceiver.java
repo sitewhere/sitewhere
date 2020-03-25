@@ -30,6 +30,7 @@ import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.TransportConnector;
 
 import com.sitewhere.sources.InboundEventReceiver;
+import com.sitewhere.sources.configuration.eventsource.activemq.ActiveMqBrokerConfiguration;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
@@ -38,31 +39,23 @@ import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
  * Implementation of {@link IInboundEventReceiver} that uses an ActiveMQ broker
  * to listen on a transport for messages.
  */
-public class ActiveMQBrokerEventReceiver extends InboundEventReceiver<byte[]> {
+public class ActiveMqBrokerEventReceiver extends InboundEventReceiver<byte[]> {
 
-    /** Number of consumers reading messages from the queue */
-    private static final int DEFAULT_NUM_CONSUMERS = 3;
+    /** Configuration */
+    private ActiveMqBrokerConfiguration configuration;
 
-    /** ActiveMQ broker service */
+    /** Broker service */
     private BrokerService brokerService;
-
-    /** Unique name of ActiveMQ broker */
-    private String brokerName;
-
-    /** URI for configuring transport */
-    private String transportUri;
-
-    /** Queue name used for inbound event data */
-    private String queueName;
-
-    /** Number of consumers used to read messages from the queue */
-    private int numConsumers = DEFAULT_NUM_CONSUMERS;
 
     /** List of consumers reading messages */
     private List<Consumer> consumers = new ArrayList<Consumer>();
 
     /** Thread pool for consumer processing */
     private ExecutorService consumersPool;
+
+    public ActiveMqBrokerEventReceiver(ActiveMqBrokerConfiguration configuration) {
+	this.configuration = configuration;
+    }
 
     /*
      * @see
@@ -71,13 +64,13 @@ public class ActiveMQBrokerEventReceiver extends InboundEventReceiver<byte[]> {
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if (getBrokerName() == null) {
+	if (getConfiguration().getBrokerName() == null) {
 	    throw new SiteWhereException("Broker name must be configured.");
 	}
-	if (getTransportUri() == null) {
+	if (getConfiguration().getTransportUri() == null) {
 	    throw new SiteWhereException("Transport URI must be configured.");
 	}
-	if (getQueueName() == null) {
+	if (getConfiguration().getQueueName() == null) {
 	    throw new SiteWhereException("Queue name must be configured.");
 	}
 	this.brokerService = new BrokerService();
@@ -93,9 +86,9 @@ public class ActiveMQBrokerEventReceiver extends InboundEventReceiver<byte[]> {
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	try {
-	    getBrokerService().setBrokerName(getBrokerName());
+	    getBrokerService().setBrokerName(getConfiguration().getBrokerName());
 	    TransportConnector connector = new TransportConnector();
-	    connector.setUri(new URI(getTransportUri()));
+	    connector.setUri(new URI(getConfiguration().getTransportUri()));
 	    getBrokerService().addConnector(connector);
 	    getBrokerService().setUseShutdownHook(false);
 	    getBrokerService().setUseJmx(false);
@@ -114,7 +107,7 @@ public class ActiveMQBrokerEventReceiver extends InboundEventReceiver<byte[]> {
      */
     @Override
     public String getDisplayName() {
-	return getTransportUri();
+	return getConfiguration().getTransportUri();
     }
 
     /**
@@ -124,8 +117,9 @@ public class ActiveMQBrokerEventReceiver extends InboundEventReceiver<byte[]> {
      */
     protected void startConsumers() throws SiteWhereException {
 	getConsumers().clear();
-	this.consumersPool = Executors.newFixedThreadPool(getNumConsumers(), new ConsumersThreadFactory());
-	for (int i = 0; i < getNumConsumers(); i++) {
+	this.consumersPool = Executors.newFixedThreadPool(getConfiguration().getNumConsumers(),
+		new ConsumersThreadFactory());
+	for (int i = 0; i < getConfiguration().getNumConsumers(); i++) {
 	    Consumer consumer = new Consumer();
 	    consumer.start();
 	    getConsumersPool().execute(consumer);
@@ -172,7 +166,8 @@ public class ActiveMQBrokerEventReceiver extends InboundEventReceiver<byte[]> {
 	private AtomicInteger counter = new AtomicInteger();
 
 	public Thread newThread(Runnable r) {
-	    return new Thread(r, "SiteWhere ActiveMQ(" + getBrokerName() + ") Consumer " + counter.incrementAndGet());
+	    return new Thread(r, "SiteWhere ActiveMQ(" + getConfiguration().getBrokerName() + ") Consumer "
+		    + counter.incrementAndGet());
 	}
     }
 
@@ -194,7 +189,8 @@ public class ActiveMQBrokerEventReceiver extends InboundEventReceiver<byte[]> {
 	public void start() throws SiteWhereException {
 	    try {
 		// Create a VM connection to the broker.
-		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("vm://" + getBrokerName());
+		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(
+			"vm://" + getConfiguration().getBrokerName());
 		this.connection = connectionFactory.createConnection();
 		getConnection().setExceptionListener(this);
 		getConnection().start();
@@ -202,7 +198,7 @@ public class ActiveMQBrokerEventReceiver extends InboundEventReceiver<byte[]> {
 		// Create a Session
 		this.session = getConnection().createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-		Destination destination = getSession().createQueue(getQueueName());
+		Destination destination = getSession().createQueue(getConfiguration().getQueueName());
 		this.consumer = getSession().createConsumer(destination);
 	    } catch (Exception e) {
 		throw new SiteWhereException("Error starting ActiveMQ consumer.", e);
@@ -276,6 +272,10 @@ public class ActiveMQBrokerEventReceiver extends InboundEventReceiver<byte[]> {
 	}
     }
 
+    protected ActiveMqBrokerConfiguration getConfiguration() {
+	return configuration;
+    }
+
     protected BrokerService getBrokerService() {
 	return brokerService;
     }
@@ -286,37 +286,5 @@ public class ActiveMQBrokerEventReceiver extends InboundEventReceiver<byte[]> {
 
     protected List<Consumer> getConsumers() {
 	return consumers;
-    }
-
-    public String getBrokerName() {
-	return brokerName;
-    }
-
-    public void setBrokerName(String brokerName) {
-	this.brokerName = brokerName;
-    }
-
-    public String getTransportUri() {
-	return transportUri;
-    }
-
-    public void setTransportUri(String transportUri) {
-	this.transportUri = transportUri;
-    }
-
-    public String getQueueName() {
-	return queueName;
-    }
-
-    public void setQueueName(String queueName) {
-	this.queueName = queueName;
-    }
-
-    public int getNumConsumers() {
-	return numConsumers;
-    }
-
-    public void setNumConsumers(int numConsumers) {
-	this.numConsumers = numConsumers;
     }
 }

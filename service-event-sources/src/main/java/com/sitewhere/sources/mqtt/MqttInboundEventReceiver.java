@@ -23,7 +23,7 @@ import org.fusesource.mqtt.client.Topic;
 
 import com.sitewhere.communication.mqtt.MqttLifecycleComponent;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
-import com.sitewhere.sources.configuration.eventsource.MqttEventSourceConfiguration;
+import com.sitewhere.sources.configuration.eventsource.mqtt.MqttConfiguration;
 import com.sitewhere.sources.messages.EventSourcesMessages;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.sources.spi.IInboundEventSource;
@@ -47,7 +47,7 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
     private IInboundEventSource<byte[]> eventSource;
 
     /** Configuration */
-    private MqttEventSourceConfiguration configuration;
+    private MqttConfiguration configuration;
 
     /** Shared MQTT connection */
     private FutureConnection connection;
@@ -58,7 +58,7 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
     /** Used to process MQTT events in a thread pool */
     private ExecutorService processorsExecutor;
 
-    public MqttInboundEventReceiver(MqttEventSourceConfiguration configuration) {
+    public MqttInboundEventReceiver(MqttConfiguration configuration) {
 	super(LifecycleComponentType.InboundEventReceiver, configuration);
 	this.configuration = configuration;
     }
@@ -248,7 +248,7 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 	this.eventSource = eventSource;
     }
 
-    protected MqttEventSourceConfiguration getConfiguration() {
+    protected MqttConfiguration getConfiguration() {
 	return configuration;
     }
 

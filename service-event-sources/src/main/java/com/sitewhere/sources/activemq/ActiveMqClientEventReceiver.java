@@ -27,6 +27,7 @@ import javax.jms.TextMessage;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 import com.sitewhere.sources.InboundEventReceiver;
+import com.sitewhere.sources.configuration.eventsource.activemq.ActiveMqClientConfiguration;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
@@ -35,13 +36,10 @@ import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
  * Implementation of {@link IInboundEventReceiver} that creates multiple
  * ActiveMQ consumer threads to ingest remote data.
  */
-public class ActiveMQClientEventReceiver extends InboundEventReceiver<byte[]> {
+public class ActiveMqClientEventReceiver extends InboundEventReceiver<byte[]> {
 
-    /** Number of consumers reading messages from the queue */
-    private static final int DEFAULT_NUM_CONSUMERS = 3;
-
-    /** Number of consumers used to read messages from the queue */
-    private int numConsumers = DEFAULT_NUM_CONSUMERS;
+    /** Configuration */
+    private ActiveMqClientConfiguration configuration;
 
     /** List of consumers reading messages */
     private List<Consumer> consumers = new ArrayList<Consumer>();
@@ -49,11 +47,9 @@ public class ActiveMQClientEventReceiver extends InboundEventReceiver<byte[]> {
     /** Thread pool for consumer processing */
     private ExecutorService consumersPool;
 
-    /** Remote URI used for connection */
-    private String remoteUri;
-
-    /** Queue name used for inbound event data */
-    private String queueName;
+    public ActiveMqClientEventReceiver(ActiveMqClientConfiguration configuration) {
+	this.configuration = configuration;
+    }
 
     /*
      * @see
@@ -62,10 +58,10 @@ public class ActiveMQClientEventReceiver extends InboundEventReceiver<byte[]> {
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if (getRemoteUri() == null) {
+	if (getConfiguration().getRemoteUri() == null) {
 	    throw new SiteWhereException("Remote URI must be configured.");
 	}
-	if (getQueueName() == null) {
+	if (getConfiguration().getQueueName() == null) {
 	    throw new SiteWhereException("Queue name must be configured.");
 	}
     }
@@ -80,8 +76,9 @@ public class ActiveMQClientEventReceiver extends InboundEventReceiver<byte[]> {
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	getConsumers().clear();
-	consumersPool = Executors.newFixedThreadPool(getNumConsumers(), new ConsumersThreadFactory());
-	for (int i = 0; i < getNumConsumers(); i++) {
+	consumersPool = Executors.newFixedThreadPool(getConfiguration().getNumConsumers(),
+		new ConsumersThreadFactory());
+	for (int i = 0; i < getConfiguration().getNumConsumers(); i++) {
 	    Consumer consumer = new Consumer();
 	    consumer.start();
 	    getConsumersPool().execute(consumer);
@@ -113,7 +110,7 @@ public class ActiveMQClientEventReceiver extends InboundEventReceiver<byte[]> {
      */
     @Override
     public String getDisplayName() {
-	return getRemoteUri();
+	return getConfiguration().getRemoteUri();
     }
 
     /** Used for naming consumer threads */
@@ -123,7 +120,8 @@ public class ActiveMQClientEventReceiver extends InboundEventReceiver<byte[]> {
 	private AtomicInteger counter = new AtomicInteger();
 
 	public Thread newThread(Runnable r) {
-	    return new Thread(r, "SiteWhere ActiveMQ(" + getQueueName() + ") Consumer " + counter.incrementAndGet());
+	    return new Thread(r, "SiteWhere ActiveMQ(" + getConfiguration().getQueueName() + ") Consumer "
+		    + counter.incrementAndGet());
 	}
     }
 
@@ -145,7 +143,8 @@ public class ActiveMQClientEventReceiver extends InboundEventReceiver<byte[]> {
 	public void start() throws SiteWhereException {
 	    try {
 		// Create a connection to the broker.
-		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(getRemoteUri());
+		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(
+			getConfiguration().getRemoteUri());
 		this.connection = connectionFactory.createConnection();
 		getConnection().setExceptionListener(this);
 		getConnection().start();
@@ -153,7 +152,7 @@ public class ActiveMQClientEventReceiver extends InboundEventReceiver<byte[]> {
 		// Create a Session
 		this.session = getConnection().createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-		Destination destination = getSession().createQueue(getQueueName());
+		Destination destination = getSession().createQueue(getConfiguration().getQueueName());
 		this.consumer = getSession().createConsumer(destination);
 	    } catch (Exception e) {
 		throw new SiteWhereException("Error starting ActiveMQ consumer.", e);
@@ -226,35 +225,15 @@ public class ActiveMQClientEventReceiver extends InboundEventReceiver<byte[]> {
 	}
     }
 
+    protected ActiveMqClientConfiguration getConfiguration() {
+	return configuration;
+    }
+
     protected List<Consumer> getConsumers() {
 	return consumers;
     }
 
     protected ExecutorService getConsumersPool() {
 	return consumersPool;
-    }
-
-    public String getRemoteUri() {
-	return remoteUri;
-    }
-
-    public void setRemoteUri(String remoteUri) {
-	this.remoteUri = remoteUri;
-    }
-
-    public String getQueueName() {
-	return queueName;
-    }
-
-    public void setQueueName(String queueName) {
-	this.queueName = queueName;
-    }
-
-    public int getNumConsumers() {
-	return numConsumers;
-    }
-
-    public void setNumConsumers(int numConsumers) {
-	this.numConsumers = numConsumers;
     }
 }

@@ -21,10 +21,9 @@ import com.microsoft.azure.eventprocessorhost.EventProcessorOptions;
 import com.microsoft.azure.eventprocessorhost.ExceptionReceivedEventArgs;
 import com.microsoft.azure.eventprocessorhost.IEventProcessor;
 import com.microsoft.azure.eventprocessorhost.PartitionContext;
-import com.sitewhere.microservice.lifecycle.parameters.StringComponentParameter;
 import com.sitewhere.sources.InboundEventReceiver;
+import com.sitewhere.sources.configuration.eventsource.azure.EventHubConfiguration;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.lifecycle.ILifecycleComponentParameter;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
@@ -32,53 +31,8 @@ import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
  */
 public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
-    /** Consumer group name */
-    private String consumerGroupName;
-
-    /** Namespace name */
-    private String namespaceName;
-
-    /** Event Hub name */
-    private String eventHubName;
-
-    /** SAS key name */
-    private String sasKeyName;
-
-    /** SAS key */
-    private String sasKey;
-
-    /** Storage connection string */
-    private String storageConnectionString;
-
-    /** Storage container name */
-    private String storageContainerName;
-
-    /** Host name prefix */
-    private String hostNamePrefix;
-
-    /** Consumer group name parameter */
-    private ILifecycleComponentParameter<String> consumerGroupNameParameter;
-
-    /** Namespace name parameter */
-    private ILifecycleComponentParameter<String> namespaceNameParameter;
-
-    /** Event Hub name parameter */
-    private ILifecycleComponentParameter<String> eventHubNameParameter;
-
-    /** SAS key name parameter */
-    private ILifecycleComponentParameter<String> sasKeyNameParameter;
-
-    /** SAS key parameter */
-    private ILifecycleComponentParameter<String> sasKeyParameter;
-
-    /** Storage connection string parameter */
-    private ILifecycleComponentParameter<String> storageConnectionStringParameter;
-
-    /** Storage container name parameter */
-    private ILifecycleComponentParameter<String> storageContainerNameParameter;
-
-    /** Host name prefix parameter */
-    private ILifecycleComponentParameter<String> hostNamePrefixParameter;
+    /** Configuration */
+    private EventHubConfiguration configuration;
 
     /** Connection string builder */
     private ConnectionStringBuilder connectionStringBuilder;
@@ -86,50 +40,8 @@ public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
     /** Event processor host */
     private EventProcessorHost eventProcessorHost;
 
-    /*
-     * @see com.sitewhere.server.lifecycle.LifecycleComponent#initializeParameters()
-     */
-    @Override
-    public void initializeParameters() throws SiteWhereException {
-	// Add consumer group name.
-	this.consumerGroupNameParameter = StringComponentParameter.newBuilder(this, "Consumer Group Name")
-		.value(getConsumerGroupName()).makeRequired().build();
-	getParameters().add(consumerGroupNameParameter);
-
-	// Add namespace name.
-	this.namespaceNameParameter = StringComponentParameter.newBuilder(this, "Namespace Name")
-		.value(getNamespaceName()).makeRequired().build();
-	getParameters().add(namespaceNameParameter);
-
-	// Add Event Hub name.
-	this.eventHubNameParameter = StringComponentParameter.newBuilder(this, "Event Hub Name")
-		.value(getEventHubName()).makeRequired().build();
-	getParameters().add(eventHubNameParameter);
-
-	// Add SAS key name.
-	this.sasKeyNameParameter = StringComponentParameter.newBuilder(this, "SAS Key Name").value(getSasKeyName())
-		.makeRequired().build();
-	getParameters().add(sasKeyNameParameter);
-
-	// Add SAS key.
-	this.sasKeyParameter = StringComponentParameter.newBuilder(this, "SAS Key").value(getSasKey()).makeRequired()
-		.build();
-	getParameters().add(sasKeyParameter);
-
-	// Add Storage connection string.
-	this.storageConnectionStringParameter = StringComponentParameter.newBuilder(this, "Storage Connection String")
-		.value(getStorageConnectionString()).makeRequired().build();
-	getParameters().add(storageConnectionStringParameter);
-
-	// Add Storage container name.
-	this.storageContainerNameParameter = StringComponentParameter.newBuilder(this, "Storage Container Name")
-		.value(getStorageContainerName()).makeRequired().build();
-	getParameters().add(storageContainerNameParameter);
-
-	// Add Host name prefix.
-	this.hostNamePrefixParameter = StringComponentParameter.newBuilder(this, "Host Name Prefix")
-		.value(getHostNamePrefix()).makeRequired().build();
-	getParameters().add(hostNamePrefixParameter);
+    public EventHubInboundEventReceiver(EventHubConfiguration configuration) {
+	this.configuration = configuration;
     }
 
     /*
@@ -140,15 +52,17 @@ public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Use parameters to build connection string.
-	this.connectionStringBuilder = new ConnectionStringBuilder().setNamespaceName(namespaceNameParameter.getValue())
-		.setEventHubName(eventHubNameParameter.getValue()).setSasKeyName(sasKeyNameParameter.getValue())
-		.setSasKey(sasKeyParameter.getValue());
+	this.connectionStringBuilder = new ConnectionStringBuilder()
+		.setNamespaceName(getConfiguration().getNamespaceName())
+		.setEventHubName(getConfiguration().getEventHubName()).setSasKeyName(getConfiguration().getSasKeyName())
+		.setSasKey(getConfiguration().getSasKey());
 
 	// Use parameters to build event processor host.
 	this.eventProcessorHost = new EventProcessorHost(
-		EventProcessorHost.createHostName(hostNamePrefixParameter.getValue()), eventHubNameParameter.getValue(),
-		consumerGroupNameParameter.getValue(), connectionStringBuilder.toString(),
-		storageConnectionStringParameter.getValue(), storageContainerNameParameter.getValue());
+		EventProcessorHost.createHostName(getConfiguration().getHostNamePrefix()),
+		getConfiguration().getEventHubName(), getConfiguration().getConsumerGroupName(),
+		connectionStringBuilder.toString(), getConfiguration().getStorageConnectionString(),
+		getConfiguration().getStorageContainerName());
     }
 
     /*
@@ -259,75 +173,15 @@ public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
 	}
     }
 
+    protected EventHubConfiguration getConfiguration() {
+	return configuration;
+    }
+
     protected ConnectionStringBuilder getConnectionStringBuilder() {
 	return connectionStringBuilder;
     }
 
     protected EventProcessorHost getEventProcessorHost() {
 	return eventProcessorHost;
-    }
-
-    public String getConsumerGroupName() {
-	return consumerGroupName;
-    }
-
-    public void setConsumerGroupName(String consumerGroupName) {
-	this.consumerGroupName = consumerGroupName;
-    }
-
-    public String getNamespaceName() {
-	return namespaceName;
-    }
-
-    public void setNamespaceName(String namespaceName) {
-	this.namespaceName = namespaceName;
-    }
-
-    public String getEventHubName() {
-	return eventHubName;
-    }
-
-    public void setEventHubName(String eventHubName) {
-	this.eventHubName = eventHubName;
-    }
-
-    public String getSasKeyName() {
-	return sasKeyName;
-    }
-
-    public void setSasKeyName(String sasKeyName) {
-	this.sasKeyName = sasKeyName;
-    }
-
-    public String getSasKey() {
-	return sasKey;
-    }
-
-    public void setSasKey(String sasKey) {
-	this.sasKey = sasKey;
-    }
-
-    public String getStorageConnectionString() {
-	return storageConnectionString;
-    }
-
-    public void setStorageConnectionString(String storageConnectionString) {
-	this.storageConnectionString = storageConnectionString;
-    }
-
-    public String getStorageContainerName() {
-	return storageContainerName;
-    }
-
-    public void setStorageContainerName(String storageContainerName) {
-	this.storageContainerName = storageContainerName;
-    }
-
-    public String getHostNamePrefix() {
-	return hostNamePrefix;
-    }
-
-    public void setHostNamePrefix(String hostNamePrefix) {
-	this.hostNamePrefix = hostNamePrefix;
     }
 }

@@ -21,7 +21,7 @@ public class EventSourceGenericConfiguration {
     private String type;
 
     /** Payload decoder */
-    private String decoder;
+    private JsonNode decoder;
 
     /** Type-specific configuration parameters */
     private JsonNode configuration;
@@ -42,11 +42,11 @@ public class EventSourceGenericConfiguration {
 	this.type = type;
     }
 
-    public String getDecoder() {
+    public JsonNode getDecoder() {
 	return decoder;
     }
 
-    public void setDecoder(String decoder) {
+    public void setDecoder(JsonNode decoder) {
 	this.decoder = decoder;
     }
 
