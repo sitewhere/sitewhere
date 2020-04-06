@@ -7,6 +7,9 @@
  */
 package com.sitewhere.web.rest.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -32,6 +35,8 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
+import com.sitewhere.microservice.tenant.MarshaledTenantConfigurationTemplate;
+import com.sitewhere.microservice.tenant.MarshaledTenantDatasetTemplate;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
@@ -42,6 +47,10 @@ import com.sitewhere.spi.microservice.tenant.ITenantManagement;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.SiteWhereAuthority;
 
+import io.sitewhere.k8s.crd.tenant.configuration.TenantConfigurationTemplate;
+import io.sitewhere.k8s.crd.tenant.configuration.TenantConfigurationTemplateList;
+import io.sitewhere.k8s.crd.tenant.dataset.TenantDatasetTemplate;
+import io.sitewhere.k8s.crd.tenant.dataset.TenantDatasetTemplateList;
 import io.swagger.annotations.Api;
 
 /**
@@ -182,15 +191,25 @@ public class Tenants {
      * @throws SiteWhereException
      */
     @GET
-    @Path("/templates")
+    @Path("/templates/configuration")
     @Operation(summary = "List templates available for creating tenants", description = "List templates available for creating tenants")
     public Response listTenantConfigurationTemplates() throws SiteWhereException {
 	checkAuthFor(SiteWhereAuthority.REST, true);
 	if (checkAuthFor(SiteWhereAuthority.AdminTenants, false)
 		|| checkAuthFor(SiteWhereAuthority.AdminOwnTenant, false)) {
 	}
-	// return getInstanceManagement().getTenantTemplates();
-	return Response.ok().build();
+	TenantConfigurationTemplateList list = getMicroservice().getSiteWhereKubernetesClient()
+		.getTenantConfigurationTemplates().list();
+	List<MarshaledTenantConfigurationTemplate> templates = new ArrayList<>();
+	for (TenantConfigurationTemplate template : list.getItems()) {
+	    MarshaledTenantConfigurationTemplate marshaled = new MarshaledTenantConfigurationTemplate();
+	    marshaled.setId(template.getMetadata().getName());
+	    marshaled.setName(template.getSpec().getName());
+	    marshaled.setDescription(template.getSpec().getDescription());
+	    templates.add(marshaled);
+	}
+
+	return Response.ok(templates).build();
     }
 
     /**
@@ -200,15 +219,26 @@ public class Tenants {
      * @throws SiteWhereException
      */
     @GET
-    @Path("/datasets")
+    @Path("/templates/dataset")
     @Operation(summary = "List datasets available for creating tenants", description = "List datasets available for creating tenants")
     public Response listTenantDatasetTemplates() throws SiteWhereException {
 	checkAuthFor(SiteWhereAuthority.REST, true);
 	if (checkAuthFor(SiteWhereAuthority.AdminTenants, false)
 		|| checkAuthFor(SiteWhereAuthority.AdminOwnTenant, false)) {
 	}
-	// return getInstanceManagement().getDatasetTemplates();
-	return Response.ok().build();
+
+	TenantDatasetTemplateList list = getMicroservice().getSiteWhereKubernetesClient().getTenantDatasetTemplates()
+		.list();
+	List<MarshaledTenantDatasetTemplate> templates = new ArrayList<>();
+	for (TenantDatasetTemplate template : list.getItems()) {
+	    MarshaledTenantDatasetTemplate marshaled = new MarshaledTenantDatasetTemplate();
+	    marshaled.setId(template.getMetadata().getName());
+	    marshaled.setName(template.getSpec().getName());
+	    marshaled.setDescription(template.getSpec().getDescription());
+	    templates.add(marshaled);
+	}
+
+	return Response.ok(templates).build();
     }
 
     protected boolean checkAuthFor(SiteWhereAuthority auth, boolean flag) {

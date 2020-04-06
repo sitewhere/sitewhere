@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -39,6 +41,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.configuration.model.instance.InstanceConfiguration;
 import com.sitewhere.microservice.kubernetes.K8sModelConverter;
+import com.sitewhere.microservice.scripting.ScriptActivationRequest;
 import com.sitewhere.microservice.scripting.ScriptCloneRequest;
 import com.sitewhere.microservice.scripting.ScriptCreateRequest;
 import com.sitewhere.microservice.util.MarshalUtils;
@@ -51,14 +54,21 @@ import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.scripting.IScriptManagement;
 import com.sitewhere.spi.microservice.tenant.ITenantManagement;
+import com.sitewhere.web.rest.marshaling.MarshaledScriptCategory;
+import com.sitewhere.web.rest.marshaling.MarshaledScriptTemplate;
 import com.sitewhere.web.rest.model.TenantEngineConfiguration;
 
+import io.sitewhere.k8s.crd.ResourceLabels;
 import io.sitewhere.k8s.crd.exception.SiteWhereK8sException;
 import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
 import io.sitewhere.k8s.crd.microservice.SiteWhereMicroservice;
 import io.sitewhere.k8s.crd.microservice.SiteWhereMicroserviceList;
 import io.sitewhere.k8s.crd.tenant.SiteWhereTenant;
 import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
+import io.sitewhere.k8s.crd.tenant.scripting.category.SiteWhereScriptCategory;
+import io.sitewhere.k8s.crd.tenant.scripting.category.SiteWhereScriptCategoryList;
+import io.sitewhere.k8s.crd.tenant.scripting.template.SiteWhereScriptTemplate;
+import io.sitewhere.k8s.crd.tenant.scripting.template.SiteWhereScriptTemplateList;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -207,19 +217,79 @@ public class Instance {
     }
 
     /**
-     * Get list of script templates for a given microservice.
+     * Get list of script categories for a given functional area.
      * 
      * @param identifier
      * @return
      * @throws SiteWhereException
      */
     @GET
-    @Path("/microservices/{identifier}/scripting/templates")
+    @Path("/microservices/{identifier}/scripting/categories")
     @Operation(summary = "Get list of script templates for a given microservice", description = "Get list of script templates for a given microservice")
-    public Response getScriptTemplates(
+    public Response getScriptCategories(
 	    @Parameter(description = "Service identifier", required = true) @PathParam("identifier") String identifier)
 	    throws SiteWhereException {
-	return Response.ok().build();
+	SiteWhereScriptCategoryList list = getMicroservice().getSiteWhereKubernetesClient().getScriptCategories()
+		.withLabel(ResourceLabels.LABEL_SITEWHERE_FUNCTIONAL_AREA, identifier).list();
+	List<MarshaledScriptCategory> result = new ArrayList<>();
+	for (SiteWhereScriptCategory category : list.getItems()) {
+	    MarshaledScriptCategory converted = new MarshaledScriptCategory();
+	    converted.setId(category.getMetadata().getName());
+	    converted.setName(category.getSpec().getName());
+	    converted.setDescription(category.getSpec().getDescription());
+	    result.add(converted);
+	}
+	Collections.sort(result, new Comparator<MarshaledScriptCategory>() {
+
+	    @Override
+	    public int compare(MarshaledScriptCategory c1, MarshaledScriptCategory c2) {
+		return c1.getName().compareTo(c2.getName());
+	    }
+	});
+
+	return Response.ok(result).build();
+    }
+
+    /**
+     * Get list of script templates for a given functional area and category.
+     * 
+     * @param identifier
+     * @param category
+     * @return
+     * @throws SiteWhereException
+     */
+    @GET
+    @Path("/microservices/{identifier}/scripting/categories/{category}/templates")
+    @Operation(summary = "Get list of script templates for a given microservice", description = "Get list of script templates for a given microservice")
+    public Response getScriptTemplates(
+	    @Parameter(description = "Service identifier", required = true) @PathParam("identifier") String identifier,
+	    @Parameter(description = "Script category", required = true) @PathParam("category") String category)
+	    throws SiteWhereException {
+	Map<String, String> labels = new HashMap<>();
+	labels.put(ResourceLabels.LABEL_SITEWHERE_FUNCTIONAL_AREA, identifier);
+	labels.put(ResourceLabels.LABEL_SCRIPTING_SCRIPT_CATEGORY, category);
+	SiteWhereScriptTemplateList list = getMicroservice().getSiteWhereKubernetesClient().getScriptTemplates()
+		.withLabels(labels).list();
+
+	List<MarshaledScriptTemplate> result = new ArrayList<>();
+	for (SiteWhereScriptTemplate template : list.getItems()) {
+	    MarshaledScriptTemplate converted = new MarshaledScriptTemplate();
+	    converted.setId(template.getMetadata().getName());
+	    converted.setName(template.getSpec().getName());
+	    converted.setDescription(template.getSpec().getDescription());
+	    converted.setInterpreterType(template.getSpec().getInterpreterType());
+	    converted.setScript(template.getSpec().getScript());
+	    result.add(converted);
+	}
+	Collections.sort(result, new Comparator<MarshaledScriptTemplate>() {
+
+	    @Override
+	    public int compare(MarshaledScriptTemplate c1, MarshaledScriptTemplate c2) {
+		return c1.getName().compareTo(c2.getName());
+	    }
+	});
+
+	return Response.ok(result).build();
     }
 
     /**
@@ -252,7 +322,7 @@ public class Instance {
     @GET
     @Path("/microservices/{identifier}/tenants/{tenantToken}/scripting/scripts")
     @Operation(summary = "Get list of script metadata for the given tenant", description = "Get list of script metadata for the given tenant")
-    public Response listTenantScriptMetadata(
+    public Response listTenantScripts(
 	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
 	    @Parameter(description = "Function identifier", required = true) @PathParam("identifier") String identifier)
 	    throws SiteWhereException {
@@ -272,7 +342,7 @@ public class Instance {
     @GET
     @Path("/microservices/{identifier}/tenants/{tenantToken}/scripting/scripts/{scriptId}")
     @Operation(summary = "Get metadata for a tenant script based on unique script id", description = "Get metadata for a tenant script based on unique script id")
-    public Response getTenantScriptMetadata(
+    public Response getTenantScript(
 	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
 	    @Parameter(description = "Function identifier", required = true) @PathParam("identifier") String identifier,
 	    @Parameter(description = "Script id", required = true) @PathParam("scriptId") String scriptId)
@@ -393,7 +463,8 @@ public class Instance {
 	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
 	    @Parameter(description = "Function identifier", required = true) @PathParam("identifier") String identifier,
 	    @Parameter(description = "Script id", required = true) @PathParam("scriptId") String scriptId,
-	    @Parameter(description = "Version id", required = true) @PathParam("versionId") String versionId)
+	    @Parameter(description = "Version id", required = true) @PathParam("versionId") String versionId,
+	    @RequestBody ScriptActivationRequest request)
 	    throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
 	return Response.ok(getScriptManagement().activateScript(msid, tenantToken, scriptId, versionId)).build();
