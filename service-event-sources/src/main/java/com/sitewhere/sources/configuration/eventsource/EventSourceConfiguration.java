@@ -9,6 +9,7 @@ package com.sitewhere.sources.configuration.eventsource;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.microservice.configuration.json.JsonConfiguration;
+import com.sitewhere.sources.configuration.DecoderGenericConfiguration;
 import com.sitewhere.sources.configuration.EventSourceGenericConfiguration;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
@@ -22,7 +23,7 @@ public abstract class EventSourceConfiguration extends JsonConfiguration {
     private String id;
 
     /** Decoder type */
-    private JsonNode decoder;
+    private DecoderGenericConfiguration decoder;
 
     public EventSourceConfiguration(ITenantEngineLifecycleComponent component) {
 	super(component);
@@ -50,11 +51,11 @@ public abstract class EventSourceConfiguration extends JsonConfiguration {
 	this.id = id;
     }
 
-    public JsonNode getDecoder() {
+    public DecoderGenericConfiguration getDecoder() {
 	return decoder;
     }
 
-    public void setDecoder(JsonNode decoder) {
+    public void setDecoder(DecoderGenericConfiguration decoder) {
 	this.decoder = decoder;
     }
 }

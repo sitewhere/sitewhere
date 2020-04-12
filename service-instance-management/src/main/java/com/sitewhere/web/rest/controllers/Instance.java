@@ -53,6 +53,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.scripting.IScriptManagement;
+import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
 import com.sitewhere.spi.microservice.tenant.ITenantManagement;
 import com.sitewhere.web.rest.marshaling.MarshaledScriptCategory;
 import com.sitewhere.web.rest.marshaling.MarshaledScriptTemplate;
@@ -217,18 +218,12 @@ public class Instance {
     }
 
     /**
-     * Get list of script categories for a given functional area.
+     * Get script category list based on microservice identifier.
      * 
      * @param identifier
      * @return
-     * @throws SiteWhereException
      */
-    @GET
-    @Path("/microservices/{identifier}/scripting/categories")
-    @Operation(summary = "Get list of script templates for a given microservice", description = "Get list of script templates for a given microservice")
-    public Response getScriptCategories(
-	    @Parameter(description = "Service identifier", required = true) @PathParam("identifier") String identifier)
-	    throws SiteWhereException {
+    protected List<MarshaledScriptCategory> getScriptCategoryList(String identifier) {
 	SiteWhereScriptCategoryList list = getMicroservice().getSiteWhereKubernetesClient().getScriptCategories()
 		.withLabel(ResourceLabels.LABEL_SITEWHERE_FUNCTIONAL_AREA, identifier).list();
 	List<MarshaledScriptCategory> result = new ArrayList<>();
@@ -246,7 +241,23 @@ public class Instance {
 		return c1.getName().compareTo(c2.getName());
 	    }
 	});
+	return result;
+    }
 
+    /**
+     * Get list of script categories for a given functional area.
+     * 
+     * @param identifier
+     * @return
+     * @throws SiteWhereException
+     */
+    @GET
+    @Path("/microservices/{identifier}/scripting/categories")
+    @Operation(summary = "Get list of script templates for a given microservice", description = "Get list of script templates for a given microservice")
+    public Response getScriptCategories(
+	    @Parameter(description = "Service identifier", required = true) @PathParam("identifier") String identifier)
+	    throws SiteWhereException {
+	List<MarshaledScriptCategory> result = getScriptCategoryList(identifier);
 	return Response.ok(result).build();
     }
 
@@ -312,7 +323,7 @@ public class Instance {
     }
 
     /**
-     * Get a list of script metadata for the given tenant.
+     * List tenant scripts for the given functional area.
      * 
      * @param tenantToken
      * @param identifier
@@ -321,13 +332,71 @@ public class Instance {
      */
     @GET
     @Path("/microservices/{identifier}/tenants/{tenantToken}/scripting/scripts")
-    @Operation(summary = "Get list of script metadata for the given tenant", description = "Get list of script metadata for the given tenant")
+    @Operation(summary = "Get list of script metadata for the given function", description = "Get list of script metadata for the given function")
     public Response listTenantScripts(
 	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
 	    @Parameter(description = "Function identifier", required = true) @PathParam("identifier") String identifier)
 	    throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
 	return Response.ok(getScriptManagement().getScriptMetadataList(msid, tenantToken)).build();
+    }
+
+    /**
+     * List tenant scripts for the given functional area organized by category
+     * 
+     * @param tenantToken
+     * @param identifier
+     * @return
+     * @throws SiteWhereException
+     */
+    @GET
+    @Path("/microservices/{identifier}/tenants/{tenantToken}/scripting/categories")
+    @Operation(summary = "Get list of script metadata organized by category", description = "Get list of script metadata organized by category")
+    public Response listTenantScriptsByCategory(
+	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
+	    @Parameter(description = "Function identifier", required = true) @PathParam("identifier") String identifier)
+	    throws SiteWhereException {
+	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
+	List<MarshaledScriptCategory> categories = getScriptCategoryList(identifier);
+	List<IScriptMetadata> scripts = getScriptManagement().getScriptMetadataList(msid, tenantToken);
+
+	Map<String, List<IScriptMetadata>> scriptsByCategory = new HashMap<>();
+	for (IScriptMetadata script : scripts) {
+	    List<IScriptMetadata> existing = scriptsByCategory.get(script.getCategory());
+	    if (existing == null) {
+		existing = new ArrayList<IScriptMetadata>();
+		scriptsByCategory.put(script.getCategory(), existing);
+	    }
+	    existing.add(script);
+	}
+
+	for (MarshaledScriptCategory category : categories) {
+	    category.setScripts(scriptsByCategory.get(category.getId()));
+	}
+
+	return Response.ok(categories).build();
+    }
+
+    /**
+     * List tenant scripts for the given functional area and belonging to the given
+     * category.
+     * 
+     * @param tenantToken
+     * @param identifier
+     * @param category
+     * @return
+     * @throws SiteWhereException
+     */
+    @GET
+    @Path("/microservices/{identifier}/tenants/{tenantToken}/scripting/categories/{category}")
+    @Operation(summary = "Get list of script metadata for the given function and category", description = "Get list of script metadata for the given function and category")
+    public Response listTenantScriptsForCategory(
+	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
+	    @Parameter(description = "Function identifier", required = true) @PathParam("identifier") String identifier,
+	    @Parameter(description = "Category", required = true) @PathParam("category") String category)
+	    throws SiteWhereException {
+	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
+	return Response.ok(getScriptManagement().getScriptMetadataListForCategory(msid, tenantToken, category)).build();
     }
 
     /**
@@ -464,8 +533,7 @@ public class Instance {
 	    @Parameter(description = "Function identifier", required = true) @PathParam("identifier") String identifier,
 	    @Parameter(description = "Script id", required = true) @PathParam("scriptId") String scriptId,
 	    @Parameter(description = "Version id", required = true) @PathParam("versionId") String versionId,
-	    @RequestBody ScriptActivationRequest request)
-	    throws SiteWhereException {
+	    @RequestBody ScriptActivationRequest request) throws SiteWhereException {
 	MicroserviceIdentifier msid = MicroserviceIdentifier.getByPath(identifier);
 	return Response.ok(getScriptManagement().activateScript(msid, tenantToken, scriptId, versionId)).build();
     }

@@ -14,6 +14,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.sources.BinaryInboundEventSource;
@@ -22,6 +23,7 @@ import com.sitewhere.sources.activemq.ActiveMqClientEventReceiver;
 import com.sitewhere.sources.azure.EventHubInboundEventReceiver;
 import com.sitewhere.sources.coap.CoapServerEventReceiver;
 import com.sitewhere.sources.coap.CoapServerEventSource;
+import com.sitewhere.sources.configuration.DecoderGenericConfiguration;
 import com.sitewhere.sources.configuration.EventSourceGenericConfiguration;
 import com.sitewhere.sources.configuration.EventSourcesTenantConfiguration;
 import com.sitewhere.sources.configuration.eventsource.activemq.ActiveMqBrokerConfiguration;
@@ -30,6 +32,8 @@ import com.sitewhere.sources.configuration.eventsource.azure.EventHubConfigurati
 import com.sitewhere.sources.configuration.eventsource.coap.CoapServerConfiguration;
 import com.sitewhere.sources.configuration.eventsource.mqtt.MqttConfiguration;
 import com.sitewhere.sources.configuration.eventsource.rabbitmq.RabbitMqConfiguration;
+import com.sitewhere.sources.decoder.ScriptedEventDecoder;
+import com.sitewhere.sources.decoder.ScriptedEventDecoderConfiguration;
 import com.sitewhere.sources.decoder.json.JsonDeviceRequestDecoder;
 import com.sitewhere.sources.decoder.protobuf.ProtobufDeviceEventDecoder;
 import com.sitewhere.sources.mqtt.MqttInboundEventReceiver;
@@ -65,6 +69,15 @@ public class EventSourcesParser {
 
     /** Type for RabbitMQ event source */
     public static final String TYPE_RABBITMQ = "rabbitmq";
+
+    /** Decoder for JSON payloads */
+    public static final String DECODER_JSON = "json";
+
+    /** Decoder for protocol buffer payloads */
+    public static final String DECODER_PROTOBUF = "protobuf";
+
+    /** Decoder for scripted payload processing */
+    public static final String DECODER_SCRIPTED = "scripted";
 
     /**
      * Parse event source configurations in order to build event source instances.
@@ -244,17 +257,32 @@ public class EventSourcesParser {
      */
     protected static IDeviceEventDecoder<byte[]> parseBinaryDecoder(EventSourceGenericConfiguration sourceConfig)
 	    throws SiteWhereException {
-	JsonNode decoder = sourceConfig.getDecoder();
-	JsonNode type = decoder.findValue("type");
+	DecoderGenericConfiguration decoder = sourceConfig.getDecoder();
+	String type = decoder.getType();
 	if (type == null) {
 	    throw new SiteWhereException("Event source decoder does not specify type.");
 	}
-	switch (type.asText()) {
-	case "json": {
+	JsonNode config = decoder.getConfiguration();
+	if (config == null) {
+	    throw new SiteWhereException("Event source decoder does not specify configuration.");
+	}
+	switch (type) {
+	case DECODER_JSON: {
 	    return new JsonDeviceRequestDecoder();
 	}
-	case "protobuf": {
+	case DECODER_PROTOBUF: {
 	    return new ProtobufDeviceEventDecoder();
+	}
+	case DECODER_SCRIPTED: {
+	    ScriptedEventDecoder scripted = new ScriptedEventDecoder();
+	    try {
+		ScriptedEventDecoderConfiguration scriptConfig = MarshalUtils.unmarshalJsonNode(config,
+			ScriptedEventDecoderConfiguration.class);
+		scripted.setScriptId(scriptConfig.getScriptId());
+		return scripted;
+	    } catch (JsonProcessingException e) {
+		throw new SiteWhereException("Invalid JSON configuration provider for scripted event decoder.", e);
+	    }
 	}
 	default: {
 	    throw new SiteWhereException(String.format("Unknown decoder type '%s' for source with id '%s'",

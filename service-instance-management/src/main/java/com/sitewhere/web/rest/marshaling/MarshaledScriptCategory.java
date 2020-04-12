@@ -7,6 +7,13 @@
  */
 package com.sitewhere.web.rest.marshaling;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
+
+@JsonInclude(Include.NON_NULL)
 public class MarshaledScriptCategory {
 
     /** Category id */
@@ -17,6 +24,9 @@ public class MarshaledScriptCategory {
 
     /** Category description */
     private String description;
+
+    /** List of scripts in category */
+    private List<IScriptMetadata> scripts;
 
     public String getId() {
 	return id;
@@ -40,5 +50,13 @@ public class MarshaledScriptCategory {
 
     public void setDescription(String description) {
 	this.description = description;
+    }
+
+    public List<IScriptMetadata> getScripts() {
+	return scripts;
+    }
+
+    public void setScripts(List<IScriptMetadata> scripts) {
+	this.scripts = scripts;
     }
 }

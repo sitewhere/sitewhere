@@ -10,29 +10,15 @@ package com.sitewhere.sources.configuration;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
- * Configuration entry for an event source.
+ * Generic format for specify information about an event source decoder.
  */
-public class EventSourceGenericConfiguration {
-
-    /** Unique id */
-    private String id;
+public class DecoderGenericConfiguration {
 
     /** Event source type */
     private String type;
 
-    /** Payload decoder */
-    private DecoderGenericConfiguration decoder;
-
     /** Type-specific configuration parameters */
     private JsonNode configuration;
-
-    public String getId() {
-	return id;
-    }
-
-    public void setId(String id) {
-	this.id = id;
-    }
 
     public String getType() {
 	return type;
@@ -40,14 +26,6 @@ public class EventSourceGenericConfiguration {
 
     public void setType(String type) {
 	this.type = type;
-    }
-
-    public DecoderGenericConfiguration getDecoder() {
-	return decoder;
-    }
-
-    public void setDecoder(DecoderGenericConfiguration decoder) {
-	this.decoder = decoder;
     }
 
     public JsonNode getConfiguration() {

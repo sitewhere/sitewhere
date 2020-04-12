@@ -41,8 +41,13 @@ import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
+import com.sitewhere.spi.microservice.configuration.IScriptSpecUpdates;
+import com.sitewhere.spi.microservice.configuration.IScriptVersionSpecUpdates;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+
+import io.sitewhere.k8s.crd.tenant.scripting.SiteWhereScript;
+import io.sitewhere.k8s.crd.tenant.scripting.version.SiteWhereScriptVersion;
 
 /**
  * Microservice that provides instance management functionality.
@@ -316,6 +321,62 @@ public class InstanceManagementMicroservice
 	stop.execute(monitor);
 
 	super.stop(monitor);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.configuration.IScriptConfigurationListener#
+     * onScriptAdded(io.sitewhere.k8s.crd.tenant.scripting.SiteWhereScript)
+     */
+    @Override
+    public void onScriptAdded(SiteWhereScript script) {
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.configuration.IScriptConfigurationListener#
+     * onScriptUpdated(io.sitewhere.k8s.crd.tenant.scripting.SiteWhereScript,
+     * com.sitewhere.spi.microservice.configuration.IScriptSpecUpdates)
+     */
+    @Override
+    public void onScriptUpdated(SiteWhereScript script, IScriptSpecUpdates updates) {
+    }
+
+    /*
+     * @see
+     * com.sitewhere.spi.microservice.configuration.IScriptConfigurationListener#
+     * onScriptDeleted(io.sitewhere.k8s.crd.tenant.scripting.SiteWhereScript)
+     */
+    @Override
+    public void onScriptDeleted(SiteWhereScript script) {
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.
+     * IScriptVersionConfigurationListener#onScriptVersionAdded(io.sitewhere.k8s.crd
+     * .tenant.scripting.version.SiteWhereScriptVersion)
+     */
+    @Override
+    public void onScriptVersionAdded(SiteWhereScriptVersion version) {
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.
+     * IScriptVersionConfigurationListener#onScriptVersionUpdated(io.sitewhere.k8s.
+     * crd.tenant.scripting.version.SiteWhereScriptVersion,
+     * com.sitewhere.spi.microservice.configuration.IScriptVersionSpecUpdates)
+     */
+    @Override
+    public void onScriptVersionUpdated(SiteWhereScriptVersion version, IScriptVersionSpecUpdates updates) {
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.
+     * IScriptVersionConfigurationListener#onScriptVersionDeleted(io.sitewhere.k8s.
+     * crd.tenant.scripting.version.SiteWhereScriptVersion)
+     */
+    @Override
+    public void onScriptVersionDeleted(SiteWhereScriptVersion version) {
     }
 
     /*
