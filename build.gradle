@@ -20,8 +20,8 @@ ext['git.revision.abbrev'] = ext.git.head().abbreviatedId
 ext['docker.base.image'] = 'openjdk:8-jre-alpine'
 ext['docker.maintainer'] = 'admin@sitewhere.com'
 
-ext['sitewhere.microservice.api.version'] = '3.0.0.alpha33'
-ext['sitewhere.integration.api.version'] = '3.0.0.alpha28'
+ext['sitewhere.microservice.api.version'] = '3.0.0.alpha34'
+ext['sitewhere.integration.api.version'] = '3.0.0.alpha29'
 ext['kafka.version'] = '2.0.0'
 ext['protobuf.version'] = '3.5.1'
 ext['grpc.version'] = '1.25.0'
@@ -76,7 +76,6 @@ subprojects {
 	// Apply Docker plugin.
 	apply plugin: 'com.bmuschko.docker-remote-api'
 	docker {
-	    url = (System.getenv("DOCKER_HOST") != null) ? System.getenv("DOCKER_HOST") : dockerProtocol + '://' + dockerHostname + ':' + dockerPort
 	    registryCredentials {
 	        url = registryUrl
 	        username = registryUsername

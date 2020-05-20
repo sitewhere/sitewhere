@@ -108,13 +108,14 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
      * @param qos
      * @return
      */
-    private static QoS qosFromConfig(String qos) {
-	if ("0".equals(qos) || "AT_MOST_ONCE".equals(qos))
+    private static QoS qosFromConfig(int qos) {
+	if (qos == 0) {
 	    return QoS.AT_MOST_ONCE;
-	if ("1".equals(qos) || "AT_LEAST_ONCE".equals(qos))
+	} else if (qos == 1) {
 	    return QoS.AT_LEAST_ONCE;
-	if ("2".equals(qos) || "EXACTLY_ONCE".equals(qos))
+	} else if (qos == 2) {
 	    return QoS.EXACTLY_ONCE;
+	}
 	return QoS.AT_LEAST_ONCE;
     }
 

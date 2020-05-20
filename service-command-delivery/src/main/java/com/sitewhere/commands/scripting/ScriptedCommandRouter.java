@@ -74,7 +74,7 @@ public class ScriptedCommandRouter extends ScriptingComponent<String> implements
 	    throws SiteWhereException {
 	String target = findCommandDestination(execution, system, nesting, assignments);
 	if (target != null) {
-	    ICommandDestination<?, ?> destination = getCommandDestinationsManager().getCommandDestinations()
+	    ICommandDestination<?, ?> destination = getCommandDestinationsManager().getCommandDestinationsMap()
 		    .get(target);
 	    if (destination == null) {
 		throw new SiteWhereException(

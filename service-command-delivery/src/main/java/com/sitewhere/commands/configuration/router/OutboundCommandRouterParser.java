@@ -1,0 +1,62 @@
+/*
+ * Copyright (c) SiteWhere, LLC. All rights reserved. http://www.sitewhere.com
+ *
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
+package com.sitewhere.commands.configuration.router;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.sitewhere.commands.configuration.CommandDeliveryTenantConfiguration;
+import com.sitewhere.commands.configuration.router.devicetypemapping.DeviceTypeMappingConfiguration;
+import com.sitewhere.commands.routing.DeviceTypeMappingCommandRouter;
+import com.sitewhere.commands.spi.IOutboundCommandRouter;
+import com.sitewhere.microservice.util.MarshalUtils;
+import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
+
+/**
+ * Parses generic configuration into command router instances.
+ */
+public class OutboundCommandRouterParser {
+
+    /** Static logger instance */
+    private static final Logger LOGGER = LoggerFactory.getLogger(OutboundCommandRouterParser.class);
+
+    /** Type for device type mapping router */
+    public static final String TYPE_DEVICE_TYPE_MAPPING = "deviceTypeMapping";
+
+    public static IOutboundCommandRouter parse(ITenantEngineLifecycleComponent component,
+	    CommandDeliveryTenantConfiguration configuration) throws SiteWhereException {
+	RouterGenericConfiguration routerConfig = configuration.getRouter();
+	switch (routerConfig.getType()) {
+	case TYPE_DEVICE_TYPE_MAPPING: {
+	    return createDeviceTypeMappingRouter(component, routerConfig);
+	}
+	default: {
+	    throw new SiteWhereException(
+		    String.format("Unknown command destination type '%s'.", routerConfig.getType()));
+	}
+	}
+    }
+
+    /**
+     * Create a device type mapping router.
+     * 
+     * @param component
+     * @param routerConfig
+     * @return
+     * @throws SiteWhereException
+     */
+    protected static IOutboundCommandRouter createDeviceTypeMappingRouter(ITenantEngineLifecycleComponent component,
+	    RouterGenericConfiguration routerConfig) throws SiteWhereException {
+	DeviceTypeMappingConfiguration config = new DeviceTypeMappingConfiguration(component);
+	config.apply(routerConfig);
+	LOGGER.info(String.format("Creating device type mapping router with configuration:\n%s\n\n",
+		MarshalUtils.marshalJsonAsPrettyString(config)));
+	return new DeviceTypeMappingCommandRouter(config);
+    }
+}

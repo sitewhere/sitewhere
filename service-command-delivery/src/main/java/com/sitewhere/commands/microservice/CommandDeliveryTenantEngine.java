@@ -99,7 +99,7 @@ public class CommandDeliveryTenantEngine extends MicroserviceTenantEngine<Comman
 	// Listener for enriched command invocations.
 	this.enrichedCommandInvocationsPipeline = new EnrichedCommandInvocationsPipeline();
 
-	// Listener for enriched command invocations.
+	// Producer for storing undelivered command invocations.
 	this.undeliveredCommandInvocationsProducer = new UndeliveredCommandInvocationsProducer();
 
 	// Create step that will initialize components.

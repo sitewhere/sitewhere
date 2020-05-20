@@ -7,6 +7,8 @@
  */
 package com.sitewhere.commands.destination.mqtt;
 
+import com.sitewhere.commands.configuration.destinations.mqtt.MqttConfiguration;
+import com.sitewhere.commands.configuration.extractors.mqtt.DefaultMqttParameterExtractorConfiguration;
 import com.sitewhere.commands.destination.CommandDestination;
 import com.sitewhere.commands.encoding.json.JsonCommandExecutionEncoder;
 import com.sitewhere.commands.spi.ICommandDestination;
@@ -17,8 +19,19 @@ import com.sitewhere.commands.spi.ICommandDestination;
  */
 public class MqttCommandDestination extends CommandDestination<byte[], MqttParameters> {
 
-    public MqttCommandDestination() {
+    /** MQTT configuration */
+    private MqttConfiguration configuration;
+
+    public MqttCommandDestination(MqttConfiguration configuration) {
+	this.configuration = configuration;
+
 	setCommandExecutionEncoder(new JsonCommandExecutionEncoder());
-	setCommandDeliveryParameterExtractor(new DefaultMqttParameterExtractor());
+	setCommandDeliveryParameterExtractor(
+		new DefaultMqttParameterExtractor(new DefaultMqttParameterExtractorConfiguration(this)));
+	setCommandDeliveryProvider(new MqttCommandDeliveryProvider(getConfiguration()));
+    }
+
+    protected MqttConfiguration getConfiguration() {
+	return configuration;
     }
 }

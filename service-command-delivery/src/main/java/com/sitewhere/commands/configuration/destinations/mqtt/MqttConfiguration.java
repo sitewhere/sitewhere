@@ -5,29 +5,18 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.connectors.configuration.connector;
+package com.sitewhere.commands.configuration.destinations.mqtt;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.sitewhere.commands.configuration.destinations.CommandDestinationConfiguration;
 import com.sitewhere.communication.mqtt.IMqttConfiguration;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
- * Configuration for an MQTT outbound connector.
+ * Configuration for an MQTT command destination.
  */
-public class MqttOutboundConnectorConfiguration extends OutboundConnectorConfiguration implements IMqttConfiguration {
-
-    /** Default protocol for broker connection */
-    public static final String DEFAULT_PROTOCOL = "tcp";
-
-    /** Default hostname for broker connection */
-    public static final String DEFAULT_HOSTNAME = "mqtt";
-
-    /** Default port for broker connection */
-    public static final int DEFAULT_PORT = 1883;
-
-    /** Default outbound topic */
-    private static final String DEFAULT_OUTBOUND_TOPIC = "SiteWhere/%s/outbound/%s";
+public class MqttConfiguration extends CommandDestinationConfiguration implements IMqttConfiguration {
 
     /** Communication protocol */
     private String protocol;
@@ -62,24 +51,21 @@ public class MqttOutboundConnectorConfiguration extends OutboundConnectorConfigu
     /** Clean session flag */
     private boolean cleanSession = true;
 
-    /** Outbound topic */
-    private String outboundTopic;
-
-    public MqttOutboundConnectorConfiguration(ITenantEngineLifecycleComponent component) {
+    public MqttConfiguration(ITenantEngineLifecycleComponent component) {
 	super(component);
     }
 
     /*
-     * @see com.sitewhere.connectors.configuration.connector.
-     * OutboundConnectorConfiguration#loadFrom(com.fasterxml.jackson.databind.
-     * JsonNode)
+     * @see
+     * com.sitewhere.sources.configuration.eventsource.EventSourceConfiguration#
+     * loadFrom(com.fasterxml.jackson.databind.JsonNode)
      */
     @Override
     public void loadFrom(JsonNode json) throws SiteWhereException {
-	this.protocol = configurableString("protocol", json, DEFAULT_PROTOCOL);
-	this.hostname = configurableString("hostname", json, DEFAULT_HOSTNAME);
-	this.port = configurableInt("port", json, DEFAULT_PORT);
-	this.trustStorePath = configurableString("trustStorePath", json, null);
+	this.protocol = configurableString("protocol", json, IMqttConfiguration.DEFAULT_PROTOCOL);
+	this.hostname = configurableString("hostname", json, IMqttConfiguration.DEFAULT_HOSTNAME);
+	this.port = configurableInt("port", json, IMqttConfiguration.DEFAULT_PORT);
+	this.trustStorePath = configurableString("qos", json, null);
 	this.trustStorePassword = configurableString("trustStorePassword", json, null);
 	this.keyStorePath = configurableString("keyStorePath", json, null);
 	this.keyStorePassword = configurableString("keyStorePassword", json, null);
@@ -87,7 +73,6 @@ public class MqttOutboundConnectorConfiguration extends OutboundConnectorConfigu
 	this.password = configurableString("password", json, null);
 	this.clientId = configurableString("clientId", json, null);
 	this.cleanSession = configurableBoolean("cleanSession", json, true);
-	this.outboundTopic = configurableString("outboundTopic", json, DEFAULT_OUTBOUND_TOPIC);
     }
 
     /*
@@ -222,13 +207,5 @@ public class MqttOutboundConnectorConfiguration extends OutboundConnectorConfigu
 
     public void setCleanSession(boolean cleanSession) {
 	this.cleanSession = cleanSession;
-    }
-
-    public String getOutboundTopic() {
-	return outboundTopic;
-    }
-
-    public void setOutboundTopic(String outboundTopic) {
-	this.outboundTopic = outboundTopic;
     }
 }

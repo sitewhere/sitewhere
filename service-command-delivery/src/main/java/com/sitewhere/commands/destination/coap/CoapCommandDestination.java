@@ -7,6 +7,8 @@
  */
 package com.sitewhere.commands.destination.coap;
 
+import com.sitewhere.commands.configuration.destinations.coap.CoapConfiguration;
+import com.sitewhere.commands.configuration.extractors.coap.MetadataCoapParameterExtractorConfiguration;
 import com.sitewhere.commands.destination.CommandDestination;
 import com.sitewhere.commands.encoding.json.JsonCommandExecutionEncoder;
 
@@ -15,8 +17,19 @@ import com.sitewhere.commands.encoding.json.JsonCommandExecutionEncoder;
  */
 public class CoapCommandDestination extends CommandDestination<byte[], CoapParameters> {
 
-    public CoapCommandDestination() {
+    /** Configuration */
+    private CoapConfiguration configuration;
+
+    public CoapCommandDestination(CoapConfiguration configuration) {
+	this.configuration = configuration;
+
 	setCommandExecutionEncoder(new JsonCommandExecutionEncoder());
-	setCommandDeliveryParameterExtractor(new MetadataCoapParameterExtractor());
+	setCommandDeliveryParameterExtractor(
+		new MetadataCoapParameterExtractor(new MetadataCoapParameterExtractorConfiguration(this)));
+	setCommandDeliveryProvider(new CoapCommandDeliveryProvider());
+    }
+
+    protected CoapConfiguration getConfiguration() {
+	return configuration;
     }
 }

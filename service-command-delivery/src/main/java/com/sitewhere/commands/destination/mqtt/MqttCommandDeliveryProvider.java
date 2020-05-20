@@ -31,9 +31,6 @@ import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
 	implements ICommandDeliveryProvider<byte[], MqttParameters> {
 
-    /** Configuration */
-    private IMqttConfiguration configuration;
-
     /** Shared MQTT connection */
     private FutureConnection connection;
 
@@ -114,9 +111,5 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to publish command to MQTT topic.", e);
 	}
-    }
-
-    protected IMqttConfiguration getConfiguration() {
-	return configuration;
     }
 }

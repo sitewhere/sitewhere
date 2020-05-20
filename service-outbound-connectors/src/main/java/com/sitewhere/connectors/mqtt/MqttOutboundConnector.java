@@ -15,7 +15,6 @@ import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
 
-import com.sitewhere.communication.mqtt.IMqttConfiguration;
 import com.sitewhere.communication.mqtt.MqttConfigurer;
 import com.sitewhere.communication.mqtt.MqttLifecycleComponent;
 import com.sitewhere.connectors.SerialOutboundConnector;
@@ -73,7 +72,8 @@ public class MqttOutboundConnector extends SerialOutboundConnector implements IM
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if ((getConfiguration().getTopic() == null) && (getMulticaster() == null) && (getRouteBuilder() == null)) {
+	if ((getConfiguration().getOutboundTopic() == null) && (getMulticaster() == null)
+		&& (getRouteBuilder() == null)) {
 	    this.topic = String.format(DEFAULT_OUTBOUND_TOPIC,
 		    getTenantEngine().getTenantResource().getMetadata().getName(), getConnectorId());
 	    getLogger().warn(String.format(
@@ -213,7 +213,7 @@ public class MqttOutboundConnector extends SerialOutboundConnector implements IM
 		IDevice device = getDeviceManagement().getDevice(assignment.getDeviceId());
 		publish(event, getRouteBuilder().build(event, device, assignment));
 	    } else {
-		publish(event, getConfiguration().getTopic());
+		publish(event, getConfiguration().getOutboundTopic());
 	    }
 	}
     }
@@ -246,7 +246,7 @@ public class MqttOutboundConnector extends SerialOutboundConnector implements IM
 	return routeBuilder;
     }
 
-    protected IMqttConfiguration getConfiguration() {
+    protected MqttOutboundConnectorConfiguration getConfiguration() {
 	return configuration;
     }
 

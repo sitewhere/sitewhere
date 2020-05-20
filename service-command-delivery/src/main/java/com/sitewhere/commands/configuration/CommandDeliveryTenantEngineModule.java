@@ -8,7 +8,7 @@
 package com.sitewhere.commands.configuration;
 
 import com.sitewhere.commands.configuration.destinations.CommandDestinationsManagerProvider;
-import com.sitewhere.commands.configuration.destinations.OutboundCommandRouterProvider;
+import com.sitewhere.commands.configuration.router.OutboundCommandRouterProvider;
 import com.sitewhere.commands.spi.ICommandDestinationsManager;
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
 import com.sitewhere.microservice.multitenant.TenantEngineModule;

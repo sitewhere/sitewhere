@@ -67,7 +67,8 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.start(monitor);
 
-	Map<String, ICommandDestination<?, ?>> destinations = getCommandDestinationsManager().getCommandDestinations();
+	Map<String, ICommandDestination<?, ?>> destinations = getCommandDestinationsManager()
+		.getCommandDestinationsMap();
 	if (destinations.size() != 1) {
 	    throw new SiteWhereException(
 		    "Expected exactly one destination for command routing but found " + destinations.size() + ".");

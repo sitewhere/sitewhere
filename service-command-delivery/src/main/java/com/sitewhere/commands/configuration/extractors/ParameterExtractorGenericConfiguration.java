@@ -5,32 +5,21 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.commands.configuration.destinations;
+package com.sitewhere.commands.configuration.extractors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
- * Generic entry for a command destination. The configuration section is parsed
- * based on type.
+ * Generic information used to configure a parameter extractor for a command
+ * destination.
  */
-public class GenericCommandDestinationConfiguration {
-
-    /** Destination id */
-    private String id;
+public class ParameterExtractorGenericConfiguration {
 
     /** Destination type */
     private String type;
 
     /** Custom configuration for type */
     private JsonNode configuration;
-
-    public String getId() {
-	return id;
-    }
-
-    public void setId(String id) {
-	this.id = id;
-    }
 
     public String getType() {
 	return type;

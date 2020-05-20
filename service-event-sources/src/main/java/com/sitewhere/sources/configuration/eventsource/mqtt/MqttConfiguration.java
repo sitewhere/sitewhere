@@ -18,23 +18,14 @@ import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
  */
 public class MqttConfiguration extends EventSourceConfiguration implements IMqttConfiguration {
 
-    /** Default protocol for broker connection */
-    public static final String DEFAULT_PROTOCOL = "tcp";
+    /** Default MQTT topic for receiving events */
+    public static final String DEFAULT_TOPIC = "SiteWhere/${tenant.token}/input/json";
 
-    /** Default hostname for broker connection */
-    public static final String DEFAULT_HOSTNAME = "mqtt";
-
-    /** Default port for broker connection */
-    public static final int DEFAULT_PORT = 1883;
-
-    /** Default subscribed topic name */
-    public static final String DEFAULT_TOPIC = "SiteWhere/input/protobuf";
-
-    /** Number of threads used for processing events */
-    public static final int DEFAULT_NUM_THREADS = 5;
+    /** Default number of concurrent processing threads */
+    public static final int DEFAULT_NUM_THREADS = 3;
 
     /** Default quality of service */
-    public static final String DEFAULT_QOS = "AT_LEAST_ONCE";
+    public static final int DEFAULT_QOS = 0;
 
     /** Communication protocol */
     private String protocol;
@@ -44,15 +35,6 @@ public class MqttConfiguration extends EventSourceConfiguration implements IMqtt
 
     /** Broker port */
     private int port;
-
-    /** MQTT topic */
-    private String topic;
-
-    /** Number of processing threads */
-    private int numThreads;
-
-    /** Quality of service */
-    private String qos;
 
     /** TrustStore path */
     private String trustStorePath;
@@ -78,6 +60,15 @@ public class MqttConfiguration extends EventSourceConfiguration implements IMqtt
     /** Clean session flag */
     private boolean cleanSession = true;
 
+    /** MQTT topic */
+    private String topic;
+
+    /** Number of processing threads */
+    private int numThreads;
+
+    /** Quality of service */
+    private int qos;
+
     public MqttConfiguration(ITenantEngineLifecycleComponent component) {
 	super(component);
     }
@@ -89,13 +80,13 @@ public class MqttConfiguration extends EventSourceConfiguration implements IMqtt
      */
     @Override
     public void loadFrom(JsonNode json) throws SiteWhereException {
-	this.protocol = configurableString("protocol", json, DEFAULT_PROTOCOL);
-	this.hostname = configurableString("hostname", json, DEFAULT_HOSTNAME);
-	this.port = configurableInt("port", json, DEFAULT_PORT);
+	this.protocol = configurableString("protocol", json, IMqttConfiguration.DEFAULT_PROTOCOL);
+	this.hostname = configurableString("hostname", json, IMqttConfiguration.DEFAULT_HOSTNAME);
+	this.port = configurableInt("port", json, IMqttConfiguration.DEFAULT_PORT);
 	this.topic = configurableString("topic", json, DEFAULT_TOPIC);
 	this.numThreads = configurableInt("numThreads", json, DEFAULT_NUM_THREADS);
-	this.qos = configurableString("qos", json, DEFAULT_QOS);
-	this.trustStorePath = configurableString("qos", json, DEFAULT_QOS);
+	this.qos = configurableInt("qos", json, DEFAULT_QOS);
+	this.trustStorePath = configurableString("qos", json, null);
 	this.trustStorePassword = configurableString("trustStorePassword", json, null);
 	this.keyStorePath = configurableString("keyStorePath", json, null);
 	this.keyStorePassword = configurableString("keyStorePassword", json, null);
@@ -139,42 +130,6 @@ public class MqttConfiguration extends EventSourceConfiguration implements IMqtt
 
     public void setPort(int port) {
 	this.port = port;
-    }
-
-    /*
-     * @see com.sitewhere.communication.mqtt.IMqttConfiguration#getTopic()
-     */
-    @Override
-    public String getTopic() {
-	return topic;
-    }
-
-    public void setTopic(String topic) {
-	this.topic = topic;
-    }
-
-    /*
-     * @see com.sitewhere.communication.mqtt.IMqttConfiguration#getNumThreads()
-     */
-    @Override
-    public int getNumThreads() {
-	return numThreads;
-    }
-
-    public void setNumThreads(int numThreads) {
-	this.numThreads = numThreads;
-    }
-
-    /*
-     * @see com.sitewhere.communication.mqtt.IMqttConfiguration#getQos()
-     */
-    @Override
-    public String getQos() {
-	return qos;
-    }
-
-    public void setQos(String qos) {
-	this.qos = qos;
     }
 
     /*
@@ -273,5 +228,29 @@ public class MqttConfiguration extends EventSourceConfiguration implements IMqtt
 
     public void setCleanSession(boolean cleanSession) {
 	this.cleanSession = cleanSession;
+    }
+
+    public String getTopic() {
+	return topic;
+    }
+
+    public void setTopic(String topic) {
+	this.topic = topic;
+    }
+
+    public int getNumThreads() {
+	return numThreads;
+    }
+
+    public void setNumThreads(int numThreads) {
+	this.numThreads = numThreads;
+    }
+
+    public int getQos() {
+	return qos;
+    }
+
+    public void setQos(int qos) {
+	this.qos = qos;
     }
 }

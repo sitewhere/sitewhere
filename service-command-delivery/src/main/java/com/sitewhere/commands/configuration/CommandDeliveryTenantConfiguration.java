@@ -10,8 +10,8 @@ package com.sitewhere.commands.configuration;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sitewhere.commands.configuration.destinations.GenericCommandDestinationConfiguration;
-import com.sitewhere.commands.configuration.router.GenericRouterConfiguration;
+import com.sitewhere.commands.configuration.destinations.CommandDestinationGenericConfiguration;
+import com.sitewhere.commands.configuration.router.RouterGenericConfiguration;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineConfiguration;
 
 /**
@@ -20,24 +20,24 @@ import com.sitewhere.spi.microservice.multitenant.ITenantEngineConfiguration;
 public class CommandDeliveryTenantConfiguration implements ITenantEngineConfiguration {
 
     /** Router configuration */
-    private GenericRouterConfiguration router;
+    private RouterGenericConfiguration router;
 
     /** List of command destination configurations */
-    private List<GenericCommandDestinationConfiguration> commandDestinations = new ArrayList<>();
+    private List<CommandDestinationGenericConfiguration> commandDestinations = new ArrayList<>();
 
-    public GenericRouterConfiguration getRouter() {
+    public RouterGenericConfiguration getRouter() {
 	return router;
     }
 
-    public void setRouter(GenericRouterConfiguration router) {
+    public void setRouter(RouterGenericConfiguration router) {
 	this.router = router;
     }
 
-    public List<GenericCommandDestinationConfiguration> getCommandDestinations() {
+    public List<CommandDestinationGenericConfiguration> getCommandDestinations() {
 	return commandDestinations;
     }
 
-    public void setCommandDestinations(List<GenericCommandDestinationConfiguration> commandDestinations) {
+    public void setCommandDestinations(List<CommandDestinationGenericConfiguration> commandDestinations) {
 	this.commandDestinations = commandDestinations;
     }
 }

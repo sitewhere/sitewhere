@@ -10,7 +10,7 @@ package com.sitewhere.commands.configuration.destinations;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.sitewhere.commands.configuration.CommandDeliveryTenantConfiguration;
-import com.sitewhere.commands.destination.CommandDestinationsManager;
+import com.sitewhere.commands.manager.CommandDestinationsManager;
 
 /**
  * Provides a command destinations manager based on tenant configuration.
@@ -30,7 +30,7 @@ public class CommandDestinationsManagerProvider implements Provider<CommandDesti
      */
     @Override
     public CommandDestinationsManager get() {
-	CommandDestinationsManager manager = new CommandDestinationsManager();
+	CommandDestinationsManager manager = new CommandDestinationsManager(getConfiguration());
 	return manager;
     }
 

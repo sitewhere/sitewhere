@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * Contains router information in a generic format.
  */
-public class GenericRouterConfiguration {
+public class RouterGenericConfiguration {
 
     /** Router type */
     private String type;
