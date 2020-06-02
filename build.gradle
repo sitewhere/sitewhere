@@ -38,13 +38,13 @@ ext['solr.version'] = '6.4.0'
 ext['siddhi.version'] = '3.1.2'
 
 apply plugin: 'distribution'
-    
+
 allprojects {
     group = 'com.sitewhere'
 	version = '2.2.0'
-	
+
     repositories {
-        maven { url "http://repo.maven.apache.org/maven2" }
+        maven { url "https://repo.maven.apache.org/maven2" }
         maven { url 'http://maven.restlet.org' }
         maven { url "https://jitpack.io" }
         maven { url "http://oss.jfrog.org/artifactory/oss-release-local/" }
@@ -58,13 +58,13 @@ allprojects {
 
 subprojects {
 	apply plugin: 'eclipse'
-	
+
 	apply plugin: "com.github.hierynomus.license"
 	license {
 		header rootProject.file('HEADER')
     	include "**/*.java"
 	}
-	
+
     // Use Spring dependency management.
  	apply plugin: 'io.spring.dependency-management'
 	dependencyManagement {
@@ -75,13 +75,13 @@ subprojects {
 
 	// Use Docker plugin to allow for creating/pushing an image.
 	apply plugin: 'com.bmuschko.docker-remote-api'
-	
+
 	// Allow Docker settings to be overridden by build environment.
 	if (System.getenv("DOCKER_REGISTRY_URL") != null) registryUrl = System.getenv("DOCKER_REGISTRY_URL")
 	if (System.getenv("DOCKER_REGISTRY_USERNAME") != null) registryUsername = System.getenv("DOCKER_REGISTRY_USERNAME")
 	if (System.getenv("DOCKER_REGISTRY_PASSWORD") != null) registryPassword = System.getenv("DOCKER_REGISTRY_PASSWORD")
 	if (System.getenv("DOCKER_REGISTRY_EMAIL") != null) registryEmail = System.getenv("DOCKER_REGISTRY_EMAIL")
-	
+
 	docker {
 	    url = (System.getenv("DOCKER_HOST") != null) ? System.getenv("DOCKER_HOST") : dockerProtocol + '://' + dockerHostname + ':' + dockerPort
 	    registryCredentials {
@@ -91,12 +91,12 @@ subprojects {
 	        email = registryEmail
 	    }
 	}
- 	
+
  	// Choose Java settings.
     apply plugin: 'java'
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
-    
+
     // Common dependencies used for all projects.
     dependencies {
         testCompile group: 'junit', name: 'junit'
