@@ -182,7 +182,7 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 
     /**
      * Get or create Syncope application for SiteWhere.
-     * 
+     *
      * @throws SiteWhereException
      */
     protected ApplicationTO getOrCreateSiteWhereApplication() throws SiteWhereException {
@@ -370,7 +370,7 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 
     /**
      * Convert Syncope user to SiteWhere user.
-     * 
+     *
      * @param user
      * @return
      * @throws SiteWhereException
@@ -479,7 +479,7 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 
     /**
      * Create a Syncope privilege from an SiteWhere authority.
-     * 
+     *
      * @param authority
      * @return
      * @throws SiteWhereException
@@ -657,19 +657,19 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
     }
 
     protected ApplicationService getApplicationService() {
-	return applicationService;
+	return client.getService(ApplicationService.class);
     }
 
     protected UserService getUserService() {
-	return userService;
+	return client.getService(UserService.class);
     }
 
     protected SchemaService getSchemaService() {
-	return schemaService;
+	return client.getService(SchemaService.class);
     }
 
     protected AnyTypeClassService getAnyTypeClassService() {
-	return anyTypeClassService;
+	return client.getService(AnyTypeClassService.class);
     }
 
     protected ExecutorService getWaiter() {
