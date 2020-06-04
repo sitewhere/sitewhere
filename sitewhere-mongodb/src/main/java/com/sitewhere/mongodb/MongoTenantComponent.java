@@ -15,7 +15,6 @@ import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
  * Base class for components in a tenant engine that rely on MongoDB
@@ -41,11 +40,11 @@ public abstract class MongoTenantComponent<T extends MongoDbClient> extends Tena
 
     /*
      * @see
-     * com.sitewhere.server.lifecycle.LifecycleComponent#start(com.sitewhere.spi.
-     * server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.server.lifecycle.LifecycleComponent#provision(com.sitewhere.spi
+     * .server.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void provision(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if (getIndexer() != null) {
 	    getIndexer().shutdownNow();
 	}
@@ -79,9 +78,12 @@ public abstract class MongoTenantComponent<T extends MongoDbClient> extends Tena
     protected void waitForMongoAvailable() throws SiteWhereException {
 	int retries = 0;
 	while (true) {
-	    if (getMongoClient().getLifecycleStatus() == LifecycleStatus.Started) {
+	    try {
+		getMongoClient().getMongoClient().listDatabases();
 		getLogger().info("MongoDB detected as available.");
 		return;
+	    } catch (Throwable t) {
+		getLogger().info("MongoDB not available yet.", t);
 	    }
 
 	    try {

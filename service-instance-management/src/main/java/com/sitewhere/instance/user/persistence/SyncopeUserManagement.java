@@ -24,6 +24,9 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.syncope.client.lib.SyncopeClient;
 import org.apache.syncope.client.lib.SyncopeClientFactoryBean;
 import org.apache.syncope.common.lib.SyncopeClientException;
+import org.apache.syncope.common.lib.patch.AttrPatch;
+import org.apache.syncope.common.lib.patch.PasswordPatch;
+import org.apache.syncope.common.lib.patch.UserPatch;
 import org.apache.syncope.common.lib.to.AnyTypeClassTO;
 import org.apache.syncope.common.lib.to.ApplicationTO;
 import org.apache.syncope.common.lib.to.AttrTO;
@@ -104,23 +107,11 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
     /** Allows blocking until Syncope is available */
     private CountDownLatch syncopeAvailable = new CountDownLatch(1);
 
-    /** Application service */
-    private ApplicationService applicationService;
-
     /** Provides thread for waiter */
     private ExecutorService waiter;
 
     /** Provides thread for refreshing access token */
     private ScheduledExecutorService refresher;
-
-    /** User service */
-    private UserService userService;
-
-    /** Schema service */
-    private SchemaService schemaService;
-
-    /** AnyType service */
-    private AnyTypeClassService anyTypeClassService;
 
     public SyncopeUserManagement() {
 	super(LifecycleComponentType.DataStore);
@@ -139,6 +130,8 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 
 	// Prepare executor for refreshing access token.
 	this.refresher = Executors.newSingleThreadScheduledExecutor();
+	refresher.scheduleAtFixedRate(new SyncopeConnectionRefresher(), TOKEN_REFRESH_IN_MINUTES,
+		TOKEN_REFRESH_IN_MINUTES, TimeUnit.MINUTES);
     }
 
     /*
@@ -165,10 +158,6 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 	String domain = getClient().getDomain();
 	getLogger().info(String.format("Syncope client connected to %s:%d using domain %s.", settings.getSyncopeHost(),
 		settings.getSyncopePort(), domain));
-	this.applicationService = client.getService(ApplicationService.class);
-	this.userService = client.getService(UserService.class);
-	this.schemaService = client.getService(SchemaService.class);
-	this.anyTypeClassService = client.getService(AnyTypeClassService.class);
 
 	// Verify that SiteWhere application exists.
 	getOrCreateSiteWhereApplication();
@@ -176,7 +165,7 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 
     /**
      * Get or create Syncope application for SiteWhere.
-     * 
+     *
      * @throws SiteWhereException
      */
     protected ApplicationTO getOrCreateSiteWhereApplication() throws SiteWhereException {
@@ -307,7 +296,37 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
     @Override
     public IUser updateUser(String username, IUserCreateRequest request, boolean encodePassword)
 	    throws SiteWhereException {
-	throw new RuntimeException("Not implemented.");
+	UserTO user = getUserService().read(username);
+	if (user == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR);
+	}
+	User swuser = User.copy(convertUser(user));
+	UserManagementPersistenceLogic.userUpdateLogic(request, swuser, encodePassword);
+	UserPatch userPatch = new UserPatch();
+	userPatch.setKey(user.getKey());
+	if(request.getPassword()!=null){
+		userPatch.setPassword(new PasswordPatch.Builder().value(request.getPassword()).build());
+	}
+	if(request.getFirstName()!=null){
+		userPatch.getPlainAttrs().add(new AttrPatch.Builder().attrTO(createAttribute(ATTR_FIRST_NAME, request.getFirstName())).build());
+	}
+	if(request.getLastName()!=null){
+		userPatch.getPlainAttrs().add(new AttrPatch.Builder().attrTO(createAttribute(ATTR_LAST_NAME, request.getLastName())).build());
+
+	}
+	userPatch.getPlainAttrs().add(new AttrPatch.Builder().attrTO(createAttribute(ATTR_JSON,
+			Base64.encodeBase64String(MarshalUtils.marshalJsonAsString(swuser).getBytes()))).build());
+
+	swuser.getAuthorities().forEach(auth -> {
+		user.getPrivileges().add(auth);
+	});
+
+	try {
+		getUserService().update(userPatch);
+	} catch (Throwable t) {
+		throw new SiteWhereException("Unable to update user.", t);
+	}
+	return swuser;
     }
 
     /*
@@ -326,7 +345,7 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 
     /**
      * Convert Syncope user to SiteWhere user.
-     * 
+     *
      * @param user
      * @return
      * @throws SiteWhereException
@@ -430,7 +449,7 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 
     /**
      * Create a Syncope privilege from an SiteWhere authority.
-     * 
+     *
      * @param authority
      * @return
      * @throws SiteWhereException
@@ -532,8 +551,6 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 	    Callable<Boolean> connectCheck = () -> {
 		SyncopeUserManagement.this.client = clientFactory.create(SYNCOPE_USERNAME, SYNCOPE_PASSWORD);
 		getSyncopeAvailable().countDown();
-		refresher.scheduleAtFixedRate(new SyncopeConnectionRefresher(), TOKEN_REFRESH_IN_MINUTES,
-			TOKEN_REFRESH_IN_MINUTES, TimeUnit.MINUTES);
 		return true;
 	    };
 	    RetryConfig config = new RetryConfigBuilder().retryOnAnyException().retryIndefinitely()
@@ -559,8 +576,16 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 
 	@Override
 	public void run() {
-	    getLogger().debug("Refreshing access token...");
-	    getClient().refresh();
+	    if (getSyncopeAvailable().getCount() == 0) {
+		getLogger().debug("Refreshing Syncope access token...");
+		try {
+		    getClient().refresh();
+		} catch (Throwable t) {
+		    getLogger().error("Unable to refresh Syncope access token.", t);
+		}
+	    } else {
+		getLogger().debug("Skipping Syncope token refresh until connection is established.");
+	    }
 	}
     }
 
@@ -585,18 +610,18 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
     }
 
     protected ApplicationService getApplicationService() {
-	return applicationService;
+	return client.getService(ApplicationService.class);
     }
 
     protected UserService getUserService() {
-	return userService;
+	return client.getService(UserService.class);
     }
 
     protected SchemaService getSchemaService() {
-	return schemaService;
+	return client.getService(SchemaService.class);
     }
 
     protected AnyTypeClassService getAnyTypeClassService() {
-	return anyTypeClassService;
+	return client.getService(AnyTypeClassService.class);
     }
 }

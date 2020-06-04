@@ -7,10 +7,15 @@
  */
 package com.sitewhere.grpc.client;
 
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.grpc.client.spi.IGrpcChannel;
@@ -31,6 +36,12 @@ import io.grpc.netty.NettyChannelBuilder;
  * @param <A>
  */
 public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent implements IGrpcChannel<B, A> {
+
+    /** Number of seconds between DNS checks */
+    protected static final int DNS_CHECK_INTERVAL_SECS = 5;
+
+    /** Numer of retries for DNS checks */
+    protected static final int DNS_CHECK_RETRIES = 8;
 
     /** Instance settings */
     protected IInstanceSettings instanceSettings;
@@ -56,8 +67,17 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
     /** Asynchronous stub */
     protected A asyncStub;
 
+    /** Indicates whether DNS is currently verifying */
+    protected CountDownLatch dnsVerifying = new CountDownLatch(2);
+
+    /** Tracks whether DNS is verification succeeded */
+    protected AtomicBoolean dnsVerified = new AtomicBoolean(false);
+
     /** Client interceptor for adding JWT from Spring Security context */
     protected JwtClientInterceptor jwtInterceptor;
+
+    /** Thread for DNS resolution */
+    protected ExecutorService dnsExecutor = Executors.newSingleThreadExecutor();
 
     public GrpcChannel(IInstanceSettings instanceSettings, IFunctionIdentifier functionIdentifier,
 	    IGrpcServiceIdentifier grpcServiceIdentifier, int port) {
@@ -181,7 +201,11 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
      */
     @Override
     public B getBlockingStub() {
-	return blockingStub;
+	if (isDnsValid()) {
+	    return blockingStub;
+	} else {
+	    throw new RuntimeException("Unable to invoke gRPC operation. DNS check failed.");
+	}
     }
 
     public void setBlockingStub(B blockingStub) {
@@ -193,7 +217,11 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
      */
     @Override
     public A getAsyncStub() {
-	return asyncStub;
+	if (isDnsValid()) {
+	    return asyncStub;
+	} else {
+	    throw new RuntimeException("Unable to invoke gRPC operation. DNS check failed.");
+	}
     }
 
     public void setAsyncStub(A asyncStub) {
@@ -211,6 +239,74 @@ public abstract class GrpcChannel<B, A> extends TenantEngineLifecycleComponent i
      */
     @Override
     public abstract A createAsyncStub();
+
+    /**
+     * Check whether DNS is valid.
+     * 
+     * @return
+     */
+    protected boolean isDnsValid() {
+	if (getDnsVerified().get()) {
+	    return true;
+	}
+	if (getDnsVerifying().getCount() == 2) {
+	    getDnsExecutor().execute(new DnsVerifier());
+	}
+	try {
+	    getDnsVerifying().await();
+	} catch (InterruptedException e) {
+	    return false;
+	}
+	return getDnsVerified().get();
+    }
+
+    /**
+     * Attempts to check DNS with a given number of retries.
+     */
+    private class DnsVerifier implements Runnable {
+
+	@Override
+	public void run() {
+	    getDnsVerifying().countDown();
+	    try {
+		int retries = DNS_CHECK_RETRIES;
+		while (retries > 0) {
+		    try {
+			InetAddress.getByName(getHostname());
+			getLogger().info(String.format("Resolved DNS for '%s'", getHostname()));
+			getDnsVerified().set(true);
+			return;
+		    } catch (Throwable e) {
+			getLogger().debug(String.format("Unable to resolve DNS for '%s'", getHostname()), e);
+		    }
+		    getLogger().info(String.format("Waiting for DNS to resolve '%s'", getHostname()));
+		    try {
+			Thread.sleep(5000);
+		    } catch (InterruptedException e) {
+			getDnsVerified().set(false);
+			return;
+		    }
+
+		    retries--;
+		}
+		getDnsVerified().set(false);
+	    } finally {
+		getDnsVerifying().countDown();
+	    }
+	}
+    }
+
+    public ExecutorService getDnsExecutor() {
+	return dnsExecutor;
+    }
+
+    public CountDownLatch getDnsVerifying() {
+	return dnsVerifying;
+    }
+
+    public AtomicBoolean getDnsVerified() {
+	return dnsVerified;
+    }
 
     public JwtClientInterceptor getJwtInterceptor() {
 	return jwtInterceptor;

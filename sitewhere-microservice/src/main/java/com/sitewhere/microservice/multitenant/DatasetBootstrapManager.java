@@ -104,6 +104,9 @@ public class DatasetBootstrapManager extends TenantEngineLifecycleComponent impl
 	    String tenantName = engine.getTenant().getName();
 	    long start = System.currentTimeMillis();
 
+	    // Run provisioning logic.
+	    getTenantEngine().lifecycleProvision(monitor);
+
 	    // Execute tenant bootstrap.
 	    IDatasetTemplate template = engine.getDatasetTemplate();
 	    engine.tenantBootstrap(template, monitor);

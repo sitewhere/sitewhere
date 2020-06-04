@@ -167,7 +167,7 @@ public class MongoPersistence {
 	    SearchResults<T> results = new SearchResults<T>(matches);
 	    MongoConverter<T> converter = lookup.getConverterFor(api);
 	    try {
-		results.setNumResults(collection.count(query));
+		results.setNumResults(collection.countDocuments(query));
 		while (cursor.hasNext()) {
 		    Document match = cursor.next();
 		    matches.add(converter.convert(match));
@@ -204,7 +204,7 @@ public class MongoPersistence {
 	    SearchResults<T> results = new SearchResults<T>(matches);
 	    MongoConverter<T> converter = lookup.getConverterFor(api);
 	    try {
-		results.setNumResults(collection.count(query));
+		results.setNumResults(collection.countDocuments(query));
 		while (cursor.hasNext()) {
 		    Document match = cursor.next();
 		    matches.add(converter.convert(match));
