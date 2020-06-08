@@ -7,8 +7,8 @@
  */
 package com.sitewhere.commands.configuration.router.devicetypemapping;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -17,10 +17,13 @@ import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
+/**
+ * Data structure for device type mapping router configuration.
+ */
 public class DeviceTypeMappingConfiguration extends RouterConfiguration {
 
     /** Map of device type tokens to command destination ids */
-    private Map<String, String> mappings = new HashMap<String, String>();
+    private List<DeviceTypeMapping> mappings = new ArrayList<>();
 
     /** Default destination for unmapped specifications */
     private String defaultDestination = null;
@@ -39,7 +42,7 @@ public class DeviceTypeMappingConfiguration extends RouterConfiguration {
     public void loadFrom(JsonNode json) throws SiteWhereException {
 	try {
 	    JsonNode mappings = json.findValue("mappings");
-	    this.mappings = MarshalUtils.unmarshalJsonNode(mappings, Map.class);
+	    this.mappings = MarshalUtils.unmarshalJsonNode(mappings, List.class);
 	    JsonNode defaultDestination = json.findValue("defaultDestination");
 	    this.defaultDestination = defaultDestination.asText();
 	} catch (JsonProcessingException e) {
@@ -47,11 +50,11 @@ public class DeviceTypeMappingConfiguration extends RouterConfiguration {
 	}
     }
 
-    public Map<String, String> getMappings() {
+    public List<DeviceTypeMapping> getMappings() {
 	return mappings;
     }
 
-    public void setMappings(Map<String, String> mappings) {
+    public void setMappings(List<DeviceTypeMapping> mappings) {
 	this.mappings = mappings;
     }
 

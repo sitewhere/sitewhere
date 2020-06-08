@@ -46,15 +46,6 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
     /** Configuration */
     private DeviceRegistrationTenantConfiguration configuration;
 
-    /** Device type used if not provided in registration request */
-    private IDeviceType defaultDeviceType;
-
-    /** Customer used for automatic assignment */
-    private ICustomer defaultCustomer;
-
-    /** Area used for automatic assignment */
-    private IArea defaultArea;
-
     /** Thread pool */
     private ExecutorService executor;
 
@@ -82,7 +73,19 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	new RegistrationInitializer(this).run();
+	if (isUseDefaultDeviceType() && getDefaultDeviceTypeToken() != null) {
+	    getLogger()
+		    .info(String.format("Registration manager will use default device type '%s' if none is specified.",
+			    getDefaultDeviceTypeToken()));
+	}
+	if (isUseDefaultCustomer() && getDefaultCustomerToken() != null) {
+	    getLogger().info(String.format("Registration manager will use default customer '%s' if none is specified.",
+		    getDefaultCustomerToken()));
+	}
+	if (isUseDefaultArea() && getDefaultAreaToken() != null) {
+	    getLogger().info(String.format("Registration manager will use default area '%s' if none is specified.",
+		    getDefaultAreaToken()));
+	}
     }
 
     /*
@@ -115,57 +118,6 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
     @Override
     public void handleUnregisteredDeviceEvent(IDecodedEventPayload payload) throws SiteWhereException {
 	getLogger().info("Would be handling unregistered device event for " + payload.getDeviceToken());
-    }
-
-    /**
-     * Handle registration initialization in a thread with system user access.
-     */
-    protected class RegistrationInitializer extends SystemUserRunnable {
-
-	public RegistrationInitializer(ITenantEngineLifecycleComponent component) {
-	    super(component);
-	}
-
-	/*
-	 * @see com.sitewhere.microservice.security.SystemUserRunnable#runAsSystemUser()
-	 */
-	@Override
-	public void runAsSystemUser() throws SiteWhereException {
-	    if (isUseDefaultDeviceType() && getDefaultDeviceTypeToken() != null) {
-		getLogger().info(
-			String.format("Registration manager will use default device type '%s' if none is specified.",
-				getDefaultDeviceTypeToken()));
-		IDeviceType deviceType = getDeviceManagement().getDeviceTypeByToken(getDefaultDeviceTypeToken());
-		if (deviceType == null) {
-		    throw new SiteWhereException(
-			    String.format("Registration manager auto assignment device type '%s' is invalid.",
-				    getDefaultDeviceTypeToken()));
-		}
-		DeviceRegistrationManager.this.defaultDeviceType = deviceType;
-	    }
-	    if (isUseDefaultCustomer() && getDefaultCustomerToken() != null) {
-		getLogger()
-			.info(String.format("Registration manager will use default customer '%s' if none is specified.",
-				getDefaultCustomerToken()));
-		ICustomer customer = getDeviceManagement().getCustomerByToken(getDefaultCustomerToken());
-		if (customer == null) {
-		    throw new SiteWhereException(
-			    String.format("Registration manager auto assignment customer '%s' is invalid.",
-				    getDefaultCustomerToken()));
-		}
-		DeviceRegistrationManager.this.defaultCustomer = customer;
-	    }
-	    if (isUseDefaultArea() && getDefaultAreaToken() != null) {
-		getLogger().info(String.format("Registration manager will use default area '%s' if none is specified.",
-			getDefaultAreaToken()));
-		IArea area = getDeviceManagement().getAreaByToken(getDefaultAreaToken());
-		if (area == null) {
-		    throw new SiteWhereException(String.format(
-			    "Registration manager auto assignment area '%s' is invalid.", getDefaultAreaToken()));
-		}
-		DeviceRegistrationManager.this.defaultArea = area;
-	    }
-	}
     }
 
     /**
@@ -252,16 +204,14 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
 	 */
 	protected IDeviceType getDeviceTypeFor(IDeviceRegistrationPayload registration) throws SiteWhereException {
 	    String deviceTypeToken = registration.getDeviceRegistrationRequest().getDeviceTypeToken();
-	    if (deviceTypeToken != null) {
-		IDeviceType override = getDeviceManagement().getDeviceTypeByToken(deviceTypeToken);
-		if (override == null) {
-		    throw new SiteWhereException("Registration request specified invalid device type token.");
+	    if (deviceTypeToken == null) {
+		if (isUseDefaultDeviceType()) {
+		    deviceTypeToken = getDefaultDeviceTypeToken();
+		} else {
+		    throw new SiteWhereException("Device type not passed and no default provided.");
 		}
-		return override;
-	    } else if (isUseDefaultDeviceType()) {
-		return getDefaultDeviceType();
 	    }
-	    throw new SiteWhereException("Device type not passed and no default provided.");
+	    return getDeviceManagement().getDeviceTypeByToken(deviceTypeToken);
 	}
 
 	/**
@@ -273,16 +223,10 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
 	 */
 	protected ICustomer getCustomerFor(IDeviceRegistrationPayload registration) throws SiteWhereException {
 	    String customerToken = registration.getDeviceRegistrationRequest().getCustomerToken();
-	    if (customerToken != null) {
-		ICustomer override = getDeviceManagement().getCustomerByToken(customerToken);
-		if (override == null) {
-		    throw new SiteWhereException("Registration request specified invalid customer token.");
-		}
-		return override;
-	    } else if (isUseDefaultCustomer()) {
-		return getDefaultCustomer();
+	    if (customerToken == null && isUseDefaultCustomer()) {
+		customerToken = getDefaultCustomerToken();
 	    }
-	    return null;
+	    return customerToken != null ? getDeviceManagement().getCustomerByToken(customerToken) : null;
 	}
 
 	/**
@@ -294,16 +238,10 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
 	 */
 	protected IArea getAreaFor(IDeviceRegistrationPayload registration) throws SiteWhereException {
 	    String areaToken = registration.getDeviceRegistrationRequest().getAreaToken();
-	    if (areaToken != null) {
-		IArea override = getDeviceManagement().getAreaByToken(areaToken);
-		if (override == null) {
-		    throw new SiteWhereException("Registration request specified invalid area token.");
-		}
-		return override;
-	    } else if (isUseDefaultArea()) {
-		return getDefaultArea();
+	    if (areaToken == null && isUseDefaultArea()) {
+		areaToken = getDefaultAreaToken();
 	    }
-	    return null;
+	    return areaToken != null ? getDeviceManagement().getAreaByToken(areaToken) : null;
 	}
 
 	/**
@@ -363,7 +301,7 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
      */
     @Override
     public boolean isUseDefaultDeviceType() {
-	return getConfiguration().getAssignmentDefaults().isUseDefaultDeviceType();
+	return getConfiguration().getAssignmentDefaults().getDefaultDeviceTypeToken() != null;
     }
 
     /*
@@ -382,7 +320,7 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
      */
     @Override
     public boolean isUseDefaultCustomer() {
-	return getConfiguration().getAssignmentDefaults().isUseDefaultCustomer();
+	return getConfiguration().getAssignmentDefaults().getDefaultCustomerToken() != null;
     }
 
     /*
@@ -399,7 +337,7 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
      */
     @Override
     public boolean isUseDefaultArea() {
-	return getConfiguration().getAssignmentDefaults().isUseDefaultArea();
+	return getConfiguration().getAssignmentDefaults().getDefaultAreaToken() != null;
     }
 
     /*
@@ -413,18 +351,6 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
 
     public DeviceRegistrationTenantConfiguration getConfiguration() {
 	return configuration;
-    }
-
-    protected IDeviceType getDefaultDeviceType() {
-	return defaultDeviceType;
-    }
-
-    protected ICustomer getDefaultCustomer() {
-	return defaultCustomer;
-    }
-
-    protected IArea getDefaultArea() {
-	return defaultArea;
     }
 
     protected ExecutorService getExecutor() {

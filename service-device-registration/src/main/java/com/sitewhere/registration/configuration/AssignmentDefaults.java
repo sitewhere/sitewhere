@@ -12,31 +12,14 @@ package com.sitewhere.registration.configuration;
  */
 public class AssignmentDefaults {
 
-    /** Indicates if a default device type is used if not provided in request */
-    private boolean useDefaultDeviceType = false;
-
     /** Id of device type that will be used if none provided */
     private String defaultDeviceTypeToken = null;
-
-    /** Indicates if a default customer used if not provided in request */
-    private boolean useDefaultCustomer = false;
 
     /** Token of customer that will be used by default in assignment */
     private String defaultCustomerToken = null;
 
-    /** Indicates if a default area used if not provided in request */
-    private boolean useDefaultArea = false;
-
     /** Token of area that will be used by default in assignment */
     private String defaultAreaToken = null;
-
-    public boolean isUseDefaultDeviceType() {
-	return useDefaultDeviceType;
-    }
-
-    public void setUseDefaultDeviceType(boolean useDefaultDeviceType) {
-	this.useDefaultDeviceType = useDefaultDeviceType;
-    }
 
     public String getDefaultDeviceTypeToken() {
 	return defaultDeviceTypeToken;
@@ -46,28 +29,12 @@ public class AssignmentDefaults {
 	this.defaultDeviceTypeToken = defaultDeviceTypeToken;
     }
 
-    public boolean isUseDefaultCustomer() {
-	return useDefaultCustomer;
-    }
-
-    public void setUseDefaultCustomer(boolean useDefaultCustomer) {
-	this.useDefaultCustomer = useDefaultCustomer;
-    }
-
     public String getDefaultCustomerToken() {
 	return defaultCustomerToken;
     }
 
     public void setDefaultCustomerToken(String defaultCustomerToken) {
 	this.defaultCustomerToken = defaultCustomerToken;
-    }
-
-    public boolean isUseDefaultArea() {
-	return useDefaultArea;
-    }
-
-    public void setUseDefaultArea(boolean useDefaultArea) {
-	this.useDefaultArea = useDefaultArea;
     }
 
     public String getDefaultAreaToken() {

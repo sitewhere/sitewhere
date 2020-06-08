@@ -109,23 +109,11 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
     /** Allows blocking until Syncope is available */
     private CountDownLatch syncopeAvailable = new CountDownLatch(1);
 
-    /** Application service */
-    private ApplicationService applicationService;
-
     /** Provides thread for waiter */
     private ExecutorService waiter;
 
     /** Provides thread for refreshing access token */
     private ExecutorService refresher;
-
-    /** User service */
-    private UserService userService;
-
-    /** Schema service */
-    private SchemaService schemaService;
-
-    /** AnyType service */
-    private AnyTypeClassService anyTypeClassService;
 
     @Inject
     public SyncopeUserManagement(InstanceManagementConfiguration configuration) {
@@ -171,10 +159,6 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	getLogger().info(String.format("Syncope client connected to %s:%d using domain %s.",
 		getConfiguration().getUserManagement().getSyncopeHost(),
 		getConfiguration().getUserManagement().getSyncopePort(), domain));
-	this.applicationService = client.getService(ApplicationService.class);
-	this.userService = client.getService(UserService.class);
-	this.schemaService = client.getService(SchemaService.class);
-	this.anyTypeClassService = client.getService(AnyTypeClassService.class);
 
 	// Verify that SiteWhere application exists.
 	getOrCreateSiteWhereApplication();
