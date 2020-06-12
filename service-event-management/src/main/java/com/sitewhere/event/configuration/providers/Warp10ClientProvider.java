@@ -9,9 +9,9 @@ package com.sitewhere.event.configuration.providers;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.sitewhere.datastore.DatastoreDefinition;
 import com.sitewhere.event.configuration.EventManagementTenantConfiguration;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
+import com.sitewhere.microservice.datastore.DatastoreDefinition;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.warp10.Warp10Client;
 import com.sitewhere.warp10.Warp10Configuration;

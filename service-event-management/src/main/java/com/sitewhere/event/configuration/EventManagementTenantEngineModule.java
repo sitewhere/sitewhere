@@ -9,13 +9,13 @@ package com.sitewhere.event.configuration;
 
 import java.util.Map;
 
-import com.sitewhere.datastore.DatastoreDefinition;
 import com.sitewhere.event.configuration.providers.TimeSeriesProvider;
 import com.sitewhere.event.configuration.providers.Warp10ClientProvider;
 import com.sitewhere.event.persistence.warp10.Warp10DeviceEventManagement;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
 import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.microservice.configuration.model.instance.persistence.TimeSeriesConfiguration;
+import com.sitewhere.microservice.datastore.DatastoreDefinition;
 import com.sitewhere.microservice.multitenant.TenantEngineModule;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.warp10.Warp10Client;

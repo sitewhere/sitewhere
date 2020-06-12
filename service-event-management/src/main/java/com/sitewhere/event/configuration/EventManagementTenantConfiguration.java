@@ -7,7 +7,7 @@
  */
 package com.sitewhere.event.configuration;
 
-import com.sitewhere.datastore.DatastoreDefinition;
+import com.sitewhere.microservice.datastore.DatastoreDefinition;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineConfiguration;
 
 /**
