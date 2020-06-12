@@ -7,10 +7,10 @@
  */
 package com.sitewhere.schedule.microservice;
 
-import com.sitewhere.datastore.DatastoreDefinition;
 import com.sitewhere.grpc.service.ScheduleManagementGrpc;
 import com.sitewhere.microservice.api.schedule.IScheduleManagement;
 import com.sitewhere.microservice.api.schedule.ScheduleManagementRequestBuilder;
+import com.sitewhere.microservice.datastore.DatastoreDefinition;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.scripting.Binding;
 import com.sitewhere.rdb.RdbPersistenceOptions;

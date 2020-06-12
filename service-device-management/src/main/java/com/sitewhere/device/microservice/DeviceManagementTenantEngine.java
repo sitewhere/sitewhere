@@ -7,7 +7,6 @@
  */
 package com.sitewhere.device.microservice;
 
-import com.sitewhere.datastore.DatastoreDefinition;
 import com.sitewhere.device.DeviceManagementTriggers;
 import com.sitewhere.device.configuration.DeviceManagementTenantConfiguration;
 import com.sitewhere.device.configuration.DeviceManagementTenantEngineModule;
@@ -40,6 +39,7 @@ import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
 import com.sitewhere.grpc.service.DeviceManagementGrpc;
 import com.sitewhere.microservice.api.device.DeviceManagementRequestBuilder;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.datastore.DatastoreDefinition;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.scripting.Binding;
 import com.sitewhere.rdb.RdbPersistenceOptions;

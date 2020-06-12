@@ -8,7 +8,7 @@
 package com.sitewhere.batch.configuration;
 
 import com.sitewhere.batch.configuration.manager.BatchOperationManagerConfiguration;
-import com.sitewhere.datastore.DatastoreDefinition;
+import com.sitewhere.microservice.datastore.DatastoreDefinition;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineConfiguration;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;

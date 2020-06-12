@@ -7,9 +7,6 @@ dependencies {
 	// SiteWhere RDB integration.	
     compile group: 'com.sitewhere', name: 'sitewhere-rdb', version: "${rootProject.ext['sitewhere.integration.api.version']}"
 
-	// SiteWhere Datastore support.	
-    compile group: 'com.sitewhere', name: 'sitewhere-datastore', version: "${rootProject.ext['sitewhere.integration.api.version']}"
-
     compile group: 'org.apache.httpcomponents', name: 'httpclient'
     
     compile group: 'org.graalvm.sdk', name: 'graal-sdk', version: '19.2.1'

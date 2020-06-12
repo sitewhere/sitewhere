@@ -7,7 +7,6 @@
  */
 package com.sitewhere.devicestate.microservice;
 
-import com.sitewhere.datastore.DatastoreDefinition;
 import com.sitewhere.devicestate.configuration.DeviceStateTenantConfiguration;
 import com.sitewhere.devicestate.configuration.DeviceStateTenantEngineModule;
 import com.sitewhere.devicestate.grpc.DeviceStateImpl;
@@ -19,6 +18,7 @@ import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
 import com.sitewhere.grpc.service.DeviceStateGrpc;
 import com.sitewhere.microservice.api.state.IDeviceStateManagement;
+import com.sitewhere.microservice.datastore.DatastoreDefinition;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.scripting.Binding;
 import com.sitewhere.rdb.RdbPersistenceOptions;

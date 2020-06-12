@@ -9,6 +9,7 @@ package com.sitewhere.event.configuration.providers;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.sitewhere.datastore.DatastoreDefinition;
 import com.sitewhere.event.configuration.EventManagementTenantConfiguration;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
@@ -26,11 +27,15 @@ public class Warp10ClientProvider implements Provider<Warp10Client> {
     /** Injected configuration */
     private EventManagementTenantConfiguration configuration;
 
+    /** Datastore information */
+    private DatastoreDefinition datastore;
+
     @Inject
     public Warp10ClientProvider(IEventManagementTenantEngine tenantEngine,
-	    EventManagementTenantConfiguration configuration) {
+	    EventManagementTenantConfiguration configuration, DatastoreDefinition datastore) {
 	this.tenantEngine = tenantEngine;
 	this.configuration = configuration;
+	this.datastore = datastore;
     }
 
     /*
@@ -40,7 +45,7 @@ public class Warp10ClientProvider implements Provider<Warp10Client> {
     public Warp10Client get() {
 	try {
 	    Warp10Configuration warp10 = new Warp10Configuration(getTenantEngine());
-	    warp10.loadFrom(getConfiguration().getDatastore().getConfiguration());
+	    warp10.loadFrom(getDatastore().getConfiguration());
 	    return new Warp10Client(warp10);
 	} catch (SiteWhereException e) {
 	    throw new RuntimeException("Unable to load Warp 10 configuration.o", e);
@@ -53,5 +58,9 @@ public class Warp10ClientProvider implements Provider<Warp10Client> {
 
     protected IEventManagementTenantEngine getTenantEngine() {
 	return tenantEngine;
+    }
+
+    public DatastoreDefinition getDatastore() {
+	return datastore;
     }
 }
