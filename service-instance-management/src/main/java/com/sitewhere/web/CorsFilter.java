@@ -27,7 +27,8 @@ public class CorsFilter implements ContainerResponseFilter {
 	    throws IOException {
 	responseContext.getHeaders().add("Access-Control-Allow-Origin", "*");
 	responseContext.getHeaders().add("Access-Control-Allow-Credentials", "true");
-	responseContext.getHeaders().add("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
+	responseContext.getHeaders().add("Access-Control-Allow-Headers",
+		"origin, content-type, accept, authorization, x-sitewhere-tenant-id, x-sitewhere-tenant-auth");
 	responseContext.getHeaders().add("Access-Control-Expose-Headers",
 		"x-sitewhere-jwt, x-sitewhere-error, x-sitewhere-error-code");
 	responseContext.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
