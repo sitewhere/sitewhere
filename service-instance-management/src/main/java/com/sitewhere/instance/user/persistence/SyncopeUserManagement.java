@@ -432,7 +432,18 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
      */
     @Override
     public IUser deleteUser(String username) throws SiteWhereException {
-	throw new RuntimeException("Not implemented.");
+	getLogger().info("Deleting SiteWhere User: {}", username);
+	UserTO user = getUserService().read(username);
+	if (user == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR);
+	}
+	User swuser = User.copy(convertUser(user));
+	try {
+	    getUserService().delete(user.getKey());
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Unable to update user.", t);
+	}
+	return swuser;
     }
 
     /*
