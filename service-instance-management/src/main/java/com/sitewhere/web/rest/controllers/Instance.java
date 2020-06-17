@@ -122,9 +122,13 @@ public class Instance {
 	String namespace = getMicroservice().getInstanceSettings().getKubernetesNamespace();
 	SiteWhereMicroserviceList list = getMicroservice().getSiteWhereKubernetesClient()
 		.getAllMicroservices(namespace);
-	List<SiteWhereMicroservice> all = new ArrayList<>();
-	all.addAll(list.getItems());
-	Collections.sort(all, new Comparator<SiteWhereMicroservice>() {
+	List<SiteWhereMicroservice> multitenant = new ArrayList<>();
+	for (SiteWhereMicroservice microservice : list.getItems()) {
+	    if (microservice.getSpec().isMultitenant()) {
+		multitenant.add(microservice);
+	    }
+	}
+	Collections.sort(multitenant, new Comparator<SiteWhereMicroservice>() {
 
 	    @Override
 	    public int compare(SiteWhereMicroservice arg0, SiteWhereMicroservice arg1) {
@@ -132,7 +136,7 @@ public class Instance {
 	    }
 	});
 	List<MicroserviceSummary> summaries = new ArrayList<>();
-	for (SiteWhereMicroservice microservice : all) {
+	for (SiteWhereMicroservice microservice : multitenant) {
 	    summaries.add(K8sModelConverter.convert(microservice));
 	}
 	return Response.ok(summaries).build();
