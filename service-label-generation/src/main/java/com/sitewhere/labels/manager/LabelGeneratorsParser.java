@@ -31,7 +31,7 @@ public class LabelGeneratorsParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(LabelGeneratorsParser.class);
 
     /** Type for QR code generator */
-    public static final String TYPE_QRCODE = "qrCode";
+    public static final String TYPE_QRCODE = "qr-code";
 
     /**
      * Parse label generator configurations to build runtime components.
