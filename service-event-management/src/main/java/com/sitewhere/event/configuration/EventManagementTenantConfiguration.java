@@ -15,8 +15,14 @@ import com.sitewhere.spi.microservice.multitenant.ITenantEngineConfiguration;
  */
 public class EventManagementTenantConfiguration implements ITenantEngineConfiguration {
 
+    /** Default number of threads used for concurrent processing of events */
+    private static final int DEFAULT_PROCESSING_THREAD_COUNT = 10;
+
     /** Datastore definition */
     private DatastoreDefinition datastore;
+
+    /** Number of threads used for concurrent processing of events */
+    private int processingThreadCount = DEFAULT_PROCESSING_THREAD_COUNT;
 
     public DatastoreDefinition getDatastore() {
 	return datastore;
@@ -24,5 +30,13 @@ public class EventManagementTenantConfiguration implements ITenantEngineConfigur
 
     public void setDatastore(DatastoreDefinition datastore) {
 	this.datastore = datastore;
+    }
+
+    public int getProcessingThreadCount() {
+	return processingThreadCount;
+    }
+
+    public void setProcessingThreadCount(int processingThreadCount) {
+	this.processingThreadCount = processingThreadCount;
     }
 }
