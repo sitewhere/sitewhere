@@ -20,8 +20,8 @@ ext['git.revision.abbrev'] = ext.git.head().abbreviatedId
 ext['docker.base.image'] = 'openjdk:8-jre-alpine'
 ext['docker.maintainer'] = 'admin@sitewhere.com'
 
-ext['sitewhere.microservice.api.version'] = '3.0.0.beta4'
-ext['sitewhere.integration.api.version'] = '3.0.0.beta3'
+ext['sitewhere.microservice.api.version'] = '3.0.0.beta5'
+ext['sitewhere.integration.api.version'] = '3.0.0.beta4'
 ext['kafka.version'] = '2.0.0'
 ext['protobuf.version'] = '3.5.1'
 ext['grpc.version'] = '1.25.0'
@@ -50,7 +50,7 @@ subprojects {
 	license {
 		header rootProject.file('HEADER')
     	include "**/*.java"
-	}
+	}	
 	
 	// Allow Docker settings to be overridden by build environment.
 	if (System.getenv("DOCKER_REGISTRY_URL") != null) registryUrl = System.getenv("DOCKER_REGISTRY_URL")
@@ -98,6 +98,19 @@ subprojects {
     apply plugin: 'java'
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
+	
+	// Replace tokens with version info.
+	processResources {
+	    from(sourceSets.main.resources.srcDirs) {
+	        include '**/*.properties'
+	        filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
+	            'build.timestamp': new java.text.SimpleDateFormat('yyyyMMddHHmmss').format(new Date()),
+	            'version.identifier' : project.version,
+	            'git.revision': rootProject.ext['git.revision'],
+	            'git.revision.abbrev': rootProject.ext['git.revision.abbrev']
+	        ])
+	    }
+	}
     
     // Common dependencies used for all projects.
     dependencies {
