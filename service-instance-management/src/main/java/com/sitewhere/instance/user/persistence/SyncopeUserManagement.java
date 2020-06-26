@@ -18,27 +18,22 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.sitewhere.rest.model.user.*;
+import com.sitewhere.spi.user.*;
+import com.sitewhere.spi.user.request.IRoleCreateRequest;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.syncope.client.lib.SyncopeClient;
 import org.apache.syncope.client.lib.SyncopeClientFactoryBean;
 import org.apache.syncope.common.lib.SyncopeClientException;
 import org.apache.syncope.common.lib.patch.AttrPatch;
 import org.apache.syncope.common.lib.patch.PasswordPatch;
+import org.apache.syncope.common.lib.patch.StringPatchItem;
 import org.apache.syncope.common.lib.patch.UserPatch;
-import org.apache.syncope.common.lib.to.AnyTypeClassTO;
-import org.apache.syncope.common.lib.to.ApplicationTO;
-import org.apache.syncope.common.lib.to.AttrTO;
-import org.apache.syncope.common.lib.to.PagedResult;
-import org.apache.syncope.common.lib.to.PlainSchemaTO;
-import org.apache.syncope.common.lib.to.PrivilegeTO;
-import org.apache.syncope.common.lib.to.UserTO;
+import org.apache.syncope.common.lib.to.*;
 import org.apache.syncope.common.lib.types.AttrSchemaType;
 import org.apache.syncope.common.lib.types.SchemaType;
 import org.apache.syncope.common.rest.api.beans.AnyQuery;
-import org.apache.syncope.common.rest.api.service.AnyTypeClassService;
-import org.apache.syncope.common.rest.api.service.ApplicationService;
-import org.apache.syncope.common.rest.api.service.SchemaService;
-import org.apache.syncope.common.rest.api.service.UserService;
+import org.apache.syncope.common.rest.api.service.*;
 
 import com.evanlennick.retry4j.CallExecutorBuilder;
 import com.evanlennick.retry4j.Status;
@@ -51,9 +46,6 @@ import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.microservice.lifecycle.AsyncStartLifecycleComponent;
 import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.rest.model.user.GrantedAuthority;
-import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
-import com.sitewhere.rest.model.user.User;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
@@ -61,10 +53,6 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.user.IGrantedAuthority;
-import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
-import com.sitewhere.spi.user.IUser;
-import com.sitewhere.spi.user.IUserSearchCriteria;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
 
@@ -249,6 +237,13 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	    user.getPrivileges().add(auth);
 	});
 
+	/*if(swuser.getRoles() != null ) {
+	    swuser.getRoles().forEach(auth -> {
+		user.getRoles().add(auth);
+	    });
+	}*/
+
+
 	try {
 	    getUserService().create(user, true);
 	} catch (Throwable t) {
@@ -329,6 +324,11 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	    user.getPrivileges().add(auth);
 	});
 
+	//TODO: Yo lo haria asi, para despues persistir los nuevos roles
+	request.getRoles().forEach(auth -> {
+	    userPatch.getRoles().add(new StringPatchItem.Builder().value(auth).build());
+	});
+
 	try {
 	    getUserService().update(userPatch);
 	} catch (Throwable t) {
@@ -346,6 +346,7 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
     public IUser getUserByUsername(String username) throws SiteWhereException {
 	try {
 	    UserTO match = getUserService().read(username);
+	    getLogger().info("tiene roles? " + (match.getRoles().size()>0 ? "si":"no") + "y son: " + match.getRoles().size());
 	    return convertUser(match);
 	} catch (Throwable t) {
 	    throw new SiteWhereException("Unable to get user by username.", t);
@@ -362,6 +363,14 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
     protected IUser convertUser(UserTO user) throws SiteWhereException {
 	Optional<AttrTO> json = user.getPlainAttr(ATTR_JSON);
 	if (json.isPresent()) {
+
+	    getLogger().info("posicion cero: " + json.get().getValues().get(0).getBytes());
+	    getLogger().info("bytes: " + json.get().getValues().get(0).getBytes());
+	    getLogger().info("json: " + json.get().getValues() );
+	    for(String a: json.get().getValues()) {
+	        getLogger().info(a);
+	    }
+
 	    String encoded = new String(json.get().getValues().get(0).getBytes());
 	    return MarshalUtils.unmarshalJson(Base64.decodeBase64(encoded), User.class);
 	}
@@ -561,6 +570,72 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	}
     }
 
+
+    //*******************inicio********************************
+
+    @Override public List<IRole> getRoles(String username) throws SiteWhereException {
+	IUser user = getUserByUsername(username);
+	List<String> userRoles = user.getRoles();
+
+	getLogger().info("roles " + userRoles.size());
+
+
+	ISearchResults<IRole> all = listRoles(new RoleSearchCriteria(1, 0));
+	List<IRole> matched = new ArrayList<IRole>();
+	for (IRole role : all.getResults()) {
+	    getLogger().info("comparando:" + role.getRole());
+	    if (userRoles.contains(role.getRole())) {
+		matched.add(role);
+	    }
+	}
+	return matched;
+    }
+
+    @Override public List<IRole> addRoles(String username, List<String> roles) throws SiteWhereException {
+	throw new RuntimeException("Not implemented.");
+    }
+
+    @Override public List<IRole> removeRoles(String username, List<String> roles) throws SiteWhereException {
+	throw new RuntimeException("Not implemented.");
+    }
+
+    @Override public IRole createRole(IRoleCreateRequest request) throws SiteWhereException {
+	throw new RuntimeException("Not implemented.");
+    }
+
+    @Override public IRole getRoleByName(String name) throws SiteWhereException {
+	throw new RuntimeException("Not implemented.");
+    }
+
+    @Override public IRole updateRole(String name, IRoleCreateRequest request) throws SiteWhereException {
+	throw new RuntimeException("Not implemented.");
+    }
+
+    @Override public ISearchResults<IRole> listRoles(IRoleSearchCriteria criteria) throws SiteWhereException {
+	RoleService roleService = client.getService(RoleService.class);
+	List<RoleTO> allRoles = roleService.list();
+
+	getLogger().info("listado roles" + allRoles.size());
+	List<IRole> roles = new ArrayList<>();
+	if (allRoles != null) {
+
+	    getLogger().info("es distinto de nulo");
+	    allRoles.forEach(role -> {
+	        getLogger().info("Este es el role: " + role.getKey());
+	        Role sRole = new Role();
+	        sRole.setRole(role.getKey());
+	        sRole.setDescription("descripcion");
+		roles.add(sRole);
+	    });
+	}
+	return new SearchResults<IRole>(roles);
+    }
+
+    @Override public void deleteRole(String role) throws SiteWhereException {
+	throw new RuntimeException("Not implemented.");
+    }
+
+    /***********************fin*******************************
     /**
      * Waits for Syncope connection to become available.
      */

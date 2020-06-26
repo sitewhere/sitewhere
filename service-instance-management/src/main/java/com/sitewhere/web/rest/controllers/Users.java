@@ -23,6 +23,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.sitewhere.rest.model.user.Role;
+import com.sitewhere.spi.user.IRole;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -70,7 +72,7 @@ public class Users {
 
     /**
      * Create a new user.
-     * 
+     *
      * @param input
      * @return
      * @throws SiteWhereException
@@ -90,7 +92,7 @@ public class Users {
 
     /**
      * Update an existing user.
-     * 
+     *
      * @param username
      * @param input
      * @return
@@ -107,7 +109,7 @@ public class Users {
 
     /**
      * Get a user by unique username.
-     * 
+     *
      * @param username
      * @return
      * @throws SiteWhereException
@@ -127,7 +129,7 @@ public class Users {
 
     /**
      * Delete information for a given user based on username.
-     * 
+     *
      * @param username
      * @return
      * @throws SiteWhereException
@@ -143,7 +145,7 @@ public class Users {
 
     /**
      * Get a list of detailed authority information for a given user.
-     * 
+     *
      * @param username
      * @return
      * @throws SiteWhereException
@@ -164,7 +166,7 @@ public class Users {
 
     /**
      * List users matching criteria.
-     * 
+     *
      * @return
      * @throws SiteWhereException
      */
@@ -173,6 +175,27 @@ public class Users {
     public Response listUsers() throws SiteWhereException {
 	UserSearchCriteria criteria = new UserSearchCriteria();
 	return Response.ok(getUserManagement().listUsers(criteria)).build();
+    }
+
+    /**
+     * Get a list of detailed role information for a given user.
+     *
+     * @param username
+     * @return
+     * @throws SiteWhereException
+     */
+    @GET
+    @Path("/{username}/roles")
+    @Operation(summary = "Get roles for user", description = "Get roles for user")
+    public Response getRolesForUsername(
+		    @Parameter(description = "Unique username", required = true) @PathParam("username") String username)
+		    throws SiteWhereException {
+	List<IRole> matches = getUserManagement().getRoles(username);
+	List<Role> converted = new ArrayList<Role>();
+	for (IRole role : matches) {
+	    converted.add(Role.copy(role));
+	}
+	return Response.ok(new SearchResults<Role>(converted)).build();
     }
 
     protected IUserManagement getUserManagement() throws SiteWhereException {

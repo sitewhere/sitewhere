@@ -31,7 +31,7 @@ public class UserManagementPersistenceLogic extends Persistence {
 
     /**
      * Common logic for creating a user based on an incoming request.
-     * 
+     *
      * @param source
      * @param encodePassword
      * @return
@@ -51,7 +51,7 @@ public class UserManagementPersistenceLogic extends Persistence {
 	user.setLastName(request.getLastName());
 	user.setLastLogin(null);
 	user.setStatus(request.getStatus());
-	user.setAuthorities(request.getAuthorities());
+	user.setRoles(request.getRoles());
 
 	return user;
     }
@@ -59,7 +59,7 @@ public class UserManagementPersistenceLogic extends Persistence {
     /**
      * Common code for copying information from an update request to an existing
      * user.
-     * 
+     *
      * @param source
      * @param target
      * @param encodePassword
@@ -86,8 +86,8 @@ public class UserManagementPersistenceLogic extends Persistence {
 	if (request.getStatus() != null) {
 	    target.setStatus(request.getStatus());
 	}
-	if (request.getAuthorities() != null) {
-	    target.setAuthorities(request.getAuthorities());
+	if (request.getRoles() != null) {
+	    target.setRoles(request.getRoles());
 	}
 	if (request.getStatus() != null) {
 	    target.setStatus(request.getStatus());
@@ -97,7 +97,7 @@ public class UserManagementPersistenceLogic extends Persistence {
     /**
      * Common logic for deleting a user. Takes care of related tasks such as
      * deleting user id from tenant authorized users.
-     * 
+     *
      * @param username
      * @param tenantManagement
      * @throws SiteWhereException
@@ -117,7 +117,7 @@ public class UserManagementPersistenceLogic extends Persistence {
 
     /**
      * Common logic for creating a granted authority based on an incoming request.
-     * 
+     *
      * @param request
      * @return
      * @throws SiteWhereException
@@ -137,7 +137,7 @@ public class UserManagementPersistenceLogic extends Persistence {
 
     /**
      * Common logic for encoding a plaintext password.
-     * 
+     *
      * @param plaintext
      * @return
      */
