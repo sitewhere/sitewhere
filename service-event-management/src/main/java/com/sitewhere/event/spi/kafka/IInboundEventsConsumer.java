@@ -7,10 +7,25 @@
  */
 package com.sitewhere.event.spi.kafka;
 
+import com.sitewhere.event.spi.processing.IEventManagementConfiguration;
+import com.sitewhere.event.spi.processing.IEventManagementStoreLogic;
 import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer;
 
 /**
  * Kafka consumer for events which have already completed inbound processing.
  */
 public interface IInboundEventsConsumer extends IMicroserviceKafkaConsumer {
+    /**
+     * Get configuration options for inbound processing.
+     *
+     * @return
+     */
+    public IEventManagementConfiguration getEventManagementConfiguration();
+
+    /**
+     * Get processing logic component used for inbound event payloads.
+     *
+     * @return
+     */
+    public IEventManagementStoreLogic getEventManagementStoreLogic();
 }
