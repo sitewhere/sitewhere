@@ -12,6 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.sitewhere.event.processing.EventManagementStoreLogic;
+import com.sitewhere.event.spi.processing.IEventManagementConfiguration;
+import com.sitewhere.event.spi.processing.IEventManagementStoreLogic;
+import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
+import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.consumer.OffsetCommitCallback;
@@ -28,14 +34,6 @@ import com.sitewhere.grpc.model.DeviceEventModel.GPreprocessedEventPayload;
 import com.sitewhere.rest.model.device.event.kafka.PreprocessedEventPayload;
 import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
-import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 
 import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
@@ -52,13 +50,19 @@ public class InboundEventsConsumer extends MicroserviceKafkaConsumer implements 
     /** Suffix for group id */
     private static String GROUP_ID_SUFFIX = "inbound-event-consumers";
 
-    /** Counter for processed events */
-    private static final Gauge KAFFA_BATCH_SIZE = TenantEngineLifecycleComponent
-	    .createGaugeMetric("inbound_events_kafka_batch_size", "Size of Kafka inbound event batches");
+	/** Get settings for inbound processing */
+	private IEventManagementConfiguration eventManagementConfiguration;
 
-    /** Counter for processed events */
-    private static final Counter PROCESSED_EVENTS = TenantEngineLifecycleComponent
-	    .createCounterMetric("inbound_events_event_count", "Count of total events processed by consumer");
+	/** Inbound payload processing logic */
+	private IEventManagementStoreLogic eventManagementStoreLogic;
+
+	public InboundEventsConsumer(IEventManagementConfiguration eventManagementConfiguration) {
+		this.eventManagementConfiguration = eventManagementConfiguration;
+		this.eventManagementStoreLogic = new EventManagementStoreLogic(this);
+	}
+	public InboundEventsConsumer() {
+		this.eventManagementStoreLogic = new EventManagementStoreLogic(this);
+	}
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#
@@ -89,6 +93,66 @@ public class InboundEventsConsumer extends MicroserviceKafkaConsumer implements 
 	return topics;
     }
 
+	/*
+	 * @see
+	 * com.sitewhere.server.lifecycle.LifecycleComponent#initialize(com.sitewhere.
+	 * spi.server.lifecycle.ILifecycleProgressMonitor)
+	 */
+	@Override
+	public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		super.initialize(monitor);
+
+		// Create step that will initialize components.
+		ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
+
+		// Initialize inbound processing logic.
+		init.addInitializeStep(this, getEventManagementStoreLogic(), true);
+
+		// Execute initialization steps.
+		init.execute(monitor);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer#start(com.
+	 * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+	 */
+	@Override
+	public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		// Create step that will start components.
+		ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
+
+		// Start inbound processing logic.
+		start.addStartStep(this, getEventManagementStoreLogic(), true);
+
+		// Execute startup steps.
+		start.execute(monitor);
+
+		getLogger().info("Allocating 25 threads for inbound event processing.");
+		super.start(monitor);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer#stop(com.
+	 * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+	 */
+	@Override
+	public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+		super.stop(monitor);
+
+		// Create step that will stop components.
+		ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
+
+		// Stop inbound processing logic.
+		stop.addStopStep(this, getEventManagementStoreLogic());
+
+		// Execute shutdown steps.
+		stop.execute(monitor);
+	}
+
     /*
      * @see
      * com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer#process(org.
@@ -107,7 +171,8 @@ public class InboundEventsConsumer extends MicroserviceKafkaConsumer implements 
 		}
 		preprocessed.add(message);
 	    }
-	    storeEvents(preprocessed);
+	    //storeEvents(preprocessed);
+		getEventManagementStoreLogic().process(topicPartition, preprocessed);
 	    getConsumer().commitAsync(new OffsetCommitCallback() {
 		public void onComplete(Map<TopicPartition, OffsetAndMetadata> offsets, Exception e) {
 		    if (e != null) {
@@ -120,52 +185,25 @@ public class InboundEventsConsumer extends MicroserviceKafkaConsumer implements 
 	}
     }
 
-    /**
-     * Store a batch of events via the event management APIs.
-     * 
-     * @param events
-     * @throws SiteWhereException
-     */
-    protected void storeEvents(List<GPreprocessedEventPayload> payloads) throws SiteWhereException {
-	KAFFA_BATCH_SIZE.labels(buildLabels()).set(payloads.size());
-	for (GPreprocessedEventPayload payload : payloads) {
-	    GAnyDeviceEventCreateRequest grpc = payload.getEvent();
-	    UUID assignmentId = CommonModelConverter.asApiUuid(payload.getDeviceAssignmentId());
-	    IDeviceEventCreateRequest request = EventModelConverter.asApiDeviceEventCreateRequest(grpc);
-	    switch (request.getEventType()) {
-	    case Measurement:
-		getDeviceEventManagement().addDeviceMeasurements(assignmentId,
-			(IDeviceMeasurementCreateRequest) request);
-		break;
-	    case Alert:
-		getDeviceEventManagement().addDeviceAlerts(assignmentId, (IDeviceAlertCreateRequest) request);
-		break;
-	    case CommandInvocation:
-		getDeviceEventManagement().addDeviceCommandInvocations(assignmentId,
-			(IDeviceCommandInvocationCreateRequest) request);
-		break;
-	    case CommandResponse:
-		getDeviceEventManagement().addDeviceCommandResponses(assignmentId,
-			(IDeviceCommandResponseCreateRequest) request);
-		break;
-	    case Location:
-		getDeviceEventManagement().addDeviceLocations(assignmentId, (IDeviceLocationCreateRequest) request);
-		break;
-	    case StateChange:
-		getDeviceEventManagement().addDeviceStateChanges(assignmentId,
-			(IDeviceStateChangeCreateRequest) request);
-		break;
-	    default:
-		getLogger()
-			.warn(String.format("Unknown event type sent for storage: %s", request.getEventType().name()));
-	    }
-
-	    // Keep metrics on processed events.
-	    PROCESSED_EVENTS.labels(buildLabels()).inc();
+	/*
+	 * @see com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer#
+	 * getEventManagementProcessingLogic()
+	 */
+	@Override
+	public IEventManagementStoreLogic getEventManagementStoreLogic() {
+		return eventManagementStoreLogic;
 	}
-    }
 
-    protected IDeviceEventManagement getDeviceEventManagement() {
-	return ((IEventManagementTenantEngine) getTenantEngine()).getEventManagement();
-    }
+	public void setEventManagementStoreLogic(IEventManagementStoreLogic eventManagementStoreLogic) {
+		this.eventManagementStoreLogic = eventManagementStoreLogic;
+	}
+
+	/*
+	 * @see com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer#
+	 * getInboundProcessingConfiguration()
+	 */
+	@Override
+	public IEventManagementConfiguration getEventManagementConfiguration() {
+		return eventManagementConfiguration;
+	}
 }

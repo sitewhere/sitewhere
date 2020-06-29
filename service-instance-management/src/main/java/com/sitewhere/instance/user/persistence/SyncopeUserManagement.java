@@ -107,23 +107,11 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
     /** Allows blocking until Syncope is available */
     private CountDownLatch syncopeAvailable = new CountDownLatch(1);
 
-    /** Application service */
-    private ApplicationService applicationService;
-
     /** Provides thread for waiter */
     private ExecutorService waiter;
 
     /** Provides thread for refreshing access token */
     private ScheduledExecutorService refresher;
-
-    /** User service */
-    private UserService userService;
-
-    /** Schema service */
-    private SchemaService schemaService;
-
-    /** AnyType service */
-    private AnyTypeClassService anyTypeClassService;
 
     public SyncopeUserManagement() {
 	super(LifecycleComponentType.DataStore);
@@ -170,10 +158,6 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 	String domain = getClient().getDomain();
 	getLogger().info(String.format("Syncope client connected to %s:%d using domain %s.", settings.getSyncopeHost(),
 		settings.getSyncopePort(), domain));
-	this.applicationService = client.getService(ApplicationService.class);
-	this.userService = client.getService(UserService.class);
-	this.schemaService = client.getService(SchemaService.class);
-	this.anyTypeClassService = client.getService(AnyTypeClassService.class);
 
 	// Verify that SiteWhere application exists.
 	getOrCreateSiteWhereApplication();
@@ -181,7 +165,7 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 
     /**
      * Get or create Syncope application for SiteWhere.
-     * 
+     *
      * @throws SiteWhereException
      */
     protected ApplicationTO getOrCreateSiteWhereApplication() throws SiteWhereException {
@@ -361,7 +345,7 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 
     /**
      * Convert Syncope user to SiteWhere user.
-     * 
+     *
      * @param user
      * @return
      * @throws SiteWhereException
@@ -465,7 +449,7 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
 
     /**
      * Create a Syncope privilege from an SiteWhere authority.
-     * 
+     *
      * @param authority
      * @return
      * @throws SiteWhereException
@@ -626,18 +610,18 @@ public class SyncopeUserManagement extends LifecycleComponent implements IUserMa
     }
 
     protected ApplicationService getApplicationService() {
-	return applicationService;
+	return client.getService(ApplicationService.class);
     }
 
     protected UserService getUserService() {
-	return userService;
+	return client.getService(UserService.class);
     }
 
     protected SchemaService getSchemaService() {
-	return schemaService;
+	return client.getService(SchemaService.class);
     }
 
     protected AnyTypeClassService getAnyTypeClassService() {
-	return anyTypeClassService;
+	return client.getService(AnyTypeClassService.class);
     }
 }
