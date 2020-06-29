@@ -1,5 +1,6 @@
 create table devicestate.device_state (
-	id uuid not null, created_by varchar(255), 
+	id uuid not null, 
+	created_by varchar(255), 
 	created_date timestamp, 
 	token varchar(255), 
 	updated_by varchar(255), 
@@ -14,6 +15,8 @@ create table devicestate.device_state (
 	presence_missing_date timestamp, 
 	primary key (id)
 );
+
+create unique index device_state_device_and_assignment on devicestate.device_state (device_id, device_assignment_id);
 
 create table devicestate.device_state_metadata (
 	device_state_id uuid not null, 
