@@ -11,10 +11,12 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
 import org.apache.kafka.common.TopicPartition;
 
 import com.sitewhere.grpc.client.event.EventModelMarshaler;
 import com.sitewhere.grpc.model.DeviceEventModel.GDecodedEventPayload;
+import com.sitewhere.grpc.model.DeviceEventModel.GPreprocessedEventPayload;
 import com.sitewhere.inbound.spi.kafka.IDecodedEventsConsumer;
 import com.sitewhere.inbound.spi.kafka.IInboundEventsProducer;
 import com.sitewhere.inbound.spi.kafka.IUnregisteredEventsProducer;
@@ -115,15 +117,39 @@ public class InboundPayloadProcessingLogic extends TenantEngineLifecycleComponen
 			    : "" + assignments.size() + " active assignment",
 		    event.getDeviceToken()));
 	}
+	// Loop through assignments and send an enriched payload for each.
 	if (assignments != null) {
-	    byte[] marshaled = EventModelMarshaler.buildDecodedEventPayloadMessage(event);
-	    if (getLogger().isDebugEnabled()) {
-		getLogger().debug(String.format("Forwarding payload for '%s' to Kafka for further processing.",
-			event.getDeviceToken()));
-	    }
-	    getInboundEventsProducer().send(event.getDeviceToken(), marshaled);
+		for (IDeviceAssignment assignment : assignments) {
+			GPreprocessedEventPayload preproc = buildPreProcessedEventPayload(assignment, event);
+			byte[] marshaled = EventModelMarshaler.buildPreprocessedEventPayloadMessage(preproc);
+			if (getLogger().isDebugEnabled()) {
+				getLogger().debug(String.format(
+						"Forwarding preprocessed payload for '%s' to Kafka for further processing.",
+						event.getDeviceToken()));
+			}
+			getInboundEventsProducer().send(event.getDeviceToken(), marshaled);
+		}
 	}
     }
+
+	/**
+	 * Build preprocessed payload by adding assignment details to decoded event.
+	 *
+	 * @param assignment
+	 * @param event
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected GPreprocessedEventPayload buildPreProcessedEventPayload(IDeviceAssignment assignment,
+																	  GDecodedEventPayload event) throws SiteWhereException {
+		GPreprocessedEventPayload.Builder preproc = GPreprocessedEventPayload.newBuilder();
+		preproc.setSourceId(event.getSourceId());
+		preproc.setDeviceToken(event.getDeviceToken());
+		preproc.setEvent(event.getEvent());
+		preproc.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(assignment.getId()));
+		preproc.setDeviceId(CommonModelConverter.asGrpcUuid(assignment.getDeviceId()));
+		return preproc.build();
+	}
 
     /**
      * Validates that inbound event payload references a registered device that has
