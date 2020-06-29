@@ -44,13 +44,13 @@ allprojects {
 	version = '2.1.1'
 	
     repositories {
-        maven { url "http://repo.maven.apache.org/maven2" }
-        maven { url 'http://maven.restlet.org' }
+        maven { url "https://repo.maven.apache.org/maven2" }
+        maven { url 'https://maven.restlet.org' }
         maven { url "https://jitpack.io" }
-        maven { url "http://oss.jfrog.org/artifactory/oss-release-local/" }
+        maven { url "https://oss.jfrog.org/artifactory/oss-release-local/" }
         maven { url "https://oss.sonatype.org/content/repositories/ksoap2-android-releases/" }
     	maven { url "https://repo.spring.io/libs-milestone" }
-        maven { url "http://maven.wso2.org/nexus/content/repositories/releases/" }
+        maven { url "https://maven.wso2.org/nexus/content/repositories/releases/" }
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
 		mavenLocal()
     }
