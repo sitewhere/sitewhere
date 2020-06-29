@@ -10,6 +10,7 @@ package com.sitewhere.event.microservice;
 import java.util.Collections;
 import java.util.List;
 
+import com.sitewhere.microservice.kafka.InboundEventsConsumer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -92,14 +93,15 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 	// Initialize event management persistence.
 	init.addInitializeStep(this, getEventManagement(), true);
 
+    // Initialize inbound events consumer.
+    init.addInitializeStep(this, getInboundEventsConsumer(), true);
+
 	// Initialize outbound events producer.
 	init.addInitializeStep(this, getOutboundEventsProducer(), true);
 
 	// Initialize outbound command invocations producer.
 	init.addInitializeStep(this, getOutboundCommandInvocationsProducer(), true);
 
-	// Initialize inbound events consumer.
-	init.addInitializeStep(this, getInboundEventsConsumer(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -126,6 +128,7 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
      * @throws SiteWhereException
      */
     protected void initializeKafkaComponents() throws SiteWhereException {
+    this.inboundEventsConsumer = new InboundEventsConsumer();
 	this.outboundEventsProducer = new OutboundEventsProducer();
 	this.outboundCommandInvocationsProducer = new OutboundCommandInvocationsProducer();
     }
@@ -147,14 +150,16 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine implem
 	// Start event management persistence.
 	start.addStartStep(this, getEventManagement(), true);
 
+    // Start inbound events consumer.
+    start.addStartStep(this, getInboundEventsConsumer(), true);
+
 	// Start outbound events producer.
 	start.addStartStep(this, getOutboundEventsProducer(), true);
 
 	// Start outbound command invocations producer.
 	start.addStartStep(this, getOutboundCommandInvocationsProducer(), true);
 
-	// Start inbound events consumer.
-	start.addStartStep(this, getInboundEventsConsumer(), true);
+
 
 	// Execute startup steps.
 	start.execute(monitor);
