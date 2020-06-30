@@ -606,7 +606,7 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
     public List<IRole> removeRoles(String username, List<String> roles) throws SiteWhereException {
 	UserTO userTO = getUserService().read(username);
 	if (userTO != null) {
-	    userTO.getRoles().addAll(roles);
+	    userTO.getRoles().removeAll(roles);
 	    getUserService().update(userTO);
 	} else {
 	    throw new SiteWhereException("Unable to get user by username.");

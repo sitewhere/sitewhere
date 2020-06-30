@@ -63,24 +63,21 @@ public class Roles {
     private IInstanceManagementMicroservice<?> microservice;
 
     /**
-     * Get a list of detailed role information for a given user.
+     * Get role by name.
      *
-     * @param username
+     * @param roleName
      * @return
      * @throws SiteWhereException
      */
     @GET
-    @Path("/{username}/roles")
-    @Operation(summary = "Get roles for user", description = "Get roles for user")
-    public Response getRolesForUsername(
-		    @Parameter(description = "Unique username", required = true) @PathParam("username") String username)
+    @Path("/{roleName}/roles")
+    @Operation(summary = "Get role by name", description = "Get role by name")
+    public Response getRoleByName(
+		    @Parameter(description = "Unique roleName", required = true) @PathParam("roleName") String roleName)
 		    throws SiteWhereException {
-	List<IRole> matches = getUserManagement().getRoles(username);
+	IRole match = getUserManagement().getRoleByName(roleName);
 	List<Role> converted = new ArrayList<Role>();
-	for (IRole role : matches) {
-	    converted.add(Role.copy(role));
-	}
-	return Response.ok(new SearchResults<Role>(converted)).build();
+	return Response.ok(match).build();
     }
 
     @GET

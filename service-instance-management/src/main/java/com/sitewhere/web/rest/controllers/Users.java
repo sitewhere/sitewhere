@@ -9,6 +9,7 @@ package com.sitewhere.web.rest.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -175,6 +176,70 @@ public class Users {
     public Response listUsers() throws SiteWhereException {
 	UserSearchCriteria criteria = new UserSearchCriteria();
 	return Response.ok(getUserManagement().listUsers(criteria)).build();
+    }
+
+    /**
+     * Get a list of detailed role information for a given user.
+     *
+     * @param username
+     * @return
+     * @throws SiteWhereException
+     */
+    @GET
+    @Path("/{username}/roles")
+    @Operation(summary = "Get roles for user", description = "Get roles for user")
+    public Response getRolesForUsername(
+		    @Parameter(description = "Unique username", required = true) @PathParam("username") String username)
+		    throws SiteWhereException {
+	List<IRole> matches = getUserManagement().getRoles(username);
+	List<Role> converted = new ArrayList<Role>();
+	for (IRole role : matches) {
+	    converted.add(Role.copy(role));
+	}
+	return Response.ok(new SearchResults<Role>(converted)).build();
+    }
+
+    /**
+     * add roles to users
+     *
+     * @param input
+     * @return
+     * @throws SiteWhereException
+     */
+    @PUT
+    @Path("/{username}/add/roles")
+    @Operation(summary = "Add roles to users", description = "Add roles to users")
+    public Response addRoles(
+    		@Parameter(description = "Unique username", required = true) @PathParam("username") String username,
+		@RequestBody List<Role> input) throws SiteWhereException {
+	if ((input == null) && input.size()> 0) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidUserInformation, ErrorLevel.ERROR);
+	}
+
+	List<String> rolesToAdd = input.stream().map(result -> result.getRole()).collect(Collectors.toList());
+	return Response.ok(getUserManagement().addRoles(username, rolesToAdd)).build();
+    }
+
+
+    /**
+     * remove roles to users
+     *
+     * @param input
+     * @return
+     * @throws SiteWhereException
+     */
+    @PUT
+    @Path("/{username}/delete/roles")
+    @Operation(summary = "Delete roles to users", description = "Delete roles to users")
+    public Response removeRoles(
+		    @Parameter(description = "Unique username", required = true) @PathParam("username") String username,
+		    @RequestBody List<Role> input) throws SiteWhereException {
+	if ((input == null) && input.size()> 0) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidUserInformation, ErrorLevel.ERROR);
+	}
+
+	List<String> rolesToRemove = input.stream().map(result -> result.getRole()).collect(Collectors.toList());
+	return Response.ok(getUserManagement().removeRoles(username, rolesToRemove)).build();
     }
 
     protected IUserManagement getUserManagement() throws SiteWhereException {
