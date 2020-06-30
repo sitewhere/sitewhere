@@ -177,27 +177,6 @@ public class Users {
 	return Response.ok(getUserManagement().listUsers(criteria)).build();
     }
 
-    /**
-     * Get a list of detailed role information for a given user.
-     *
-     * @param username
-     * @return
-     * @throws SiteWhereException
-     */
-    @GET
-    @Path("/{username}/roles")
-    @Operation(summary = "Get roles for user", description = "Get roles for user")
-    public Response getRolesForUsername(
-		    @Parameter(description = "Unique username", required = true) @PathParam("username") String username)
-		    throws SiteWhereException {
-	List<IRole> matches = getUserManagement().getRoles(username);
-	List<Role> converted = new ArrayList<Role>();
-	for (IRole role : matches) {
-	    converted.add(Role.copy(role));
-	}
-	return Response.ok(new SearchResults<Role>(converted)).build();
-    }
-
     protected IUserManagement getUserManagement() throws SiteWhereException {
 	return getMicroservice().getUserManagement();
     }

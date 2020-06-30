@@ -52,6 +52,7 @@ public class UserManagementPersistenceLogic extends Persistence {
 	user.setLastLogin(null);
 	user.setStatus(request.getStatus());
 	user.setRoles(request.getRoles());
+	//user.setAuthorities(request.getAuthorities());
 
 	return user;
     }

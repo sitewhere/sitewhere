@@ -56,6 +56,8 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
 
+import javax.ws.rs.core.Response;
+
 /**
  * Interact with Apache Synope instance to manage users.
  */
@@ -233,16 +235,15 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	user.getPlainAttrs().add(createAttribute(ATTR_JSON,
 		Base64.encodeBase64String(MarshalUtils.marshalJsonAsString(swuser).getBytes())));
 
-	swuser.getAuthorities().forEach(auth -> {
+/*	swuser.getAuthorities().forEach(auth -> {
 	    user.getPrivileges().add(auth);
-	});
+	});*/
 
-	/*if(swuser.getRoles() != null ) {
+	if(swuser.getRoles() != null ) {
 	    swuser.getRoles().forEach(auth -> {
 		user.getRoles().add(auth);
 	    });
-	}*/
-
+	}
 
 	try {
 	    getUserService().create(user, true);
@@ -361,18 +362,19 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
      * @throws SiteWhereException
      */
     protected IUser convertUser(UserTO user) throws SiteWhereException {
+	Optional<AttrTO> firstName = user.getPlainAttr(ATTR_FIRST_NAME);
+	Optional<AttrTO> lastNmae = user.getPlainAttr(ATTR_LAST_NAME);
 	Optional<AttrTO> json = user.getPlainAttr(ATTR_JSON);
 	if (json.isPresent()) {
-
-	    getLogger().info("posicion cero: " + json.get().getValues().get(0).getBytes());
-	    getLogger().info("bytes: " + json.get().getValues().get(0).getBytes());
-	    getLogger().info("json: " + json.get().getValues() );
-	    for(String a: json.get().getValues()) {
-	        getLogger().info(a);
-	    }
-
 	    String encoded = new String(json.get().getValues().get(0).getBytes());
-	    return MarshalUtils.unmarshalJson(Base64.decodeBase64(encoded), User.class);
+	    User swuser = MarshalUtils.unmarshalJson(Base64.decodeBase64(encoded), User.class);
+	    swuser.getAuthorities().addAll(user.getPrivileges());
+	    swuser.getRoles().addAll(user.getRoles());
+	    swuser.setCreatedBy(user.getCreator());
+	    swuser.setCreatedDate(user.getCreationDate());
+	    swuser.setToken(user.getToken());
+	    //swuser.setStatus(AccountStatus.valueOf(user.getStatus()));
+	    return swuser;
 	}
 	throw new SiteWhereException("Syncope user did not contain JSON data.");
     }
@@ -573,17 +575,14 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 
     //*******************inicio********************************
 
-    @Override public List<IRole> getRoles(String username) throws SiteWhereException {
+    @Override
+    public List<IRole> getRoles(String username) throws SiteWhereException {
 	IUser user = getUserByUsername(username);
 	List<String> userRoles = user.getRoles();
-
-	getLogger().info("roles " + userRoles.size());
-
 
 	ISearchResults<IRole> all = listRoles(new RoleSearchCriteria(1, 0));
 	List<IRole> matched = new ArrayList<IRole>();
 	for (IRole role : all.getResults()) {
-	    getLogger().info("comparando:" + role.getRole());
 	    if (userRoles.contains(role.getRole())) {
 		matched.add(role);
 	    }
@@ -591,48 +590,75 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	return matched;
     }
 
-    @Override public List<IRole> addRoles(String username, List<String> roles) throws SiteWhereException {
+    @Override
+    public List<IRole> addRoles(String username, List<String> roles) throws SiteWhereException {
+	UserTO userTO = getUserService().read(username);
+	if (userTO != null) {
+	    userTO.getRoles().addAll(roles);
+	    getUserService().update(userTO);
+	} else {
+	    throw new SiteWhereException("Unable to get user by username.");
+	}
+	return getRoles(username);
+    }
+
+    @Override
+    public List<IRole> removeRoles(String username, List<String> roles) throws SiteWhereException {
+	UserTO userTO = getUserService().read(username);
+	if (userTO != null) {
+	    userTO.getRoles().addAll(roles);
+	    getUserService().update(userTO);
+	} else {
+	    throw new SiteWhereException("Unable to get user by username.");
+	}
+	return getRoles(username);
+    }
+
+    @Override
+    public IRole createRole(IRoleCreateRequest request) throws SiteWhereException {
+        RoleTO roleTO = new RoleTO();
+        roleTO.setKey(request.getRole());
+	getRoleService().create(roleTO);
+	return converRole(roleTO);
+    }
+
+    @Override
+    public IRole getRoleByName(String name) throws SiteWhereException {
+	RoleTO roleTO = getRoleService().read(name);
+	return converRole(roleTO);
+    }
+
+    @Override
+    public IRole updateRole(String name, IRoleCreateRequest request) throws SiteWhereException {
 	throw new RuntimeException("Not implemented.");
     }
 
-    @Override public List<IRole> removeRoles(String username, List<String> roles) throws SiteWhereException {
-	throw new RuntimeException("Not implemented.");
-    }
-
-    @Override public IRole createRole(IRoleCreateRequest request) throws SiteWhereException {
-	throw new RuntimeException("Not implemented.");
-    }
-
-    @Override public IRole getRoleByName(String name) throws SiteWhereException {
-	throw new RuntimeException("Not implemented.");
-    }
-
-    @Override public IRole updateRole(String name, IRoleCreateRequest request) throws SiteWhereException {
-	throw new RuntimeException("Not implemented.");
-    }
-
-    @Override public ISearchResults<IRole> listRoles(IRoleSearchCriteria criteria) throws SiteWhereException {
-	RoleService roleService = client.getService(RoleService.class);
-	List<RoleTO> allRoles = roleService.list();
-
-	getLogger().info("listado roles" + allRoles.size());
+    @Override
+    public ISearchResults<IRole> listRoles(IRoleSearchCriteria criteria) throws SiteWhereException {
+	List<RoleTO> allRoles = getRoleService().list();
 	List<IRole> roles = new ArrayList<>();
 	if (allRoles != null) {
-
-	    getLogger().info("es distinto de nulo");
 	    allRoles.forEach(role -> {
-	        getLogger().info("Este es el role: " + role.getKey());
-	        Role sRole = new Role();
-	        sRole.setRole(role.getKey());
-	        sRole.setDescription("descripcion");
-		roles.add(sRole);
+		roles.add(converRole(role));
 	    });
 	}
 	return new SearchResults<IRole>(roles);
     }
 
-    @Override public void deleteRole(String role) throws SiteWhereException {
-	throw new RuntimeException("Not implemented.");
+    @Override
+    public void deleteRole(String role) throws SiteWhereException {
+        try {
+	    getRoleService().delete(role);
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Unable to delete user by username.");
+	}
+    }
+
+    protected IRole converRole(RoleTO roleTO) {
+	Role sRole = new Role();
+	sRole.setRole(roleTO.getKey());
+	sRole.setDescription("descripcion");
+	return sRole;
     }
 
     /***********************fin*******************************
@@ -736,6 +762,10 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 
     protected SchemaService getSchemaService() {
 	return client.getService(SchemaService.class);
+    }
+
+    protected RoleService getRoleService() {
+	return client.getService(RoleService.class);
     }
 
     protected AnyTypeClassService getAnyTypeClassService() {
