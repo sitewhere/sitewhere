@@ -13,8 +13,9 @@ import java.util.List;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
+import org.apache.kafka.streams.kstream.Printed;
 
-import com.sitewhere.event.spi.kafka.IPreprocessedEventsPipeline;
+import com.sitewhere.event.spi.kafka.IEventPersistencePipeline;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
 import com.sitewhere.grpc.kafka.serdes.SiteWhereSerdes;
 import com.sitewhere.microservice.kafka.KafkaStreamPipeline;
@@ -22,19 +23,20 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
- * Kafka pipeline for inbound events (usually decoded from event sources).
+ * Kafka pipeline for persisting inbound events (usually decoded from event
+ * sources).
  */
-public class PreprocessedEventsPipeline extends KafkaStreamPipeline implements IPreprocessedEventsPipeline {
+public class EventPersistencePipeline extends KafkaStreamPipeline implements IEventPersistencePipeline {
 
     /** Applies event persistence logic to preprocessed event streams */
-    private EventManagementProcessingSupplier eventManagementProcessingSupplier;
+    private EventPersistenceMapper eventPersistenceMapper;
 
     /*
      * @see com.sitewhere.microservice.kafka.KafkaStreamPipeline#getPipelineName()
      */
     @Override
     public String getPipelineName() {
-	return "preprocessed";
+	return "persistence";
     }
 
     /*
@@ -60,7 +62,7 @@ public class PreprocessedEventsPipeline extends KafkaStreamPipeline implements I
 	// Pipeline handles both event source decoded events and reprocess events.
 	builder.stream(getSourceTopicNames(),
 		Consumed.with(Serdes.UUID(), SiteWhereSerdes.forPreprocessedEventPayload()))
-		.process(getEventManagementProcessingSupplier(), new String[0]);
+		.map(getEventPersistenceMapper()).print(Printed.toSysOut());
     }
 
     /*
@@ -70,11 +72,11 @@ public class PreprocessedEventsPipeline extends KafkaStreamPipeline implements I
      */
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	this.eventManagementProcessingSupplier = new EventManagementProcessingSupplier(
+	this.eventPersistenceMapper = new EventPersistenceMapper(
 		((IEventManagementTenantEngine) getTenantEngine()).getActiveConfiguration());
 
 	super.initialize(monitor);
-	initializeNestedComponent(getEventManagementProcessingSupplier(), monitor, true);
+	initializeNestedComponent(getEventPersistenceMapper(), monitor, true);
     }
 
     /*
@@ -85,7 +87,7 @@ public class PreprocessedEventsPipeline extends KafkaStreamPipeline implements I
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.start(monitor);
-	startNestedComponent(getEventManagementProcessingSupplier(), monitor, true);
+	startNestedComponent(getEventPersistenceMapper(), monitor, true);
     }
 
     /*
@@ -96,10 +98,10 @@ public class PreprocessedEventsPipeline extends KafkaStreamPipeline implements I
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.stop(monitor);
-	stopNestedComponent(getEventManagementProcessingSupplier(), monitor);
+	stopNestedComponent(getEventPersistenceMapper(), monitor);
     }
 
-    protected EventManagementProcessingSupplier getEventManagementProcessingSupplier() {
-	return eventManagementProcessingSupplier;
+    protected EventPersistenceMapper getEventPersistenceMapper() {
+	return eventPersistenceMapper;
     }
 }

@@ -45,7 +45,7 @@ public class DeviceStateTenantEngine extends RdbTenantEngine<DeviceStateTenantCo
     private DeviceStateGrpc.DeviceStateImplBase deviceStateImpl;
 
     /** Kafka Streams pipeline for device state event processing */
-    private DeviceStatePipeline deviceStatePipeline = new DeviceStatePipeline();
+    private DeviceStatePipeline deviceStatePipeline;
 
     /** Presence manager implementation */
     private IDevicePresenceManager devicePresenceManager;
@@ -127,9 +127,7 @@ public class DeviceStateTenantEngine extends RdbTenantEngine<DeviceStateTenantCo
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.tenantInitialize(monitor);
-	// // Create presence manager.
-	// this.devicePresenceManager = (IDevicePresenceManager) getModuleContext()
-	// .getBean(DeviceStateManagementBeans.BEAN_PRESENCE_MANAGER);
+	this.deviceStatePipeline = new DeviceStatePipeline(getActiveConfiguration());
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());

@@ -8,7 +8,7 @@
 package com.sitewhere.event.spi.microservice;
 
 import com.sitewhere.event.configuration.EventManagementTenantConfiguration;
-import com.sitewhere.event.spi.kafka.IPreprocessedEventsPipeline;
+import com.sitewhere.event.spi.kafka.IEventPersistencePipeline;
 import com.sitewhere.event.spi.kafka.IOutboundCommandInvocationsProducer;
 import com.sitewhere.event.spi.kafka.IOutboundEventsProducer;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
@@ -40,7 +40,7 @@ public interface IEventManagementTenantEngine extends IMicroserviceTenantEngine<
      * 
      * @return
      */
-    public IPreprocessedEventsPipeline getPreprocessedEventsPipeline();
+    public IEventPersistencePipeline getPreprocessedEventsPipeline();
 
     /**
      * Get Kafka producer that sends enriched, persisted events to a topic.

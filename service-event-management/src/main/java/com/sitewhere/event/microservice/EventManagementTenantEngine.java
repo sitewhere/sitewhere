@@ -13,10 +13,10 @@ import com.sitewhere.event.grpc.EventManagementImpl;
 import com.sitewhere.event.kafka.KafkaEventPersistenceTriggers;
 import com.sitewhere.event.kafka.OutboundCommandInvocationsProducer;
 import com.sitewhere.event.kafka.OutboundEventsProducer;
-import com.sitewhere.event.kafka.PreprocessedEventsPipeline;
+import com.sitewhere.event.kafka.EventPersistencePipeline;
 import com.sitewhere.event.spi.kafka.IOutboundCommandInvocationsProducer;
 import com.sitewhere.event.spi.kafka.IOutboundEventsProducer;
-import com.sitewhere.event.spi.kafka.IPreprocessedEventsPipeline;
+import com.sitewhere.event.spi.kafka.IEventPersistencePipeline;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
@@ -52,7 +52,7 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
     private DeviceEventManagementGrpc.DeviceEventManagementImplBase eventManagementImpl;
 
     /** Kafka Streams pipeline for decoded, pre-processed inbound events */
-    private IPreprocessedEventsPipeline preprocessedEventsPipeline;
+    private IEventPersistencePipeline preprocessedEventsPipeline;
 
     /** Kafka producer for pushing persisted events to a topic */
     private IOutboundEventsProducer outboundEventsProducer;
@@ -95,7 +95,7 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
 		getEventManagement());
 
 	// Create Kafka components.
-	this.preprocessedEventsPipeline = new PreprocessedEventsPipeline();
+	this.preprocessedEventsPipeline = new EventPersistencePipeline();
 	this.outboundEventsProducer = new OutboundEventsProducer();
 	this.outboundCommandInvocationsProducer = new OutboundCommandInvocationsProducer();
     }
@@ -226,7 +226,7 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
      * getPreprocessedEventsPipeline()
      */
     @Override
-    public IPreprocessedEventsPipeline getPreprocessedEventsPipeline() {
+    public IEventPersistencePipeline getPreprocessedEventsPipeline() {
 	return preprocessedEventsPipeline;
     }
 
