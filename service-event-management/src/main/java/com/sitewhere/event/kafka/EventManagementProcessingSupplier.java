@@ -39,7 +39,7 @@ import io.prometheus.client.Counter;
 /**
  * Processing supplier that persists events via the event management APIs.
  */
-public class EventManagementProcessingSupplier extends ProcessorSupplierComponent<String, GPreprocessedEventPayload> {
+public class EventManagementProcessingSupplier extends ProcessorSupplierComponent<UUID, GPreprocessedEventPayload> {
 
     /** Counter for processed events */
     private static final Counter PROCESSED_EVENTS = TenantEngineLifecycleComponent
@@ -64,8 +64,8 @@ public class EventManagementProcessingSupplier extends ProcessorSupplierComponen
      * @see org.apache.kafka.streams.processor.ProcessorSupplier#get()
      */
     @Override
-    public Processor<String, GPreprocessedEventPayload> get() {
-	return new Processor<String, GPreprocessedEventPayload>() {
+    public Processor<UUID, GPreprocessedEventPayload> get() {
+	return new Processor<UUID, GPreprocessedEventPayload>() {
 
 	    @SuppressWarnings("unused")
 	    private ProcessorContext context;
@@ -85,7 +85,7 @@ public class EventManagementProcessingSupplier extends ProcessorSupplierComponen
 	     * java.lang.Object)
 	     */
 	    @Override
-	    public void process(String key, GPreprocessedEventPayload event) {
+	    public void process(UUID deviceId, GPreprocessedEventPayload event) {
 		getExecutor().execute(new PersistenceProcessor(EventManagementProcessingSupplier.this, event));
 	    }
 

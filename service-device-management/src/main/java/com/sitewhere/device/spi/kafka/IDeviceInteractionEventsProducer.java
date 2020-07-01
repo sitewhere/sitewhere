@@ -12,5 +12,5 @@ import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer;
 /**
  * Kafka producer that sends events triggered by device management interactions.
  */
-public interface IDeviceInteractionEventsProducer extends IMicroserviceKafkaProducer {
+public interface IDeviceInteractionEventsProducer extends IMicroserviceKafkaProducer<String, byte[]> {
 }

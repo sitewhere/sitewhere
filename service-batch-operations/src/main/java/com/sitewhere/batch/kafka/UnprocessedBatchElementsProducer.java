@@ -8,7 +8,6 @@
 package com.sitewhere.batch.kafka;
 
 import com.sitewhere.batch.spi.kafka.IUnprocessedBatchElementsProducer;
-import com.sitewhere.microservice.kafka.AckPolicy;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 
@@ -16,12 +15,8 @@ import com.sitewhere.spi.SiteWhereException;
  * Kafka producer that sends sends unprocessed batch elements to a topic for
  * further processing.
  */
-public class UnprocessedBatchElementsProducer extends MicroserviceKafkaProducer
+public class UnprocessedBatchElementsProducer extends MicroserviceKafkaProducer<String, byte[]>
 	implements IUnprocessedBatchElementsProducer {
-
-    public UnprocessedBatchElementsProducer() {
-	super(AckPolicy.FireAndForget);
-    }
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer#

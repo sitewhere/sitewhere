@@ -7,8 +7,9 @@
  */
 package com.sitewhere.event.kafka;
 
+import java.util.UUID;
+
 import com.sitewhere.event.spi.kafka.IOutboundCommandInvocationsProducer;
-import com.sitewhere.microservice.kafka.AckPolicy;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 
@@ -16,12 +17,8 @@ import com.sitewhere.spi.SiteWhereException;
  * Kafka producer that sends sends enriched device command invocations to a
  * topic for further processing.
  */
-public class OutboundCommandInvocationsProducer extends MicroserviceKafkaProducer
+public class OutboundCommandInvocationsProducer extends MicroserviceKafkaProducer<UUID, byte[]>
 	implements IOutboundCommandInvocationsProducer {
-
-    public OutboundCommandInvocationsProducer() {
-	super(AckPolicy.FireAndForget);
-    }
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer#

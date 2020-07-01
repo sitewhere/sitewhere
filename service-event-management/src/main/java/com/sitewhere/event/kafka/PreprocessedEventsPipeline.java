@@ -59,7 +59,7 @@ public class PreprocessedEventsPipeline extends KafkaStreamPipeline implements I
     public void buildStreams(StreamsBuilder builder) {
 	// Pipeline handles both event source decoded events and reprocess events.
 	builder.stream(getSourceTopicNames(),
-		Consumed.with(Serdes.String(), SiteWhereSerdes.forPreprocessedEventPayload()))
+		Consumed.with(Serdes.UUID(), SiteWhereSerdes.forPreprocessedEventPayload()))
 		.process(getEventManagementProcessingSupplier(), new String[0]);
     }
 

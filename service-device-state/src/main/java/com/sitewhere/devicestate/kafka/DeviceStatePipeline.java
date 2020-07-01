@@ -50,7 +50,7 @@ public class DeviceStatePipeline extends KafkaStreamPipeline {
      */
     @Override
     public void buildStreams(StreamsBuilder builder) {
-	builder.stream(getSourceTopicNames(), Consumed.with(Serdes.String(), SiteWhereSerdes.forEnrichedEventPayload()))
+	builder.stream(getSourceTopicNames(), Consumed.with(Serdes.UUID(), SiteWhereSerdes.forEnrichedEventPayload()))
 		.process(new DeviceStatePersistenceProcessorSupplier(), new String[0]);
     }
 }

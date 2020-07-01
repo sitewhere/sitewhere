@@ -13,5 +13,5 @@ import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer;
  * Kafka producer that sends sends unprocessed batch operations to a topic for
  * further processing.
  */
-public interface IUnprocessedBatchOperationsProducer extends IMicroserviceKafkaProducer {
+public interface IUnprocessedBatchOperationsProducer extends IMicroserviceKafkaProducer<String, byte[]> {
 }

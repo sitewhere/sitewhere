@@ -7,7 +7,6 @@
  */
 package com.sitewhere.sources.kafka;
 
-import com.sitewhere.microservice.kafka.AckPolicy;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 
@@ -15,11 +14,7 @@ import com.sitewhere.spi.SiteWhereException;
  * Kafka producer for the stream of events that could not be decoded by all
  * event sources for a tenant.
  */
-public class FailedDecodeEventsProducer extends MicroserviceKafkaProducer {
-
-    public FailedDecodeEventsProducer() {
-	super(AckPolicy.FireAndForget);
-    }
+public class FailedDecodeEventsProducer extends MicroserviceKafkaProducer<String, byte[]> {
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer#

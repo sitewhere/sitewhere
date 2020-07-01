@@ -7,11 +7,13 @@
  */
 package com.sitewhere.event.spi.kafka;
 
+import java.util.UUID;
+
 import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer;
 
 /**
  * Kafka producer that sends sends enriched device command invocations to a
  * topic for further processing.
  */
-public interface IOutboundCommandInvocationsProducer extends IMicroserviceKafkaProducer {
+public interface IOutboundCommandInvocationsProducer extends IMicroserviceKafkaProducer<UUID, byte[]> {
 }

@@ -10,11 +10,7 @@ package com.sitewhere.inbound.microservice;
 import com.sitewhere.inbound.configuration.InboundProcessingTenantConfiguration;
 import com.sitewhere.inbound.configuration.InboundProcessingTenantEngineModule;
 import com.sitewhere.inbound.kafka.DecodedEventsPipeline;
-import com.sitewhere.inbound.kafka.InboundEventsProducer;
-import com.sitewhere.inbound.kafka.UnregisteredEventsProducer;
 import com.sitewhere.inbound.spi.kafka.IDecodedEventsPipeline;
-import com.sitewhere.inbound.spi.kafka.IInboundEventsProducer;
-import com.sitewhere.inbound.spi.kafka.IUnregisteredEventsProducer;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
@@ -35,12 +31,6 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine<Inbo
 
     /** Kafka Streams pipeline that handles inbound decoded events */
     private IDecodedEventsPipeline decodedEventsPipeline;
-
-    /** Kafka producer for events sent to unregistered devices */
-    private IUnregisteredEventsProducer unregisteredDeviceEventsProducer;
-
-    /** Kafka producer for forwarding processed events */
-    private IInboundEventsProducer inboundEventsProducer;
 
     public InboundProcessingTenantEngine(SiteWhereTenantEngine engine) {
 	super(engine);
@@ -71,8 +61,6 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine<Inbo
     @Override
     public void loadEngineComponents() throws SiteWhereException {
 	this.decodedEventsPipeline = new DecodedEventsPipeline();
-	this.unregisteredDeviceEventsProducer = new UnregisteredEventsProducer();
-	this.inboundEventsProducer = new InboundEventsProducer();
     }
 
     /*
@@ -88,12 +76,6 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine<Inbo
 	// Initialize decoded events pipeline.
 	init.addInitializeStep(this, getDecodedEventsPipeline(), true);
 
-	// Initialize unregistered device events producer.
-	init.addInitializeStep(this, getUnregisteredDeviceEventsProducer(), true);
-
-	// Initialize inbound events producer.
-	init.addInitializeStep(this, getInboundEventsProducer(), true);
-
 	// Execute initialization steps.
 	init.execute(monitor);
     }
@@ -108,14 +90,8 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine<Inbo
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
 
-	// Start unregistered device events producer.
-	start.addStartStep(this, getUnregisteredDeviceEventsProducer(), true);
-
 	// Start decoded events pipeline.
 	start.addStartStep(this, getDecodedEventsPipeline(), true);
-
-	// Start inbound events producer.
-	start.addStartStep(this, getInboundEventsProducer(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -134,12 +110,6 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine<Inbo
 	// Stop decoded events pipeline.
 	stop.addStopStep(this, getDecodedEventsPipeline());
 
-	// Stop unregistered device events producer.
-	stop.addStopStep(this, getUnregisteredDeviceEventsProducer());
-
-	// Stop inbound events producer.
-	stop.addStopStep(this, getInboundEventsProducer());
-
 	// Execute shutdown steps.
 	stop.execute(monitor);
     }
@@ -151,23 +121,5 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine<Inbo
     @Override
     public IDecodedEventsPipeline getDecodedEventsPipeline() {
 	return decodedEventsPipeline;
-    }
-
-    /*
-     * @see com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine#
-     * getUnregisteredDeviceEventsProducer()
-     */
-    @Override
-    public IUnregisteredEventsProducer getUnregisteredDeviceEventsProducer() {
-	return unregisteredDeviceEventsProducer;
-    }
-
-    /*
-     * @see com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine#
-     * getInboundEventsProducer()
-     */
-    @Override
-    public IInboundEventsProducer getInboundEventsProducer() {
-	return inboundEventsProducer;
     }
 }
