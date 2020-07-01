@@ -51,9 +51,6 @@ public class UserManagementPersistenceLogic extends Persistence {
 	user.setLastName(request.getLastName());
 	user.setLastLogin(null);
 	user.setStatus(request.getStatus());
-	user.setRoles(request.getRoles());
-	//user.setAuthorities(request.getAuthorities());
-
 	return user;
     }
 
@@ -86,9 +83,6 @@ public class UserManagementPersistenceLogic extends Persistence {
 	}
 	if (request.getStatus() != null) {
 	    target.setStatus(request.getStatus());
-	}
-	if (request.getRoles() != null) {
-	    target.setRoles(request.getRoles());
 	}
 	if (request.getStatus() != null) {
 	    target.setStatus(request.getStatus());

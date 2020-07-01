@@ -17,6 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import com.sitewhere.rest.model.user.*;
 import com.sitewhere.spi.user.*;
@@ -230,20 +231,12 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	user.setCreator(swuser.getCreatedBy());
 	user.setUsername(request.getUsername());
 	user.setPassword(request.getPassword());
+	user.getRoles().addAll(request.getRoles());
 	user.getPlainAttrs().add(createAttribute(ATTR_FIRST_NAME, request.getFirstName()));
 	user.getPlainAttrs().add(createAttribute(ATTR_LAST_NAME, request.getLastName()));
 	user.getPlainAttrs().add(createAttribute(ATTR_JSON,
 		Base64.encodeBase64String(MarshalUtils.marshalJsonAsString(swuser).getBytes())));
 
-/*	swuser.getAuthorities().forEach(auth -> {
-	    user.getPrivileges().add(auth);
-	});*/
-
-	if(swuser.getRoles() != null ) {
-	    swuser.getRoles().forEach(auth -> {
-		user.getRoles().add(auth);
-	    });
-	}
 
 	try {
 	    getUserService().create(user, true);
@@ -321,13 +314,8 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 				Base64.encodeBase64String(MarshalUtils.marshalJsonAsString(swuser).getBytes())))
 			.build());
 
-	swuser.getAuthorities().forEach(auth -> {
-	    user.getPrivileges().add(auth);
-	});
-
-	//TODO: Yo lo haria asi, para despues persistir los nuevos roles
-	request.getRoles().forEach(auth -> {
-	    userPatch.getRoles().add(new StringPatchItem.Builder().value(auth).build());
+	request.getRoles().forEach(role -> {
+	    userPatch.getRoles().add(new StringPatchItem.Builder().value(role).build());
 	});
 
 	try {
@@ -368,8 +356,7 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	if (json.isPresent()) {
 	    String encoded = new String(json.get().getValues().get(0).getBytes());
 	    User swuser = MarshalUtils.unmarshalJson(Base64.decodeBase64(encoded), User.class);
-	    swuser.getAuthorities().addAll(user.getPrivileges());
-	    swuser.getRoles().addAll(user.getRoles());
+	    //swuser.getRoles().addAll(user.getRoles());
 	    swuser.setCreatedBy(user.getCreator());
 	    swuser.setCreatedDate(user.getCreationDate());
 	    swuser.setToken(user.getToken());
@@ -387,7 +374,13 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
     @Override
     public List<IGrantedAuthority> getGrantedAuthorities(String username) throws SiteWhereException {
 	IUser user = getUserByUsername(username);
-	List<String> userAuths = user.getAuthorities();
+	List<String> userAuths = new ArrayList();
+	for(IRole role: user.getRoles()) {
+	    List<String> authorities = role.getAuthorities().stream().map(auth -> auth.getAuthority())
+			    .collect(Collectors.toList());
+	    userAuths = authorities;
+	}
+
 	ISearchResults<IGrantedAuthority> all = listGrantedAuthorities(new GrantedAuthoritySearchCriteria(1, 0));
 	List<IGrantedAuthority> matched = new ArrayList<IGrantedAuthority>();
 	for (IGrantedAuthority auth : all.getResults()) {
@@ -578,7 +571,7 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
     @Override
     public List<IRole> getRoles(String username) throws SiteWhereException {
 	IUser user = getUserByUsername(username);
-	List<String> userRoles = user.getRoles();
+	List<IRole> userRoles = user.getRoles();
 
 	ISearchResults<IRole> all = listRoles(new RoleSearchCriteria(1, 0));
 	List<IRole> matched = new ArrayList<IRole>();
