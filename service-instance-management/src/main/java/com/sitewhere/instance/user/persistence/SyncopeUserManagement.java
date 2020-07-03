@@ -335,7 +335,6 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
     public IUser getUserByUsername(String username) throws SiteWhereException {
 	try {
 	    UserTO match = getUserService().read(username);
-	    getLogger().info("tiene roles? " + (match.getRoles().size()>0 ? "si":"no") + "y son: " + match.getRoles().size());
 	    return convertUser(match);
 	} catch (Throwable t) {
 	    throw new SiteWhereException("Unable to get user by username.", t);
@@ -356,11 +355,11 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	if (json.isPresent()) {
 	    String encoded = new String(json.get().getValues().get(0).getBytes());
 	    User swuser = MarshalUtils.unmarshalJson(Base64.decodeBase64(encoded), User.class);
-	    //swuser.getRoles().addAll(user.getRoles());
+	    user.setPassword(user.getPassword());
+	    user.setUsername(user.getUsername());
 	    swuser.setCreatedBy(user.getCreator());
 	    swuser.setCreatedDate(user.getCreationDate());
 	    swuser.setToken(user.getToken());
-	    //swuser.setStatus(AccountStatus.valueOf(user.getStatus()));
 	    return swuser;
 	}
 	throw new SiteWhereException("Syncope user did not contain JSON data.");
