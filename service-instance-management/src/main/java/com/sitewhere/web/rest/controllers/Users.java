@@ -192,7 +192,7 @@ public class Users {
 		    @Parameter(description = "Unique username", required = true) @PathParam("username") String username)
 		    throws SiteWhereException {
 	List<IRole> matches = getUserManagement().getRoles(username);
-	List<Role> converted = new ArrayList<Role>();
+	List<Role> converted = new ArrayList();
 	for (IRole role : matches) {
 	    converted.add(Role.copy(role));
 	}

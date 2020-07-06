@@ -360,6 +360,11 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	    swuser.setCreatedBy(user.getCreator());
 	    swuser.setCreatedDate(user.getCreationDate());
 	    swuser.setToken(user.getToken());
+
+	    for (String role: user.getRoles()) {
+		IRole roleByName = getRoleByName(role);
+		swuser.getRoles().add(roleByName);
+	    }
 	    return swuser;
 	}
 	throw new SiteWhereException("Syncope user did not contain JSON data.");
@@ -570,16 +575,7 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
     @Override
     public List<IRole> getRoles(String username) throws SiteWhereException {
 	IUser user = getUserByUsername(username);
-	List<IRole> userRoles = user.getRoles();
-
-	ISearchResults<IRole> all = listRoles(new RoleSearchCriteria(1, 0));
-	List<IRole> matched = new ArrayList<IRole>();
-	for (IRole role : all.getResults()) {
-	    if (userRoles.contains(role.getRole())) {
-		matched.add(role);
-	    }
-	}
-	return matched;
+	return user.getRoles();
     }
 
     @Override
@@ -609,15 +605,22 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
     @Override
     public IRole createRole(IRoleCreateRequest request) throws SiteWhereException {
         RoleTO roleTO = new RoleTO();
+        getLogger().info("esto esta queriendo insertar: " + request.getRole());
         roleTO.setKey(request.getRole());
-	getRoleService().create(roleTO);
-	return converRole(roleTO);
+	roleTO.getPrivileges().addAll(request.getAuthorities());
+        getRoleService().create(roleTO);
+	return convertRole(roleTO);
     }
 
     @Override
     public IRole getRoleByName(String name) throws SiteWhereException {
-	RoleTO roleTO = getRoleService().read(name);
-	return converRole(roleTO);
+	ISearchResults<IRole> iRoleISearchResults = listRoles(new RoleSearchCriteria(1, 0));
+	for (IRole role: iRoleISearchResults.getResults()) {
+	    if(role.getRole().equals(name)) {
+	        return role;
+	    }
+	}
+	return null;
     }
 
     @Override
@@ -630,9 +633,9 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	List<RoleTO> allRoles = getRoleService().list();
 	List<IRole> roles = new ArrayList<>();
 	if (allRoles != null) {
-	    allRoles.forEach(role -> {
-		roles.add(converRole(role));
-	    });
+	    for(RoleTO roleTO: allRoles) {
+	        roles.add(convertRole(roleTO));
+	    }
 	}
 	return new SearchResults<IRole>(roles);
     }
@@ -646,10 +649,14 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	}
     }
 
-    protected IRole converRole(RoleTO roleTO) {
+    protected IRole convertRole(RoleTO roleTO) throws SiteWhereException {
 	Role sRole = new Role();
 	sRole.setRole(roleTO.getKey());
 	sRole.setDescription("descripcion");
+	for (String grantedAuthority: roleTO.getPrivileges()) {
+	    IGrantedAuthority grantedAuthorityByName = getGrantedAuthorityByName(grantedAuthority);
+	    sRole.getAuthorities().add(grantedAuthorityByName);
+	}
 	return sRole;
     }
 
