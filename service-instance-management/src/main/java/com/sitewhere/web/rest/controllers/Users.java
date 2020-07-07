@@ -196,13 +196,13 @@ public class Users {
 	for (IRole role : matches) {
 	    converted.add(Role.copy(role));
 	}
-	return Response.ok(new SearchResults<Role>(converted)).build();
+	return Response.ok(new SearchResults(converted)).build();
     }
 
     /**
      * add roles to users
      *
-     * @param input
+     * @param roles
      * @return
      * @throws SiteWhereException
      */
@@ -211,20 +211,18 @@ public class Users {
     @Operation(summary = "Add roles to users", description = "Add roles to users")
     public Response addRoles(
     		@Parameter(description = "Unique username", required = true) @PathParam("username") String username,
-		@RequestBody List<Role> input) throws SiteWhereException {
-	if ((input == null) && input.size()> 0) {
+		@RequestBody List<String> roles) throws SiteWhereException {
+	if ((roles == null) && roles.size()> 0) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidUserInformation, ErrorLevel.ERROR);
 	}
-
-	List<String> rolesToAdd = input.stream().map(result -> result.getRole()).collect(Collectors.toList());
-	return Response.ok(getUserManagement().addRoles(username, rolesToAdd)).build();
+	return Response.ok(getUserManagement().addRoles(username, roles)).build();
     }
 
 
     /**
      * remove roles to users
      *
-     * @param input
+     * @param roles
      * @return
      * @throws SiteWhereException
      */
@@ -233,13 +231,12 @@ public class Users {
     @Operation(summary = "Delete roles to users", description = "Delete roles to users")
     public Response removeRoles(
 		    @Parameter(description = "Unique username", required = true) @PathParam("username") String username,
-		    @RequestBody List<Role> input) throws SiteWhereException {
-	if ((input == null) && input.size()> 0) {
+		    @RequestBody List<String> roles) throws SiteWhereException {
+	if ((roles == null) && roles.size()> 0) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidUserInformation, ErrorLevel.ERROR);
 	}
 
-	List<String> rolesToRemove = input.stream().map(result -> result.getRole()).collect(Collectors.toList());
-	return Response.ok(getUserManagement().removeRoles(username, rolesToRemove)).build();
+	return Response.ok(getUserManagement().removeRoles(username, roles)).build();
     }
 
     protected IUserManagement getUserManagement() throws SiteWhereException {

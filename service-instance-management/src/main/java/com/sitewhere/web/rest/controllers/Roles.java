@@ -70,13 +70,12 @@ public class Roles {
      * @throws SiteWhereException
      */
     @GET
-    @Path("/{roleName}/roles")
+    @Path("/{roleName}")
     @Operation(summary = "Get role by name", description = "Get role by name")
     public Response getRoleByName(
 		    @Parameter(description = "Unique roleName", required = true) @PathParam("roleName") String roleName)
 		    throws SiteWhereException {
 	IRole match = getUserManagement().getRoleByName(roleName);
-	List<Role> converted = new ArrayList<Role>();
 	return Response.ok(match).build();
     }
 
@@ -97,8 +96,8 @@ public class Roles {
     @DELETE
     @Path("/{roleName}")
     @Operation(summary = "Delete role by roleName", description = "Delete role by roleName")
-    public Response deleteUserByUsername(
-		    @Parameter(description = "Unique username", required = true) @PathParam("roleName") String roleName)
+    public Response deleteRoleByRoleName(
+		    @Parameter(description = "Unique rolName", required = true) @PathParam("roleName") String roleName)
 		    throws SiteWhereException {
         getUserManagement().deleteRole(roleName);
 	return Response.ok().build();
@@ -118,6 +117,25 @@ public class Roles {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidUserInformation, ErrorLevel.ERROR);
 	}
 	return Response.ok(getUserManagement().createRole(input)).build();
+    }
+
+    /**
+     * Update an existing role.
+     *
+     * @param roleName
+     * @param input
+     * @return
+     * @throws SiteWhereException
+     */
+    @PUT
+    @Path("/{roleName}")
+    @Operation(summary = "Update existing user", description = "Update existing user")
+    public Response updateUser(
+		    @Parameter(description = "Unique roleName", required = true) @PathParam("roleName") String roleName,
+		    @RequestBody RoleCreateRequest input) throws SiteWhereException {
+
+
+	return Response.ok(getUserManagement().updateRole(roleName, input)).build();
     }
 
     protected IUserManagement getUserManagement() throws SiteWhereException {
