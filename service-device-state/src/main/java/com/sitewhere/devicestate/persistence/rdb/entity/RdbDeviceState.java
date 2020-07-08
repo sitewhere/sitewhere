@@ -23,6 +23,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
@@ -31,12 +32,12 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import com.sitewhere.rdb.entities.RdbPersistentEntity;
 import com.sitewhere.spi.device.state.IDeviceState;
 
 @Entity
-@Table(name = "device_state")
-public class RdbDeviceState extends RdbPersistentEntity implements IDeviceState {
+@Table(name = "device_state", indexes = {
+	@Index(name = "device_state_device_and_assignment", columnList = "device_id, device_assignment_id", unique = true) })
+public class RdbDeviceState implements IDeviceState {
 
     /** Serial version UID */
     private static final long serialVersionUID = -44935949900753350L;
@@ -236,6 +237,8 @@ public class RdbDeviceState extends RdbPersistentEntity implements IDeviceState 
 	if (source.getPresenceMissingDate() != null) {
 	    target.setPresenceMissingDate(source.getPresenceMissingDate());
 	}
-	RdbPersistentEntity.copy(source, target);
+	if (source.getMetadata() != null) {
+	    target.setMetadata(source.getMetadata());
+	}
     }
 }

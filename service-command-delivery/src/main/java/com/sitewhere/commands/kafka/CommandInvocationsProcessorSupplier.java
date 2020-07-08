@@ -7,6 +7,8 @@
  */
 package com.sitewhere.commands.kafka;
 
+import java.util.UUID;
+
 import org.apache.kafka.streams.processor.Processor;
 import org.apache.kafka.streams.processor.ProcessorContext;
 
@@ -23,14 +25,14 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
  * Takes command invocation events from the pipeline and applies the command
  * processing strategy.
  */
-public class CommandInvocationsProcessorSupplier extends ProcessorSupplierComponent<String, GEnrichedEventPayload> {
+public class CommandInvocationsProcessorSupplier extends ProcessorSupplierComponent<UUID, GEnrichedEventPayload> {
 
     /*
      * @see org.apache.kafka.streams.processor.ProcessorSupplier#get()
      */
     @Override
-    public Processor<String, GEnrichedEventPayload> get() {
-	return new Processor<String, GEnrichedEventPayload>() {
+    public Processor<UUID, GEnrichedEventPayload> get() {
+	return new Processor<UUID, GEnrichedEventPayload>() {
 
 	    @SuppressWarnings("unused")
 	    private ProcessorContext context;
@@ -50,7 +52,7 @@ public class CommandInvocationsProcessorSupplier extends ProcessorSupplierCompon
 	     * java.lang.Object)
 	     */
 	    @Override
-	    public void process(String key, GEnrichedEventPayload event) {
+	    public void process(UUID key, GEnrichedEventPayload event) {
 		try {
 		    // Convert payload to API object.
 		    EnrichedEventPayload payload = EventModelConverter.asApiEnrichedEventPayload(event);

@@ -13,9 +13,10 @@ import com.sitewhere.event.grpc.EventManagementImpl;
 import com.sitewhere.event.kafka.KafkaEventPersistenceTriggers;
 import com.sitewhere.event.kafka.OutboundCommandInvocationsProducer;
 import com.sitewhere.event.kafka.OutboundEventsProducer;
-import com.sitewhere.event.spi.kafka.IInboundEventsConsumer;
+import com.sitewhere.event.kafka.EventPersistencePipeline;
 import com.sitewhere.event.spi.kafka.IOutboundCommandInvocationsProducer;
 import com.sitewhere.event.spi.kafka.IOutboundEventsProducer;
+import com.sitewhere.event.spi.kafka.IEventPersistencePipeline;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
@@ -50,8 +51,8 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
     /** Responds to event management GRPC requests */
     private DeviceEventManagementGrpc.DeviceEventManagementImplBase eventManagementImpl;
 
-    /** Kafka consumer for decoded, pre-processed inbound events */
-    private IInboundEventsConsumer inboundEventsConsumer;
+    /** Kafka Streams pipeline for decoded, pre-processed inbound events */
+    private IEventPersistencePipeline preprocessedEventsPipeline;
 
     /** Kafka producer for pushing persisted events to a topic */
     private IOutboundEventsProducer outboundEventsProducer;
@@ -94,6 +95,7 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
 		getEventManagement());
 
 	// Create Kafka components.
+	this.preprocessedEventsPipeline = new EventPersistencePipeline();
 	this.outboundEventsProducer = new OutboundEventsProducer();
 	this.outboundCommandInvocationsProducer = new OutboundCommandInvocationsProducer();
     }
@@ -138,8 +140,8 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
 	// Initialize outbound command invocations producer.
 	init.addInitializeStep(this, getOutboundCommandInvocationsProducer(), true);
 
-	// Initialize inbound events consumer.
-	init.addInitializeStep(this, getInboundEventsConsumer(), true);
+	// Initialize preprocessed events pipeline.
+	init.addInitializeStep(this, getPreprocessedEventsPipeline(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -164,8 +166,8 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
 	// Start outbound command invocations producer.
 	start.addStartStep(this, getOutboundCommandInvocationsProducer(), true);
 
-	// Start inbound events consumer.
-	start.addStartStep(this, getInboundEventsConsumer(), true);
+	// Start preprocessed events pipeline.
+	start.addStartStep(this, getPreprocessedEventsPipeline(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -184,8 +186,8 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
 	// Stop event management persistence.
 	stop.addStopStep(this, getEventManagement());
 
-	// Stop inbound events consumer.
-	stop.addStopStep(this, getInboundEventsConsumer());
+	// Stop preprocessed events pipeline.
+	stop.addStopStep(this, getPreprocessedEventsPipeline());
 
 	// Stop outbound command invocations producer.
 	stop.addStopStep(this, getOutboundCommandInvocationsProducer());
@@ -221,11 +223,11 @@ public class EventManagementTenantEngine extends MicroserviceTenantEngine<EventM
 
     /*
      * @see com.sitewhere.event.spi.microservice.IEventManagementTenantEngine#
-     * getInboundEventsConsumer()
+     * getPreprocessedEventsPipeline()
      */
     @Override
-    public IInboundEventsConsumer getInboundEventsConsumer() {
-	return inboundEventsConsumer;
+    public IEventPersistencePipeline getPreprocessedEventsPipeline() {
+	return preprocessedEventsPipeline;
     }
 
     /*

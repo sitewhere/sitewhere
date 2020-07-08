@@ -8,19 +8,14 @@
 package com.sitewhere.device.kafka;
 
 import com.sitewhere.device.spi.kafka.IDeviceInteractionEventsProducer;
-import com.sitewhere.microservice.kafka.AckPolicy;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Kafka producer that sends events triggered by device management interactions.
  */
-public class DeviceInteractionEventsProducer extends MicroserviceKafkaProducer
+public class DeviceInteractionEventsProducer extends MicroserviceKafkaProducer<String, byte[]>
 	implements IDeviceInteractionEventsProducer {
-
-    public DeviceInteractionEventsProducer() {
-	super(AckPolicy.Leader);
-    }
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer#

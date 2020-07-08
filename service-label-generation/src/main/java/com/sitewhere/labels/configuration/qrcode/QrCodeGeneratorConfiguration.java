@@ -23,11 +23,11 @@ public class QrCodeGeneratorConfiguration extends LabelGeneratorConfiguration {
     /** Image height in pixels */
     private int height = 200;
 
-    /** Foreground color */
-    private String foregroundColor = "0xff333333";
+    /** Foreground color (RGBA) */
+    private String foregroundColor = "333333ff";
 
-    /** Background color */
-    private String backgroundColor = "0xffffffff";
+    /** Background color (RGBA) */
+    private String backgroundColor = "ffffffff";
 
     public QrCodeGeneratorConfiguration(ITenantEngineLifecycleComponent component) {
 	super(component);
@@ -42,8 +42,8 @@ public class QrCodeGeneratorConfiguration extends LabelGeneratorConfiguration {
     public void loadFrom(JsonNode json) throws SiteWhereException {
 	this.width = configurableInt("width", json, 200);
 	this.height = configurableInt("height", json, 200);
-	this.foregroundColor = configurableString("foregroundColor", json, "0xff333333");
-	this.backgroundColor = configurableString("backgroundColor", json, "0xffffffff");
+	this.foregroundColor = configurableString("foregroundColor", json, "333333ff");
+	this.backgroundColor = configurableString("backgroundColor", json, "ffffffff");
     }
 
     public int getWidth() {

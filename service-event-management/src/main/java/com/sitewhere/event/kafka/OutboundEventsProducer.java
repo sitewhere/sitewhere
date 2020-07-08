@@ -7,8 +7,11 @@
  */
 package com.sitewhere.event.kafka;
 
+import java.util.UUID;
+
+import org.apache.kafka.common.serialization.UUIDSerializer;
+
 import com.sitewhere.event.spi.kafka.IOutboundEventsProducer;
-import com.sitewhere.microservice.kafka.AckPolicy;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 
@@ -16,10 +19,15 @@ import com.sitewhere.spi.SiteWhereException;
  * Kafka producer that sends sends enriched events to a topic for further
  * processing.
  */
-public class OutboundEventsProducer extends MicroserviceKafkaProducer implements IOutboundEventsProducer {
+public class OutboundEventsProducer extends MicroserviceKafkaProducer<UUID, byte[]> implements IOutboundEventsProducer {
 
-    public OutboundEventsProducer() {
-	super(AckPolicy.Leader);
+    /*
+     * @see
+     * com.sitewhere.microservice.kafka.MicroserviceKafkaProducer#getKeySerializer()
+     */
+    @Override
+    public Class<?> getKeySerializer() {
+	return UUIDSerializer.class;
     }
 
     /*

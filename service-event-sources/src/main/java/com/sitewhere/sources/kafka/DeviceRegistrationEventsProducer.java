@@ -7,7 +7,6 @@
  */
 package com.sitewhere.sources.kafka;
 
-import com.sitewhere.microservice.kafka.AckPolicy;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
 
@@ -15,11 +14,7 @@ import com.sitewhere.spi.SiteWhereException;
  * Kafka producer for a stream of decoded device registration events produced by
  * all event sources for a tenant.
  */
-public class DeviceRegistrationEventsProducer extends MicroserviceKafkaProducer {
-
-    public DeviceRegistrationEventsProducer() {
-	super(AckPolicy.FireAndForget);
-    }
+public class DeviceRegistrationEventsProducer extends MicroserviceKafkaProducer<String, byte[]> {
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer#

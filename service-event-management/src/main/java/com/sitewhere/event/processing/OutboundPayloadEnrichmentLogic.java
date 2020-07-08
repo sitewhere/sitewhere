@@ -77,11 +77,13 @@ public class OutboundPayloadEnrichmentLogic {
 	    // Send enriched payload to topic.
 	    GEnrichedEventPayload grpc = EventModelConverter.asGrpcEnrichedEventPayload(enriched);
 	    byte[] message = EventModelMarshaler.buildEnrichedEventPayloadMessage(grpc);
-	    engine.getOutboundEventsProducer().send(device.getToken(), message);
+	    engine.getOutboundEventsProducer().send(device.getId(), message);
+	    LOGGER.debug("Delivered payload to outbound events producer.");
 
 	    // Send enriched command invocations to topic.
 	    if (event.getEventType() == DeviceEventType.CommandInvocation) {
-		engine.getOutboundCommandInvocationsProducer().send(device.getToken(), message);
+		engine.getOutboundCommandInvocationsProducer().send(device.getId(), message);
+		LOGGER.debug("Delivered payload to outbound command invocations producer.");
 	    }
 	} catch (SiteWhereException e) {
 	    throw e;

@@ -7,10 +7,10 @@
  */
 package com.sitewhere.event.spi.kafka;
 
-import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer;
+import com.sitewhere.spi.microservice.kafka.IKafkaStreamPipeline;
 
 /**
- * Kafka consumer for events which have already completed inbound processing.
+ * Kafka stream pipeline for persisting decoded, preprocessed events.
  */
-public interface IInboundEventsConsumer extends IMicroserviceKafkaConsumer {
+public interface IEventPersistencePipeline extends IKafkaStreamPipeline {
 }

@@ -7,11 +7,13 @@
  */
 package com.sitewhere.event.spi.kafka;
 
+import java.util.UUID;
+
 import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer;
 
 /**
  * Kafka producer that sends sends enriched events to a topic for further
  * processing.
  */
-public interface IOutboundEventsProducer extends IMicroserviceKafkaProducer {
+public interface IOutboundEventsProducer extends IMicroserviceKafkaProducer<UUID, byte[]> {
 }

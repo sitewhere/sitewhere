@@ -8,7 +8,7 @@
 package com.sitewhere.event.spi.microservice;
 
 import com.sitewhere.event.configuration.EventManagementTenantConfiguration;
-import com.sitewhere.event.spi.kafka.IInboundEventsConsumer;
+import com.sitewhere.event.spi.kafka.IEventPersistencePipeline;
 import com.sitewhere.event.spi.kafka.IOutboundCommandInvocationsProducer;
 import com.sitewhere.event.spi.kafka.IOutboundEventsProducer;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
@@ -36,11 +36,11 @@ public interface IEventManagementTenantEngine extends IMicroserviceTenantEngine<
     public DeviceEventManagementGrpc.DeviceEventManagementImplBase getEventManagementImpl();
 
     /**
-     * Get Kafka consumer for events prepared by inbound processing logic.
+     * Get Kafka Streams pipeline for events prepared by inbound processing logic.
      * 
      * @return
      */
-    public IInboundEventsConsumer getInboundEventsConsumer();
+    public IEventPersistencePipeline getPreprocessedEventsPipeline();
 
     /**
      * Get Kafka producer that sends enriched, persisted events to a topic.

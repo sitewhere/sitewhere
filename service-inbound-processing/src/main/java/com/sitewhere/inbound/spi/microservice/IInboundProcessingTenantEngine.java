@@ -9,8 +9,6 @@ package com.sitewhere.inbound.spi.microservice;
 
 import com.sitewhere.inbound.configuration.InboundProcessingTenantConfiguration;
 import com.sitewhere.inbound.spi.kafka.IDecodedEventsPipeline;
-import com.sitewhere.inbound.spi.kafka.IInboundEventsProducer;
-import com.sitewhere.inbound.spi.kafka.IUnregisteredEventsProducer;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
@@ -26,20 +24,4 @@ public interface IInboundProcessingTenantEngine
      * @return
      */
     public IDecodedEventsPipeline getDecodedEventsPipeline();
-
-    /**
-     * Get Kafka producer that sends events for unregistered devices to an
-     * out-of-band topic for later processing.
-     * 
-     * @return
-     */
-    public IUnregisteredEventsProducer getUnregisteredDeviceEventsProducer();
-
-    /**
-     * Get Kafka producer that forwards events which have successfully completed
-     * inbound processing.
-     * 
-     * @return
-     */
-    public IInboundEventsProducer getInboundEventsProducer();
 }

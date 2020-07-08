@@ -7,6 +7,8 @@
  */
 package com.sitewhere.event.persistence.warp10;
 
+import java.util.HashMap;
+
 import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.warp10.Warp10Converter;
@@ -46,6 +48,7 @@ public class Warp10DeviceMeasurement implements Warp10Converter<IDeviceMeasureme
         target.setValue(source.getValue());
         target.setName(source.getName());
         target.setTs(source.getEventDate().getTime());
+        target.setAttributes(new HashMap<>());
         Warp10DeviceEvent.toGTS(source, target, isNested);
         Warp10MetadataProvider.toGTS(source, target);
     }
