@@ -210,7 +210,7 @@ public class Users {
      * @throws SiteWhereException
      */
     @PUT
-    @Path("/{username}/add/roles")
+    @Path("/{username}/roles")
     @Operation(summary = "Add roles to users", description = "Add roles to users")
     public Response addRoles(
     		@Parameter(description = "Unique username", required = true) @PathParam("username") String username,
@@ -229,8 +229,8 @@ public class Users {
      * @return
      * @throws SiteWhereException
      */
-    @PUT
-    @Path("/{username}/delete/roles")
+    @DELETE
+    @Path("/{username}/roles")
     @Operation(summary = "Delete roles to users", description = "Delete roles to users")
     public Response removeRoles(
 		    @Parameter(description = "Unique username", required = true) @PathParam("username") String username,
