@@ -8,6 +8,7 @@
 package com.sitewhere.web.rest.controllers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,8 @@ import javax.ws.rs.core.Response.Status;
 
 import com.sitewhere.rest.model.user.Role;
 import com.sitewhere.spi.user.IRole;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -211,11 +214,11 @@ public class Users {
     @Operation(summary = "Add roles to users", description = "Add roles to users")
     public Response addRoles(
     		@Parameter(description = "Unique username", required = true) @PathParam("username") String username,
-		@RequestBody List<String> roles) throws SiteWhereException {
-	if ((roles == null) && roles.size()> 0) {
+		@RequestBody String[] roles) throws SiteWhereException {
+	if ((roles == null) && roles.length> 0) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidUserInformation, ErrorLevel.ERROR);
 	}
-	return Response.ok(getUserManagement().addRoles(username, roles)).build();
+	return Response.ok(getUserManagement().addRoles(username, Arrays.asList(roles))).build();
     }
 
 
@@ -231,12 +234,12 @@ public class Users {
     @Operation(summary = "Delete roles to users", description = "Delete roles to users")
     public Response removeRoles(
 		    @Parameter(description = "Unique username", required = true) @PathParam("username") String username,
-		    @RequestBody List<String> roles) throws SiteWhereException {
-	if ((roles == null) && roles.size()> 0) {
+		    @RequestBody String[] roles) throws SiteWhereException {
+	if ((roles == null) && roles.length> 0) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidUserInformation, ErrorLevel.ERROR);
 	}
 
-	return Response.ok(getUserManagement().removeRoles(username, roles)).build();
+	return Response.ok(getUserManagement().removeRoles(username, Arrays.asList(roles))).build();
     }
 
     protected IUserManagement getUserManagement() throws SiteWhereException {
