@@ -70,7 +70,7 @@ public class CommandDeliveryTenantEngine extends MicroserviceTenantEngine<Comman
      */
     @Override
     public ITenantEngineModule<CommandDeliveryTenantConfiguration> createConfigurationModule() {
-	return new CommandDeliveryTenantEngineModule(getActiveConfiguration());
+	return new CommandDeliveryTenantEngineModule(this, getActiveConfiguration());
     }
 
     /*

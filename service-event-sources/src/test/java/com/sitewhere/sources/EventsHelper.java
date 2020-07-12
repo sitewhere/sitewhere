@@ -7,6 +7,7 @@
  */
 package com.sitewhere.sources;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.sitewhere.microservice.util.MarshalUtils;
@@ -58,7 +59,7 @@ public class EventsHelper {
 	DeviceMeasurementCreateRequest mx = new DeviceMeasurementCreateRequest();
 	mx.setEventDate(new Date());
 	mx.setName("fuel.level");
-	mx.setValue(123.4);
+	mx.setValue(new BigDecimal("123.4"));
 	request.setRequest(mx);
 	return request;
     }

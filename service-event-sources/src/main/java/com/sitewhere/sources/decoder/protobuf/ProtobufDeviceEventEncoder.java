@@ -74,7 +74,8 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 	    }
 
 	    payloadBuilder.setMeasurementName(GOptionalString.newBuilder().setValue(measurements.getName()));
-	    payloadBuilder.setMeasurementValue(GOptionalDouble.newBuilder().setValue(measurements.getValue()));
+	    payloadBuilder
+		    .setMeasurementValue(GOptionalDouble.newBuilder().setValue(measurements.getValue().doubleValue()));
 
 	    // Write to byte-stream
 	    ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -139,9 +140,9 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 	    // Payload
 	    DeviceEvent.DeviceLocation.Builder payloadBuilder = DeviceEvent.DeviceLocation.newBuilder();
 	    payloadBuilder.setEventDate(GOptionalFixed64.newBuilder().setValue(location.getEventDate().getTime()));
-	    payloadBuilder.setLatitude(GOptionalDouble.newBuilder().setValue(location.getLatitude()));
-	    payloadBuilder.setLongitude(GOptionalDouble.newBuilder().setValue(location.getLongitude()));
-	    payloadBuilder.setElevation(GOptionalDouble.newBuilder().setValue(location.getElevation()));
+	    payloadBuilder.setLatitude(GOptionalDouble.newBuilder().setValue(location.getLatitude().doubleValue()));
+	    payloadBuilder.setLongitude(GOptionalDouble.newBuilder().setValue(location.getLongitude().doubleValue()));
+	    payloadBuilder.setElevation(GOptionalDouble.newBuilder().setValue(location.getElevation().doubleValue()));
 	    if (location.getMetadata() != null) {
 		payloadBuilder.putAllMetadata(location.getMetadata());
 	    }

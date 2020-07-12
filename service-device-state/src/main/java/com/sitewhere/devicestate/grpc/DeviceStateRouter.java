@@ -17,24 +17,20 @@ import com.sitewhere.grpc.client.spi.server.IGrpcRouter;
 import com.sitewhere.grpc.service.DeviceStateGrpc;
 import com.sitewhere.grpc.service.GCreateDeviceStateRequest;
 import com.sitewhere.grpc.service.GCreateDeviceStateResponse;
-import com.sitewhere.grpc.service.GCreateRecentStateEventRequest;
-import com.sitewhere.grpc.service.GCreateRecentStateEventResponse;
 import com.sitewhere.grpc.service.GDeleteDeviceStateRequest;
 import com.sitewhere.grpc.service.GDeleteDeviceStateResponse;
-import com.sitewhere.grpc.service.GDeleteRecentStateEventRequest;
-import com.sitewhere.grpc.service.GDeleteRecentStateEventResponse;
+import com.sitewhere.grpc.service.GGetDeviceStateByAssignmentRequest;
+import com.sitewhere.grpc.service.GGetDeviceStateByAssignmentResponse;
 import com.sitewhere.grpc.service.GGetDeviceStateRequest;
 import com.sitewhere.grpc.service.GGetDeviceStateResponse;
-import com.sitewhere.grpc.service.GGetRecentStateEventRequest;
-import com.sitewhere.grpc.service.GGetRecentStateEventResponse;
+import com.sitewhere.grpc.service.GGetDeviceStatesByDeviceRequest;
+import com.sitewhere.grpc.service.GGetDeviceStatesByDeviceResponse;
+import com.sitewhere.grpc.service.GMergeDeviceStateRequest;
+import com.sitewhere.grpc.service.GMergeDeviceStateResponse;
 import com.sitewhere.grpc.service.GSearchDeviceStatesRequest;
 import com.sitewhere.grpc.service.GSearchDeviceStatesResponse;
-import com.sitewhere.grpc.service.GSearchRecentStateEventsRequest;
-import com.sitewhere.grpc.service.GSearchRecentStateEventsResponse;
 import com.sitewhere.grpc.service.GUpdateDeviceStateRequest;
 import com.sitewhere.grpc.service.GUpdateDeviceStateResponse;
-import com.sitewhere.grpc.service.GUpdateRecentStateEventRequest;
-import com.sitewhere.grpc.service.GUpdateRecentStateEventResponse;
 import com.sitewhere.microservice.grpc.GrpcKeys;
 import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
 
@@ -106,6 +102,34 @@ public class DeviceStateRouter extends DeviceStateGrpc.DeviceStateImplBase
 
     /*
      * @see com.sitewhere.grpc.service.DeviceStateGrpc.DeviceStateImplBase#
+     * getDeviceStateByAssignment(com.sitewhere.grpc.service.
+     * GGetDeviceStateByAssignmentRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getDeviceStateByAssignment(GGetDeviceStateByAssignmentRequest request,
+	    StreamObserver<GGetDeviceStateByAssignmentResponse> responseObserver) {
+	DeviceStateGrpc.DeviceStateImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getDeviceStateByAssignment(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.DeviceStateGrpc.DeviceStateImplBase#
+     * getDeviceStatesByDevice(com.sitewhere.grpc.service.
+     * GGetDeviceStatesByDeviceRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getDeviceStatesByDevice(GGetDeviceStatesByDeviceRequest request,
+	    StreamObserver<GGetDeviceStatesByDeviceResponse> responseObserver) {
+	DeviceStateGrpc.DeviceStateImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.getDeviceStatesByDevice(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.DeviceStateGrpc.DeviceStateImplBase#
      * searchDeviceStates(com.sitewhere.grpc.service.GSearchDeviceStatesRequest,
      * io.grpc.stub.StreamObserver)
      */
@@ -134,6 +158,20 @@ public class DeviceStateRouter extends DeviceStateGrpc.DeviceStateImplBase
 
     /*
      * @see com.sitewhere.grpc.service.DeviceStateGrpc.DeviceStateImplBase#
+     * mergeDeviceState(com.sitewhere.grpc.service.GMergeDeviceStateRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void mergeDeviceState(GMergeDeviceStateRequest request,
+	    StreamObserver<GMergeDeviceStateResponse> responseObserver) {
+	DeviceStateGrpc.DeviceStateImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.mergeDeviceState(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.DeviceStateGrpc.DeviceStateImplBase#
      * deleteDeviceState(com.sitewhere.grpc.service.GDeleteDeviceStateRequest,
      * io.grpc.stub.StreamObserver)
      */
@@ -143,76 +181,6 @@ public class DeviceStateRouter extends DeviceStateGrpc.DeviceStateImplBase
 	DeviceStateGrpc.DeviceStateImplBase engine = getTenantImplementation(responseObserver);
 	if (engine != null) {
 	    engine.deleteDeviceState(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.grpc.service.DeviceStateGrpc.DeviceStateImplBase#
-     * createRecentStateEvent(com.sitewhere.grpc.service.
-     * GCreateRecentStateEventRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void createRecentStateEvent(GCreateRecentStateEventRequest request,
-	    StreamObserver<GCreateRecentStateEventResponse> responseObserver) {
-	DeviceStateGrpc.DeviceStateImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.createRecentStateEvent(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.grpc.service.DeviceStateGrpc.DeviceStateImplBase#
-     * deleteRecentStateEvent(com.sitewhere.grpc.service.
-     * GDeleteRecentStateEventRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void deleteRecentStateEvent(GDeleteRecentStateEventRequest request,
-	    StreamObserver<GDeleteRecentStateEventResponse> responseObserver) {
-	DeviceStateGrpc.DeviceStateImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.deleteRecentStateEvent(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.grpc.service.DeviceStateGrpc.DeviceStateImplBase#
-     * getRecentStateEvent(com.sitewhere.grpc.service.GGetRecentStateEventRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getRecentStateEvent(GGetRecentStateEventRequest request,
-	    StreamObserver<GGetRecentStateEventResponse> responseObserver) {
-	DeviceStateGrpc.DeviceStateImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getRecentStateEvent(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.grpc.service.DeviceStateGrpc.DeviceStateImplBase#
-     * searchRecentStateEvents(com.sitewhere.grpc.service.
-     * GSearchRecentStateEventsRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void searchRecentStateEvents(GSearchRecentStateEventsRequest request,
-	    StreamObserver<GSearchRecentStateEventsResponse> responseObserver) {
-	DeviceStateGrpc.DeviceStateImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.searchRecentStateEvents(request, responseObserver);
-	}
-    }
-
-    /*
-     * @see com.sitewhere.grpc.service.DeviceStateGrpc.DeviceStateImplBase#
-     * updateRecentStateEvent(com.sitewhere.grpc.service.
-     * GUpdateRecentStateEventRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void updateRecentStateEvent(GUpdateRecentStateEventRequest request,
-	    StreamObserver<GUpdateRecentStateEventResponse> responseObserver) {
-	DeviceStateGrpc.DeviceStateImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.updateRecentStateEvent(request, responseObserver);
 	}
     }
 

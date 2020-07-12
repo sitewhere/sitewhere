@@ -9,6 +9,7 @@ package com.sitewhere.labels.configuration;
 
 import com.sitewhere.labels.manager.LabelGeneratorManager;
 import com.sitewhere.labels.spi.manager.ILabelGeneratorManager;
+import com.sitewhere.labels.spi.microservice.ILabelGenerationTenantEngine;
 import com.sitewhere.microservice.multitenant.TenantEngineModule;
 
 /**
@@ -17,8 +18,9 @@ import com.sitewhere.microservice.multitenant.TenantEngineModule;
  */
 public class LabelGenerationTenantEngineModule extends TenantEngineModule<LabelGenerationTenantConfiguration> {
 
-    public LabelGenerationTenantEngineModule(LabelGenerationTenantConfiguration configuration) {
-	super(configuration);
+    public LabelGenerationTenantEngineModule(ILabelGenerationTenantEngine tenantEngine,
+	    LabelGenerationTenantConfiguration configuration) {
+	super(tenantEngine, configuration);
     }
 
     /*
@@ -26,6 +28,7 @@ public class LabelGenerationTenantEngineModule extends TenantEngineModule<LabelG
      */
     @Override
     protected void configure() {
+	bind(ILabelGenerationTenantEngine.class).toInstance((ILabelGenerationTenantEngine) getTenantEngine());
 	bind(LabelGenerationTenantConfiguration.class).toInstance(getConfiguration());
 	bind(ILabelGeneratorManager.class).to(LabelGeneratorManager.class);
     }

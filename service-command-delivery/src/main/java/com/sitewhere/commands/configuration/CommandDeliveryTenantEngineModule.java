@@ -11,6 +11,7 @@ import com.sitewhere.commands.configuration.destinations.CommandDestinationsMana
 import com.sitewhere.commands.configuration.router.OutboundCommandRouterProvider;
 import com.sitewhere.commands.spi.ICommandDestinationsManager;
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
+import com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine;
 import com.sitewhere.microservice.multitenant.TenantEngineModule;
 
 /**
@@ -19,8 +20,9 @@ import com.sitewhere.microservice.multitenant.TenantEngineModule;
  */
 public class CommandDeliveryTenantEngineModule extends TenantEngineModule<CommandDeliveryTenantConfiguration> {
 
-    public CommandDeliveryTenantEngineModule(CommandDeliveryTenantConfiguration configuration) {
-	super(configuration);
+    public CommandDeliveryTenantEngineModule(ICommandDeliveryTenantEngine tenantEngine,
+	    CommandDeliveryTenantConfiguration configuration) {
+	super(tenantEngine, configuration);
     }
 
     /*
@@ -28,6 +30,7 @@ public class CommandDeliveryTenantEngineModule extends TenantEngineModule<Comman
      */
     @Override
     protected void configure() {
+	bind(ICommandDeliveryTenantEngine.class).toInstance((ICommandDeliveryTenantEngine) getTenantEngine());
 	bind(CommandDeliveryTenantConfiguration.class).toInstance(getConfiguration());
 	bind(ICommandDestinationsManager.class).toProvider(CommandDestinationsManagerProvider.class);
 	bind(IOutboundCommandRouter.class).toProvider(OutboundCommandRouterProvider.class);

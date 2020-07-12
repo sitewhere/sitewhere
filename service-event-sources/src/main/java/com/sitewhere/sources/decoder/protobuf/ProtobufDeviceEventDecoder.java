@@ -9,6 +9,7 @@ package com.sitewhere.sources.decoder.protobuf;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -109,9 +110,9 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 			.parseDelimitedFrom(stream);
 		getLogger().debug("Decoded location for: " + header.getDeviceToken().getValue());
 		DeviceLocationCreateRequest request = new DeviceLocationCreateRequest();
-		request.setLatitude(location.getLatitude().getValue());
-		request.setLongitude(location.getLongitude().getValue());
-		request.setElevation(location.getElevation().getValue());
+		request.setLatitude(new BigDecimal(location.getLatitude().getValue()));
+		request.setLongitude(new BigDecimal(location.getLongitude().getValue()));
+		request.setElevation(new BigDecimal(location.getElevation().getValue()));
 
 		if (location.hasUpdateState()) {
 		    request.setUpdateState(location.getUpdateState().getValue());
@@ -170,7 +171,7 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		DeviceMeasurementCreateRequest request = new DeviceMeasurementCreateRequest();
 
 		request.setName(dm.getMeasurementName().getValue());
-		request.setValue(dm.getMeasurementValue().getValue());
+		request.setValue(new BigDecimal(dm.getMeasurementValue().getValue()));
 
 		if (dm.hasUpdateState()) {
 		    request.setUpdateState(dm.getUpdateState().getValue());

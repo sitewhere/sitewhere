@@ -9,6 +9,7 @@ package com.sitewhere.connectors.configuration;
 
 import com.sitewhere.connectors.manager.OutboundConnectorsManager;
 import com.sitewhere.connectors.spi.IOutboundConnectorsManager;
+import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsTenantEngine;
 import com.sitewhere.microservice.multitenant.TenantEngineModule;
 
 /**
@@ -17,8 +18,9 @@ import com.sitewhere.microservice.multitenant.TenantEngineModule;
  */
 public class OutboundConnectorsTenantEngineModule extends TenantEngineModule<OutboundConnectorsTenantConfiguration> {
 
-    public OutboundConnectorsTenantEngineModule(OutboundConnectorsTenantConfiguration configuration) {
-	super(configuration);
+    public OutboundConnectorsTenantEngineModule(IOutboundConnectorsTenantEngine tenantEngine,
+	    OutboundConnectorsTenantConfiguration configuration) {
+	super(tenantEngine, configuration);
     }
 
     /*
@@ -26,6 +28,7 @@ public class OutboundConnectorsTenantEngineModule extends TenantEngineModule<Out
      */
     @Override
     protected void configure() {
+	bind(IOutboundConnectorsTenantEngine.class).toInstance((IOutboundConnectorsTenantEngine) getTenantEngine());
 	bind(OutboundConnectorsTenantConfiguration.class).toInstance(getConfiguration());
 	bind(IOutboundConnectorsManager.class).to(OutboundConnectorsManager.class);
     }

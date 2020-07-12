@@ -7,6 +7,7 @@
  */
 package com.sitewhere.event.persistence.influxdb;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import org.influxdb.dto.Point;
@@ -47,7 +48,7 @@ public class InfluxDbDeviceMeasurements {
      */
     public static void loadFromMap(DeviceMeasurement event, Map<String, Object> values) throws SiteWhereException {
 	event.setName((String) values.get(MX_NAME));
-	event.setValue((Double) values.get(MX_VALUE));
+	event.setValue(new BigDecimal((Double) values.get(MX_VALUE)));
 	InfluxDbDeviceEvent.loadFromMap(event, values);
     }
 

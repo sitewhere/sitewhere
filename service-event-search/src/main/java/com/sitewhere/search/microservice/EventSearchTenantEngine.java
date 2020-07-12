@@ -50,7 +50,7 @@ public class EventSearchTenantEngine extends MicroserviceTenantEngine<EventSearc
      */
     @Override
     public ITenantEngineModule<EventSearchTenantConfiguration> createConfigurationModule() {
-	return new EventSearchTenantEngineModule(getActiveConfiguration());
+	return new EventSearchTenantEngineModule(this, getActiveConfiguration());
     }
 
     /*

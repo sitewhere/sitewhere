@@ -9,6 +9,7 @@ package com.sitewhere.instance.user.persistence;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
@@ -245,9 +246,9 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	user.getPlainAttrs().add(createAttribute(ATTR_JSON,
 		Base64.encodeBase64String(MarshalUtils.marshalJsonAsString(swuser).getBytes())));
 
-	swuser.getAuthorities().forEach(auth -> {
-	    user.getPrivileges().add(auth);
-	});
+	// swuser.getAuthorities().forEach(auth -> {
+	// user.getPrivileges().add(auth);
+	// });
 
 	try {
 	    getUserService().create(user, true);
@@ -325,8 +326,10 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 				Base64.encodeBase64String(MarshalUtils.marshalJsonAsString(swuser).getBytes())))
 			.build());
 
-	swuser.getAuthorities().forEach(auth -> {
-	    user.getPrivileges().add(auth);
+	swuser.getRoles().forEach(role -> {
+	    role.getAuthorities().forEach(auth -> {
+		user.getPrivileges().add(auth.getAuthority());
+	    });
 	});
 
 	try {
@@ -375,8 +378,9 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
      */
     @Override
     public List<IGrantedAuthority> getGrantedAuthorities(String username) throws SiteWhereException {
-	IUser user = getUserByUsername(username);
-	List<String> userAuths = user.getAuthorities();
+	// IUser user = getUserByUsername(username);
+	// List<String> userAuths = user.getAuthorities();
+	List<String> userAuths = Collections.emptyList();
 	ISearchResults<IGrantedAuthority> all = listGrantedAuthorities(new GrantedAuthoritySearchCriteria(1, 0));
 	List<IGrantedAuthority> matched = new ArrayList<IGrantedAuthority>();
 	for (IGrantedAuthority auth : all.getResults()) {

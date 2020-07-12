@@ -19,9 +19,10 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import com.sitewhere.devicestate.microservice.DeviceStateMicroservice;
+import com.sitewhere.devicestate.microservice.DeviceStateTenantEngine;
 import com.sitewhere.devicestate.persistence.DeviceStatePersistence;
 import com.sitewhere.devicestate.persistence.rdb.entity.RdbDeviceState;
-import com.sitewhere.devicestate.persistence.rdb.entity.RdbRecentStateEvent;
+import com.sitewhere.devicestate.spi.IDeviceStateMergeStrategy;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
@@ -30,7 +31,7 @@ import com.sitewhere.rdb.RdbTenantComponent;
 import com.sitewhere.rdb.spi.IRdbEntityManagerProvider;
 import com.sitewhere.rdb.spi.IRdbQueryProvider;
 import com.sitewhere.rest.model.device.state.DeviceState;
-import com.sitewhere.rest.model.device.state.RecentStateEvent;
+import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
 import com.sitewhere.spi.asset.IAsset;
@@ -38,12 +39,11 @@ import com.sitewhere.spi.customer.ICustomer;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceType;
-import com.sitewhere.spi.device.state.IRecentStateEvent;
+import com.sitewhere.spi.device.state.IDeviceState;
 import com.sitewhere.spi.device.state.request.IDeviceStateCreateRequest;
-import com.sitewhere.spi.device.state.request.IRecentStateEventCreateRequest;
+import com.sitewhere.spi.device.state.request.IDeviceStateEventMergeRequest;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IDeviceStateSearchCriteria;
-import com.sitewhere.spi.search.device.IRecentStateEventSearchCriteria;
 
 /**
  * Device state management implementation that uses a relational database for
@@ -61,8 +61,7 @@ public class RdbDeviceStateManagement extends RdbTenantComponent implements IDev
 	DeviceState state = DeviceStatePersistence.deviceStateCreateLogic(request);
 	RdbDeviceState created = new RdbDeviceState();
 	RdbDeviceState.copy(state, created);
-	getEntityManagerProvider().persist(created);
-	return created;
+	return getEntityManagerProvider().persist(created);
     }
 
     /*
@@ -73,6 +72,78 @@ public class RdbDeviceStateManagement extends RdbTenantComponent implements IDev
     @Override
     public RdbDeviceState getDeviceState(UUID id) throws SiteWhereException {
 	return getEntityManagerProvider().findById(id, RdbDeviceState.class);
+    }
+
+    /*
+     * @see com.sitewhere.microservice.api.state.IDeviceStateManagement#
+     * getDeviceStateByDeviceAssignment(java.util.UUID)
+     */
+    @Override
+    public IDeviceState getDeviceStateByDeviceAssignment(UUID assignmentId) throws SiteWhereException {
+	SearchCriteria criteria = new SearchCriteria(1, 0);
+	ISearchResults<RdbDeviceState> results = getEntityManagerProvider().findWithCriteria(criteria,
+		new IRdbQueryProvider<RdbDeviceState>() {
+
+		    /*
+		     * @see com.sitewhere.rdb.spi.IRdbQueryProvider#addPredicates(javax.persistence.
+		     * criteria.CriteriaBuilder, java.util.List, javax.persistence.criteria.Root)
+		     */
+		    @Override
+		    public void addPredicates(CriteriaBuilder cb, List<Predicate> predicates, Root<RdbDeviceState> root)
+			    throws SiteWhereException {
+			Path<UUID> path = root.get("deviceAssignmentId");
+			predicates.add(cb.equal(path, assignmentId));
+		    }
+
+		    /*
+		     * @see
+		     * com.sitewhere.rdb.spi.IRdbQueryProvider#addSort(javax.persistence.criteria.
+		     * CriteriaBuilder, javax.persistence.criteria.Root,
+		     * javax.persistence.criteria.CriteriaQuery)
+		     */
+		    @Override
+		    public CriteriaQuery<RdbDeviceState> addSort(CriteriaBuilder cb, Root<RdbDeviceState> root,
+			    CriteriaQuery<RdbDeviceState> query) {
+			return query.orderBy(cb.desc(root.get("lastInteractionDate")));
+		    }
+		}, RdbDeviceState.class);
+	return results.getResults().size() > 0 ? results.getResults().get(0) : null;
+    }
+
+    /*
+     * @see com.sitewhere.microservice.api.state.IDeviceStateManagement#
+     * getDeviceStatesForDevice(java.util.UUID)
+     */
+    @Override
+    public List<? extends IDeviceState> getDeviceStatesForDevice(UUID deviceId) throws SiteWhereException {
+	SearchCriteria criteria = new SearchCriteria(1, 0);
+	ISearchResults<RdbDeviceState> results = getEntityManagerProvider().findWithCriteria(criteria,
+		new IRdbQueryProvider<RdbDeviceState>() {
+
+		    /*
+		     * @see com.sitewhere.rdb.spi.IRdbQueryProvider#addPredicates(javax.persistence.
+		     * criteria.CriteriaBuilder, java.util.List, javax.persistence.criteria.Root)
+		     */
+		    @Override
+		    public void addPredicates(CriteriaBuilder cb, List<Predicate> predicates, Root<RdbDeviceState> root)
+			    throws SiteWhereException {
+			Path<UUID> path = root.get("deviceId");
+			predicates.add(cb.equal(path, deviceId));
+		    }
+
+		    /*
+		     * @see
+		     * com.sitewhere.rdb.spi.IRdbQueryProvider#addSort(javax.persistence.criteria.
+		     * CriteriaBuilder, javax.persistence.criteria.Root,
+		     * javax.persistence.criteria.CriteriaQuery)
+		     */
+		    @Override
+		    public CriteriaQuery<RdbDeviceState> addSort(CriteriaBuilder cb, Root<RdbDeviceState> root,
+			    CriteriaQuery<RdbDeviceState> query) {
+			return query.orderBy(cb.desc(root.get("lastInteractionDate")));
+		    }
+		}, RdbDeviceState.class);
+	return results.getResults();
     }
 
     /*
@@ -93,6 +164,16 @@ public class RdbDeviceStateManagement extends RdbTenantComponent implements IDev
 	    return getEntityManagerProvider().merge(existing);
 	}
 	return null;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.microservice.api.state.IDeviceStateManagement#merge(java.util.
+     * UUID, com.sitewhere.spi.device.state.request.IDeviceStateEventMergeRequest)
+     */
+    @Override
+    public IDeviceState merge(UUID id, IDeviceStateEventMergeRequest events) throws SiteWhereException {
+	return getDeviceStateMergeStrategy().merge(id, events);
     }
 
     /*
@@ -195,101 +276,6 @@ public class RdbDeviceStateManagement extends RdbTenantComponent implements IDev
     @Override
     public RdbDeviceState deleteDeviceState(UUID id) throws SiteWhereException {
 	return getEntityManagerProvider().remove(id, RdbDeviceState.class);
-    }
-
-    /*
-     * @see com.sitewhere.microservice.api.state.IDeviceStateManagement#
-     * createRecentStateEvent(com.sitewhere.spi.device.state.request.
-     * IRecentStateEventCreateRequest)
-     */
-    @Override
-    public RdbRecentStateEvent createRecentStateEvent(IRecentStateEventCreateRequest request)
-	    throws SiteWhereException {
-	RecentStateEvent state = DeviceStatePersistence.recentStateEventCreateLogic(request);
-	RdbRecentStateEvent created = new RdbRecentStateEvent();
-	RdbRecentStateEvent.copy(state, created);
-	getEntityManagerProvider().persist(created);
-	return created;
-    }
-
-    /*
-     * @see com.sitewhere.microservice.api.state.IDeviceStateManagement#
-     * getRecentStateEvent(java.util.UUID)
-     */
-    @Override
-    public RdbRecentStateEvent getRecentStateEvent(UUID id) throws SiteWhereException {
-	return getEntityManagerProvider().findById(id, RdbRecentStateEvent.class);
-    }
-
-    /*
-     * @see com.sitewhere.microservice.api.state.IDeviceStateManagement#
-     * updateRecentStateEvent(java.util.UUID,
-     * com.sitewhere.spi.device.state.request.IRecentStateEventCreateRequest)
-     */
-    @Override
-    public RdbRecentStateEvent updateRecentStateEvent(UUID id, IRecentStateEventCreateRequest request)
-	    throws SiteWhereException {
-	RdbRecentStateEvent existing = getEntityManagerProvider().findById(id, RdbRecentStateEvent.class);
-	if (existing != null) {
-	    RecentStateEvent updates = new RecentStateEvent();
-
-	    // Use common update logic.
-	    DeviceStatePersistence.recentStateEventUpdateLogic(request, updates);
-	    RdbRecentStateEvent.copy(updates, existing);
-	    return getEntityManagerProvider().merge(existing);
-	}
-	return null;
-    }
-
-    /*
-     * @see com.sitewhere.microservice.api.state.IDeviceStateManagement#
-     * searchRecentStateEvents(com.sitewhere.spi.search.device.
-     * IRecentStateEventSearchCriteria)
-     */
-    @Override
-    public ISearchResults<RdbRecentStateEvent> searchRecentStateEvents(IRecentStateEventSearchCriteria criteria)
-	    throws SiteWhereException {
-	return getEntityManagerProvider().findWithCriteria(criteria, new IRdbQueryProvider<RdbRecentStateEvent>() {
-
-	    /*
-	     * @see com.sitewhere.rdb.spi.IRdbQueryProvider#addPredicates(javax.persistence.
-	     * criteria.CriteriaBuilder, java.util.List, javax.persistence.criteria.Root)
-	     */
-	    @Override
-	    public void addPredicates(CriteriaBuilder cb, List<Predicate> predicates, Root<RdbRecentStateEvent> root)
-		    throws SiteWhereException {
-		if (criteria.getDeviceStateId() != null) {
-		    predicates.add(cb.equal(root.get("deviceStateId"), criteria.getDeviceStateId()));
-		}
-		if (criteria.getEventType() != null) {
-		    predicates.add(cb.equal(root.get("eventType"), criteria.getEventType()));
-		}
-		if (criteria.getClassifier() != null) {
-		    predicates.add(cb.equal(root.get("classifier"), criteria.getClassifier()));
-		}
-	    }
-
-	    /*
-	     * @see
-	     * com.sitewhere.rdb.spi.IRdbQueryProvider#addSort(javax.persistence.criteria.
-	     * CriteriaBuilder, javax.persistence.criteria.Root,
-	     * javax.persistence.criteria.CriteriaQuery)
-	     */
-	    @Override
-	    public CriteriaQuery<RdbRecentStateEvent> addSort(CriteriaBuilder cb, Root<RdbRecentStateEvent> root,
-		    CriteriaQuery<RdbRecentStateEvent> query) {
-		return query.orderBy(cb.desc(root.get("createdDate")));
-	    }
-	}, RdbRecentStateEvent.class);
-    }
-
-    /*
-     * @see com.sitewhere.microservice.api.state.IDeviceStateManagement#
-     * deleteRecentStateEvent(java.util.UUID)
-     */
-    @Override
-    public IRecentStateEvent deleteRecentStateEvent(UUID id) throws SiteWhereException {
-	return getEntityManagerProvider().remove(id, RdbRecentStateEvent.class);
     }
 
     /*
@@ -404,7 +390,7 @@ public class RdbDeviceStateManagement extends RdbTenantComponent implements IDev
      * 
      * @return
      */
-    public IDeviceManagement getDeviceManagement() {
+    protected IDeviceManagement getDeviceManagement() {
 	return ((DeviceStateMicroservice) getTenantEngine().getMicroservice()).getDeviceManagement();
     }
 
@@ -413,7 +399,18 @@ public class RdbDeviceStateManagement extends RdbTenantComponent implements IDev
      * 
      * @return
      */
-    public IAssetManagement getAssetManagement() {
+    protected IAssetManagement getAssetManagement() {
 	return ((DeviceStateMicroservice) getTenantEngine().getMicroservice()).getAssetManagement();
+    }
+
+    /**
+     * Get configured device state merge strategy.
+     * 
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    protected IDeviceStateMergeStrategy<RdbDeviceState> getDeviceStateMergeStrategy() {
+	return (IDeviceStateMergeStrategy<RdbDeviceState>) ((DeviceStateTenantEngine) getTenantEngine())
+		.getDeviceStateMergeStrategy();
     }
 }
