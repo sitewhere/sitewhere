@@ -60,8 +60,7 @@ public class RdbBatchManagement extends RdbTenantComponent implements IBatchMana
 	BatchOperation batch = BatchManagementPersistence.batchOperationCreateLogic(request);
 	RdbBatchOperation created = new RdbBatchOperation();
 	RdbBatchOperation.copy(batch, created);
-	getEntityManagerProvider().persist(created);
-	return created;
+	return getEntityManagerProvider().persist(created);
     }
 
     /*
@@ -171,8 +170,7 @@ public class RdbBatchManagement extends RdbTenantComponent implements IBatchMana
 	BatchElement element = BatchManagementPersistence.batchElementCreateLogic(batch, device);
 	RdbBatchElement created = new RdbBatchElement();
 	RdbBatchElement.copy(element, created);
-	getEntityManagerProvider().persist(created);
-	return created;
+	return getEntityManagerProvider().persist(created);
     }
 
     /*

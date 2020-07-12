@@ -7,6 +7,7 @@
  */
 package com.sitewhere.media.configuration;
 
+import com.sitewhere.media.spi.microservice.IStreamingMediaTenantEngine;
 import com.sitewhere.microservice.multitenant.TenantEngineModule;
 
 /**
@@ -15,7 +16,8 @@ import com.sitewhere.microservice.multitenant.TenantEngineModule;
  */
 public class StreamingMediaTenantEngineModule extends TenantEngineModule<StreamingMediaTenantConfiguration> {
 
-    public StreamingMediaTenantEngineModule(StreamingMediaTenantConfiguration configuration) {
-	super(configuration);
+    public StreamingMediaTenantEngineModule(IStreamingMediaTenantEngine tenantEngine,
+	    StreamingMediaTenantConfiguration configuration) {
+	super(tenantEngine, configuration);
     }
 }

@@ -50,7 +50,7 @@ public class EventSourcesTenantEngine extends MicroserviceTenantEngine<EventSour
      */
     @Override
     public ITenantEngineModule<EventSourcesTenantConfiguration> createConfigurationModule() {
-	return new EventSourcesTenantEngineModule(getActiveConfiguration());
+	return new EventSourcesTenantEngineModule(this, getActiveConfiguration());
     }
 
     /*

@@ -7,13 +7,14 @@
  */
 package com.sitewhere.devicestate.kafka;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serializer;
 
 import com.sitewhere.microservice.util.MarshalUtils;
+import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 
@@ -23,11 +24,14 @@ import com.sitewhere.rest.model.device.event.DeviceMeasurement;
  */
 public class AggregatedDeviceState {
 
-    /** Most recent location measurement for window */
-    private DeviceLocation latestLocation;
+    /** List of device locations for window */
+    private List<DeviceLocation> deviceLocations = new ArrayList<>();
 
-    /** Latest measurements for window, indexed by name */
-    private Map<String, DeviceMeasurement> latestMeasurementsByName = new HashMap<>();
+    /** List of device measurements for window */
+    private List<DeviceMeasurement> deviceMeasurements = new ArrayList<>();
+
+    /** List of device alerts for window */
+    private List<DeviceAlert> deviceAlerts = new ArrayList<>();
 
     /**
      * Create a copy of the given device state.
@@ -37,25 +41,46 @@ public class AggregatedDeviceState {
      */
     public static AggregatedDeviceState copy(AggregatedDeviceState original) {
 	AggregatedDeviceState created = new AggregatedDeviceState();
-	created.updateFromLocation(original.getLatestLocation());
-	created.getLatestMeasurementsByName().putAll(original.getLatestMeasurementsByName());
+	created.getDeviceLocations().addAll(original.getDeviceLocations());
+	created.getDeviceMeasurements().addAll(original.getDeviceMeasurements());
+	created.getDeviceAlerts().addAll(original.getDeviceAlerts());
 	return created;
     }
 
-    public DeviceLocation getLatestLocation() {
-	return latestLocation;
-    }
-
-    public void updateFromLocation(DeviceLocation latestLocation) {
-	this.latestLocation = latestLocation;
-    }
-
-    public Map<String, DeviceMeasurement> getLatestMeasurementsByName() {
-	return latestMeasurementsByName;
+    public void updateFromLocation(DeviceLocation location) {
+	getDeviceLocations().add(location);
     }
 
     public void updateFromMeasurement(DeviceMeasurement measurement) {
-	this.latestMeasurementsByName.put(measurement.getName(), measurement);
+	getDeviceMeasurements().add(measurement);
+    }
+
+    public void updateFromAlert(DeviceAlert alert) {
+	getDeviceAlerts().add(alert);
+    }
+
+    public List<DeviceLocation> getDeviceLocations() {
+	return deviceLocations;
+    }
+
+    public void setDeviceLocations(List<DeviceLocation> deviceLocations) {
+	this.deviceLocations = deviceLocations;
+    }
+
+    public List<DeviceMeasurement> getDeviceMeasurements() {
+	return deviceMeasurements;
+    }
+
+    public void setDeviceMeasurements(List<DeviceMeasurement> deviceMeasurements) {
+	this.deviceMeasurements = deviceMeasurements;
+    }
+
+    public List<DeviceAlert> getDeviceAlerts() {
+	return deviceAlerts;
+    }
+
+    public void setDeviceAlerts(List<DeviceAlert> deviceAlerts) {
+	this.deviceAlerts = deviceAlerts;
     }
 
     /**

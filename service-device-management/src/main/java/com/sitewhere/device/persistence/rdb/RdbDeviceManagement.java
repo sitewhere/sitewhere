@@ -129,8 +129,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	DeviceType deviceType = DeviceManagementPersistence.deviceTypeCreateLogic(request);
 	RdbDeviceType created = new RdbDeviceType();
 	RdbDeviceType.copy(deviceType, created);
-	getEntityManagerProvider().persist(created);
-	return created;
+	return getEntityManagerProvider().persist(created);
     }
 
     /*
@@ -238,19 +237,16 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 		all.getResults());
 	RdbDeviceCommand created = new RdbDeviceCommand();
 	RdbDeviceCommand.copy(command, created);
-	getEntityManagerProvider().persist(created);
+	created = getEntityManagerProvider().persist(created);
 
 	// Create and add parameters.
 	for (ICommandParameter param : request.getParameters()) {
 	    RdbCommandParameter rdbParam = new RdbCommandParameter(null, param.getName(), param.getType(),
 		    param.isRequired());
 	    rdbParam.setDeviceCommand(created);
-	    getEntityManagerProvider().persist(rdbParam);
 	    created.getParameters().add(rdbParam);
 	}
-	getEntityManagerProvider().persist(created);
-
-	return created;
+	return getEntityManagerProvider().merge(created);
     }
 
     /*
@@ -378,8 +374,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 
 	RdbDeviceStatus created = new RdbDeviceStatus();
 	RdbDeviceStatus.copy(status, created);
-	getEntityManagerProvider().persist(created);
-	return created;
+	return getEntityManagerProvider().persist(created);
     }
 
     /*
@@ -508,8 +503,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	Device newDevice = DeviceManagementPersistence.deviceCreateLogic(request, deviceType, parent);
 	RdbDevice created = new RdbDevice();
 	RdbDevice.copy(newDevice, created);
-	getEntityManagerProvider().persist(created);
-	return created;
+	return getEntityManagerProvider().persist(created);
     }
 
     /*
@@ -688,8 +682,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 
 	RdbDeviceAssignment created = new RdbDeviceAssignment();
 	RdbDeviceAssignment.copy(newAssignment, created);
-	getEntityManagerProvider().persist(created);
-	return created;
+	return getEntityManagerProvider().persist(created);
     }
 
     /*
@@ -897,8 +890,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	DeviceAlarm alarm = DeviceManagementPersistence.deviceAlarmCreateLogic(assignment, request);
 	RdbDeviceAlarm created = new RdbDeviceAlarm();
 	RdbDeviceAlarm.copy(alarm, created);
-	getEntityManagerProvider().persist(created);
-	return created;
+	return getEntityManagerProvider().persist(created);
     }
 
     /*
@@ -1021,8 +1013,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	RdbCustomerType created = new RdbCustomerType();
 	RdbCustomerType.copy(customerType, created);
 	created.setContainedCustomerTypes(contained);
-	getEntityManagerProvider().persist(created);
-	return created;
+	return getEntityManagerProvider().persist(created);
     }
 
     /*
@@ -1157,8 +1148,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	Customer customer = DeviceManagementPersistence.customerCreateLogic(request, customerType, parentCustomer);
 	RdbCustomer created = new RdbCustomer();
 	RdbCustomer.copy(customer, created);
-	getEntityManagerProvider().persist(created);
-	return created;
+	return getEntityManagerProvider().persist(created);
     }
 
     /*
@@ -1325,8 +1315,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	RdbAreaType created = new RdbAreaType();
 	RdbAreaType.copy(areaType, created);
 	created.setContainedAreaTypes(contained);
-	getEntityManagerProvider().persist(created);
-	return created;
+	return getEntityManagerProvider().persist(created);
     }
 
     /*
@@ -1461,8 +1450,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	Area area = DeviceManagementPersistence.areaCreateLogic(request, areaType, parentArea);
 	RdbArea created = new RdbArea();
 	RdbArea.copy(area, created);
-	getEntityManagerProvider().persist(created);
-	return created;
+	return getEntityManagerProvider().persist(created);
     }
 
     /*
@@ -1630,7 +1618,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	Zone zone = DeviceManagementPersistence.zoneCreateLogic(request, area);
 	RdbZone created = new RdbZone();
 	RdbZone.copy(zone, created);
-	getEntityManagerProvider().persist(created);
+	created = getEntityManagerProvider().persist(created);
 
 	// Parse bounds into entities.
 	List<RdbZoneBoundary> bounds = new ArrayList<>();
@@ -1641,9 +1629,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	    bounds.add(boundary);
 	}
 	created.setBounds(bounds);
-	getEntityManagerProvider().persist(created);
-
-	return created;
+	return getEntityManagerProvider().merge(created);
     }
 
     /*
@@ -1766,8 +1752,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	DeviceGroup group = DeviceManagementPersistence.deviceGroupCreateLogic(request);
 	RdbDeviceGroup created = new RdbDeviceGroup();
 	RdbDeviceGroup.copy(group, created);
-	getEntityManagerProvider().persist(created);
-	return created;
+	return getEntityManagerProvider().persist(created);
     }
 
     /*

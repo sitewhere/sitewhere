@@ -10,6 +10,7 @@ package com.sitewhere.sources.configuration;
 import com.sitewhere.microservice.multitenant.TenantEngineModule;
 import com.sitewhere.sources.manager.EventSourcesManager;
 import com.sitewhere.sources.spi.IEventSourcesManager;
+import com.sitewhere.sources.spi.microservice.IEventSourcesTenantEngine;
 
 /**
  * Guice module used for configuring components associated with an event sources
@@ -17,8 +18,9 @@ import com.sitewhere.sources.spi.IEventSourcesManager;
  */
 public class EventSourcesTenantEngineModule extends TenantEngineModule<EventSourcesTenantConfiguration> {
 
-    public EventSourcesTenantEngineModule(EventSourcesTenantConfiguration configuration) {
-	super(configuration);
+    public EventSourcesTenantEngineModule(IEventSourcesTenantEngine tenantEngine,
+	    EventSourcesTenantConfiguration configuration) {
+	super(tenantEngine, configuration);
     }
 
     /*
@@ -26,6 +28,7 @@ public class EventSourcesTenantEngineModule extends TenantEngineModule<EventSour
      */
     @Override
     protected void configure() {
+	bind(IEventSourcesTenantEngine.class).toInstance((IEventSourcesTenantEngine) getTenantEngine());
 	bind(EventSourcesTenantConfiguration.class).toInstance(getConfiguration());
 	bind(IEventSourcesManager.class).to(EventSourcesManager.class);
     }

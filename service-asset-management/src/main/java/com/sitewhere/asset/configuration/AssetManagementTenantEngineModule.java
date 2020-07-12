@@ -8,6 +8,7 @@
 package com.sitewhere.asset.configuration;
 
 import com.sitewhere.asset.persistence.rdb.RdbAssetManagement;
+import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.multitenant.TenantEngineModule;
 
@@ -17,8 +18,9 @@ import com.sitewhere.microservice.multitenant.TenantEngineModule;
  */
 public class AssetManagementTenantEngineModule extends TenantEngineModule<AssetManagementTenantConfiguration> {
 
-    public AssetManagementTenantEngineModule(AssetManagementTenantConfiguration configuration) {
-	super(configuration);
+    public AssetManagementTenantEngineModule(IAssetManagementTenantEngine tenantEngine,
+	    AssetManagementTenantConfiguration configuration) {
+	super(tenantEngine, configuration);
     }
 
     /*
@@ -26,6 +28,7 @@ public class AssetManagementTenantEngineModule extends TenantEngineModule<AssetM
      */
     @Override
     protected void configure() {
+	bind(IAssetManagementTenantEngine.class).toInstance((IAssetManagementTenantEngine) getTenantEngine());
 	bind(IAssetManagement.class).to(RdbAssetManagement.class);
     }
 }

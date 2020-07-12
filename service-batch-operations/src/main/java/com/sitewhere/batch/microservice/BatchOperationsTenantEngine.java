@@ -80,7 +80,7 @@ public class BatchOperationsTenantEngine extends RdbTenantEngine<BatchOperations
      */
     @Override
     public ITenantEngineModule<BatchOperationsTenantConfiguration> createConfigurationModule() {
-	return new BatchOperationsTenantEngineModule(getActiveConfiguration());
+	return new BatchOperationsTenantEngineModule(this, getActiveConfiguration());
     }
 
     /*

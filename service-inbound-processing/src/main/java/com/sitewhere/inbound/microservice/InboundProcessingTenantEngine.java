@@ -51,7 +51,7 @@ public class InboundProcessingTenantEngine extends MicroserviceTenantEngine<Inbo
      */
     @Override
     public ITenantEngineModule<InboundProcessingTenantConfiguration> createConfigurationModule() {
-	return new InboundProcessingTenantEngineModule(getActiveConfiguration());
+	return new InboundProcessingTenantEngineModule(this, getActiveConfiguration());
     }
 
     /*

@@ -8,6 +8,9 @@
 package com.sitewhere.devicestate.configuration;
 
 import com.sitewhere.devicestate.persistence.rdb.RdbDeviceStateManagement;
+import com.sitewhere.devicestate.persistence.rdb.RdbDeviceStateMergeStrategy;
+import com.sitewhere.devicestate.spi.IDeviceStateMergeStrategy;
+import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
 import com.sitewhere.microservice.api.state.IDeviceStateManagement;
 import com.sitewhere.microservice.multitenant.TenantEngineModule;
 
@@ -17,8 +20,9 @@ import com.sitewhere.microservice.multitenant.TenantEngineModule;
  */
 public class DeviceStateTenantEngineModule extends TenantEngineModule<DeviceStateTenantConfiguration> {
 
-    public DeviceStateTenantEngineModule(DeviceStateTenantConfiguration configuration) {
-	super(configuration);
+    public DeviceStateTenantEngineModule(IDeviceStateTenantEngine tenantEngine,
+	    DeviceStateTenantConfiguration configuration) {
+	super(tenantEngine, configuration);
     }
 
     /*
@@ -26,6 +30,9 @@ public class DeviceStateTenantEngineModule extends TenantEngineModule<DeviceStat
      */
     @Override
     protected void configure() {
+	bind(IDeviceStateTenantEngine.class).toInstance((IDeviceStateTenantEngine) getTenantEngine());
+	bind(DeviceStateTenantConfiguration.class).toInstance(getConfiguration());
 	bind(IDeviceStateManagement.class).to(RdbDeviceStateManagement.class);
+	bind(IDeviceStateMergeStrategy.class).to(RdbDeviceStateMergeStrategy.class);
     }
 }

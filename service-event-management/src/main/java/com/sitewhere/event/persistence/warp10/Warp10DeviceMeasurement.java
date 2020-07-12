@@ -7,6 +7,7 @@
  */
 package com.sitewhere.event.persistence.warp10;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 
 import com.sitewhere.rest.model.device.event.DeviceMeasurement;
@@ -30,34 +31,34 @@ public class Warp10DeviceMeasurement implements Warp10Converter<IDeviceMeasureme
 
     @Override
     public GTSInput convert(IDeviceMeasurement source) {
-       return Warp10DeviceMeasurement.toGTS(source, false);
+	return Warp10DeviceMeasurement.toGTS(source, false);
     }
 
     @Override
     public IDeviceMeasurement convert(GTSOutput source) {
-        return Warp10DeviceMeasurement.fromGTS(source, false);
+	return Warp10DeviceMeasurement.fromGTS(source, false);
     }
 
     public static GTSInput toGTS(IDeviceMeasurement source, boolean isNested) {
-        GTSInput gtsInput = GTSInput.builder();
-        Warp10DeviceMeasurement.toGTS(source, gtsInput, isNested);
-        return gtsInput;
+	GTSInput gtsInput = GTSInput.builder();
+	Warp10DeviceMeasurement.toGTS(source, gtsInput, isNested);
+	return gtsInput;
     }
 
     public static void toGTS(IDeviceMeasurement source, GTSInput target, boolean isNested) {
-        target.setValue(source.getValue());
-        target.setName(source.getName());
-        target.setTs(source.getEventDate().getTime());
-        target.setAttributes(new HashMap<>());
-        Warp10DeviceEvent.toGTS(source, target, isNested);
-        Warp10MetadataProvider.toGTS(source, target);
+	target.setValue(source.getValue().doubleValue());
+	target.setName(source.getName());
+	target.setTs(source.getEventDate().getTime());
+	target.setAttributes(new HashMap<>());
+	Warp10DeviceEvent.toGTS(source, target, isNested);
+	Warp10MetadataProvider.toGTS(source, target);
     }
 
-    public static DeviceMeasurement fromGTS(GTSOutput source,  boolean isNested){
-        DeviceMeasurement deviceMeasurement = new DeviceMeasurement();
-        deviceMeasurement.setName(source.getClassName());
-        deviceMeasurement.setValue(Double.valueOf(source.getPoints().get(0).getValue()));
-        Warp10DeviceEvent.fromGTS(source, deviceMeasurement, isNested);
-        return deviceMeasurement;
+    public static DeviceMeasurement fromGTS(GTSOutput source, boolean isNested) {
+	DeviceMeasurement deviceMeasurement = new DeviceMeasurement();
+	deviceMeasurement.setName(source.getClassName());
+	deviceMeasurement.setValue(new BigDecimal(Double.valueOf(source.getPoints().get(0).getValue())));
+	Warp10DeviceEvent.fromGTS(source, deviceMeasurement, isNested);
+	return deviceMeasurement;
     }
 }

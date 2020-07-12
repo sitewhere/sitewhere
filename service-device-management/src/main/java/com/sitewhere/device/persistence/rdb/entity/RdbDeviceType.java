@@ -8,6 +8,7 @@
 package com.sitewhere.device.persistence.rdb.entity;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -24,6 +25,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -31,6 +33,7 @@ import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sitewhere.rdb.entities.RdbBrandedEntity;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.IDeviceType;
@@ -74,6 +77,10 @@ public class RdbDeviceType extends RdbBrandedEntity implements IDeviceType {
     @MapKeyColumn(name = "prop_key")
     @Column(name = "prop_value")
     private Map<String, String> metadata = new HashMap<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "deviceType", fetch = FetchType.LAZY)
+    private List<RdbDeviceCommand> commands;
 
     /*
      * @see com.sitewhere.spi.common.IPersistentEntity#getId()
@@ -150,6 +157,14 @@ public class RdbDeviceType extends RdbBrandedEntity implements IDeviceType {
     @Override
     public void setMetadata(Map<String, String> metadata) {
 	this.metadata = metadata;
+    }
+
+    public List<RdbDeviceCommand> getCommands() {
+	return commands;
+    }
+
+    public void setCommands(List<RdbDeviceCommand> commands) {
+	this.commands = commands;
     }
 
     public static void copy(IDeviceType source, RdbDeviceType target) {

@@ -8,6 +8,7 @@
 package com.sitewhere.search.configuration;
 
 import com.sitewhere.microservice.multitenant.TenantEngineModule;
+import com.sitewhere.search.spi.microservice.IEventSearchTenantEngine;
 
 /**
  * Guice module used for configuring components associated with an event search
@@ -15,7 +16,8 @@ import com.sitewhere.microservice.multitenant.TenantEngineModule;
  */
 public class EventSearchTenantEngineModule extends TenantEngineModule<EventSearchTenantConfiguration> {
 
-    public EventSearchTenantEngineModule(EventSearchTenantConfiguration configuration) {
-	super(configuration);
+    public EventSearchTenantEngineModule(IEventSearchTenantEngine tenantEngine,
+	    EventSearchTenantConfiguration configuration) {
+	super(tenantEngine, configuration);
     }
 }

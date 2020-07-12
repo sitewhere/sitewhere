@@ -50,7 +50,7 @@ public class OutboundConnectorsTenantEngine extends MicroserviceTenantEngine<Out
      */
     @Override
     public ITenantEngineModule<OutboundConnectorsTenantConfiguration> createConfigurationModule() {
-	return new OutboundConnectorsTenantEngineModule(getActiveConfiguration());
+	return new OutboundConnectorsTenantEngineModule(this, getActiveConfiguration());
     }
 
     /*

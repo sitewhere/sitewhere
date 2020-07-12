@@ -26,13 +26,9 @@ import com.sitewhere.warp10.Warp10Client;
  */
 public class EventManagementTenantEngineModule extends TenantEngineModule<EventManagementTenantConfiguration> {
 
-    /** Tenant engine */
-    private IEventManagementTenantEngine tenantEngine;
-
     public EventManagementTenantEngineModule(IEventManagementTenantEngine tenantEngine,
 	    EventManagementTenantConfiguration configuration) {
-	super(configuration);
-	this.tenantEngine = tenantEngine;
+	super(tenantEngine, configuration);
     }
 
     /**
@@ -64,7 +60,7 @@ public class EventManagementTenantEngineModule extends TenantEngineModule<EventM
      */
     @Override
     protected void configure() {
-	bind(IEventManagementTenantEngine.class).toInstance(getTenantEngine());
+	bind(IEventManagementTenantEngine.class).toInstance((IEventManagementTenantEngine) getTenantEngine());
 	bind(EventManagementTenantConfiguration.class).toInstance(getConfiguration());
 
 	try {
@@ -87,9 +83,5 @@ public class EventManagementTenantEngineModule extends TenantEngineModule<EventM
 	} catch (SiteWhereException e) {
 	    throw new RuntimeException(e);
 	}
-    }
-
-    protected IEventManagementTenantEngine getTenantEngine() {
-	return tenantEngine;
     }
 }

@@ -10,6 +10,7 @@ package com.sitewhere.schedule.configuration;
 import com.sitewhere.microservice.api.schedule.IScheduleManagement;
 import com.sitewhere.microservice.multitenant.TenantEngineModule;
 import com.sitewhere.schedule.persistence.rdb.RdbScheduleManagement;
+import com.sitewhere.schedule.spi.microservice.IScheduleManagementTenantEngine;
 
 /**
  * Guice module used for configuring components associated with a schedule
@@ -17,8 +18,9 @@ import com.sitewhere.schedule.persistence.rdb.RdbScheduleManagement;
  */
 public class ScheduleManagementTenantEngineModule extends TenantEngineModule<ScheduleManagementTenantConfiguration> {
 
-    public ScheduleManagementTenantEngineModule(ScheduleManagementTenantConfiguration configuration) {
-	super(configuration);
+    public ScheduleManagementTenantEngineModule(IScheduleManagementTenantEngine tenantEngine,
+	    ScheduleManagementTenantConfiguration configuration) {
+	super(tenantEngine, configuration);
     }
 
     /*
@@ -26,6 +28,7 @@ public class ScheduleManagementTenantEngineModule extends TenantEngineModule<Sch
      */
     @Override
     protected void configure() {
+	bind(IScheduleManagementTenantEngine.class).toInstance((IScheduleManagementTenantEngine) getTenantEngine());
 	bind(ScheduleManagementTenantConfiguration.class).toInstance(getConfiguration());
 	bind(IScheduleManagement.class).to(RdbScheduleManagement.class);
     }

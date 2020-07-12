@@ -9,6 +9,7 @@ package com.sitewhere.devicestate.spi.microservice;
 
 import com.sitewhere.devicestate.configuration.DeviceStateTenantConfiguration;
 import com.sitewhere.devicestate.spi.IDevicePresenceManager;
+import com.sitewhere.devicestate.spi.IDeviceStateMergeStrategy;
 import com.sitewhere.grpc.service.DeviceStateGrpc;
 import com.sitewhere.microservice.api.state.IDeviceStateManagement;
 import com.sitewhere.rdb.spi.IRdbEntityManagerProvider;
@@ -33,6 +34,13 @@ public interface IDeviceStateTenantEngine extends IMicroserviceTenantEngine<Devi
      * @return
      */
     public DeviceStateGrpc.DeviceStateImplBase getDeviceStateImpl();
+
+    /**
+     * Get merge strategy used for assembling device state.
+     * 
+     * @return
+     */
+    public IDeviceStateMergeStrategy<?> getDeviceStateMergeStrategy();
 
     /**
      * Get presence manager implementation.

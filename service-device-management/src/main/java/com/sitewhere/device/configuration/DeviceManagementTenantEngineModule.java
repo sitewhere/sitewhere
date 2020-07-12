@@ -8,6 +8,7 @@
 package com.sitewhere.device.configuration;
 
 import com.sitewhere.device.persistence.rdb.RdbDeviceManagement;
+import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.multitenant.TenantEngineModule;
 
@@ -17,8 +18,9 @@ import com.sitewhere.microservice.multitenant.TenantEngineModule;
  */
 public class DeviceManagementTenantEngineModule extends TenantEngineModule<DeviceManagementTenantConfiguration> {
 
-    public DeviceManagementTenantEngineModule(DeviceManagementTenantConfiguration configuration) {
-	super(configuration);
+    public DeviceManagementTenantEngineModule(IDeviceManagementTenantEngine tenantEngine,
+	    DeviceManagementTenantConfiguration configuration) {
+	super(tenantEngine, configuration);
     }
 
     /*
@@ -26,6 +28,7 @@ public class DeviceManagementTenantEngineModule extends TenantEngineModule<Devic
      */
     @Override
     protected void configure() {
+	bind(IDeviceManagementTenantEngine.class).toInstance((IDeviceManagementTenantEngine) getTenantEngine());
 	bind(IDeviceManagement.class).to(RdbDeviceManagement.class);
     }
 }
