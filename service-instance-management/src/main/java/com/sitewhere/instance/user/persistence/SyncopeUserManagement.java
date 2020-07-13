@@ -9,7 +9,6 @@ package com.sitewhere.instance.user.persistence;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
@@ -18,13 +17,27 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
+import com.sitewhere.rest.model.user.GrantedAuthority;
+import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
+import com.sitewhere.rest.model.user.Role;
+import com.sitewhere.rest.model.user.RoleSearchCriteria;
+import com.sitewhere.rest.model.user.User;
+import com.sitewhere.spi.user.IGrantedAuthority;
+import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
+import com.sitewhere.spi.user.IRole;
+import com.sitewhere.spi.user.IRoleSearchCriteria;
+import com.sitewhere.spi.user.IUser;
+import com.sitewhere.spi.user.IUserSearchCriteria;
+import com.sitewhere.spi.user.request.IRoleCreateRequest;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.syncope.client.lib.SyncopeClient;
 import org.apache.syncope.client.lib.SyncopeClientFactoryBean;
 import org.apache.syncope.common.lib.SyncopeClientException;
 import org.apache.syncope.common.lib.patch.AttrPatch;
 import org.apache.syncope.common.lib.patch.PasswordPatch;
+import org.apache.syncope.common.lib.patch.StringPatchItem;
 import org.apache.syncope.common.lib.patch.UserPatch;
 import org.apache.syncope.common.lib.to.AnyTypeClassTO;
 import org.apache.syncope.common.lib.to.ApplicationTO;
@@ -32,14 +45,11 @@ import org.apache.syncope.common.lib.to.AttrTO;
 import org.apache.syncope.common.lib.to.PagedResult;
 import org.apache.syncope.common.lib.to.PlainSchemaTO;
 import org.apache.syncope.common.lib.to.PrivilegeTO;
+import org.apache.syncope.common.lib.to.RoleTO;
 import org.apache.syncope.common.lib.to.UserTO;
 import org.apache.syncope.common.lib.types.AttrSchemaType;
 import org.apache.syncope.common.lib.types.SchemaType;
 import org.apache.syncope.common.rest.api.beans.AnyQuery;
-import org.apache.syncope.common.rest.api.service.AnyTypeClassService;
-import org.apache.syncope.common.rest.api.service.ApplicationService;
-import org.apache.syncope.common.rest.api.service.SchemaService;
-import org.apache.syncope.common.rest.api.service.UserService;
 
 import com.evanlennick.retry4j.CallExecutorBuilder;
 import com.evanlennick.retry4j.Status;
@@ -52,9 +62,6 @@ import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.microservice.lifecycle.AsyncStartLifecycleComponent;
 import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.rest.model.user.GrantedAuthority;
-import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
-import com.sitewhere.rest.model.user.User;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
@@ -62,12 +69,13 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.user.IGrantedAuthority;
-import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
-import com.sitewhere.spi.user.IUser;
-import com.sitewhere.spi.user.IUserSearchCriteria;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
+import org.apache.syncope.common.rest.api.service.AnyTypeClassService;
+import org.apache.syncope.common.rest.api.service.ApplicationService;
+import org.apache.syncope.common.rest.api.service.RoleService;
+import org.apache.syncope.common.rest.api.service.SchemaService;
+import org.apache.syncope.common.rest.api.service.UserService;
 
 /**
  * Interact with Apache Synope instance to manage users.
@@ -241,15 +249,11 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	user.setCreator(swuser.getCreatedBy());
 	user.setUsername(request.getUsername());
 	user.setPassword(request.getPassword());
+	user.getRoles().addAll(request.getRoles());
 	user.getPlainAttrs().add(createAttribute(ATTR_FIRST_NAME, request.getFirstName()));
 	user.getPlainAttrs().add(createAttribute(ATTR_LAST_NAME, request.getLastName()));
 	user.getPlainAttrs().add(createAttribute(ATTR_JSON,
 		Base64.encodeBase64String(MarshalUtils.marshalJsonAsString(swuser).getBytes())));
-
-	// swuser.getAuthorities().forEach(auth -> {
-	// user.getPrivileges().add(auth);
-	// });
-
 	try {
 	    getUserService().create(user, true);
 	} catch (Throwable t) {
@@ -326,10 +330,8 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 				Base64.encodeBase64String(MarshalUtils.marshalJsonAsString(swuser).getBytes())))
 			.build());
 
-	swuser.getRoles().forEach(role -> {
-	    role.getAuthorities().forEach(auth -> {
-		user.getPrivileges().add(auth.getAuthority());
-	    });
+	request.getRoles().forEach(role -> {
+	    userPatch.getRoles().add(new StringPatchItem.Builder().value(role).build());
 	});
 
 	try {
@@ -366,7 +368,18 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	Optional<AttrTO> json = user.getPlainAttr(ATTR_JSON);
 	if (json.isPresent()) {
 	    String encoded = new String(json.get().getValues().get(0).getBytes());
-	    return MarshalUtils.unmarshalJson(Base64.decodeBase64(encoded), User.class);
+	    User swuser = MarshalUtils.unmarshalJson(Base64.decodeBase64(encoded), User.class);
+	    user.setPassword(user.getPassword());
+	    user.setUsername(user.getUsername());
+	    swuser.setCreatedBy(user.getCreator());
+	    swuser.setCreatedDate(user.getCreationDate());
+	    swuser.setToken(user.getToken());
+
+	    for (String role: user.getRoles()) {
+		IRole roleByName = getRoleByName(role);
+		swuser.getRoles().add(roleByName);
+	    }
+	    return swuser;
 	}
 	throw new SiteWhereException("Syncope user did not contain JSON data.");
     }
@@ -378,9 +391,14 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
      */
     @Override
     public List<IGrantedAuthority> getGrantedAuthorities(String username) throws SiteWhereException {
-	// IUser user = getUserByUsername(username);
-	// List<String> userAuths = user.getAuthorities();
-	List<String> userAuths = Collections.emptyList();
+	IUser user = getUserByUsername(username);
+	List<String> userAuths = new ArrayList();
+	for(IRole role: user.getRoles()) {
+	    List<String> authorities = role.getAuthorities().stream().map(auth -> auth.getAuthority())
+			    .collect(Collectors.toList());
+	    userAuths = authorities;
+	}
+
 	ISearchResults<IGrantedAuthority> all = listGrantedAuthorities(new GrantedAuthoritySearchCriteria(1, 0));
 	List<IGrantedAuthority> matched = new ArrayList<IGrantedAuthority>();
 	for (IGrantedAuthority auth : all.getResults()) {
@@ -437,17 +455,21 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
     @Override
     public IUser deleteUser(String username) throws SiteWhereException {
 	getLogger().info("Deleting SiteWhere User: {}", username);
-	UserTO user = getUserService().read(username);
-	if (user == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR);
-	}
-	User swuser = User.copy(convertUser(user));
 	try {
-	    getUserService().delete(user.getKey());
+	    UserTO user = getUserService().read(username);
+	    if (user == null) {
+		throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR);
+	    }
+	    User swuser = User.copy(convertUser(user));
+	    try {
+		getUserService().delete(user.getKey());
+	    } catch (Throwable t) {
+		throw new SiteWhereException("Unable to update user.", t);
+	    }
+	    return swuser;
 	} catch (Throwable t) {
-	    throw new SiteWhereException("Unable to update user.", t);
+	    throw new SiteWhereException("Unable to get user by username.", t);
 	}
-	return swuser;
     }
 
     /*
@@ -565,6 +587,139 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	}
     }
 
+
+    /*
+     * @see
+     * com.sitewhere.microservice.api.user.IUserManagement#deleteGrantedAuthority(
+     * java.lang.String)
+     */
+    @Override
+    public List<IRole> getRoles(String username) throws SiteWhereException {
+	IUser user = getUserByUsername(username);
+	return user.getRoles();
+    }
+
+    /*
+     * @see
+     * com.sitewhere.microservice.api.user.IUserManagement#addRoles(
+     * java.lang.String, java.util.List)
+     */
+    @Override
+    public List<IRole> addRoles(String username, List<String> roles) throws SiteWhereException {
+        try {
+	    UserTO userTO = getUserService().read(username);
+	    if (userTO != null) {
+		userTO.getRoles().addAll(roles);
+		getUserService().update(userTO);
+	    } else {
+		throw new SiteWhereException("Unable to get user by username.");
+	    }
+	    return getRoles(username);
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Unable to get user by username.", t);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.microservice.api.user.IUserManagement#removeRoles(
+     * java.lang.String, java.util.List)
+     */
+    @Override
+    public List<IRole> removeRoles(String username, List<String> roles) throws SiteWhereException {
+	UserTO userTO = getUserService().read(username);
+	if (userTO != null) {
+	    userTO.getRoles().removeAll(roles);
+	    getUserService().update(userTO);
+	} else {
+	    throw new SiteWhereException("Unable to get user by username.");
+	}
+	return getRoles(username);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.microservice.api.user.IUserManagement#createRole(
+     * com.sitewhere.spi.user.request.IRoleCreateRequest)
+     */
+    @Override
+    public IRole createRole(IRoleCreateRequest request) throws SiteWhereException {
+        RoleTO roleTO = new RoleTO();
+        roleTO.setKey(request.getRole());
+	roleTO.getPrivileges().addAll(request.getAuthorities());
+        getRoleService().create(roleTO);
+	return convertRole(roleTO);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.microservice.api.user.IUserManagement#getRoleByName(java.lang.String)
+     */
+    @Override
+    public IRole getRoleByName(String name) throws SiteWhereException {
+	ISearchResults<IRole> iRoleISearchResults = listRoles(new RoleSearchCriteria(1, 0));
+	for (IRole role: iRoleISearchResults.getResults()) {
+	    if(role.getRole().equals(name)) {
+	        return role;
+	    }
+	}
+	return null;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.microservice.api.user.IUserManagement#updateRole(java.lang.String,
+     * com.sitewhere.spi.user.request.IRoleCreateRequest)
+     */
+    @Override
+    public IRole updateRole(String name, IRoleCreateRequest request) throws SiteWhereException {
+	RoleTO roleToUpdate = getRoleService().read(name);
+	roleToUpdate.getPrivileges().clear();
+	roleToUpdate.getPrivileges().addAll(request.getAuthorities());
+	getRoleService().update(roleToUpdate);
+	return convertRole(roleToUpdate);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.microservice.api.user.IUserManagement#listRoles(com.sitewhere.spi.user.IRoleSearchCriteria)
+     */
+    @Override
+    public ISearchResults<IRole> listRoles(IRoleSearchCriteria criteria) throws SiteWhereException {
+	List<RoleTO> allRoles = getRoleService().list();
+	List<IRole> roles = new ArrayList<>();
+	if (allRoles != null) {
+	    for(RoleTO roleTO: allRoles) {
+	        roles.add(convertRole(roleTO));
+	    }
+	}
+	return new SearchResults(roles);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.microservice.api.user.IUserManagement#deleteRole(java.lang.String)
+     */
+    @Override
+    public void deleteRole(String role) throws SiteWhereException {
+        try {
+	    getRoleService().delete(role);
+	} catch (Throwable t) {
+	    throw new SiteWhereException("Unable to delete user by username.");
+	}
+    }
+
+    protected IRole convertRole(RoleTO roleTO) throws SiteWhereException {
+	Role sRole = new Role();
+	sRole.setRole(roleTO.getKey());
+	//sRole.setDescription(SiteWhereRole.valueOf(roleTO.getKey()).getDescription());
+	for (String grantedAuthority: roleTO.getPrivileges()) {
+	    IGrantedAuthority grantedAuthorityByName = getGrantedAuthorityByName(grantedAuthority);
+	    sRole.getAuthorities().add(grantedAuthorityByName);
+	}
+	return sRole;
+    }
+
     /**
      * Waits for Syncope connection to become available.
      */
@@ -665,6 +820,10 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 
     protected SchemaService getSchemaService() {
 	return client.getService(SchemaService.class);
+    }
+
+    protected RoleService getRoleService() {
+	return client.getService(RoleService.class);
     }
 
     protected AnyTypeClassService getAnyTypeClassService() {

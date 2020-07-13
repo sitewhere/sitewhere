@@ -8,7 +8,9 @@
 package com.sitewhere.web.rest.controllers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -23,6 +25,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.sitewhere.rest.model.user.Role;
+import com.sitewhere.spi.user.IRole;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -70,7 +76,7 @@ public class Users {
 
     /**
      * Create a new user.
-     * 
+     *
      * @param input
      * @return
      * @throws SiteWhereException
@@ -90,7 +96,7 @@ public class Users {
 
     /**
      * Update an existing user.
-     * 
+     *
      * @param username
      * @param input
      * @return
@@ -107,7 +113,7 @@ public class Users {
 
     /**
      * Get a user by unique username.
-     * 
+     *
      * @param username
      * @return
      * @throws SiteWhereException
@@ -127,7 +133,7 @@ public class Users {
 
     /**
      * Delete information for a given user based on username.
-     * 
+     *
      * @param username
      * @return
      * @throws SiteWhereException
@@ -143,7 +149,7 @@ public class Users {
 
     /**
      * Get a list of detailed authority information for a given user.
-     * 
+     *
      * @param username
      * @return
      * @throws SiteWhereException
@@ -164,7 +170,7 @@ public class Users {
 
     /**
      * List users matching criteria.
-     * 
+     *
      * @return
      * @throws SiteWhereException
      */
@@ -173,6 +179,67 @@ public class Users {
     public Response listUsers() throws SiteWhereException {
 	UserSearchCriteria criteria = new UserSearchCriteria();
 	return Response.ok(getUserManagement().listUsers(criteria)).build();
+    }
+
+    /**
+     * Get a list of detailed role information for a given user.
+     *
+     * @param username
+     * @return
+     * @throws SiteWhereException
+     */
+    @GET
+    @Path("/{username}/roles")
+    @Operation(summary = "Get roles for user", description = "Get roles for user")
+    public Response getRolesForUsername(
+		    @Parameter(description = "Unique username", required = true) @PathParam("username") String username)
+		    throws SiteWhereException {
+	List<IRole> matches = getUserManagement().getRoles(username);
+	List<Role> converted = new ArrayList();
+	for (IRole role : matches) {
+	    converted.add(Role.copy(role));
+	}
+	return Response.ok(new SearchResults(converted)).build();
+    }
+
+    /**
+     * add roles to users
+     *
+     * @param roles
+     * @return
+     * @throws SiteWhereException
+     */
+    @PUT
+    @Path("/{username}/roles")
+    @Operation(summary = "Add roles to users", description = "Add roles to users")
+    public Response addRoles(
+    		@Parameter(description = "Unique username", required = true) @PathParam("username") String username,
+		@RequestBody String[] roles) throws SiteWhereException {
+	if ((roles == null) && roles.length> 0) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidUserInformation, ErrorLevel.ERROR);
+	}
+	return Response.ok(getUserManagement().addRoles(username, Arrays.asList(roles))).build();
+    }
+
+
+    /**
+     * remove roles to users
+     *
+     * @param roles
+     * @return
+     * @throws SiteWhereException
+     */
+    @DELETE
+    @Path("/{username}/roles")
+    @Operation(summary = "Delete roles to users", description = "Delete roles to users")
+    public Response removeRoles(
+		    @Parameter(description = "Unique username", required = true) @PathParam("username") String username,
+		    @RequestBody String[] roles) throws SiteWhereException {
+	if ((roles == null) && roles.length> 0) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidUserInformation, ErrorLevel.ERROR);
+	}
+
+	return Response.ok(getUserManagement().removeRoles(username, Arrays.asList(roles))).build();
     }
 
     protected IUserManagement getUserManagement() throws SiteWhereException {
