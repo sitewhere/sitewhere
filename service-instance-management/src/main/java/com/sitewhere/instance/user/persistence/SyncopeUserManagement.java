@@ -9,7 +9,6 @@ package com.sitewhere.instance.user.persistence;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
@@ -20,8 +19,17 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import com.sitewhere.rest.model.user.*;
-import com.sitewhere.spi.user.*;
+import com.sitewhere.rest.model.user.GrantedAuthority;
+import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
+import com.sitewhere.rest.model.user.Role;
+import com.sitewhere.rest.model.user.RoleSearchCriteria;
+import com.sitewhere.rest.model.user.User;
+import com.sitewhere.spi.user.IGrantedAuthority;
+import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
+import com.sitewhere.spi.user.IRole;
+import com.sitewhere.spi.user.IRoleSearchCriteria;
+import com.sitewhere.spi.user.IUser;
+import com.sitewhere.spi.user.IUserSearchCriteria;
 import com.sitewhere.spi.user.request.IRoleCreateRequest;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.syncope.client.lib.SyncopeClient;
@@ -31,11 +39,17 @@ import org.apache.syncope.common.lib.patch.AttrPatch;
 import org.apache.syncope.common.lib.patch.PasswordPatch;
 import org.apache.syncope.common.lib.patch.StringPatchItem;
 import org.apache.syncope.common.lib.patch.UserPatch;
-import org.apache.syncope.common.lib.to.*;
+import org.apache.syncope.common.lib.to.AnyTypeClassTO;
+import org.apache.syncope.common.lib.to.ApplicationTO;
+import org.apache.syncope.common.lib.to.AttrTO;
+import org.apache.syncope.common.lib.to.PagedResult;
+import org.apache.syncope.common.lib.to.PlainSchemaTO;
+import org.apache.syncope.common.lib.to.PrivilegeTO;
+import org.apache.syncope.common.lib.to.RoleTO;
+import org.apache.syncope.common.lib.to.UserTO;
 import org.apache.syncope.common.lib.types.AttrSchemaType;
 import org.apache.syncope.common.lib.types.SchemaType;
 import org.apache.syncope.common.rest.api.beans.AnyQuery;
-import org.apache.syncope.common.rest.api.service.*;
 
 import com.evanlennick.retry4j.CallExecutorBuilder;
 import com.evanlennick.retry4j.Status;
@@ -57,8 +71,11 @@ import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
-
-import javax.ws.rs.core.Response;
+import org.apache.syncope.common.rest.api.service.AnyTypeClassService;
+import org.apache.syncope.common.rest.api.service.ApplicationService;
+import org.apache.syncope.common.rest.api.service.RoleService;
+import org.apache.syncope.common.rest.api.service.SchemaService;
+import org.apache.syncope.common.rest.api.service.UserService;
 
 /**
  * Interact with Apache Synope instance to manage users.
