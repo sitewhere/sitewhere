@@ -7,6 +7,8 @@
  */
 package com.sitewhere.event.persistence.warp10;
 
+import java.math.BigDecimal;
+
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.warp10.Warp10Converter;
@@ -35,8 +37,8 @@ public class Warp10DeviceLocation implements Warp10Converter<IDeviceLocation> {
     public static void toGTS(IDeviceLocation source, GTSInput target, boolean isNested) {
 	Warp10DeviceEvent.toGTS(source, target, isNested);
 	target.setTs(source.getReceivedDate().getTime());
-	target.setLat(source.getLatitude());
-	target.setLon(source.getLongitude());
+	target.setLat(source.getLatitude().doubleValue());
+	target.setLon(source.getLongitude().doubleValue());
 	target.setName(source.getDeviceAssignmentId().toString());
 
 	if (source.getElevation() != null) {
@@ -48,9 +50,9 @@ public class Warp10DeviceLocation implements Warp10Converter<IDeviceLocation> {
     public static DeviceLocation fromGTS(GTSOutput source, boolean isNested) {
 	DeviceLocation deviceLocation = new DeviceLocation();
 	Warp10DeviceEvent.fromGTS(source, deviceLocation, isNested);
-	deviceLocation.setElevation(source.getPoints().get(0).getElevation().doubleValue());
-	deviceLocation.setLongitude(source.getPoints().get(0).getLongitude());
-	deviceLocation.setLatitude(source.getPoints().get(0).getLatitude());
+	deviceLocation.setElevation(new BigDecimal(source.getPoints().get(0).getElevation().doubleValue()));
+	deviceLocation.setLongitude(new BigDecimal(source.getPoints().get(0).getLongitude()));
+	deviceLocation.setLatitude(new BigDecimal(source.getPoints().get(0).getLatitude()));
 	return deviceLocation;
     }
 }

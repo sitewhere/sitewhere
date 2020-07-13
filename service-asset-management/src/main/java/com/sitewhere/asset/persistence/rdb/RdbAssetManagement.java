@@ -60,8 +60,7 @@ public class RdbAssetManagement extends RdbTenantComponent implements IAssetMana
 	Asset asset = AssetManagementPersistence.assetCreateLogic(assetType, request);
 	RdbAsset created = new RdbAsset();
 	RdbAsset.copy(asset, created);
-	getEntityManagerProvider().persist(created);
-	return created;
+	return getEntityManagerProvider().persist(created);
     }
 
     /*
@@ -165,8 +164,7 @@ public class RdbAssetManagement extends RdbTenantComponent implements IAssetMana
 	AssetType assetType = AssetManagementPersistence.assetTypeCreateLogic(request);
 	RdbAssetType created = new RdbAssetType();
 	RdbAssetType.copy(assetType, created);
-	getEntityManagerProvider().persist(created);
-	return created;
+	return getEntityManagerProvider().persist(created);
     }
 
     /*

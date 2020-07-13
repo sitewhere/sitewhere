@@ -62,7 +62,7 @@ public class AssetManagementTenantEngine extends RdbTenantEngine<AssetManagement
      */
     @Override
     public ITenantEngineModule<AssetManagementTenantConfiguration> createConfigurationModule() {
-	return new AssetManagementTenantEngineModule(getActiveConfiguration());
+	return new AssetManagementTenantEngineModule(this, getActiveConfiguration());
     }
 
     /*

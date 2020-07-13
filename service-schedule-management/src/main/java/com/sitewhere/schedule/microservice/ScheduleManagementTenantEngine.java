@@ -63,7 +63,7 @@ public class ScheduleManagementTenantEngine extends RdbTenantEngine<ScheduleMana
      */
     @Override
     public ITenantEngineModule<ScheduleManagementTenantConfiguration> createConfigurationModule() {
-	return new ScheduleManagementTenantEngineModule(getActiveConfiguration());
+	return new ScheduleManagementTenantEngineModule(this, getActiveConfiguration());
     }
 
     /*

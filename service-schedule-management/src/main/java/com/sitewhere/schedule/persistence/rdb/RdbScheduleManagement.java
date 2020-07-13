@@ -54,8 +54,7 @@ public class RdbScheduleManagement extends RdbTenantComponent implements ISchedu
 	Schedule schedule = ScheduleManagementPersistence.scheduleCreateLogic(request);
 	RdbSchedule created = new RdbSchedule();
 	RdbSchedule.copy(schedule, created);
-	getEntityManagerProvider().persist(created);
-	return created;
+	return getEntityManagerProvider().persist(created);
     }
 
     /*
@@ -157,8 +156,7 @@ public class RdbScheduleManagement extends RdbTenantComponent implements ISchedu
 	ScheduledJob job = ScheduleManagementPersistence.scheduledJobCreateLogic(schedule, request);
 	RdbScheduledJob created = new RdbScheduledJob();
 	RdbScheduledJob.copy(job, created);
-	getEntityManagerProvider().persist(created);
-	return created;
+	return getEntityManagerProvider().persist(created);
     }
 
     /*

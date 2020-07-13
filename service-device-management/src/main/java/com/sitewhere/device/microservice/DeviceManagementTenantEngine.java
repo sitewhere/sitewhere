@@ -90,7 +90,7 @@ public class DeviceManagementTenantEngine extends RdbTenantEngine<DeviceManageme
      */
     @Override
     public ITenantEngineModule<DeviceManagementTenantConfiguration> createConfigurationModule() {
-	return new DeviceManagementTenantEngineModule(getActiveConfiguration());
+	return new DeviceManagementTenantEngineModule(this, getActiveConfiguration());
     }
 
     /*

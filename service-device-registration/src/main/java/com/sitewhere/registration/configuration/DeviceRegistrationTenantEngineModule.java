@@ -10,6 +10,7 @@ package com.sitewhere.registration.configuration;
 import com.sitewhere.microservice.multitenant.TenantEngineModule;
 import com.sitewhere.registration.DeviceRegistrationManager;
 import com.sitewhere.registration.spi.IRegistrationManager;
+import com.sitewhere.registration.spi.microservice.IDeviceRegistrationTenantEngine;
 
 /**
  * Guice module used for configuring components associated with a device
@@ -17,8 +18,9 @@ import com.sitewhere.registration.spi.IRegistrationManager;
  */
 public class DeviceRegistrationTenantEngineModule extends TenantEngineModule<DeviceRegistrationTenantConfiguration> {
 
-    public DeviceRegistrationTenantEngineModule(DeviceRegistrationTenantConfiguration configuration) {
-	super(configuration);
+    public DeviceRegistrationTenantEngineModule(IDeviceRegistrationTenantEngine tenantEngine,
+	    DeviceRegistrationTenantConfiguration configuration) {
+	super(tenantEngine, configuration);
     }
 
     /*
@@ -26,6 +28,7 @@ public class DeviceRegistrationTenantEngineModule extends TenantEngineModule<Dev
      */
     @Override
     protected void configure() {
+	bind(IDeviceRegistrationTenantEngine.class).toInstance((IDeviceRegistrationTenantEngine) getTenantEngine());
 	bind(DeviceRegistrationTenantConfiguration.class).toInstance(getConfiguration());
 	bind(IRegistrationManager.class).to(DeviceRegistrationManager.class);
     }

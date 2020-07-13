@@ -15,13 +15,14 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Materialized;
-import org.apache.kafka.streams.kstream.Printed;
 import org.apache.kafka.streams.kstream.TimeWindows;
 import org.apache.kafka.streams.state.Stores;
 
-import com.sitewhere.devicestate.configuration.DeviceStateTenantConfiguration;
+import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
 import com.sitewhere.grpc.kafka.serdes.SiteWhereSerdes;
 import com.sitewhere.microservice.kafka.KafkaStreamPipeline;
+import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Kafka pipeline for handling device state interactions
@@ -34,15 +35,11 @@ public class DeviceStatePipeline extends KafkaStreamPipeline {
     /** Number of seconds in window to aggregate events */
     private static final long WINDOW_LENGTH_IN_SECONDS = 5;
 
-    /** Tenant configuration for device state */
-    private DeviceStateTenantConfiguration configuration;
-
     /** Aggregates events for window into state object */
-    private DeviceStateAggregator aggregator = new DeviceStateAggregator();
+    private DeviceStateAggregator aggregator;
 
-    public DeviceStatePipeline(DeviceStateTenantConfiguration configuration) {
-	this.configuration = configuration;
-    }
+    /** Persists aggregated events */
+    private DeviceStatePersistenceMapper deviceStatePersistenceMapper;
 
     /*
      * @see com.sitewhere.microservice.kafka.KafkaStreamPipeline#getPipelineName()
@@ -85,16 +82,53 @@ public class DeviceStatePipeline extends KafkaStreamPipeline {
 		.groupByKey().windowedBy(TimeWindows.of(Duration.ofSeconds(WINDOW_LENGTH_IN_SECONDS)))
 		.aggregate(() -> new AggregatedDeviceState(), getAggregator(),
 			Materialized.as(
-				Stores.inMemoryWindowStore(STORE_NAME, Duration.ofSeconds(WINDOW_LENGTH_IN_SECONDS * 4),
+				Stores.inMemoryWindowStore(STORE_NAME, Duration.ofSeconds(WINDOW_LENGTH_IN_SECONDS * 3),
 					Duration.ofSeconds(WINDOW_LENGTH_IN_SECONDS), false)))
-		.toStream().print(Printed.toSysOut());
+		.toStream().map(getDeviceStatePersistenceMapper());
     }
 
-    protected DeviceStateTenantConfiguration getConfiguration() {
-	return configuration;
+    /*
+     * @see
+     * com.sitewhere.microservice.kafka.KafkaStreamPipeline#initialize(com.sitewhere
+     * .spi.microservice.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	this.aggregator = new DeviceStateAggregator();
+	this.deviceStatePersistenceMapper = new DeviceStatePersistenceMapper(
+		((IDeviceStateTenantEngine) getTenantEngine()).getActiveConfiguration());
+
+	super.initialize(monitor);
+	initializeNestedComponent(getDeviceStatePersistenceMapper(), monitor, true);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.microservice.kafka.KafkaStreamPipeline#start(com.sitewhere.spi.
+     * microservice.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+	startNestedComponent(getDeviceStatePersistenceMapper(), monitor, true);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.microservice.kafka.KafkaStreamPipeline#stop(com.sitewhere.spi.
+     * microservice.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.stop(monitor);
+	stopNestedComponent(getDeviceStatePersistenceMapper(), monitor);
     }
 
     protected DeviceStateAggregator getAggregator() {
 	return aggregator;
+    }
+
+    protected DeviceStatePersistenceMapper getDeviceStatePersistenceMapper() {
+	return deviceStatePersistenceMapper;
     }
 }

@@ -62,7 +62,7 @@ public class DeviceRegistrationTenantEngine extends MicroserviceTenantEngine<Dev
      */
     @Override
     public ITenantEngineModule<DeviceRegistrationTenantConfiguration> createConfigurationModule() {
-	return new DeviceRegistrationTenantEngineModule(getActiveConfiguration());
+	return new DeviceRegistrationTenantEngineModule(this, getActiveConfiguration());
     }
 
     /*

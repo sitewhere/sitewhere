@@ -12,8 +12,11 @@ import com.sitewhere.devicestate.configuration.DeviceStateTenantEngineModule;
 import com.sitewhere.devicestate.grpc.DeviceStateImpl;
 import com.sitewhere.devicestate.kafka.DeviceStatePipeline;
 import com.sitewhere.devicestate.persistence.rdb.entity.RdbDeviceState;
-import com.sitewhere.devicestate.persistence.rdb.entity.RdbRecentStateEvent;
+import com.sitewhere.devicestate.persistence.rdb.entity.RdbRecentAlertEvent;
+import com.sitewhere.devicestate.persistence.rdb.entity.RdbRecentLocationEvent;
+import com.sitewhere.devicestate.persistence.rdb.entity.RdbRecentMeasurementEvent;
 import com.sitewhere.devicestate.spi.IDevicePresenceManager;
+import com.sitewhere.devicestate.spi.IDeviceStateMergeStrategy;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
 import com.sitewhere.grpc.service.DeviceStateGrpc;
@@ -44,6 +47,9 @@ public class DeviceStateTenantEngine extends RdbTenantEngine<DeviceStateTenantCo
     /** Responds to device state GRPC requests */
     private DeviceStateGrpc.DeviceStateImplBase deviceStateImpl;
 
+    /** Strategy for merging events into device state */
+    private IDeviceStateMergeStrategy<?> deviceStateMergeStrategy;
+
     /** Kafka Streams pipeline for device state event processing */
     private DeviceStatePipeline deviceStatePipeline;
 
@@ -69,7 +75,7 @@ public class DeviceStateTenantEngine extends RdbTenantEngine<DeviceStateTenantCo
      */
     @Override
     public ITenantEngineModule<DeviceStateTenantConfiguration> createConfigurationModule() {
-	return new DeviceStateTenantEngineModule(getActiveConfiguration());
+	return new DeviceStateTenantEngineModule(this, getActiveConfiguration());
     }
 
     /*
@@ -85,7 +91,8 @@ public class DeviceStateTenantEngine extends RdbTenantEngine<DeviceStateTenantCo
      */
     @Override
     public Class<?>[] getEntityClasses() {
-	return new Class<?>[] { RdbDeviceState.class, RdbRecentStateEvent.class };
+	return new Class<?>[] { RdbDeviceState.class, RdbRecentLocationEvent.class, RdbRecentMeasurementEvent.class,
+		RdbRecentAlertEvent.class };
     }
 
     /*
@@ -99,6 +106,9 @@ public class DeviceStateTenantEngine extends RdbTenantEngine<DeviceStateTenantCo
 	this.deviceStateManagement = implementation;
 	this.deviceStateImpl = new DeviceStateImpl((IDeviceStateMicroservice) getMicroservice(),
 		getDeviceStateManagement());
+
+	// Load configured device state merge strategy.
+	this.deviceStateMergeStrategy = getInjector().getInstance(IDeviceStateMergeStrategy.class);
     }
 
     /*
@@ -127,7 +137,7 @@ public class DeviceStateTenantEngine extends RdbTenantEngine<DeviceStateTenantCo
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.tenantInitialize(monitor);
-	this.deviceStatePipeline = new DeviceStatePipeline(getActiveConfiguration());
+	this.deviceStatePipeline = new DeviceStatePipeline();
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
@@ -211,6 +221,15 @@ public class DeviceStateTenantEngine extends RdbTenantEngine<DeviceStateTenantCo
     @Override
     public DeviceStateGrpc.DeviceStateImplBase getDeviceStateImpl() {
 	return deviceStateImpl;
+    }
+
+    /*
+     * @see com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine#
+     * getDeviceStateMergeStrategy()
+     */
+    @Override
+    public IDeviceStateMergeStrategy<?> getDeviceStateMergeStrategy() {
+	return deviceStateMergeStrategy;
     }
 
     /*

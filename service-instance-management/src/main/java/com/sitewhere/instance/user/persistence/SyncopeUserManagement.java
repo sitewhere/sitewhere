@@ -9,6 +9,7 @@ package com.sitewhere.instance.user.persistence;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
@@ -452,7 +453,6 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	} catch (Throwable t) {
 	    throw new SiteWhereException("Unable to get user by username.", t);
 	}
-
     }
 
     /*

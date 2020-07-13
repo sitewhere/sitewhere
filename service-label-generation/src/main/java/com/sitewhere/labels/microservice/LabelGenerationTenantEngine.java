@@ -55,7 +55,7 @@ public class LabelGenerationTenantEngine extends MicroserviceTenantEngine<LabelG
      */
     @Override
     public ITenantEngineModule<LabelGenerationTenantConfiguration> createConfigurationModule() {
-	return new LabelGenerationTenantEngineModule(getActiveConfiguration());
+	return new LabelGenerationTenantEngineModule(this, getActiveConfiguration());
     }
 
     /*

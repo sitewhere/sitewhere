@@ -7,14 +7,12 @@
  */
 package com.sitewhere.devicestate.persistence.rdb.entity;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -32,11 +30,13 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sitewhere.spi.device.state.IDeviceState;
 
 @Entity
 @Table(name = "device_state", indexes = {
-	@Index(name = "device_state_device_and_assignment", columnList = "device_id, device_assignment_id", unique = true) })
+	@Index(name = "device_state_device", columnList = "device_id", unique = false),
+	@Index(name = "device_state_device_assignment", columnList = "device_assignment_id", unique = true) })
 public class RdbDeviceState implements IDeviceState {
 
     /** Serial version UID */
@@ -71,8 +71,17 @@ public class RdbDeviceState implements IDeviceState {
     @Column(name = "presence_missing_date ")
     private Date presenceMissingDate;
 
-    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "deviceState")
-    private List<RdbRecentStateEvent> recentStateEvents = new ArrayList<>();
+    @JsonIgnore
+    @OneToMany(mappedBy = "deviceState", fetch = FetchType.LAZY)
+    private List<RdbRecentLocationEvent> recentLocations;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "deviceState", fetch = FetchType.LAZY)
+    private List<RdbRecentMeasurementEvent> recentMeasurements;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "deviceState", fetch = FetchType.LAZY)
+    private List<RdbRecentAlertEvent> recentAlerts;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
@@ -201,12 +210,28 @@ public class RdbDeviceState implements IDeviceState {
 	this.metadata = metadata;
     }
 
-    public List<RdbRecentStateEvent> getRecentStateEvents() {
-	return recentStateEvents;
+    public List<RdbRecentLocationEvent> getRecentLocations() {
+	return recentLocations;
     }
 
-    public void setRecentStateEvents(List<RdbRecentStateEvent> recentStateEvents) {
-	this.recentStateEvents = recentStateEvents;
+    public void setRecentLocations(List<RdbRecentLocationEvent> recentLocations) {
+	this.recentLocations = recentLocations;
+    }
+
+    public List<RdbRecentMeasurementEvent> getRecentMeasurements() {
+	return recentMeasurements;
+    }
+
+    public void setRecentMeasurements(List<RdbRecentMeasurementEvent> recentMeasurements) {
+	this.recentMeasurements = recentMeasurements;
+    }
+
+    public List<RdbRecentAlertEvent> getRecentAlerts() {
+	return recentAlerts;
+    }
+
+    public void setRecentAlerts(List<RdbRecentAlertEvent> recentAlerts) {
+	this.recentAlerts = recentAlerts;
     }
 
     public static void copy(IDeviceState source, RdbDeviceState target) {

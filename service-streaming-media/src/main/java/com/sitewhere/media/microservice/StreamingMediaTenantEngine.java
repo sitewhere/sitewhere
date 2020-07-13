@@ -44,7 +44,7 @@ public class StreamingMediaTenantEngine extends MicroserviceTenantEngine<Streami
      */
     @Override
     public ITenantEngineModule<StreamingMediaTenantConfiguration> createConfigurationModule() {
-	return new StreamingMediaTenantEngineModule(getActiveConfiguration());
+	return new StreamingMediaTenantEngineModule(this, getActiveConfiguration());
     }
 
     /*

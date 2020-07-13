@@ -86,12 +86,6 @@ public class DeviceStatePersistence extends Persistence {
 
 	requireNotNull("Device state id", request.getDeviceStateId());
 	recent.setDeviceStateId(request.getDeviceStateId());
-
-	requireNotNull("Event type", request.getEventType());
-	recent.setEventType(request.getEventType());
-
-	recent.setClassifier(request.getClassifier());
-	recent.setValue(request.getValue());
 	recent.setEventDate(request.getEventDate());
 	return recent;
     }
@@ -105,9 +99,6 @@ public class DeviceStatePersistence extends Persistence {
      */
     public static void recentStateEventUpdateLogic(IRecentStateEventCreateRequest request, RecentStateEvent target)
 	    throws SiteWhereException {
-	if (request.getValue() != null) {
-	    target.setValue(request.getValue());
-	}
 	if (request.getEventId() != null) {
 	    target.setEventId(request.getEventId());
 	}

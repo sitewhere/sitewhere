@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import com.sitewhere.grpc.event.EventModelConverter;
 import com.sitewhere.grpc.model.DeviceEventModel.GAnyDeviceEvent.EventCase;
+import com.sitewhere.grpc.model.DeviceEventModel.GDeviceAlert;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceLocation;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceMeasurement;
 import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
@@ -49,6 +50,11 @@ public class DeviceStateAggregator implements Aggregator<UUID, GEnrichedEventPay
 	    case MEASUREMENT: {
 		GDeviceMeasurement mx = payload.getEvent().getMeasurement();
 		updated.updateFromMeasurement(EventModelConverter.asApiDeviceMeasurement(mx));
+		break;
+	    }
+	    case ALERT: {
+		GDeviceAlert alert = payload.getEvent().getAlert();
+		updated.updateFromAlert(EventModelConverter.asApiDeviceAlert(alert));
 		break;
 	    }
 	    default: {

@@ -7,39 +7,35 @@
  */
 package com.sitewhere.devicestate.grpc;
 
+import java.util.List;
+
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
 import com.sitewhere.grpc.common.CommonModelConverter;
 import com.sitewhere.grpc.devicestate.DeviceStateModelConverter;
 import com.sitewhere.grpc.model.DeviceStateModel.GDeviceStateSearchResults;
-import com.sitewhere.grpc.model.DeviceStateModel.GRecentStateEventSearchResults;
 import com.sitewhere.grpc.service.DeviceStateGrpc;
 import com.sitewhere.grpc.service.GCreateDeviceStateRequest;
 import com.sitewhere.grpc.service.GCreateDeviceStateResponse;
-import com.sitewhere.grpc.service.GCreateRecentStateEventRequest;
-import com.sitewhere.grpc.service.GCreateRecentStateEventResponse;
 import com.sitewhere.grpc.service.GDeleteDeviceStateRequest;
 import com.sitewhere.grpc.service.GDeleteDeviceStateResponse;
-import com.sitewhere.grpc.service.GDeleteRecentStateEventRequest;
-import com.sitewhere.grpc.service.GDeleteRecentStateEventResponse;
+import com.sitewhere.grpc.service.GGetDeviceStateByAssignmentRequest;
+import com.sitewhere.grpc.service.GGetDeviceStateByAssignmentResponse;
 import com.sitewhere.grpc.service.GGetDeviceStateRequest;
 import com.sitewhere.grpc.service.GGetDeviceStateResponse;
-import com.sitewhere.grpc.service.GGetRecentStateEventRequest;
-import com.sitewhere.grpc.service.GGetRecentStateEventResponse;
+import com.sitewhere.grpc.service.GGetDeviceStatesByDeviceRequest;
+import com.sitewhere.grpc.service.GGetDeviceStatesByDeviceResponse;
+import com.sitewhere.grpc.service.GMergeDeviceStateRequest;
+import com.sitewhere.grpc.service.GMergeDeviceStateResponse;
 import com.sitewhere.grpc.service.GSearchDeviceStatesRequest;
 import com.sitewhere.grpc.service.GSearchDeviceStatesResponse;
-import com.sitewhere.grpc.service.GSearchRecentStateEventsRequest;
-import com.sitewhere.grpc.service.GSearchRecentStateEventsResponse;
 import com.sitewhere.grpc.service.GUpdateDeviceStateRequest;
 import com.sitewhere.grpc.service.GUpdateDeviceStateResponse;
-import com.sitewhere.grpc.service.GUpdateRecentStateEventRequest;
-import com.sitewhere.grpc.service.GUpdateRecentStateEventResponse;
 import com.sitewhere.microservice.api.state.IDeviceStateManagement;
 import com.sitewhere.spi.device.state.IDeviceState;
-import com.sitewhere.spi.device.state.IRecentStateEvent;
 import com.sitewhere.spi.device.state.request.IDeviceStateCreateRequest;
-import com.sitewhere.spi.device.state.request.IRecentStateEventCreateRequest;
+import com.sitewhere.spi.device.state.request.IDeviceStateEventMergeRequest;
 import com.sitewhere.spi.microservice.IMicroservice;
 import com.sitewhere.spi.search.ISearchResults;
 
@@ -113,6 +109,56 @@ public class DeviceStateImpl extends DeviceStateGrpc.DeviceStateImplBase impleme
 
     /*
      * @see com.sitewhere.grpc.service.DeviceStateGrpc.DeviceStateImplBase#
+     * getDeviceStateByAssignment(com.sitewhere.grpc.service.
+     * GGetDeviceStateByAssignmentRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getDeviceStateByAssignment(GGetDeviceStateByAssignmentRequest request,
+	    StreamObserver<GGetDeviceStateByAssignmentResponse> responseObserver) {
+	try {
+	    GrpcUtils.handleServerMethodEntry(this, DeviceStateGrpc.getGetDeviceStateByAssignmentMethod());
+	    IDeviceState apiResult = getDeviceStateManagement()
+		    .getDeviceStateByDeviceAssignment(CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()));
+	    GGetDeviceStateByAssignmentResponse.Builder response = GGetDeviceStateByAssignmentResponse.newBuilder();
+	    if (apiResult != null) {
+		response.setDeviceState(DeviceStateModelConverter.asGrpcDeviceState(apiResult));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceStateGrpc.getGetDeviceStateByAssignmentMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceStateGrpc.getGetDeviceStateByAssignmentMethod());
+	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.DeviceStateGrpc.DeviceStateImplBase#
+     * getDeviceStatesByDevice(com.sitewhere.grpc.service.
+     * GGetDeviceStatesByDeviceRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getDeviceStatesByDevice(GGetDeviceStatesByDeviceRequest request,
+	    StreamObserver<GGetDeviceStatesByDeviceResponse> responseObserver) {
+	try {
+	    GrpcUtils.handleServerMethodEntry(this, DeviceStateGrpc.getGetDeviceStatesByDeviceMethod());
+	    List<? extends IDeviceState> apiResult = getDeviceStateManagement()
+		    .getDeviceStatesForDevice(CommonModelConverter.asApiUuid(request.getDeviceId()));
+	    GGetDeviceStatesByDeviceResponse.Builder response = GGetDeviceStatesByDeviceResponse.newBuilder();
+	    response.addAllDeviceStates(DeviceStateModelConverter.asGrpcDeviceStates(apiResult));
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceStateGrpc.getGetDeviceStatesByDeviceMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceStateGrpc.getGetDeviceStatesByDeviceMethod());
+	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.DeviceStateGrpc.DeviceStateImplBase#
      * searchDeviceStates(com.sitewhere.grpc.service.GSearchDeviceStatesRequest,
      * io.grpc.stub.StreamObserver)
      */
@@ -168,6 +214,33 @@ public class DeviceStateImpl extends DeviceStateGrpc.DeviceStateImplBase impleme
 
     /*
      * @see com.sitewhere.grpc.service.DeviceStateGrpc.DeviceStateImplBase#
+     * mergeDeviceState(com.sitewhere.grpc.service.GMergeDeviceStateRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void mergeDeviceState(GMergeDeviceStateRequest request,
+	    StreamObserver<GMergeDeviceStateResponse> responseObserver) {
+	try {
+	    GrpcUtils.handleServerMethodEntry(this, DeviceStateGrpc.getMergeDeviceStateMethod());
+	    IDeviceStateEventMergeRequest update = DeviceStateModelConverter
+		    .asApiDeviceStateEventMergeRequest(request.getRequest());
+	    IDeviceState apiResult = getDeviceStateManagement().merge(CommonModelConverter.asApiUuid(request.getId()),
+		    update);
+	    GMergeDeviceStateResponse.Builder response = GMergeDeviceStateResponse.newBuilder();
+	    if (apiResult != null) {
+		response.setDeviceState(DeviceStateModelConverter.asGrpcDeviceState(apiResult));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceStateGrpc.getMergeDeviceStateMethod(), e, responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceStateGrpc.getMergeDeviceStateMethod());
+	}
+    }
+
+    /*
+     * @see com.sitewhere.grpc.service.DeviceStateGrpc.DeviceStateImplBase#
      * deleteDeviceState(com.sitewhere.grpc.service.GDeleteDeviceStateRequest,
      * io.grpc.stub.StreamObserver)
      */
@@ -186,137 +259,6 @@ public class DeviceStateImpl extends DeviceStateGrpc.DeviceStateImplBase impleme
 	    GrpcUtils.handleServerMethodException(DeviceStateGrpc.getDeleteDeviceStateMethod(), e, responseObserver);
 	} finally {
 	    GrpcUtils.handleServerMethodExit(DeviceStateGrpc.getDeleteDeviceStateMethod());
-	}
-    }
-
-    /*
-     * @see com.sitewhere.grpc.service.DeviceStateGrpc.DeviceStateImplBase#
-     * createRecentStateEvent(com.sitewhere.grpc.service.
-     * GCreateRecentStateEventRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void createRecentStateEvent(GCreateRecentStateEventRequest request,
-	    StreamObserver<GCreateRecentStateEventResponse> responseObserver) {
-	try {
-	    GrpcUtils.handleServerMethodEntry(this, DeviceStateGrpc.getCreateRecentStateEventMethod());
-	    IRecentStateEventCreateRequest apiRequest = DeviceStateModelConverter
-		    .asApiRecentStateEventCreateRequest(request.getRequest());
-	    IRecentStateEvent apiResult = getDeviceStateManagement().createRecentStateEvent(apiRequest);
-	    GCreateRecentStateEventResponse.Builder response = GCreateRecentStateEventResponse.newBuilder();
-	    response.setRecentStateEvent(DeviceStateModelConverter.asGrpcRecentStateEvent(apiResult));
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceStateGrpc.getCreateRecentStateEventMethod(), e,
-		    responseObserver);
-	} finally {
-	    GrpcUtils.handleServerMethodExit(DeviceStateGrpc.getCreateRecentStateEventMethod());
-	}
-    }
-
-    /*
-     * @see com.sitewhere.grpc.service.DeviceStateGrpc.DeviceStateImplBase#
-     * getRecentStateEvent(com.sitewhere.grpc.service.GGetRecentStateEventRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getRecentStateEvent(GGetRecentStateEventRequest request,
-	    StreamObserver<GGetRecentStateEventResponse> responseObserver) {
-	try {
-	    GrpcUtils.handleServerMethodEntry(this, DeviceStateGrpc.getGetRecentStateEventMethod());
-	    IRecentStateEvent apiResult = getDeviceStateManagement()
-		    .getRecentStateEvent(CommonModelConverter.asApiUuid(request.getId()));
-	    GGetRecentStateEventResponse.Builder response = GGetRecentStateEventResponse.newBuilder();
-	    if (apiResult != null) {
-		response.setRecentStateEvent(DeviceStateModelConverter.asGrpcRecentStateEvent(apiResult));
-	    }
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceStateGrpc.getGetRecentStateEventMethod(), e, responseObserver);
-	} finally {
-	    GrpcUtils.handleServerMethodExit(DeviceStateGrpc.getGetRecentStateEventMethod());
-	}
-    }
-
-    /*
-     * @see com.sitewhere.grpc.service.DeviceStateGrpc.DeviceStateImplBase#
-     * searchRecentStateEvents(com.sitewhere.grpc.service.
-     * GSearchRecentStateEventsRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void searchRecentStateEvents(GSearchRecentStateEventsRequest request,
-	    StreamObserver<GSearchRecentStateEventsResponse> responseObserver) {
-	try {
-	    GrpcUtils.handleServerMethodEntry(this, DeviceStateGrpc.getSearchRecentStateEventsMethod());
-	    ISearchResults<? extends IRecentStateEvent> apiResult = getDeviceStateManagement().searchRecentStateEvents(
-		    DeviceStateModelConverter.asApiRecentStateEventSearchCriteria(request.getCriteria()));
-	    GSearchRecentStateEventsResponse.Builder response = GSearchRecentStateEventsResponse.newBuilder();
-	    GRecentStateEventSearchResults.Builder results = GRecentStateEventSearchResults.newBuilder();
-	    for (IRecentStateEvent api : apiResult.getResults()) {
-		results.addRecentStateEvents(DeviceStateModelConverter.asGrpcRecentStateEvent(api));
-	    }
-	    results.setCount(apiResult.getNumResults());
-	    response.setResults(results.build());
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceStateGrpc.getSearchRecentStateEventsMethod(), e,
-		    responseObserver);
-	} finally {
-	    GrpcUtils.handleServerMethodExit(DeviceStateGrpc.getSearchRecentStateEventsMethod());
-	}
-    }
-
-    /*
-     * @see com.sitewhere.grpc.service.DeviceStateGrpc.DeviceStateImplBase#
-     * updateRecentStateEvent(com.sitewhere.grpc.service.
-     * GUpdateRecentStateEventRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void updateRecentStateEvent(GUpdateRecentStateEventRequest request,
-	    StreamObserver<GUpdateRecentStateEventResponse> responseObserver) {
-	try {
-	    GrpcUtils.handleServerMethodEntry(this, DeviceStateGrpc.getUpdateRecentStateEventMethod());
-	    IRecentStateEventCreateRequest update = DeviceStateModelConverter
-		    .asApiRecentStateEventCreateRequest(request.getRequest());
-	    IRecentStateEvent apiResult = getDeviceStateManagement()
-		    .updateRecentStateEvent(CommonModelConverter.asApiUuid(request.getId()), update);
-	    GUpdateRecentStateEventResponse.Builder response = GUpdateRecentStateEventResponse.newBuilder();
-	    if (apiResult != null) {
-		response.setRecentStateEvent(DeviceStateModelConverter.asGrpcRecentStateEvent(apiResult));
-	    }
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceStateGrpc.getUpdateRecentStateEventMethod(), e,
-		    responseObserver);
-	} finally {
-	    GrpcUtils.handleServerMethodExit(DeviceStateGrpc.getUpdateRecentStateEventMethod());
-	}
-    }
-
-    /*
-     * @see com.sitewhere.grpc.service.DeviceStateGrpc.DeviceStateImplBase#
-     * deleteRecentStateEvent(com.sitewhere.grpc.service.
-     * GDeleteRecentStateEventRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void deleteRecentStateEvent(GDeleteRecentStateEventRequest request,
-	    StreamObserver<GDeleteRecentStateEventResponse> responseObserver) {
-	try {
-	    GrpcUtils.handleServerMethodEntry(this, DeviceStateGrpc.getDeleteRecentStateEventMethod());
-	    IRecentStateEvent apiResult = getDeviceStateManagement()
-		    .deleteRecentStateEvent(CommonModelConverter.asApiUuid(request.getId()));
-	    GDeleteRecentStateEventResponse.Builder response = GDeleteRecentStateEventResponse.newBuilder();
-	    response.setRecentStateEvent(DeviceStateModelConverter.asGrpcRecentStateEvent(apiResult));
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(DeviceStateGrpc.getDeleteRecentStateEventMethod(), e,
-		    responseObserver);
-	} finally {
-	    GrpcUtils.handleServerMethodExit(DeviceStateGrpc.getDeleteRecentStateEventMethod());
 	}
     }
 

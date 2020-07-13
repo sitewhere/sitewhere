@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'checkstyle'
     id 'distribution'
-	id 'com.sitewhere' version '3.0.0.alpha2' apply false
+    id 'com.sitewhere' version '3.0.0.alpha2' apply false
     id 'io.quarkus' version '1.2.1.Final'
     id 'com.bmuschko.docker-remote-api' version '5.3.0'
     id 'org.ajoberstar.grgit' version '2.2.1'
@@ -20,8 +20,8 @@ ext['git.revision.abbrev'] = ext.git.head().abbreviatedId
 ext['docker.base.image'] = 'openjdk:8-jre-alpine'
 ext['docker.maintainer'] = 'admin@sitewhere.com'
 
-ext['sitewhere.microservice.api.version'] = '3.0.0.beta1-luciano'
-ext['sitewhere.integration.api.version'] = '3.0.0.beta-luciano'
+ext['sitewhere.microservice.api.version'] = '3.0.0.beta10'
+ext['sitewhere.integration.api.version'] = '3.0.0.beta7'
 ext['kafka.version'] = '2.0.0'
 ext['protobuf.version'] = '3.5.1'
 ext['grpc.version'] = '1.25.0'

@@ -7,6 +7,7 @@
  */
 package com.sitewhere.event.persistence.influxdb;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import org.influxdb.dto.Point;
@@ -51,9 +52,9 @@ public class InfluxDbDeviceLocation {
      */
     public static void loadFromMap(DeviceLocation event, Map<String, Object> values) throws SiteWhereException {
 	event.setEventType(DeviceEventType.Location);
-	event.setLatitude((Double) values.get(LOCATION_LATITUDE));
-	event.setLongitude((Double) values.get(LOCATION_LONGITUDE));
-	event.setElevation((Double) values.get(LOCATION_ELEVATION));
+	event.setLatitude((BigDecimal) values.get(LOCATION_LATITUDE));
+	event.setLongitude((BigDecimal) values.get(LOCATION_LONGITUDE));
+	event.setElevation((BigDecimal) values.get(LOCATION_ELEVATION));
 	InfluxDbDeviceEvent.loadFromMap(event, values);
     }
 
