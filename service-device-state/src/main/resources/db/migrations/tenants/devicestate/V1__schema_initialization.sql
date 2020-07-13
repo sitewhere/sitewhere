@@ -45,6 +45,10 @@ create table devicestate.recent_measurement_event (
 	event_id uuid, 
 	name varchar(255) not null, 
 	value numeric(32, 8) not null, 
+	max_value numeric(32, 8) not null, 
+	max_value_date timestamp, 
+	min_value numeric(32, 8) not null, 
+	min_value_date timestamp, 
 	primary key (id)
 );
 	

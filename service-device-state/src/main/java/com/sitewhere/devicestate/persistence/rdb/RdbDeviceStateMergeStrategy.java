@@ -9,6 +9,7 @@ package com.sitewhere.devicestate.persistence.rdb;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -172,6 +173,14 @@ public class RdbDeviceStateMergeStrategy implements IDeviceStateMergeStrategy<Rd
 		    rdb = RdbRecentMeasurementEvent.createFrom(original, current);
 		    rdb = getRdbEntityManagerProvider().persist(rdb);
 		    eventsByMxName.put(rdb.getName(), rdb);
+		}
+		if ((rdb.getMaxValue() == null) || (current.getValue().compareTo(rdb.getValue()) > 0)) {
+		    rdb.setMaxValue(current.getValue());
+		    rdb.setMaxValueDate(new Date());
+		}
+		if ((rdb.getMinValue() == null) || (current.getValue().compareTo(rdb.getValue()) < 0)) {
+		    rdb.setMinValue(current.getValue());
+		    rdb.setMinValueDate(new Date());
 		}
 	    }
 
