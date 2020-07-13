@@ -28,6 +28,7 @@ import com.sitewhere.microservice.api.state.IDeviceStateManagement;
 import com.sitewhere.microservice.kafka.KeyValueMapperComponent;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.microservice.security.SystemUserCallable;
+import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurement;
@@ -128,6 +129,10 @@ public class DeviceStatePersistenceMapper
 	    for (DeviceMeasurement mx : state.getDeviceMeasurements()) {
 		DeviceStateEventMergeRequest request = getOrCreateMergeRequestFor(mx, mergeByAssignmentId);
 		request.getMeasurements().add(mx);
+	    }
+	    for (DeviceAlert alert : state.getDeviceAlerts()) {
+		DeviceStateEventMergeRequest request = getOrCreateMergeRequestFor(alert, mergeByAssignmentId);
+		request.getAlerts().add(alert);
 	    }
 	    return mergeByAssignmentId;
 	}

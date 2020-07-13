@@ -7,24 +7,18 @@
  */
 package com.sitewhere.web.rest.controllers;
 
-import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
-import com.sitewhere.microservice.api.user.IUserManagement;
-import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.rest.model.search.user.UserSearchCriteria;
-import com.sitewhere.rest.model.user.GrantedAuthority;
-import com.sitewhere.rest.model.user.Role;
-import com.sitewhere.rest.model.user.RoleSearchCriteria;
-import com.sitewhere.rest.model.user.request.RoleCreateRequest;
-import com.sitewhere.rest.model.user.request.UserCreateRequest;
-import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.error.ErrorCode;
-import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.user.AccountStatus;
-import com.sitewhere.spi.user.IGrantedAuthority;
-import com.sitewhere.spi.user.IRole;
-import com.sitewhere.spi.user.IUser;
-import io.swagger.annotations.Api;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -34,13 +28,17 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import java.util.ArrayList;
-import java.util.List;
+import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
+import com.sitewhere.microservice.api.user.IUserManagement;
+import com.sitewhere.rest.model.user.RoleSearchCriteria;
+import com.sitewhere.rest.model.user.request.RoleCreateRequest;
+import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.user.IRole;
+
+import io.swagger.annotations.Api;
 
 /**
  * Controller for user operations.
