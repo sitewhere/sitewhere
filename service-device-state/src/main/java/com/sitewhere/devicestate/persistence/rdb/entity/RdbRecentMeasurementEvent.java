@@ -63,6 +63,20 @@ public class RdbRecentMeasurementEvent implements IRecentMeasurementEvent {
     @Column(name = "value", nullable = false, precision = 32, scale = 8)
     private BigDecimal value;
 
+    /** Maximum value */
+    @Column(name = "max_value", nullable = false, precision = 32, scale = 8)
+    private BigDecimal maxValue;
+
+    @Column(name = "max_value_date ")
+    private Date maxValueDate;
+
+    /** Minimum value */
+    @Column(name = "min_value", nullable = false, precision = 32, scale = 8)
+    private BigDecimal minValue;
+
+    @Column(name = "min_value_date ")
+    private Date minValueDate;
+
     /*
      * @see com.sitewhere.spi.device.state.IRecentStateEvent#getId()
      */
@@ -144,6 +158,54 @@ public class RdbRecentMeasurementEvent implements IRecentMeasurementEvent {
     }
 
     /*
+     * @see com.sitewhere.spi.device.state.IRecentMeasurementEvent#getMaxValue()
+     */
+    @Override
+    public BigDecimal getMaxValue() {
+	return maxValue;
+    }
+
+    public void setMaxValue(BigDecimal maxValue) {
+	this.maxValue = maxValue;
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.state.IRecentMeasurementEvent#getMaxValueDate()
+     */
+    @Override
+    public Date getMaxValueDate() {
+	return maxValueDate;
+    }
+
+    public void setMaxValueDate(Date maxValueDate) {
+	this.maxValueDate = maxValueDate;
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.state.IRecentMeasurementEvent#getMinValue()
+     */
+    @Override
+    public BigDecimal getMinValue() {
+	return minValue;
+    }
+
+    public void setMinValue(BigDecimal minValue) {
+	this.minValue = minValue;
+    }
+
+    /*
+     * @see com.sitewhere.spi.device.state.IRecentMeasurementEvent#getMinValueDate()
+     */
+    @Override
+    public Date getMinValueDate() {
+	return minValueDate;
+    }
+
+    public void setMinValueDate(Date minValueDate) {
+	this.minValueDate = minValueDate;
+    }
+
+    /*
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -184,6 +246,10 @@ public class RdbRecentMeasurementEvent implements IRecentMeasurementEvent {
 	rdb.setEventDate(api.getEventDate());
 	rdb.setName(api.getName());
 	rdb.setValue(api.getValue());
+	rdb.setMaxValue(api.getValue());
+	rdb.setMaxValueDate(new Date());
+	rdb.setMinValue(api.getValue());
+	rdb.setMinValueDate(new Date());
 	return rdb;
     }
 

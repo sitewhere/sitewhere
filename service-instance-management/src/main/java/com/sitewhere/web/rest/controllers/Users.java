@@ -10,7 +10,6 @@ package com.sitewhere.web.rest.controllers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -25,10 +24,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.sitewhere.rest.model.user.Role;
-import com.sitewhere.spi.user.IRole;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -43,6 +38,7 @@ import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.user.UserSearchCriteria;
 import com.sitewhere.rest.model.user.GrantedAuthority;
+import com.sitewhere.rest.model.user.Role;
 import com.sitewhere.rest.model.user.request.UserCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -50,6 +46,7 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.user.AccountStatus;
 import com.sitewhere.spi.user.IGrantedAuthority;
+import com.sitewhere.spi.user.IRole;
 import com.sitewhere.spi.user.IUser;
 
 import io.swagger.annotations.Api;
@@ -192,14 +189,14 @@ public class Users {
     @Path("/{username}/roles")
     @Operation(summary = "Get roles for user", description = "Get roles for user")
     public Response getRolesForUsername(
-		    @Parameter(description = "Unique username", required = true) @PathParam("username") String username)
-		    throws SiteWhereException {
+	    @Parameter(description = "Unique username", required = true) @PathParam("username") String username)
+	    throws SiteWhereException {
 	List<IRole> matches = getUserManagement().getRoles(username);
-	List<Role> converted = new ArrayList();
+	List<Role> converted = new ArrayList<>();
 	for (IRole role : matches) {
 	    converted.add(Role.copy(role));
 	}
-	return Response.ok(new SearchResults(converted)).build();
+	return Response.ok(new SearchResults<Role>(converted)).build();
     }
 
     /**
@@ -213,14 +210,13 @@ public class Users {
     @Path("/{username}/roles")
     @Operation(summary = "Add roles to users", description = "Add roles to users")
     public Response addRoles(
-    		@Parameter(description = "Unique username", required = true) @PathParam("username") String username,
-		@RequestBody String[] roles) throws SiteWhereException {
-	if ((roles == null) && roles.length> 0) {
+	    @Parameter(description = "Unique username", required = true) @PathParam("username") String username,
+	    @RequestBody String[] roles) throws SiteWhereException {
+	if ((roles == null) || (roles.length == 0)) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidUserInformation, ErrorLevel.ERROR);
 	}
 	return Response.ok(getUserManagement().addRoles(username, Arrays.asList(roles))).build();
     }
-
 
     /**
      * remove roles to users
@@ -233,9 +229,9 @@ public class Users {
     @Path("/{username}/roles")
     @Operation(summary = "Delete roles to users", description = "Delete roles to users")
     public Response removeRoles(
-		    @Parameter(description = "Unique username", required = true) @PathParam("username") String username,
-		    @RequestBody String[] roles) throws SiteWhereException {
-	if ((roles == null) && roles.length> 0) {
+	    @Parameter(description = "Unique username", required = true) @PathParam("username") String username,
+	    @RequestBody String[] roles) throws SiteWhereException {
+	if ((roles == null) || (roles.length == 0)) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidUserInformation, ErrorLevel.ERROR);
 	}
 
