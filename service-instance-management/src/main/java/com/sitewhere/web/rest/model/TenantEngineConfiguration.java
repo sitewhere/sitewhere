@@ -10,7 +10,7 @@ package com.sitewhere.web.rest.model;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.microservice.configuration.model.instance.InstanceConfiguration;
 import com.sitewhere.rest.model.microservice.MicroserviceSummary;
-import com.sitewhere.rest.model.tenant.Tenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Wraps configuration of instance and tenant engine.
@@ -18,7 +18,7 @@ import com.sitewhere.rest.model.tenant.Tenant;
 public class TenantEngineConfiguration {
 
     /** Associated tenant information */
-    private Tenant tenant;
+    private ITenant tenant;
 
     /** Associated microservice information */
     private MicroserviceSummary microservice;
@@ -32,11 +32,11 @@ public class TenantEngineConfiguration {
     /** Tenant configuration */
     private JsonNode tenantConfiguration;
 
-    public Tenant getTenant() {
+    public ITenant getTenant() {
 	return tenant;
     }
 
-    public void setTenant(Tenant tenant) {
+    public void setTenant(ITenant tenant) {
 	this.tenant = tenant;
     }
 

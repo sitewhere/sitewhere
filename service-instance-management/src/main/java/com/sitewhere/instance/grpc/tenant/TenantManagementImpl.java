@@ -9,15 +9,12 @@ package com.sitewhere.instance.grpc.tenant;
 
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
-import com.sitewhere.grpc.common.CommonModelConverter;
 import com.sitewhere.grpc.service.GCreateTenantRequest;
 import com.sitewhere.grpc.service.GCreateTenantResponse;
 import com.sitewhere.grpc.service.GDeleteTenantRequest;
 import com.sitewhere.grpc.service.GDeleteTenantResponse;
-import com.sitewhere.grpc.service.GGetTenantByIdRequest;
-import com.sitewhere.grpc.service.GGetTenantByIdResponse;
-import com.sitewhere.grpc.service.GGetTenantByTokenRequest;
-import com.sitewhere.grpc.service.GGetTenantByTokenResponse;
+import com.sitewhere.grpc.service.GGetTenantRequest;
+import com.sitewhere.grpc.service.GGetTenantResponse;
 import com.sitewhere.grpc.service.GListTenantsRequest;
 import com.sitewhere.grpc.service.GListTenantsResponse;
 import com.sitewhere.grpc.service.GUpdateTenantRequest;
@@ -88,8 +85,7 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, TenantManagementGrpc.getUpdateTenantMethod());
 	    ITenantCreateRequest apiRequest = TenantModelConverter.asApiTenantCreateRequest(request.getRequest());
-	    ITenant apiResult = getTenantMangagement().updateTenant(CommonModelConverter.asApiUuid(request.getId()),
-		    apiRequest);
+	    ITenant apiResult = getTenantMangagement().updateTenant(request.getToken(), apiRequest);
 	    GUpdateTenantResponse.Builder response = GUpdateTenantResponse.newBuilder();
 	    response.setTenant(TenantModelConverter.asGrpcTenant(apiResult));
 	    responseObserver.onNext(response.build());
@@ -102,54 +98,26 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
      * com.sitewhere.grpc.service.TenantManagementGrpc.TenantManagementImplBase#
-     * getTenantById(com.sitewhere.grpc.service.GGetTenantByIdRequest,
+     * getTenant(com.sitewhere.grpc.service.GGetTenantRequest,
      * io.grpc.stub.StreamObserver)
      */
     @Override
-    public void getTenantById(GGetTenantByIdRequest request, StreamObserver<GGetTenantByIdResponse> responseObserver) {
+    public void getTenant(GGetTenantRequest request, StreamObserver<GGetTenantResponse> responseObserver) {
 	try {
-	    GrpcUtils.handleServerMethodEntry(this, TenantManagementGrpc.getGetTenantByIdMethod());
-	    ITenant apiResult = getTenantMangagement().getTenant(CommonModelConverter.asApiUuid(request.getId()));
-	    GGetTenantByIdResponse.Builder response = GGetTenantByIdResponse.newBuilder();
+	    GrpcUtils.handleServerMethodEntry(this, TenantManagementGrpc.getGetTenantMethod());
+	    ITenant apiResult = getTenantMangagement().getTenant(request.getToken());
+	    GGetTenantResponse.Builder response = GGetTenantResponse.newBuilder();
 	    if (apiResult != null) {
 		response.setTenant(TenantModelConverter.asGrpcTenant(apiResult));
 	    }
 	    responseObserver.onNext(response.build());
 	    responseObserver.onCompleted();
 	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.getGetTenantByIdMethod(), e, responseObserver);
+	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.getGetTenantMethod(), e, responseObserver);
 	} finally {
-	    GrpcUtils.handleServerMethodExit(TenantManagementGrpc.getGetTenantByIdMethod());
-	}
-    }
-
-    /*
-     * @see
-     * com.sitewhere.grpc.service.TenantManagementGrpc.TenantManagementImplBase#
-     * getTenantByToken(com.sitewhere.grpc.service.GGetTenantByTokenRequest,
-     * io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getTenantByToken(GGetTenantByTokenRequest request,
-	    StreamObserver<GGetTenantByTokenResponse> responseObserver) {
-	try {
-	    GrpcUtils.handleServerMethodEntry(this, TenantManagementGrpc.getGetTenantByTokenMethod());
-	    ITenant apiResult = getTenantMangagement().getTenantByToken(request.getToken());
-	    GGetTenantByTokenResponse.Builder response = GGetTenantByTokenResponse.newBuilder();
-	    if (apiResult != null) {
-		response.setTenant(TenantModelConverter.asGrpcTenant(apiResult));
-	    }
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(TenantManagementGrpc.getGetTenantByTokenMethod(), e,
-		    responseObserver);
-	} finally {
-	    GrpcUtils.handleServerMethodExit(TenantManagementGrpc.getGetTenantByTokenMethod());
+	    GrpcUtils.handleServerMethodExit(TenantManagementGrpc.getGetTenantMethod());
 	}
     }
 
@@ -190,7 +158,7 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
     public void deleteTenant(GDeleteTenantRequest request, StreamObserver<GDeleteTenantResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, TenantManagementGrpc.getDeleteTenantMethod());
-	    ITenant apiResult = getTenantMangagement().deleteTenant(CommonModelConverter.asApiUuid(request.getId()));
+	    ITenant apiResult = getTenantMangagement().deleteTenant(request.getToken());
 	    GDeleteTenantResponse.Builder response = GDeleteTenantResponse.newBuilder();
 	    response.setTenant(TenantModelConverter.asGrpcTenant(apiResult));
 	    responseObserver.onNext(response.build());
