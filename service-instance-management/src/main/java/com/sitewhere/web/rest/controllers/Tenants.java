@@ -23,7 +23,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,7 +44,6 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.tenant.ITenantManagement;
 import com.sitewhere.spi.tenant.ITenant;
-import com.sitewhere.spi.user.SiteWhereAuthority;
 
 import io.sitewhere.k8s.crd.tenant.configuration.TenantConfigurationTemplate;
 import io.sitewhere.k8s.crd.tenant.configuration.TenantConfigurationTemplateList;
@@ -100,9 +98,7 @@ public class Tenants {
     public Response updateTenant(
 	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
 	    @RequestBody TenantCreateRequest request) throws SiteWhereException {
-	ITenant tenant = assureTenant(tenantToken);
-	checkForAdminOrEditSelf(tenant);
-	return Response.ok(getTenantManagement().updateTenant(null, request)).build();
+	return Response.ok(getTenantManagement().updateTenant(tenantToken, request)).build();
     }
 
     /**
@@ -119,7 +115,6 @@ public class Tenants {
 	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken)
 	    throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantToken);
-	checkForAdminOrEditSelf(tenant);
 	return Response.ok(tenant).build();
     }
 
@@ -139,30 +134,12 @@ public class Tenants {
 	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
 	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
 	    throws SiteWhereException {
-	checkAuthFor(SiteWhereAuthority.REST, true);
 
-	// Return all tenants if authorized as tenant admin.
-	if (checkAuthFor(SiteWhereAuthority.AdminTenants, false)) {
-	    TenantSearchCriteria criteria = new TenantSearchCriteria(page, pageSize);
-	    criteria.setTextSearch(textSearch);
-	    criteria.setUserId(authUserId);
-	    criteria.setIncludeRuntimeInfo(includeRuntimeInfo);
-	    return Response.ok(getTenantManagement().listTenants(criteria)).build();
-	}
-
-	// Only return auth tenants if user has 'admin own tenant'.
-	else if (checkAuthFor(SiteWhereAuthority.AdminOwnTenant, false)) {
-	    // IUser loggedIn = UserContextManager.getCurrentlyLoggedInUser();
-	    // if (loggedIn != null) {
-	    // TenantSearchCriteria criteria = new TenantSearchCriteria(page, pageSize);
-	    // criteria.setTextSearch(textSearch);
-	    // criteria.setUserId(loggedIn.getUsername());
-	    // criteria.setIncludeRuntimeInfo(includeRuntimeInfo);
-	    // return getTenantManagement().listTenants(criteria);
-	    // }
-	}
-
-	return Response.status(Status.FORBIDDEN).build();
+	TenantSearchCriteria criteria = new TenantSearchCriteria(page, pageSize);
+	criteria.setTextSearch(textSearch);
+	criteria.setUserId(authUserId);
+	criteria.setIncludeRuntimeInfo(includeRuntimeInfo);
+	return Response.ok(getTenantManagement().listTenants(criteria)).build();
     }
 
     /**
@@ -178,9 +155,6 @@ public class Tenants {
     public Response deleteTenantById(
 	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken)
 	    throws SiteWhereException {
-	// checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminTenants);
-	ITenant tenant = assureTenant(tenantToken);
-	checkForAdminOrEditSelf(tenant);
 	return Response.ok(getTenantManagement().deleteTenant(null)).build();
     }
 
@@ -194,10 +168,6 @@ public class Tenants {
     @Path("/templates/configuration")
     @Operation(summary = "List templates available for creating tenants", description = "List templates available for creating tenants")
     public Response listTenantConfigurationTemplates() throws SiteWhereException {
-	checkAuthFor(SiteWhereAuthority.REST, true);
-	if (checkAuthFor(SiteWhereAuthority.AdminTenants, false)
-		|| checkAuthFor(SiteWhereAuthority.AdminOwnTenant, false)) {
-	}
 	TenantConfigurationTemplateList list = getMicroservice().getSiteWhereKubernetesClient()
 		.getTenantConfigurationTemplates().list();
 	List<MarshaledTenantConfigurationTemplate> templates = new ArrayList<>();
@@ -222,11 +192,6 @@ public class Tenants {
     @Path("/templates/dataset")
     @Operation(summary = "List datasets available for creating tenants", description = "List datasets available for creating tenants")
     public Response listTenantDatasetTemplates() throws SiteWhereException {
-	checkAuthFor(SiteWhereAuthority.REST, true);
-	if (checkAuthFor(SiteWhereAuthority.AdminTenants, false)
-		|| checkAuthFor(SiteWhereAuthority.AdminOwnTenant, false)) {
-	}
-
 	TenantDatasetTemplateList list = getMicroservice().getSiteWhereKubernetesClient().getTenantDatasetTemplates()
 		.list();
 	List<MarshaledTenantDatasetTemplate> templates = new ArrayList<>();
@@ -241,31 +206,6 @@ public class Tenants {
 	return Response.ok(templates).build();
     }
 
-    protected boolean checkAuthFor(SiteWhereAuthority auth, boolean flag) {
-	return true;
-    }
-
-    /**
-     * Check for privileges to use REST services + either admin all tenants or admin
-     * own tenant on the currently logged in user.
-     * 
-     * @param tenant
-     * @throws SiteWhereException
-     */
-    public static void checkForAdminOrEditSelf(ITenant tenant) throws SiteWhereException {
-	// checkAuthFor(SiteWhereAuthority.REST, true);
-	// if (!checkAuthFor(SiteWhereAuthority.AdminTenants, false)) {
-	// checkAuthFor(SiteWhereAuthority.AdminOwnTenant, true);
-	// IUser loggedIn = UserContextManager.getCurrentlyLoggedInUser();
-	// if ((loggedIn == null) ||
-	// (!tenant.getAuthorizedUserIds().contains(loggedIn.getUsername()))) {
-	// throw new SiteWhereSystemException(ErrorCode.OperationNotPermitted,
-	// ErrorLevel.ERROR,
-	// HttpServletResponse.SC_FORBIDDEN);
-	// }
-	// }
-    }
-
     /**
      * Assure that a tenant exists for the given token.
      * 
@@ -274,7 +214,7 @@ public class Tenants {
      * @throws SiteWhereException
      */
     protected ITenant assureTenant(String tenantToken) throws SiteWhereException {
-	ITenant tenant = getTenantManagement().getTenantByToken(tenantToken);
+	ITenant tenant = getTenantManagement().getTenant(tenantToken);
 	if (tenant == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantToken, ErrorLevel.ERROR);
 	}
