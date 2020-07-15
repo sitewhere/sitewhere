@@ -145,17 +145,17 @@ public class Tenants {
     /**
      * Delete tenant by token.
      * 
-     * @param tenantToken
+     * @param token
      * @return
      * @throws SiteWhereException
      */
     @DELETE
-    @Path("/{tenantToken}")
+    @Path("/{token}")
     @Operation(summary = "Delete existing tenant", description = "Delete existing tenant")
-    public Response deleteTenantById(
-	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken)
+    public Response deleteTenant(
+	    @Parameter(description = "Tenant token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
-	return Response.ok(getTenantManagement().deleteTenant(null)).build();
+	return Response.ok(getTenantManagement().deleteTenant(token)).build();
     }
 
     /**
