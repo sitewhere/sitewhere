@@ -61,6 +61,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceSummary;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
@@ -106,7 +107,7 @@ public class Devices {
     public Response createDevice(@RequestBody DeviceCreateRequest request) throws SiteWhereException {
 	IDevice result = getDeviceManagement().createDevice(request);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
-	helper.setIncludeAssignment(false);
+	helper.setIncludeAssignments(false);
 	return Response.ok(helper.convert(result, getAssetManagement())).build();
     }
 
@@ -132,7 +133,7 @@ public class Devices {
 	IDevice result = assertDeviceByToken(deviceToken);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeDeviceType(includeDeviceType);
-	helper.setIncludeAssignment(includeAssignment);
+	helper.setIncludeAssignments(includeAssignment);
 	helper.setIncludeNested(includeNested);
 	return Response.ok(helper.convert(result, getAssetManagement())).build();
     }
@@ -154,7 +155,7 @@ public class Devices {
 	IDevice existing = assertDeviceByToken(deviceToken);
 	IDevice result = getDeviceManagement().updateDevice(existing.getId(), request);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
-	helper.setIncludeAssignment(true);
+	helper.setIncludeAssignments(true);
 	return Response.ok(helper.convert(result, getAssetManagement())).build();
     }
 
@@ -198,7 +199,7 @@ public class Devices {
 	IDevice existing = assertDeviceByToken(deviceToken);
 	IDevice result = getDeviceManagement().deleteDevice(existing.getId());
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
-	helper.setIncludeAssignment(true);
+	helper.setIncludeAssignments(true);
 	return Response.ok(helper.convert(result, getAssetManagement())).build();
     }
 
@@ -301,7 +302,7 @@ public class Devices {
 	IDevice existing = assertDeviceByToken(deviceToken);
 	IDevice updated = getDeviceManagement().createDeviceElementMapping(existing.getId(), request);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
-	helper.setIncludeAssignment(false);
+	helper.setIncludeAssignments(false);
 	return Response.ok(helper.convert(updated, getAssetManagement())).build();
     }
 
@@ -323,7 +324,7 @@ public class Devices {
 	IDevice existing = assertDeviceByToken(deviceToken);
 	IDevice updated = getDeviceManagement().deleteDeviceElementMapping(existing.getId(), path);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
-	helper.setIncludeAssignment(false);
+	helper.setIncludeAssignments(false);
 	return Response.ok(helper.convert(updated, getAssetManagement())).build();
     }
 
@@ -358,12 +359,49 @@ public class Devices {
 	ISearchResults<? extends IDevice> results = getDeviceManagement().listDevices(criteria);
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeDeviceType(includeDeviceType);
-	helper.setIncludeAssignment(includeAssignment);
+	helper.setIncludeAssignments(includeAssignment);
 	List<IDevice> devicesConv = new ArrayList<IDevice>();
 	for (IDevice device : results.getResults()) {
 	    devicesConv.add(helper.convert(device, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<IDevice>(devicesConv, results.getNumResults())).build();
+    }
+
+    /**
+     * List summary information for devices that meet criteria.
+     * 
+     * @param deviceType
+     * @param excludeAssigned
+     * @param includeDeviceType
+     * @param includeAssignment
+     * @param page
+     * @param pageSize
+     * @param startDate
+     * @param endDate
+     * @return
+     * @throws SiteWhereException
+     */
+    @GET
+    @Path("/summaries")
+    @Operation(summary = "List summary information for devices that match criteria", description = "List summary information for devices that match criteria")
+    public Response listDeviceSummaries(
+	    @Parameter(description = "Device type filter", required = false) @QueryParam("deviceType") String deviceType,
+	    @Parameter(description = "Exclude assigned devices", required = false) @QueryParam("excludeAssigned") @DefaultValue("false") boolean excludeAssigned,
+	    @Parameter(description = "Include device type information", required = false) @QueryParam("includeDeviceType") @DefaultValue("false") boolean includeDeviceType,
+	    @Parameter(description = "Include assignment information if associated", required = false) @QueryParam("includeAssignment") @DefaultValue("false") boolean includeAssignment,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
+	    @Parameter(description = "Start date", required = false) @QueryParam("startDate") String startDate,
+	    @Parameter(description = "End date", required = false) @QueryParam("endDate") String endDate)
+	    throws SiteWhereException {
+	IDeviceSearchCriteria criteria = new DeviceSearchCriteria(deviceType, excludeAssigned, page, pageSize,
+		Assignments.parseDateOrFail(startDate), Assignments.parseDateOrFail(endDate));
+	ISearchResults<? extends IDeviceSummary> results = getDeviceManagement().listDeviceSummaries(criteria);
+	List<IDeviceSummary> converted = new ArrayList<>();
+	for (IDeviceSummary summary : results.getResults()) {
+	    converted.add(summary);
+	}
+	return Response.ok(new SearchResults<IDeviceSummary>(converted, results.getNumResults())).build();
     }
 
     /**
@@ -404,7 +442,7 @@ public class Devices {
 		getAssetManagement());
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeDeviceType(includeDeviceType);
-	helper.setIncludeAssignment(includeAssignment);
+	helper.setIncludeAssignments(includeAssignment);
 	List<IDevice> devicesConv = new ArrayList<IDevice>();
 	for (IDevice device : matches) {
 	    devicesConv.add(helper.convert(device, getAssetManagement()));
@@ -449,7 +487,7 @@ public class Devices {
 		getAssetManagement());
 	DeviceMarshalHelper helper = new DeviceMarshalHelper(getDeviceManagement());
 	helper.setIncludeDeviceType(includeDeviceType);
-	helper.setIncludeAssignment(includeAssignment);
+	helper.setIncludeAssignments(includeAssignment);
 	List<IDevice> devicesConv = new ArrayList<IDevice>();
 	for (IDevice device : matches) {
 	    devicesConv.add(helper.convert(device, getAssetManagement()));

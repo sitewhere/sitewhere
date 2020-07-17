@@ -893,6 +893,21 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listDeviceSummaries(com.sitewhere.grpc.service.GListDeviceSummariesRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void listDeviceSummaries(GListDeviceSummariesRequest request,
+	    StreamObserver<GListDeviceSummariesResponse> responseObserver) {
+	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
+	if (engine != null) {
+	    engine.listDeviceSummaries(request, responseObserver);
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
      * createDeviceElementMapping(com.sitewhere.grpc.service.
      * GCreateDeviceElementMappingRequest, io.grpc.stub.StreamObserver)
      */

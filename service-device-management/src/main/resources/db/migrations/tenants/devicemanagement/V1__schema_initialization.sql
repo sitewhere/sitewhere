@@ -594,3 +594,19 @@ create table devicemanagement.zone_boundary (
 
 alter table if exists devicemanagement.zone_boundary 
 	add constraint FK2cji29qkja2p16alve5q1qom7 foreign key (zone_id) references devicemanagement.zone;
+
+create view devicemanagement.device_summary as
+	select dev.*,
+		devt.name as device_type_name, devt.image_url as device_type_image_url
+			from devicemanagement.device dev
+			left join devicemanagement.device_type devt on dev.device_type_id = devt.id;
+
+create view devicemanagement.device_assignment_summary as
+	select assn.*,
+		area.name as area_name, area.image_url as area_image_url,
+		cust.name as customer_name, cust.image_url as customer_image_url,
+		null as asset_name, null as asset_image_url
+			from devicemanagement.device_assignment assn 
+			left join devicemanagement.customer cust on assn.customer_id = cust.id
+			left join devicemanagement.area area on assn.area_id = area.id;
+	
