@@ -140,11 +140,12 @@ public class InitialStateOutboundConnector extends SerialOutboundConnector {
 	}
 
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
-	helper.setIncludeAsset(false);
+	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
 	MarshaledDeviceAssignment converted = helper.convert(assignment, null);
 
-	createBucket(converted.getToken(), converted.getAssetName() + " (" + converted.getDevice().getToken() + ")");
+	createBucket(converted.getToken(),
+		converted.getAsset().getName() + " (" + converted.getDevice().getToken() + ")");
 	assignmentsById.put(assignmentId, converted);
 	return converted;
     }

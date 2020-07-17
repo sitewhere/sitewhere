@@ -25,6 +25,7 @@ import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupElementsSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceStatusSearchResults;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceSummarySearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceTypeSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GZoneSearchResults;
 import com.sitewhere.grpc.service.*;
@@ -44,6 +45,7 @@ import com.sitewhere.spi.device.IDeviceAlarm;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceStatus;
+import com.sitewhere.spi.device.IDeviceSummary;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.group.IDeviceGroup;
@@ -1580,6 +1582,36 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getListDevicesMethod(), e, responseObserver);
 	} finally {
 	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getListDevicesMethod());
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listDeviceSummaries(com.sitewhere.grpc.service.GListDeviceSummariesRequest,
+     * io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void listDeviceSummaries(GListDeviceSummariesRequest request,
+	    StreamObserver<GListDeviceSummariesResponse> responseObserver) {
+	try {
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDeviceSummariesMethod());
+	    ISearchResults<? extends IDeviceSummary> apiResult = getDeviceManagement()
+		    .listDeviceSummaries(DeviceModelConverter.asApiDeviceSearchCriteria(request.getCriteria()));
+	    GListDeviceSummariesResponse.Builder response = GListDeviceSummariesResponse.newBuilder();
+	    GDeviceSummarySearchResults.Builder results = GDeviceSummarySearchResults.newBuilder();
+	    for (IDeviceSummary apiSummary : apiResult.getResults()) {
+		results.addDeviceSummaries(DeviceModelConverter.asGrpcDeviceSummary(apiSummary));
+	    }
+	    results.setCount(apiResult.getNumResults());
+	    response.setResults(results.build());
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getListDeviceSummariesMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getListDeviceSummariesMethod());
 	}
     }
 

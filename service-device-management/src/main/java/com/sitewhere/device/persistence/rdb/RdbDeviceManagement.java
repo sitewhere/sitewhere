@@ -38,6 +38,7 @@ import com.sitewhere.device.persistence.rdb.entity.RdbDeviceCommand;
 import com.sitewhere.device.persistence.rdb.entity.RdbDeviceGroup;
 import com.sitewhere.device.persistence.rdb.entity.RdbDeviceGroupElement;
 import com.sitewhere.device.persistence.rdb.entity.RdbDeviceStatus;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceSummary;
 import com.sitewhere.device.persistence.rdb.entity.RdbDeviceType;
 import com.sitewhere.device.persistence.rdb.entity.RdbLocation;
 import com.sitewhere.device.persistence.rdb.entity.RdbZone;
@@ -86,6 +87,7 @@ import com.sitewhere.spi.device.IDeviceAlarm;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceStatus;
+import com.sitewhere.spi.device.IDeviceSummary;
 import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
@@ -601,6 +603,53 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 		return query.orderBy(cb.desc(root.get("createdDate")));
 	    }
 	}, RdbDevice.class);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.microservice.api.device.IDeviceManagement#listDeviceSummaries(
+     * com.sitewhere.spi.search.device.IDeviceSearchCriteria)
+     */
+    @Override
+    public ISearchResults<? extends IDeviceSummary> listDeviceSummaries(IDeviceSearchCriteria criteria)
+	    throws SiteWhereException {
+	return getEntityManagerProvider().findWithCriteria(criteria, new IRdbQueryProvider<RdbDeviceSummary>() {
+
+	    /*
+	     * @see com.sitewhere.rdb.spi.IRdbQueryProvider#addPredicates(javax.persistence.
+	     * criteria.CriteriaBuilder, java.util.List, javax.persistence.criteria.Root)
+	     */
+	    @Override
+	    public void addPredicates(CriteriaBuilder cb, List<Predicate> predicates, Root<RdbDeviceSummary> root)
+		    throws SiteWhereException {
+		if (criteria.isExcludeAssigned()) {
+		    Path<List<UUID>> path = root.get("activeDeviceAssignmentIds");
+		    predicates.add(cb.not(cb.size(path).isNull()));
+		    predicates.add(cb.not(cb.size(path).in(0)));
+		}
+
+		if (!StringUtils.isEmpty(criteria.getDeviceTypeToken())) {
+		    IDeviceType deviceType = getDeviceTypeByToken(criteria.getDeviceTypeToken());
+		    if (deviceType == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceTypeToken, ErrorLevel.ERROR);
+		    }
+		    Path<UUID> path = root.get("deviceTypeId");
+		    predicates.add(cb.equal(path, deviceType.getId()));
+		}
+	    }
+
+	    /*
+	     * @see
+	     * com.sitewhere.rdb.spi.IRdbQueryProvider#addSort(javax.persistence.criteria.
+	     * CriteriaBuilder, javax.persistence.criteria.Root,
+	     * javax.persistence.criteria.CriteriaQuery)
+	     */
+	    @Override
+	    public CriteriaQuery<RdbDeviceSummary> addSort(CriteriaBuilder cb, Root<RdbDeviceSummary> root,
+		    CriteriaQuery<RdbDeviceSummary> query) {
+		return query.orderBy(cb.desc(root.get("createdDate")));
+	    }
+	}, RdbDeviceSummary.class);
     }
 
     /*
