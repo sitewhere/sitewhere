@@ -44,10 +44,12 @@ import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.api.device.DeviceAssignmentMarshalHelper;
 import com.sitewhere.microservice.api.device.DeviceGroupUtils;
 import com.sitewhere.microservice.api.device.DeviceMarshalHelper;
+import com.sitewhere.microservice.api.device.DeviceSummaryMarshalHelper;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.microservice.api.label.ILabelGeneration;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
+import com.sitewhere.rest.model.device.DeviceSummary;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
@@ -397,11 +399,13 @@ public class Devices {
 	IDeviceSearchCriteria criteria = new DeviceSearchCriteria(deviceType, excludeAssigned, page, pageSize,
 		Assignments.parseDateOrFail(startDate), Assignments.parseDateOrFail(endDate));
 	ISearchResults<? extends IDeviceSummary> results = getDeviceManagement().listDeviceSummaries(criteria);
-	List<IDeviceSummary> converted = new ArrayList<>();
+	DeviceSummaryMarshalHelper helper = new DeviceSummaryMarshalHelper();
+	helper.setIncludeAsset(true);
+	List<DeviceSummary> converted = new ArrayList<>();
 	for (IDeviceSummary summary : results.getResults()) {
-	    converted.add(summary);
+	    converted.add(helper.convert(summary, getAssetManagement()));
 	}
-	return Response.ok(new SearchResults<IDeviceSummary>(converted, results.getNumResults())).build();
+	return Response.ok(new SearchResults<DeviceSummary>(converted, results.getNumResults())).build();
     }
 
     /**
