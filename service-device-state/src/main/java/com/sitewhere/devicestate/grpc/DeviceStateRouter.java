@@ -12,8 +12,6 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
-import com.sitewhere.grpc.client.GrpcUtils;
-import com.sitewhere.grpc.client.spi.server.IGrpcRouter;
 import com.sitewhere.grpc.service.DeviceStateGrpc;
 import com.sitewhere.grpc.service.GCreateDeviceStateRequest;
 import com.sitewhere.grpc.service.GCreateDeviceStateResponse;
@@ -31,16 +29,15 @@ import com.sitewhere.grpc.service.GSearchDeviceStatesRequest;
 import com.sitewhere.grpc.service.GSearchDeviceStatesResponse;
 import com.sitewhere.grpc.service.GUpdateDeviceStateRequest;
 import com.sitewhere.grpc.service.GUpdateDeviceStateResponse;
-import com.sitewhere.microservice.grpc.GrpcKeys;
-import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
+import com.sitewhere.microservice.grpc.GrpcTenantEngineProvider;
+import com.sitewhere.spi.microservice.grpc.ITenantEngineCallback;
 
 import io.grpc.stub.StreamObserver;
 
 /**
  * Routes GRPC calls to service implementations in tenants.
  */
-public class DeviceStateRouter extends DeviceStateGrpc.DeviceStateImplBase
-	implements IGrpcRouter<DeviceStateGrpc.DeviceStateImplBase> {
+public class DeviceStateRouter extends DeviceStateGrpc.DeviceStateImplBase {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -49,26 +46,12 @@ public class DeviceStateRouter extends DeviceStateGrpc.DeviceStateImplBase
     /** Parent microservice */
     private IDeviceStateMicroservice microservice;
 
+    /** Tenant engine provider */
+    private GrpcTenantEngineProvider<IDeviceStateTenantEngine> grpcTenantEngineProvider;
+
     public DeviceStateRouter(IDeviceStateMicroservice microservice) {
 	this.microservice = microservice;
-    }
-
-    /*
-     * @see com.sitewhere.spi.grpc.IGrpcRouter#getTenantImplementation()
-     */
-    @Override
-    public DeviceStateGrpc.DeviceStateImplBase getTenantImplementation(StreamObserver<?> observer) {
-	String token = GrpcKeys.TENANT_CONTEXT_KEY.get();
-	if (token == null) {
-	    throw new RuntimeException("Tenant token not found in request.");
-	}
-	try {
-	    IDeviceStateTenantEngine engine = getMicroservice().assureTenantEngineAvailable(token);
-	    return engine.getDeviceStateImpl();
-	} catch (TenantEngineNotAvailableException e) {
-	    observer.onError(GrpcUtils.convertServerException(e));
-	    return null;
-	}
+	this.grpcTenantEngineProvider = new GrpcTenantEngineProvider<>(microservice);
     }
 
     /*
@@ -79,10 +62,13 @@ public class DeviceStateRouter extends DeviceStateGrpc.DeviceStateImplBase
     @Override
     public void createDeviceState(GCreateDeviceStateRequest request,
 	    StreamObserver<GCreateDeviceStateResponse> responseObserver) {
-	DeviceStateGrpc.DeviceStateImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.createDeviceState(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceStateTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceStateTenantEngine tenantEngine) {
+		tenantEngine.getDeviceStateImpl().createDeviceState(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -94,10 +80,13 @@ public class DeviceStateRouter extends DeviceStateGrpc.DeviceStateImplBase
     @Override
     public void getDeviceState(GGetDeviceStateRequest request,
 	    StreamObserver<GGetDeviceStateResponse> responseObserver) {
-	DeviceStateGrpc.DeviceStateImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getDeviceState(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceStateTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceStateTenantEngine tenantEngine) {
+		tenantEngine.getDeviceStateImpl().getDeviceState(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -108,10 +97,13 @@ public class DeviceStateRouter extends DeviceStateGrpc.DeviceStateImplBase
     @Override
     public void getDeviceStateByAssignment(GGetDeviceStateByAssignmentRequest request,
 	    StreamObserver<GGetDeviceStateByAssignmentResponse> responseObserver) {
-	DeviceStateGrpc.DeviceStateImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getDeviceStateByAssignment(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceStateTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceStateTenantEngine tenantEngine) {
+		tenantEngine.getDeviceStateImpl().getDeviceStateByAssignment(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -122,10 +114,13 @@ public class DeviceStateRouter extends DeviceStateGrpc.DeviceStateImplBase
     @Override
     public void getDeviceStatesByDevice(GGetDeviceStatesByDeviceRequest request,
 	    StreamObserver<GGetDeviceStatesByDeviceResponse> responseObserver) {
-	DeviceStateGrpc.DeviceStateImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getDeviceStatesByDevice(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceStateTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceStateTenantEngine tenantEngine) {
+		tenantEngine.getDeviceStateImpl().getDeviceStatesByDevice(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -136,10 +131,13 @@ public class DeviceStateRouter extends DeviceStateGrpc.DeviceStateImplBase
     @Override
     public void searchDeviceStates(GSearchDeviceStatesRequest request,
 	    StreamObserver<GSearchDeviceStatesResponse> responseObserver) {
-	DeviceStateGrpc.DeviceStateImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.searchDeviceStates(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceStateTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceStateTenantEngine tenantEngine) {
+		tenantEngine.getDeviceStateImpl().searchDeviceStates(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -150,10 +148,13 @@ public class DeviceStateRouter extends DeviceStateGrpc.DeviceStateImplBase
     @Override
     public void updateDeviceState(GUpdateDeviceStateRequest request,
 	    StreamObserver<GUpdateDeviceStateResponse> responseObserver) {
-	DeviceStateGrpc.DeviceStateImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.updateDeviceState(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceStateTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceStateTenantEngine tenantEngine) {
+		tenantEngine.getDeviceStateImpl().updateDeviceState(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -164,10 +165,13 @@ public class DeviceStateRouter extends DeviceStateGrpc.DeviceStateImplBase
     @Override
     public void mergeDeviceState(GMergeDeviceStateRequest request,
 	    StreamObserver<GMergeDeviceStateResponse> responseObserver) {
-	DeviceStateGrpc.DeviceStateImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.mergeDeviceState(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceStateTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceStateTenantEngine tenantEngine) {
+		tenantEngine.getDeviceStateImpl().mergeDeviceState(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -178,10 +182,13 @@ public class DeviceStateRouter extends DeviceStateGrpc.DeviceStateImplBase
     @Override
     public void deleteDeviceState(GDeleteDeviceStateRequest request,
 	    StreamObserver<GDeleteDeviceStateResponse> responseObserver) {
-	DeviceStateGrpc.DeviceStateImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.deleteDeviceState(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceStateTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceStateTenantEngine tenantEngine) {
+		tenantEngine.getDeviceStateImpl().deleteDeviceState(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     protected IDeviceStateMicroservice getMicroservice() {
@@ -190,5 +197,9 @@ public class DeviceStateRouter extends DeviceStateGrpc.DeviceStateImplBase
 
     protected void setMicroservice(IDeviceStateMicroservice microservice) {
 	this.microservice = microservice;
+    }
+
+    protected GrpcTenantEngineProvider<IDeviceStateTenantEngine> getGrpcTenantEngineProvider() {
+	return grpcTenantEngineProvider;
     }
 }

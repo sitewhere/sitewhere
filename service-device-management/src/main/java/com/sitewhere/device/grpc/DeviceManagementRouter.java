@@ -12,19 +12,16 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
-import com.sitewhere.grpc.client.GrpcUtils;
-import com.sitewhere.grpc.client.spi.server.IGrpcRouter;
 import com.sitewhere.grpc.service.*;
-import com.sitewhere.microservice.grpc.GrpcKeys;
-import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
+import com.sitewhere.microservice.grpc.GrpcTenantEngineProvider;
+import com.sitewhere.spi.microservice.grpc.ITenantEngineCallback;
 
 import io.grpc.stub.StreamObserver;
 
 /**
  * Routes GRPC calls to service implementations in tenants.
  */
-public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagementImplBase
-	implements IGrpcRouter<DeviceManagementGrpc.DeviceManagementImplBase> {
+public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagementImplBase {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -33,26 +30,12 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     /** Parent microservice */
     private IDeviceManagementMicroservice microservice;
 
+    /** Tenant engine provider */
+    private GrpcTenantEngineProvider<IDeviceManagementTenantEngine> grpcTenantEngineProvider;
+
     public DeviceManagementRouter(IDeviceManagementMicroservice microservice) {
 	this.microservice = microservice;
-    }
-
-    /*
-     * @see com.sitewhere.spi.grpc.IGrpcRouter#getTenantImplementation()
-     */
-    @Override
-    public DeviceManagementGrpc.DeviceManagementImplBase getTenantImplementation(StreamObserver<?> observer) {
-	String token = GrpcKeys.TENANT_CONTEXT_KEY.get();
-	if (token == null) {
-	    throw new RuntimeException("Tenant token not found in request.");
-	}
-	try {
-	    IDeviceManagementTenantEngine engine = getMicroservice().assureTenantEngineAvailable(token);
-	    return engine.getDeviceManagementImpl();
-	} catch (TenantEngineNotAvailableException e) {
-	    observer.onError(GrpcUtils.convertServerException(e));
-	    return null;
-	}
+	this.grpcTenantEngineProvider = new GrpcTenantEngineProvider<>(microservice);
     }
 
     /*
@@ -64,10 +47,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void createCustomerType(GCreateCustomerTypeRequest request,
 	    StreamObserver<GCreateCustomerTypeResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.createCustomerType(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().createCustomerType(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -79,10 +65,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void getCustomerType(GGetCustomerTypeRequest request,
 	    StreamObserver<GGetCustomerTypeResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getCustomerType(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getCustomerType(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -94,10 +83,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void getCustomerTypeByToken(GGetCustomerTypeByTokenRequest request,
 	    StreamObserver<GGetCustomerTypeByTokenResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getCustomerTypeByToken(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getCustomerTypeByToken(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -109,10 +101,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void updateCustomerType(GUpdateCustomerTypeRequest request,
 	    StreamObserver<GUpdateCustomerTypeResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.updateCustomerType(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().updateCustomerType(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -124,10 +119,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void listCustomerTypes(GListCustomerTypesRequest request,
 	    StreamObserver<GListCustomerTypesResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listCustomerTypes(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().listCustomerTypes(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -139,10 +137,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void deleteCustomerType(GDeleteCustomerTypeRequest request,
 	    StreamObserver<GDeleteCustomerTypeResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.deleteCustomerType(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().deleteCustomerType(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -154,10 +155,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void createCustomer(GCreateCustomerRequest request,
 	    StreamObserver<GCreateCustomerResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.createCustomer(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().createCustomer(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -168,10 +172,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
      */
     @Override
     public void getCustomer(GGetCustomerRequest request, StreamObserver<GGetCustomerResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getCustomer(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getCustomer(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -183,10 +190,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void getCustomerByToken(GGetCustomerByTokenRequest request,
 	    StreamObserver<GGetCustomerByTokenResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getCustomerByToken(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getCustomerByToken(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -198,10 +208,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void getCustomerChildren(GGetCustomerChildrenRequest request,
 	    StreamObserver<GGetCustomerChildrenResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getCustomerChildren(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getCustomerChildren(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -213,10 +226,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void updateCustomer(GUpdateCustomerRequest request,
 	    StreamObserver<GUpdateCustomerResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.updateCustomer(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().updateCustomer(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -227,10 +243,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
      */
     @Override
     public void listCustomers(GListCustomersRequest request, StreamObserver<GListCustomersResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listCustomers(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().listCustomers(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -242,10 +261,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void getCustomersTree(GGetCustomersTreeRequest request,
 	    StreamObserver<GGetCustomersTreeResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getCustomersTree(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getCustomersTree(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -257,10 +279,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void deleteCustomer(GDeleteCustomerRequest request,
 	    StreamObserver<GDeleteCustomerResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.deleteCustomer(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().deleteCustomer(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -272,10 +297,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void createAreaType(GCreateAreaTypeRequest request,
 	    StreamObserver<GCreateAreaTypeResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.createAreaType(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().createAreaType(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -286,10 +314,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
      */
     @Override
     public void getAreaType(GGetAreaTypeRequest request, StreamObserver<GGetAreaTypeResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getAreaType(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getAreaType(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -301,10 +332,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void getAreaTypeByToken(GGetAreaTypeByTokenRequest request,
 	    StreamObserver<GGetAreaTypeByTokenResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getAreaTypeByToken(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getAreaTypeByToken(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -316,10 +350,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void updateAreaType(GUpdateAreaTypeRequest request,
 	    StreamObserver<GUpdateAreaTypeResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.updateAreaType(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().updateAreaType(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -330,10 +367,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
      */
     @Override
     public void listAreaTypes(GListAreaTypesRequest request, StreamObserver<GListAreaTypesResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listAreaTypes(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().listAreaTypes(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -345,10 +385,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void deleteAreaType(GDeleteAreaTypeRequest request,
 	    StreamObserver<GDeleteAreaTypeResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.deleteAreaType(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().deleteAreaType(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -359,10 +402,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
      */
     @Override
     public void createArea(GCreateAreaRequest request, StreamObserver<GCreateAreaResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.createArea(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().createArea(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -373,10 +419,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
      */
     @Override
     public void getArea(GGetAreaRequest request, StreamObserver<GGetAreaResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getArea(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getArea(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -388,10 +437,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void getAreaByToken(GGetAreaByTokenRequest request,
 	    StreamObserver<GGetAreaByTokenResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getAreaByToken(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getAreaByToken(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -403,10 +455,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void getAreaChildren(GGetAreaChildrenRequest request,
 	    StreamObserver<GGetAreaChildrenResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getAreaChildren(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getAreaChildren(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -417,10 +472,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
      */
     @Override
     public void updateArea(GUpdateAreaRequest request, StreamObserver<GUpdateAreaResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.updateArea(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().updateArea(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -431,10 +489,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
      */
     @Override
     public void listAreas(GListAreasRequest request, StreamObserver<GListAreasResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listAreas(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().listAreas(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -445,10 +506,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
      */
     @Override
     public void getAreasTree(GGetAreasTreeRequest request, StreamObserver<GGetAreasTreeResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getAreasTree(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getAreasTree(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -459,10 +523,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
      */
     @Override
     public void deleteArea(GDeleteAreaRequest request, StreamObserver<GDeleteAreaResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.deleteArea(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().deleteArea(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -473,10 +540,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
      */
     @Override
     public void createZone(GCreateZoneRequest request, StreamObserver<GCreateZoneResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.createZone(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().createZone(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -487,10 +557,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
      */
     @Override
     public void getZone(GGetZoneRequest request, StreamObserver<GGetZoneResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getZone(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getZone(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -502,10 +575,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void getZoneByToken(GGetZoneByTokenRequest request,
 	    StreamObserver<GGetZoneByTokenResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getZoneByToken(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getZoneByToken(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -516,10 +592,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
      */
     @Override
     public void updateZone(GUpdateZoneRequest request, StreamObserver<GUpdateZoneResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.updateZone(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().updateZone(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -530,10 +609,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
      */
     @Override
     public void listZones(GListZonesRequest request, StreamObserver<GListZonesResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listZones(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().listZones(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -544,10 +626,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
      */
     @Override
     public void deleteZone(GDeleteZoneRequest request, StreamObserver<GDeleteZoneResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.deleteZone(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().deleteZone(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -559,10 +644,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void createDeviceType(GCreateDeviceTypeRequest request,
 	    StreamObserver<GCreateDeviceTypeResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.createDeviceType(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().createDeviceType(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -573,10 +661,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
      */
     @Override
     public void getDeviceType(GGetDeviceTypeRequest request, StreamObserver<GGetDeviceTypeResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getDeviceType(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getDeviceType(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -588,10 +679,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void getDeviceTypeByToken(GGetDeviceTypeByTokenRequest request,
 	    StreamObserver<GGetDeviceTypeByTokenResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getDeviceTypeByToken(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getDeviceTypeByToken(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -603,10 +697,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void updateDeviceType(GUpdateDeviceTypeRequest request,
 	    StreamObserver<GUpdateDeviceTypeResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.updateDeviceType(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().updateDeviceType(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -618,10 +715,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void listDeviceTypes(GListDeviceTypesRequest request,
 	    StreamObserver<GListDeviceTypesResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listDeviceTypes(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().listDeviceTypes(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -633,10 +733,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void deleteDeviceType(GDeleteDeviceTypeRequest request,
 	    StreamObserver<GDeleteDeviceTypeResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.deleteDeviceType(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().deleteDeviceType(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -648,10 +751,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void createDeviceCommand(GCreateDeviceCommandRequest request,
 	    StreamObserver<GCreateDeviceCommandResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.createDeviceCommand(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().createDeviceCommand(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -663,10 +769,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void getDeviceCommand(GGetDeviceCommandRequest request,
 	    StreamObserver<GGetDeviceCommandResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getDeviceCommand(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getDeviceCommand(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -678,10 +787,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void getDeviceCommandByToken(GGetDeviceCommandByTokenRequest request,
 	    StreamObserver<GGetDeviceCommandByTokenResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getDeviceCommandByToken(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getDeviceCommandByToken(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -693,10 +805,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void updateDeviceCommand(GUpdateDeviceCommandRequest request,
 	    StreamObserver<GUpdateDeviceCommandResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.updateDeviceCommand(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().updateDeviceCommand(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -708,10 +823,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void listDeviceCommands(GListDeviceCommandsRequest request,
 	    StreamObserver<GListDeviceCommandsResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listDeviceCommands(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().listDeviceCommands(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -723,10 +841,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void deleteDeviceCommand(GDeleteDeviceCommandRequest request,
 	    StreamObserver<GDeleteDeviceCommandResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.deleteDeviceCommand(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().deleteDeviceCommand(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -738,10 +859,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void createDeviceStatus(GCreateDeviceStatusRequest request,
 	    StreamObserver<GCreateDeviceStatusResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.createDeviceStatus(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().createDeviceStatus(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -753,10 +877,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void getDeviceStatus(GGetDeviceStatusRequest request,
 	    StreamObserver<GGetDeviceStatusResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getDeviceStatus(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getDeviceStatus(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -768,10 +895,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void getDeviceStatusByToken(GGetDeviceStatusByTokenRequest request,
 	    StreamObserver<GGetDeviceStatusByTokenResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getDeviceStatusByToken(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getDeviceStatusByToken(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -783,10 +913,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void updateDeviceStatus(GUpdateDeviceStatusRequest request,
 	    StreamObserver<GUpdateDeviceStatusResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.updateDeviceStatus(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().updateDeviceStatus(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -798,10 +931,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void listDeviceStatuses(GListDeviceStatusesRequest request,
 	    StreamObserver<GListDeviceStatusesResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listDeviceStatuses(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().listDeviceStatuses(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -813,10 +949,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void deleteDeviceStatus(GDeleteDeviceStatusRequest request,
 	    StreamObserver<GDeleteDeviceStatusResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.deleteDeviceStatus(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().deleteDeviceStatus(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -827,10 +966,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
      */
     @Override
     public void createDevice(GCreateDeviceRequest request, StreamObserver<GCreateDeviceResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.createDevice(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().createDevice(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -841,10 +983,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
      */
     @Override
     public void getDevice(GGetDeviceRequest request, StreamObserver<GGetDeviceResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getDevice(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getDevice(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -856,10 +1001,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void getDeviceByToken(GGetDeviceByTokenRequest request,
 	    StreamObserver<GGetDeviceByTokenResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getDeviceByToken(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getDeviceByToken(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -870,10 +1018,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
      */
     @Override
     public void updateDevice(GUpdateDeviceRequest request, StreamObserver<GUpdateDeviceResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.updateDevice(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().updateDevice(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -884,10 +1035,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
      */
     @Override
     public void listDevices(GListDevicesRequest request, StreamObserver<GListDevicesResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listDevices(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().listDevices(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -899,10 +1053,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void listDeviceSummaries(GListDeviceSummariesRequest request,
 	    StreamObserver<GListDeviceSummariesResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listDeviceSummaries(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().listDeviceSummaries(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -914,10 +1071,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void createDeviceElementMapping(GCreateDeviceElementMappingRequest request,
 	    StreamObserver<GCreateDeviceElementMappingResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.createDeviceElementMapping(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().createDeviceElementMapping(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -929,10 +1089,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void deleteDeviceElementMapping(GDeleteDeviceElementMappingRequest request,
 	    StreamObserver<GDeleteDeviceElementMappingResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.deleteDeviceElementMapping(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().deleteDeviceElementMapping(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -943,10 +1106,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
      */
     @Override
     public void deleteDevice(GDeleteDeviceRequest request, StreamObserver<GDeleteDeviceResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.deleteDevice(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().deleteDevice(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -958,10 +1124,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void createDeviceGroup(GCreateDeviceGroupRequest request,
 	    StreamObserver<GCreateDeviceGroupResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.createDeviceGroup(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().createDeviceGroup(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -973,10 +1142,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void getDeviceGroup(GGetDeviceGroupRequest request,
 	    StreamObserver<GGetDeviceGroupResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getDeviceGroup(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getDeviceGroup(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -988,10 +1160,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void getDeviceGroupByToken(GGetDeviceGroupByTokenRequest request,
 	    StreamObserver<GGetDeviceGroupByTokenResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getDeviceGroupByToken(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getDeviceGroupByToken(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -1003,10 +1178,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void updateDeviceGroup(GUpdateDeviceGroupRequest request,
 	    StreamObserver<GUpdateDeviceGroupResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.updateDeviceGroup(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().updateDeviceGroup(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -1018,10 +1196,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void listDeviceGroups(GListDeviceGroupsRequest request,
 	    StreamObserver<GListDeviceGroupsResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listDeviceGroups(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().listDeviceGroups(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -1033,10 +1214,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void listDeviceGroupsWithRole(GListDeviceGroupsWithRoleRequest request,
 	    StreamObserver<GListDeviceGroupsWithRoleResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listDeviceGroupsWithRole(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().listDeviceGroupsWithRole(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -1048,10 +1232,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void deleteDeviceGroup(GDeleteDeviceGroupRequest request,
 	    StreamObserver<GDeleteDeviceGroupResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.deleteDeviceGroup(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().deleteDeviceGroup(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -1063,10 +1250,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void addDeviceGroupElements(GAddDeviceGroupElementsRequest request,
 	    StreamObserver<GAddDeviceGroupElementsResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.addDeviceGroupElements(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().addDeviceGroupElements(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -1078,10 +1268,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void removeDeviceGroupElements(GRemoveDeviceGroupElementsRequest request,
 	    StreamObserver<GRemoveDeviceGroupElementsResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.removeDeviceGroupElements(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().removeDeviceGroupElements(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -1093,10 +1286,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void listDeviceGroupElements(GListDeviceGroupElementsRequest request,
 	    StreamObserver<GListDeviceGroupElementsResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listDeviceGroupElements(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().listDeviceGroupElements(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -1108,10 +1304,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void createDeviceAssignment(GCreateDeviceAssignmentRequest request,
 	    StreamObserver<GCreateDeviceAssignmentResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.createDeviceAssignment(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().createDeviceAssignment(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -1123,10 +1322,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void getDeviceAssignment(GGetDeviceAssignmentRequest request,
 	    StreamObserver<GGetDeviceAssignmentResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getDeviceAssignment(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getDeviceAssignment(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -1138,10 +1340,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void getDeviceAssignmentByToken(GGetDeviceAssignmentByTokenRequest request,
 	    StreamObserver<GGetDeviceAssignmentByTokenResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getDeviceAssignmentByToken(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getDeviceAssignmentByToken(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -1153,10 +1358,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void getActiveAssignmentsForDevice(GGetActiveAssignmentsForDeviceRequest request,
 	    StreamObserver<GGetActiveAssignmentsForDeviceResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getActiveAssignmentsForDevice(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getActiveAssignmentsForDevice(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -1168,10 +1376,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void deleteDeviceAssignment(GDeleteDeviceAssignmentRequest request,
 	    StreamObserver<GDeleteDeviceAssignmentResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.deleteDeviceAssignment(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().deleteDeviceAssignment(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -1183,10 +1394,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void updateDeviceAssignment(GUpdateDeviceAssignmentRequest request,
 	    StreamObserver<GUpdateDeviceAssignmentResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.updateDeviceAssignment(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().updateDeviceAssignment(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -1198,10 +1412,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void endDeviceAssignment(GEndDeviceAssignmentRequest request,
 	    StreamObserver<GEndDeviceAssignmentResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.endDeviceAssignment(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().endDeviceAssignment(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -1213,10 +1430,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void listDeviceAssignments(GListDeviceAssignmentsRequest request,
 	    StreamObserver<GListDeviceAssignmentsResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listDeviceAssignments(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().listDeviceAssignments(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -1228,10 +1448,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void createDeviceAlarm(GCreateDeviceAlarmRequest request,
 	    StreamObserver<GCreateDeviceAlarmResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.createDeviceAlarm(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().createDeviceAlarm(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -1243,10 +1466,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void getDeviceAlarm(GGetDeviceAlarmRequest request,
 	    StreamObserver<GGetDeviceAlarmResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getDeviceAlarm(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getDeviceAlarm(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -1258,10 +1484,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void updateDeviceAlarm(GUpdateDeviceAlarmRequest request,
 	    StreamObserver<GUpdateDeviceAlarmResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.updateDeviceAlarm(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().updateDeviceAlarm(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -1273,10 +1502,13 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void searchDeviceAlarms(GSearchDeviceAlarmsRequest request,
 	    StreamObserver<GSearchDeviceAlarmsResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.searchDeviceAlarms(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().searchDeviceAlarms(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -1288,17 +1520,20 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     @Override
     public void deleteDeviceAlarm(GDeleteDeviceAlarmRequest request,
 	    StreamObserver<GDeleteDeviceAlarmResponse> responseObserver) {
-	DeviceManagementGrpc.DeviceManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.deleteDeviceAlarm(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().deleteDeviceAlarm(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
-    public IDeviceManagementMicroservice getMicroservice() {
+    protected IDeviceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 
-    public void setMicroservice(IDeviceManagementMicroservice microservice) {
-	this.microservice = microservice;
+    protected GrpcTenantEngineProvider<IDeviceManagementTenantEngine> getGrpcTenantEngineProvider() {
+	return grpcTenantEngineProvider;
     }
 }

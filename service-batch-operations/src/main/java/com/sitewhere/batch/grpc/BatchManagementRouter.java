@@ -12,8 +12,6 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
-import com.sitewhere.grpc.client.GrpcUtils;
-import com.sitewhere.grpc.client.spi.server.IGrpcRouter;
 import com.sitewhere.grpc.service.BatchManagementGrpc;
 import com.sitewhere.grpc.service.GCreateBatchCommandInvocationRequest;
 import com.sitewhere.grpc.service.GCreateBatchCommandInvocationResponse;
@@ -35,16 +33,15 @@ import com.sitewhere.grpc.service.GUpdateBatchElementRequest;
 import com.sitewhere.grpc.service.GUpdateBatchElementResponse;
 import com.sitewhere.grpc.service.GUpdateBatchOperationRequest;
 import com.sitewhere.grpc.service.GUpdateBatchOperationResponse;
-import com.sitewhere.microservice.grpc.GrpcKeys;
-import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
+import com.sitewhere.microservice.grpc.GrpcTenantEngineProvider;
+import com.sitewhere.spi.microservice.grpc.ITenantEngineCallback;
 
 import io.grpc.stub.StreamObserver;
 
 /**
  * Routes GRPC calls to service implementations in tenants.
  */
-public class BatchManagementRouter extends BatchManagementGrpc.BatchManagementImplBase
-	implements IGrpcRouter<BatchManagementGrpc.BatchManagementImplBase> {
+public class BatchManagementRouter extends BatchManagementGrpc.BatchManagementImplBase {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -53,26 +50,12 @@ public class BatchManagementRouter extends BatchManagementGrpc.BatchManagementIm
     /** Parent microservice */
     private IBatchOperationsMicroservice microservice;
 
+    /** Tenant engine provider */
+    private GrpcTenantEngineProvider<IBatchOperationsTenantEngine> grpcTenantEngineProvider;
+
     public BatchManagementRouter(IBatchOperationsMicroservice microservice) {
 	this.microservice = microservice;
-    }
-
-    /*
-     * @see com.sitewhere.spi.grpc.IGrpcRouter#getTenantImplementation()
-     */
-    @Override
-    public BatchManagementGrpc.BatchManagementImplBase getTenantImplementation(StreamObserver<?> observer) {
-	String token = GrpcKeys.TENANT_CONTEXT_KEY.get();
-	if (token == null) {
-	    throw new RuntimeException("Tenant token not found in request.");
-	}
-	try {
-	    IBatchOperationsTenantEngine engine = getMicroservice().assureTenantEngineAvailable(token);
-	    return engine.getBatchManagementImpl();
-	} catch (TenantEngineNotAvailableException e) {
-	    observer.onError(GrpcUtils.convertServerException(e));
-	    return null;
-	}
+	this.grpcTenantEngineProvider = new GrpcTenantEngineProvider<>(microservice);
     }
 
     /*
@@ -83,10 +66,13 @@ public class BatchManagementRouter extends BatchManagementGrpc.BatchManagementIm
     @Override
     public void createBatchOperation(GCreateBatchOperationRequest request,
 	    StreamObserver<GCreateBatchOperationResponse> responseObserver) {
-	BatchManagementGrpc.BatchManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.createBatchOperation(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IBatchOperationsTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IBatchOperationsTenantEngine tenantEngine) {
+		tenantEngine.getBatchManagementImpl().createBatchOperation(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -97,10 +83,13 @@ public class BatchManagementRouter extends BatchManagementGrpc.BatchManagementIm
     @Override
     public void createBatchCommandInvocation(GCreateBatchCommandInvocationRequest request,
 	    StreamObserver<GCreateBatchCommandInvocationResponse> responseObserver) {
-	BatchManagementGrpc.BatchManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.createBatchCommandInvocation(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IBatchOperationsTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IBatchOperationsTenantEngine tenantEngine) {
+		tenantEngine.getBatchManagementImpl().createBatchCommandInvocation(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -111,10 +100,13 @@ public class BatchManagementRouter extends BatchManagementGrpc.BatchManagementIm
     @Override
     public void updateBatchOperation(GUpdateBatchOperationRequest request,
 	    StreamObserver<GUpdateBatchOperationResponse> responseObserver) {
-	BatchManagementGrpc.BatchManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.updateBatchOperation(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IBatchOperationsTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IBatchOperationsTenantEngine tenantEngine) {
+		tenantEngine.getBatchManagementImpl().updateBatchOperation(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -125,10 +117,13 @@ public class BatchManagementRouter extends BatchManagementGrpc.BatchManagementIm
     @Override
     public void getBatchOperation(GGetBatchOperationRequest request,
 	    StreamObserver<GGetBatchOperationResponse> responseObserver) {
-	BatchManagementGrpc.BatchManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getBatchOperation(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IBatchOperationsTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IBatchOperationsTenantEngine tenantEngine) {
+		tenantEngine.getBatchManagementImpl().getBatchOperation(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -139,10 +134,13 @@ public class BatchManagementRouter extends BatchManagementGrpc.BatchManagementIm
     @Override
     public void getBatchOperationByToken(GGetBatchOperationByTokenRequest request,
 	    StreamObserver<GGetBatchOperationByTokenResponse> responseObserver) {
-	BatchManagementGrpc.BatchManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getBatchOperationByToken(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IBatchOperationsTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IBatchOperationsTenantEngine tenantEngine) {
+		tenantEngine.getBatchManagementImpl().getBatchOperationByToken(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -153,10 +151,13 @@ public class BatchManagementRouter extends BatchManagementGrpc.BatchManagementIm
     @Override
     public void listBatchOperations(GListBatchOperationsRequest request,
 	    StreamObserver<GListBatchOperationsResponse> responseObserver) {
-	BatchManagementGrpc.BatchManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listBatchOperations(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IBatchOperationsTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IBatchOperationsTenantEngine tenantEngine) {
+		tenantEngine.getBatchManagementImpl().listBatchOperations(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -167,10 +168,13 @@ public class BatchManagementRouter extends BatchManagementGrpc.BatchManagementIm
     @Override
     public void deleteBatchOperation(GDeleteBatchOperationRequest request,
 	    StreamObserver<GDeleteBatchOperationResponse> responseObserver) {
-	BatchManagementGrpc.BatchManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.deleteBatchOperation(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IBatchOperationsTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IBatchOperationsTenantEngine tenantEngine) {
+		tenantEngine.getBatchManagementImpl().deleteBatchOperation(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -181,10 +185,13 @@ public class BatchManagementRouter extends BatchManagementGrpc.BatchManagementIm
     @Override
     public void createBatchElement(GCreateBatchElementRequest request,
 	    StreamObserver<GCreateBatchElementResponse> responseObserver) {
-	BatchManagementGrpc.BatchManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.createBatchElement(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IBatchOperationsTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IBatchOperationsTenantEngine tenantEngine) {
+		tenantEngine.getBatchManagementImpl().createBatchElement(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -195,10 +202,13 @@ public class BatchManagementRouter extends BatchManagementGrpc.BatchManagementIm
     @Override
     public void listBatchElements(GListBatchElementsRequest request,
 	    StreamObserver<GListBatchElementsResponse> responseObserver) {
-	BatchManagementGrpc.BatchManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listBatchElements(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IBatchOperationsTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IBatchOperationsTenantEngine tenantEngine) {
+		tenantEngine.getBatchManagementImpl().listBatchElements(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -209,10 +219,13 @@ public class BatchManagementRouter extends BatchManagementGrpc.BatchManagementIm
     @Override
     public void updateBatchElement(GUpdateBatchElementRequest request,
 	    StreamObserver<GUpdateBatchElementResponse> responseObserver) {
-	BatchManagementGrpc.BatchManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.updateBatchElement(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IBatchOperationsTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IBatchOperationsTenantEngine tenantEngine) {
+		tenantEngine.getBatchManagementImpl().updateBatchElement(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     public IBatchOperationsMicroservice getMicroservice() {
@@ -221,5 +234,9 @@ public class BatchManagementRouter extends BatchManagementGrpc.BatchManagementIm
 
     public void setMicroservice(IBatchOperationsMicroservice microservice) {
 	this.microservice = microservice;
+    }
+
+    protected GrpcTenantEngineProvider<IBatchOperationsTenantEngine> getGrpcTenantEngineProvider() {
+	return grpcTenantEngineProvider;
     }
 }
