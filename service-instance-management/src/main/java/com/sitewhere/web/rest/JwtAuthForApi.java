@@ -87,7 +87,7 @@ public class JwtAuthForApi implements ContainerRequestFilter {
 
 	try {
 	    SiteWhereAuthentication authenticated = authenticate(jwt, tenant);
-	    authenticated.setTenant(tenant);
+	    authenticated.setTenantToken(tenantId);
 	    UserContext.setContext(authenticated);
 	} catch (SiteWhereException e) {
 	    LOGGER.warn("Error locating user for JWT token request.", e);
