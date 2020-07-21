@@ -12,8 +12,6 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
-import com.sitewhere.grpc.client.GrpcUtils;
-import com.sitewhere.grpc.client.spi.server.IGrpcRouter;
 import com.sitewhere.grpc.service.DeviceEventManagementGrpc;
 import com.sitewhere.grpc.service.GAddAlertsRequest;
 import com.sitewhere.grpc.service.GAddAlertsResponse;
@@ -47,16 +45,15 @@ import com.sitewhere.grpc.service.GListMeasurementsForIndexRequest;
 import com.sitewhere.grpc.service.GListMeasurementsForIndexResponse;
 import com.sitewhere.grpc.service.GListStateChangesForIndexRequest;
 import com.sitewhere.grpc.service.GListStateChangesForIndexResponse;
-import com.sitewhere.microservice.grpc.GrpcKeys;
-import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
+import com.sitewhere.microservice.grpc.GrpcTenantEngineProvider;
+import com.sitewhere.spi.microservice.grpc.ITenantEngineCallback;
 
 import io.grpc.stub.StreamObserver;
 
 /**
  * Routes GRPC calls to service implementations in tenants.
  */
-public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEventManagementImplBase
-	implements IGrpcRouter<DeviceEventManagementGrpc.DeviceEventManagementImplBase> {
+public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEventManagementImplBase {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -65,26 +62,12 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
     /** Parent microservice */
     private IEventManagementMicroservice microservice;
 
+    /** Tenant engine provider */
+    private GrpcTenantEngineProvider<IEventManagementTenantEngine> grpcTenantEngineProvider;
+
     public EventManagementRouter(IEventManagementMicroservice microservice) {
 	this.microservice = microservice;
-    }
-
-    /*
-     * @see com.sitewhere.spi.grpc.IGrpcRouter#getTenantImplementation()
-     */
-    @Override
-    public DeviceEventManagementGrpc.DeviceEventManagementImplBase getTenantImplementation(StreamObserver<?> observer) {
-	String token = GrpcKeys.TENANT_CONTEXT_KEY.get();
-	if (token == null) {
-	    throw new RuntimeException("Tenant token not found in request.");
-	}
-	try {
-	    IEventManagementTenantEngine engine = getMicroservice().assureTenantEngineAvailable(token);
-	    return engine.getEventManagementImpl();
-	} catch (TenantEngineNotAvailableException e) {
-	    observer.onError(GrpcUtils.convertServerException(e));
-	    return null;
-	}
+	this.grpcTenantEngineProvider = new GrpcTenantEngineProvider<>(microservice);
     }
 
     /*
@@ -97,10 +80,13 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
     @Override
     public void addDeviceEventBatch(GAddDeviceEventBatchRequest request,
 	    StreamObserver<GAddDeviceEventBatchResponse> responseObserver) {
-	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.addDeviceEventBatch(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IEventManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IEventManagementTenantEngine tenantEngine) {
+		tenantEngine.getEventManagementImpl().addDeviceEventBatch(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -113,10 +99,13 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
     @Override
     public void getDeviceEventById(GGetDeviceEventByIdRequest request,
 	    StreamObserver<GGetDeviceEventByIdResponse> responseObserver) {
-	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getDeviceEventById(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IEventManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IEventManagementTenantEngine tenantEngine) {
+		tenantEngine.getEventManagementImpl().getDeviceEventById(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -130,10 +119,13 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
     @Override
     public void getDeviceEventByAlternateId(GGetDeviceEventByAlternateIdRequest request,
 	    StreamObserver<GGetDeviceEventByAlternateIdResponse> responseObserver) {
-	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getDeviceEventByAlternateId(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IEventManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IEventManagementTenantEngine tenantEngine) {
+		tenantEngine.getEventManagementImpl().getDeviceEventByAlternateId(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -144,10 +136,13 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
     @Override
     public void addMeasurements(GAddMeasurementsRequest request,
 	    StreamObserver<GAddMeasurementsResponse> responseObserver) {
-	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.addMeasurements(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IEventManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IEventManagementTenantEngine tenantEngine) {
+		tenantEngine.getEventManagementImpl().addMeasurements(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -158,10 +153,13 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
     @Override
     public void listMeasurementsForIndex(GListMeasurementsForIndexRequest request,
 	    StreamObserver<GListMeasurementsForIndexResponse> responseObserver) {
-	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listMeasurementsForIndex(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IEventManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IEventManagementTenantEngine tenantEngine) {
+		tenantEngine.getEventManagementImpl().listMeasurementsForIndex(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -171,10 +169,13 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
      */
     @Override
     public void addLocations(GAddLocationsRequest request, StreamObserver<GAddLocationsResponse> responseObserver) {
-	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.addLocations(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IEventManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IEventManagementTenantEngine tenantEngine) {
+		tenantEngine.getEventManagementImpl().addLocations(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -185,10 +186,13 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
     @Override
     public void listLocationsForIndex(GListLocationsForIndexRequest request,
 	    StreamObserver<GListLocationsForIndexResponse> responseObserver) {
-	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listLocationsForIndex(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IEventManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IEventManagementTenantEngine tenantEngine) {
+		tenantEngine.getEventManagementImpl().listLocationsForIndex(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -198,10 +202,13 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
      */
     @Override
     public void addAlerts(GAddAlertsRequest request, StreamObserver<GAddAlertsResponse> responseObserver) {
-	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.addAlerts(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IEventManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IEventManagementTenantEngine tenantEngine) {
+		tenantEngine.getEventManagementImpl().addAlerts(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -212,10 +219,13 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
     @Override
     public void listAlertsForIndex(GListAlertsForIndexRequest request,
 	    StreamObserver<GListAlertsForIndexResponse> responseObserver) {
-	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listAlertsForIndex(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IEventManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IEventManagementTenantEngine tenantEngine) {
+		tenantEngine.getEventManagementImpl().listAlertsForIndex(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -226,10 +236,13 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
     @Override
     public void addCommandInvocations(GAddCommandInvocationsRequest request,
 	    StreamObserver<GAddCommandInvocationsResponse> responseObserver) {
-	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.addCommandInvocations(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IEventManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IEventManagementTenantEngine tenantEngine) {
+		tenantEngine.getEventManagementImpl().addCommandInvocations(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -241,10 +254,13 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
     @Override
     public void listCommandInvocationsForIndex(GListCommandInvocationsForIndexRequest request,
 	    StreamObserver<GListCommandInvocationsForIndexResponse> responseObserver) {
-	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listCommandInvocationsForIndex(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IEventManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IEventManagementTenantEngine tenantEngine) {
+		tenantEngine.getEventManagementImpl().listCommandInvocationsForIndex(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -255,10 +271,13 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
     @Override
     public void addCommandResponses(GAddCommandResponsesRequest request,
 	    StreamObserver<GAddCommandResponsesResponse> responseObserver) {
-	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.addCommandResponses(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IEventManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IEventManagementTenantEngine tenantEngine) {
+		tenantEngine.getEventManagementImpl().addCommandResponses(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -272,10 +291,13 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
     @Override
     public void listCommandResponsesForInvocation(GListCommandResponsesForInvocationRequest request,
 	    StreamObserver<GListCommandResponsesForInvocationResponse> responseObserver) {
-	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listCommandResponsesForInvocation(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IEventManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IEventManagementTenantEngine tenantEngine) {
+		tenantEngine.getEventManagementImpl().listCommandResponsesForInvocation(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -286,10 +308,13 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
     @Override
     public void listCommandResponsesForIndex(GListCommandResponsesForIndexRequest request,
 	    StreamObserver<GListCommandResponsesForIndexResponse> responseObserver) {
-	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listCommandResponsesForIndex(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IEventManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IEventManagementTenantEngine tenantEngine) {
+		tenantEngine.getEventManagementImpl().listCommandResponsesForIndex(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -300,10 +325,13 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
     @Override
     public void addStateChanges(GAddStateChangesRequest request,
 	    StreamObserver<GAddStateChangesResponse> responseObserver) {
-	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.addStateChanges(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IEventManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IEventManagementTenantEngine tenantEngine) {
+		tenantEngine.getEventManagementImpl().addStateChanges(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -314,17 +342,20 @@ public class EventManagementRouter extends DeviceEventManagementGrpc.DeviceEvent
     @Override
     public void listStateChangesForIndex(GListStateChangesForIndexRequest request,
 	    StreamObserver<GListStateChangesForIndexResponse> responseObserver) {
-	DeviceEventManagementGrpc.DeviceEventManagementImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.listStateChangesForIndex(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IEventManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IEventManagementTenantEngine tenantEngine) {
+		tenantEngine.getEventManagementImpl().listStateChangesForIndex(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
-    public IEventManagementMicroservice getMicroservice() {
+    protected IEventManagementMicroservice getMicroservice() {
 	return microservice;
     }
 
-    public void setMicroservice(IEventManagementMicroservice microservice) {
-	this.microservice = microservice;
+    protected GrpcTenantEngineProvider<IEventManagementTenantEngine> getGrpcTenantEngineProvider() {
+	return grpcTenantEngineProvider;
     }
 }

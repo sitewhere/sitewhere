@@ -10,8 +10,6 @@ package com.sitewhere.labels.grpc;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitewhere.grpc.client.GrpcUtils;
-import com.sitewhere.grpc.client.spi.server.IGrpcRouter;
 import com.sitewhere.grpc.service.GGetAreaLabelRequest;
 import com.sitewhere.grpc.service.GGetAreaLabelResponse;
 import com.sitewhere.grpc.service.GGetAreaTypeLabelRequest;
@@ -33,19 +31,17 @@ import com.sitewhere.grpc.service.GGetDeviceLabelResponse;
 import com.sitewhere.grpc.service.GGetDeviceTypeLabelRequest;
 import com.sitewhere.grpc.service.GGetDeviceTypeLabelResponse;
 import com.sitewhere.grpc.service.LabelGenerationGrpc;
-import com.sitewhere.grpc.service.LabelGenerationGrpc.LabelGenerationImplBase;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationMicroservice;
 import com.sitewhere.labels.spi.microservice.ILabelGenerationTenantEngine;
-import com.sitewhere.microservice.grpc.GrpcKeys;
-import com.sitewhere.spi.microservice.multitenant.TenantEngineNotAvailableException;
+import com.sitewhere.microservice.grpc.GrpcTenantEngineProvider;
+import com.sitewhere.spi.microservice.grpc.ITenantEngineCallback;
 
 import io.grpc.stub.StreamObserver;
 
 /**
  * Routes GRPC calls to service implementations in tenants.
  */
-public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationImplBase
-	implements IGrpcRouter<LabelGenerationGrpc.LabelGenerationImplBase> {
+public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationImplBase {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -54,26 +50,12 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
     /** Parent microservice */
     private ILabelGenerationMicroservice microservice;
 
+    /** Tenant engine provider */
+    private GrpcTenantEngineProvider<ILabelGenerationTenantEngine> grpcTenantEngineProvider;
+
     public LabelGenerationRouter(ILabelGenerationMicroservice microservice) {
 	this.microservice = microservice;
-    }
-
-    /*
-     * @see com.sitewhere.spi.grpc.IGrpcRouter#getTenantImplementation()
-     */
-    @Override
-    public LabelGenerationImplBase getTenantImplementation(StreamObserver<?> observer) {
-	String token = GrpcKeys.TENANT_CONTEXT_KEY.get();
-	if (token == null) {
-	    throw new RuntimeException("Tenant token not found in request.");
-	}
-	try {
-	    ILabelGenerationTenantEngine engine = getMicroservice().assureTenantEngineAvailable(token);
-	    return engine.getLabelGenerationImpl();
-	} catch (TenantEngineNotAvailableException e) {
-	    observer.onError(GrpcUtils.convertServerException(e));
-	    return null;
-	}
+	this.grpcTenantEngineProvider = new GrpcTenantEngineProvider<>(microservice);
     }
 
     /*
@@ -84,10 +66,13 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
     @Override
     public void getCustomerTypeLabel(GGetCustomerTypeLabelRequest request,
 	    StreamObserver<GGetCustomerTypeLabelResponse> responseObserver) {
-	LabelGenerationGrpc.LabelGenerationImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getCustomerTypeLabel(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<ILabelGenerationTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(ILabelGenerationTenantEngine tenantEngine) {
+		tenantEngine.getLabelGenerationImpl().getCustomerTypeLabel(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -98,10 +83,13 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
     @Override
     public void getCustomerLabel(GGetCustomerLabelRequest request,
 	    StreamObserver<GGetCustomerLabelResponse> responseObserver) {
-	LabelGenerationGrpc.LabelGenerationImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getCustomerLabel(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<ILabelGenerationTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(ILabelGenerationTenantEngine tenantEngine) {
+		tenantEngine.getLabelGenerationImpl().getCustomerLabel(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -112,10 +100,13 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
     @Override
     public void getAreaTypeLabel(GGetAreaTypeLabelRequest request,
 	    StreamObserver<GGetAreaTypeLabelResponse> responseObserver) {
-	LabelGenerationGrpc.LabelGenerationImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getAreaTypeLabel(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<ILabelGenerationTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(ILabelGenerationTenantEngine tenantEngine) {
+		tenantEngine.getLabelGenerationImpl().getAreaTypeLabel(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -125,10 +116,13 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
      */
     @Override
     public void getAreaLabel(GGetAreaLabelRequest request, StreamObserver<GGetAreaLabelResponse> responseObserver) {
-	LabelGenerationGrpc.LabelGenerationImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getAreaLabel(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<ILabelGenerationTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(ILabelGenerationTenantEngine tenantEngine) {
+		tenantEngine.getLabelGenerationImpl().getAreaLabel(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -139,10 +133,13 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
     @Override
     public void getDeviceTypeLabel(GGetDeviceTypeLabelRequest request,
 	    StreamObserver<GGetDeviceTypeLabelResponse> responseObserver) {
-	LabelGenerationGrpc.LabelGenerationImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getDeviceTypeLabel(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<ILabelGenerationTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(ILabelGenerationTenantEngine tenantEngine) {
+		tenantEngine.getLabelGenerationImpl().getDeviceTypeLabel(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -153,10 +150,13 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
     @Override
     public void getDeviceLabel(GGetDeviceLabelRequest request,
 	    StreamObserver<GGetDeviceLabelResponse> responseObserver) {
-	LabelGenerationGrpc.LabelGenerationImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getDeviceLabel(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<ILabelGenerationTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(ILabelGenerationTenantEngine tenantEngine) {
+		tenantEngine.getLabelGenerationImpl().getDeviceLabel(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -167,10 +167,13 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
     @Override
     public void getDeviceGroupLabel(GGetDeviceGroupLabelRequest request,
 	    StreamObserver<GGetDeviceGroupLabelResponse> responseObserver) {
-	LabelGenerationGrpc.LabelGenerationImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getDeviceGroupLabel(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<ILabelGenerationTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(ILabelGenerationTenantEngine tenantEngine) {
+		tenantEngine.getLabelGenerationImpl().getDeviceGroupLabel(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -181,10 +184,13 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
     @Override
     public void getDeviceAssignmentLabel(GGetDeviceAssignmentLabelRequest request,
 	    StreamObserver<GGetDeviceAssignmentLabelResponse> responseObserver) {
-	LabelGenerationGrpc.LabelGenerationImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getDeviceAssignmentLabel(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<ILabelGenerationTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(ILabelGenerationTenantEngine tenantEngine) {
+		tenantEngine.getLabelGenerationImpl().getDeviceAssignmentLabel(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -195,10 +201,13 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
     @Override
     public void getAssetTypeLabel(GGetAssetTypeLabelRequest request,
 	    StreamObserver<GGetAssetTypeLabelResponse> responseObserver) {
-	LabelGenerationGrpc.LabelGenerationImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getAssetTypeLabel(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<ILabelGenerationTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(ILabelGenerationTenantEngine tenantEngine) {
+		tenantEngine.getLabelGenerationImpl().getAssetTypeLabel(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
     /*
@@ -208,17 +217,20 @@ public class LabelGenerationRouter extends LabelGenerationGrpc.LabelGenerationIm
      */
     @Override
     public void getAssetLabel(GGetAssetLabelRequest request, StreamObserver<GGetAssetLabelResponse> responseObserver) {
-	LabelGenerationGrpc.LabelGenerationImplBase engine = getTenantImplementation(responseObserver);
-	if (engine != null) {
-	    engine.getAssetLabel(request, responseObserver);
-	}
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<ILabelGenerationTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(ILabelGenerationTenantEngine tenantEngine) {
+		tenantEngine.getLabelGenerationImpl().getAssetLabel(request, responseObserver);
+	    }
+	}, responseObserver);
     }
 
-    public ILabelGenerationMicroservice getMicroservice() {
+    protected ILabelGenerationMicroservice getMicroservice() {
 	return microservice;
     }
 
-    public void setMicroservice(ILabelGenerationMicroservice microservice) {
-	this.microservice = microservice;
+    protected GrpcTenantEngineProvider<ILabelGenerationTenantEngine> getGrpcTenantEngineProvider() {
+	return grpcTenantEngineProvider;
     }
 }
