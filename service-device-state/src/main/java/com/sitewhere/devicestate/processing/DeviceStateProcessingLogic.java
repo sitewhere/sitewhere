@@ -16,11 +16,11 @@ import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
 import com.sitewhere.devicestate.spi.processing.IDeviceStateProcessingLogic;
 import com.sitewhere.grpc.event.EventModelConverter;
 import com.sitewhere.grpc.event.EventModelMarshaler;
-import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
+import com.sitewhere.grpc.model.DeviceEventModel.GProcessedEventPayload;
 import com.sitewhere.microservice.api.state.IDeviceStateManagement;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.microservice.util.MarshalUtils;
-import com.sitewhere.rest.model.device.event.kafka.EnrichedEventPayload;
+import com.sitewhere.rest.model.device.event.kafka.ProcessedEventPayload;
 import com.sitewhere.rest.model.device.state.request.DeviceStateCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
@@ -76,8 +76,8 @@ public class DeviceStateProcessingLogic extends TenantEngineLifecycleComponent i
     protected void processRecord(ConsumerRecord<String, byte[]> record) throws SiteWhereException {
 	PROCESSED_EVENTS.labels(buildLabels()).inc();
 	try {
-	    GEnrichedEventPayload grpc = EventModelMarshaler.parseEnrichedEventPayloadMessage(record.value());
-	    EnrichedEventPayload payload = EventModelConverter.asApiEnrichedEventPayload(grpc);
+	    GProcessedEventPayload grpc = EventModelMarshaler.parseProcessedEventPayloadMessage(record.value());
+	    ProcessedEventPayload payload = EventModelConverter.asApiProcessedEventPayload(grpc);
 	    if (getLogger().isDebugEnabled()) {
 		getLogger().debug(
 			"Received enriched event payload:\n\n" + MarshalUtils.marshalJsonAsPrettyString(payload));
@@ -97,7 +97,7 @@ public class DeviceStateProcessingLogic extends TenantEngineLifecycleComponent i
      * @throws SiteWhereException
      */
     @SuppressWarnings("unused")
-    protected void processDeviceStateEvent(EnrichedEventPayload payload) throws SiteWhereException {
+    protected void processDeviceStateEvent(ProcessedEventPayload payload) throws SiteWhereException {
 	// Only process events that affect state.
 	IDeviceEvent event = payload.getEvent();
 	IDeviceEventContext context = payload.getEventContext();

@@ -8,7 +8,6 @@
 package com.sitewhere.event.kafka;
 
 import java.util.List;
-import java.util.UUID;
 
 import com.sitewhere.event.DeviceEventManagementDecorator;
 import com.sitewhere.event.processing.OutboundPayloadEnrichmentLogic;
@@ -19,6 +18,7 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
@@ -42,89 +42,90 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
     /**
      * Forward the given event to the Kafka persisted events topic.
      * 
-     * @param deviceAssignmentId
+     * @param context
      * @param events
      * @return
      * @throws SiteWhereException
      */
-    protected <T extends IDeviceEvent> List<T> forwardEvents(UUID deviceAssignmentId, List<T> events)
+    protected <T extends IDeviceEvent> List<T> forwardEvents(IDeviceEventContext context, List<T> events)
 	    throws SiteWhereException {
 	getLogger().debug(String.format("Forwarding %d events to outbound topic.", events.size()));
 	for (T event : events) {
-	    OutboundPayloadEnrichmentLogic.enrichAndDeliver(getEventManagementTenantEngine(), event);
+	    OutboundPayloadEnrichmentLogic.enrichAndDeliver(getEventManagementTenantEngine(), context, event);
 	}
 	return events;
     }
 
     /*
      * @see
-     * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceMeasurements(java
-     * .util.UUID,
+     * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceMeasurements(com.
+     * sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest[])
      */
     @Override
-    public List<IDeviceMeasurement> addDeviceMeasurements(UUID deviceAssignmentId,
+    public List<? extends IDeviceMeasurement> addDeviceMeasurements(IDeviceEventContext context,
 	    IDeviceMeasurementCreateRequest... measurements) throws SiteWhereException {
-	return forwardEvents(deviceAssignmentId, super.addDeviceMeasurements(deviceAssignmentId, measurements));
+	return forwardEvents(context, super.addDeviceMeasurements(context, measurements));
     }
 
     /*
      * @see
-     * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceLocations(java.
-     * util.UUID,
+     * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceLocations(com.
+     * sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest[])
      */
     @Override
-    public List<IDeviceLocation> addDeviceLocations(UUID deviceAssignmentId, IDeviceLocationCreateRequest... request)
-	    throws SiteWhereException {
-	return forwardEvents(deviceAssignmentId, super.addDeviceLocations(deviceAssignmentId, request));
+    public List<? extends IDeviceLocation> addDeviceLocations(IDeviceEventContext context,
+	    IDeviceLocationCreateRequest... request) throws SiteWhereException {
+	return forwardEvents(context, super.addDeviceLocations(context, request));
     }
 
     /*
-     * @see
-     * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceAlerts(java.util.
-     * UUID, com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest[])
+     * @see com.sitewhere.event.DeviceEventManagementDecorator#addDeviceAlerts(com.
+     * sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest[])
      */
     @Override
-    public List<IDeviceAlert> addDeviceAlerts(UUID deviceAssignmentId, IDeviceAlertCreateRequest... request)
-	    throws SiteWhereException {
-	return forwardEvents(deviceAssignmentId, super.addDeviceAlerts(deviceAssignmentId, request));
+    public List<? extends IDeviceAlert> addDeviceAlerts(IDeviceEventContext context,
+	    IDeviceAlertCreateRequest... request) throws SiteWhereException {
+	return forwardEvents(context, super.addDeviceAlerts(context, request));
     }
 
     /*
      * @see com.sitewhere.event.DeviceEventManagementDecorator#
-     * addDeviceCommandInvocations(java.util.UUID,
+     * addDeviceCommandInvocations(com.sitewhere.spi.device.event.
+     * IDeviceEventContext,
      * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest[
      * ])
      */
     @Override
-    public List<IDeviceCommandInvocation> addDeviceCommandInvocations(UUID deviceAssignmentId,
+    public List<? extends IDeviceCommandInvocation> addDeviceCommandInvocations(IDeviceEventContext context,
 	    IDeviceCommandInvocationCreateRequest... request) throws SiteWhereException {
-	return forwardEvents(deviceAssignmentId, super.addDeviceCommandInvocations(deviceAssignmentId, request));
+	return forwardEvents(context, super.addDeviceCommandInvocations(context, request));
     }
 
     /*
      * @see
      * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceCommandResponses(
-     * java.util.UUID,
+     * com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest[])
      */
     @Override
-    public List<IDeviceCommandResponse> addDeviceCommandResponses(UUID deviceAssignmentId,
+    public List<? extends IDeviceCommandResponse> addDeviceCommandResponses(IDeviceEventContext context,
 	    IDeviceCommandResponseCreateRequest... request) throws SiteWhereException {
-	return forwardEvents(deviceAssignmentId, super.addDeviceCommandResponses(deviceAssignmentId, request));
+	return forwardEvents(context, super.addDeviceCommandResponses(context, request));
     }
 
     /*
      * @see
-     * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceStateChanges(java
-     * .util.UUID,
+     * com.sitewhere.event.DeviceEventManagementDecorator#addDeviceStateChanges(com.
+     * sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest[])
      */
     @Override
-    public List<IDeviceStateChange> addDeviceStateChanges(UUID deviceAssignmentId,
+    public List<? extends IDeviceStateChange> addDeviceStateChanges(IDeviceEventContext context,
 	    IDeviceStateChangeCreateRequest... request) throws SiteWhereException {
-	return forwardEvents(deviceAssignmentId, super.addDeviceStateChanges(deviceAssignmentId, request));
+	return forwardEvents(context, super.addDeviceStateChanges(context, request));
     }
 
     protected IEventManagementTenantEngine getEventManagementTenantEngine() {

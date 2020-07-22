@@ -14,8 +14,8 @@ import java.util.Map;
 import com.sitewhere.batch.BatchOperationTypes;
 import com.sitewhere.batch.spi.IBatchOperationHandler;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
-import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.event.DeviceEventRequestBuilder;
 import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
@@ -33,6 +33,7 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
 
 /**
  * Operation handler for batch command invocations.
@@ -101,8 +102,9 @@ public class BatchCommandInvocationHandler extends TenantEngineLifecycleComponen
 	request.setMetadata(metadata);
 
 	// Invoke the command.
-	IDeviceCommandInvocation invocation = getDeviceEventManagement()
-		.addDeviceCommandInvocations(target.getId(), request).get(0);
+	IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(getDeviceManagement(), target);
+	IDeviceCommandInvocation invocation = getDeviceEventManagement().addDeviceCommandInvocations(context, request)
+		.get(0);
 	updated.getMetadata().put(IBatchCommandInvocationRequest.META_INVOCATION_EVENT_ID,
 		invocation.getId().toString());
 
@@ -114,7 +116,6 @@ public class BatchCommandInvocationHandler extends TenantEngineLifecycleComponen
     }
 
     public IDeviceEventManagement getDeviceEventManagement() {
-	return new BlockingDeviceEventManagement(
-		((IBatchOperationsMicroservice) getMicroservice()).getDeviceEventManagementApiChannel());
+	return ((IBatchOperationsMicroservice) getMicroservice()).getDeviceEventManagementApiChannel();
     }
 }

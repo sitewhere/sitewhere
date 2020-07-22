@@ -24,12 +24,12 @@ import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.device.streaming.DeviceStreamData;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
@@ -47,23 +47,23 @@ public class DeviceEventManagementPersistence extends Persistence {
     /**
      * Executes logic to process a batch of device events.
      * 
-     * @param assignmentToken
+     * @param context
      * @param batch
-     * @param management
+     * @param eventManagement
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceEventBatchResponse deviceEventBatchLogic(IDeviceAssignment assignment, IDeviceEventBatch batch,
-	    IDeviceEventManagement management) throws SiteWhereException {
+    public static DeviceEventBatchResponse deviceEventBatchLogic(IDeviceEventContext context, IDeviceEventBatch batch,
+	    IDeviceEventManagement eventManagement) throws SiteWhereException {
 	DeviceEventBatchResponse response = new DeviceEventBatchResponse();
 	for (IDeviceMeasurementCreateRequest mx : batch.getMeasurements()) {
-	    response.getCreatedMeasurements().addAll(management.addDeviceMeasurements(assignment.getId(), mx));
+	    response.getCreatedMeasurements().addAll(eventManagement.addDeviceMeasurements(context, mx));
 	}
 	for (IDeviceLocationCreateRequest location : batch.getLocations()) {
-	    response.getCreatedLocations().addAll(management.addDeviceLocations(assignment.getId(), location));
+	    response.getCreatedLocations().addAll(eventManagement.addDeviceLocations(context, location));
 	}
 	for (IDeviceAlertCreateRequest alert : batch.getAlerts()) {
-	    response.getCreatedAlerts().addAll(management.addDeviceAlerts(assignment.getId(), alert));
+	    response.getCreatedAlerts().addAll(eventManagement.addDeviceAlerts(context, alert));
 	}
 	return response;
     }
@@ -72,19 +72,19 @@ public class DeviceEventManagementPersistence extends Persistence {
      * Common creation logic for all device events.
      * 
      * @param request
-     * @param assignment
+     * @param context
      * @param target
      * @throws SiteWhereException
      */
-    public static void deviceEventCreateLogic(IDeviceEventCreateRequest request, IDeviceAssignment assignment,
+    public static void deviceEventCreateLogic(IDeviceEventCreateRequest request, IDeviceEventContext context,
 	    DeviceEvent target) throws SiteWhereException {
 	target.setId(UUID.randomUUID());
 	target.setAlternateId(request.getAlternateId());
-	target.setDeviceId(assignment.getDeviceId());
-	target.setDeviceAssignmentId(assignment.getId());
-	target.setCustomerId(assignment.getCustomerId());
-	target.setAreaId(assignment.getAreaId());
-	target.setAssetId(assignment.getAssetId());
+	target.setDeviceId(context.getDeviceId());
+	target.setDeviceAssignmentId(context.getDeviceAssignmentId());
+	target.setCustomerId(context.getCustomerId());
+	target.setAreaId(context.getAreaId());
+	target.setAssetId(context.getAssetId());
 	if (request.getEventDate() != null) {
 	    target.setEventDate(request.getEventDate());
 	} else {
@@ -98,15 +98,15 @@ public class DeviceEventManagementPersistence extends Persistence {
      * Common logic for creating {@link DeviceMeasurement} from
      * {@link IDeviceMeasurementCreateRequest}.
      * 
+     * @param context
      * @param request
-     * @param assignment
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceMeasurement deviceMeasurementCreateLogic(IDeviceMeasurementCreateRequest request,
-	    IDeviceAssignment assignment) throws SiteWhereException {
+    public static DeviceMeasurement deviceMeasurementCreateLogic(IDeviceEventContext context,
+	    IDeviceMeasurementCreateRequest request) throws SiteWhereException {
 	DeviceMeasurement measurements = new DeviceMeasurement();
-	deviceEventCreateLogic(request, assignment, measurements);
+	deviceEventCreateLogic(request, context, measurements);
 	measurements.setName(request.getName());
 	measurements.setValue(request.getValue());
 	return measurements;
@@ -116,15 +116,15 @@ public class DeviceEventManagementPersistence extends Persistence {
      * Common logic for creating {@link DeviceLocation} from
      * {@link IDeviceLocationCreateRequest}.
      * 
-     * @param assignment
+     * @param context
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceLocation deviceLocationCreateLogic(IDeviceAssignment assignment,
+    public static DeviceLocation deviceLocationCreateLogic(IDeviceEventContext context,
 	    IDeviceLocationCreateRequest request) throws SiteWhereException {
 	DeviceLocation location = new DeviceLocation();
-	deviceEventCreateLogic(request, assignment, location);
+	deviceEventCreateLogic(request, context, location);
 	location.setLatitude(request.getLatitude());
 	location.setLongitude(request.getLongitude());
 	location.setElevation(request.getElevation());
@@ -135,15 +135,15 @@ public class DeviceEventManagementPersistence extends Persistence {
      * Common logic for creating {@link DeviceAlert} from
      * {@link IDeviceAlertCreateRequest}.
      * 
-     * @param assignment
+     * @param context
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceAlert deviceAlertCreateLogic(IDeviceAssignment assignment, IDeviceAlertCreateRequest request)
+    public static DeviceAlert deviceAlertCreateLogic(IDeviceEventContext context, IDeviceAlertCreateRequest request)
 	    throws SiteWhereException {
 	DeviceAlert alert = new DeviceAlert();
-	deviceEventCreateLogic(request, assignment, alert);
+	deviceEventCreateLogic(request, context, alert);
 
 	if (request.getSource() != null) {
 	    alert.setSource(request.getSource());
@@ -166,15 +166,15 @@ public class DeviceEventManagementPersistence extends Persistence {
      * Common logic for creating {@link DeviceStreamData} from
      * {@link IDeviceStreamDataCreateRequest}.
      * 
-     * @param assignment
+     * @param context
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceStreamData deviceStreamDataCreateLogic(IDeviceAssignment assignment,
+    public static DeviceStreamData deviceStreamDataCreateLogic(IDeviceEventContext context,
 	    IDeviceStreamDataCreateRequest request) throws SiteWhereException {
 	DeviceStreamData streamData = new DeviceStreamData();
-	deviceEventCreateLogic(request, assignment, streamData);
+	deviceEventCreateLogic(request, context, streamData);
 
 	require("Stream Id", request.getStreamId());
 	streamData.setStreamId(request.getStreamId());
@@ -190,18 +190,18 @@ public class DeviceEventManagementPersistence extends Persistence {
      * Common logic for creating {@link DeviceCommandInvocation} from an
      * {@link IDeviceCommandInvocationCreateRequest}.
      * 
-     * @param assignment
+     * @param context
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceCommandInvocation deviceCommandInvocationCreateLogic(IDeviceAssignment assignment,
+    public static DeviceCommandInvocation deviceCommandInvocationCreateLogic(IDeviceEventContext context,
 	    IDeviceCommand command, IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
 	requireNotNull("Initiator", request.getInitiator());
 	requireNotNull("Target", request.getTarget());
 
 	DeviceCommandInvocation ci = new DeviceCommandInvocation();
-	deviceEventCreateLogic(request, assignment, ci);
+	deviceEventCreateLogic(request, context, ci);
 	ci.setDeviceCommandId(command.getId());
 	ci.setInitiator(request.getInitiator());
 	ci.setInitiatorId(request.getInitiatorId());
@@ -283,17 +283,17 @@ public class DeviceEventManagementPersistence extends Persistence {
      * Common logic for creating a {@link DeviceCommandResponse} from an
      * {@link IDeviceCommandResponseCreateRequest}.
      * 
-     * @param assignment
+     * @param context
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceCommandResponse deviceCommandResponseCreateLogic(IDeviceAssignment assignment,
+    public static DeviceCommandResponse deviceCommandResponseCreateLogic(IDeviceEventContext context,
 	    IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
 	requireNotNull("Originating Event Id", request.getOriginatingEventId());
 
 	DeviceCommandResponse response = new DeviceCommandResponse();
-	deviceEventCreateLogic(request, assignment, response);
+	deviceEventCreateLogic(request, context, response);
 	response.setOriginatingEventId(request.getOriginatingEventId());
 	response.setResponseEventId(request.getResponseEventId());
 	response.setResponse(request.getResponse());
@@ -304,18 +304,18 @@ public class DeviceEventManagementPersistence extends Persistence {
      * Common logic for creating a {@link DeviceStateChange} from an
      * {@link IDeviceStateChangeCreateRequest}.
      * 
-     * @param assignment
+     * @param context
      * @param request
      * @return
      * @throws SiteWhereException
      */
-    public static DeviceStateChange deviceStateChangeCreateLogic(IDeviceAssignment assignment,
+    public static DeviceStateChange deviceStateChangeCreateLogic(IDeviceEventContext context,
 	    IDeviceStateChangeCreateRequest request) throws SiteWhereException {
 	require("Attribute", request.getAttribute());
 	require("Type", request.getType());
 
 	DeviceStateChange state = new DeviceStateChange();
-	deviceEventCreateLogic(request, assignment, state);
+	deviceEventCreateLogic(request, context, state);
 	state.setAttribute(request.getAttribute());
 	state.setType(request.getType());
 	state.setPreviousState(request.getPreviousState());

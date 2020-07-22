@@ -57,7 +57,7 @@ public class EnrichedCommandInvocationsPipeline extends KafkaStreamPipeline
      */
     @Override
     public void buildStreams(StreamsBuilder builder) {
-	builder.stream(getSourceTopicNames(), Consumed.with(Serdes.UUID(), SiteWhereSerdes.forEnrichedEventPayload()))
+	builder.stream(getSourceTopicNames(), Consumed.with(Serdes.UUID(), SiteWhereSerdes.forProcessedEventPayload()))
 		.process(getCommandInvocationsProcessorSupplier(), new String[0]);
     }
 

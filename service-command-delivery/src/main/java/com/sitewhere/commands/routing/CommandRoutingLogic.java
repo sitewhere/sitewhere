@@ -13,7 +13,7 @@ import com.sitewhere.commands.spi.ICommandDestination;
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
 import com.sitewhere.commands.spi.kafka.IUndeliveredCommandInvocationsProducer;
 import com.sitewhere.grpc.event.EventModelMarshaler;
-import com.sitewhere.rest.model.device.event.kafka.EnrichedEventPayload;
+import com.sitewhere.rest.model.device.event.kafka.ProcessedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -54,10 +54,10 @@ public class CommandRoutingLogic {
 	}
 	// If any command destination was not available, add to undelivered topic.
 	if (!deliveredToAll) {
-	    EnrichedEventPayload payload = new EnrichedEventPayload();
+	    ProcessedEventPayload payload = new ProcessedEventPayload();
 	    payload.setEventContext(eventContext);
 	    payload.setEvent(execution.getInvocation());
-	    byte[] message = EventModelMarshaler.buildEnrichedEventPayloadMessage(payload);
+	    byte[] message = EventModelMarshaler.buildProcessedEventPayloadMessage(payload);
 	    undelivered.send(eventContext.getDeviceId().toString(), message);
 	    router.getLogger().warn("Due to delivery failure, pushed command to undeliverable topic.");
 	}

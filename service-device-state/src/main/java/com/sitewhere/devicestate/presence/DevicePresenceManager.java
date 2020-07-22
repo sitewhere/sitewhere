@@ -20,8 +20,8 @@ import com.sitewhere.devicestate.spi.IDevicePresenceManager;
 import com.sitewhere.devicestate.spi.IPresenceNotificationStrategy;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
-import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
-import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.event.DeviceEventRequestBuilder;
 import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.microservice.api.state.IDeviceStateManagement;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
@@ -30,6 +30,8 @@ import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequ
 import com.sitewhere.rest.model.device.state.request.DeviceStateCreateRequest;
 import com.sitewhere.rest.model.search.device.DeviceStateSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.state.PresenceState;
 import com.sitewhere.spi.device.state.IDeviceState;
@@ -183,9 +185,11 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
 	    try {
 		// Only send an event if the strategy permits it.
 		if (getPresenceNotificationStrategy().shouldGenerateEvent(deviceState, create)) {
-		    IDeviceEventManagement eventManagement = new BlockingDeviceEventManagement(
-			    getDeviceEventManagementApiChannel());
-		    eventManagement.addDeviceStateChanges(deviceState.getDeviceAssignmentId(), create);
+		    IDeviceAssignment assignment = getDeviceManagement()
+			    .getDeviceAssignment(deviceState.getDeviceAssignmentId());
+		    IDeviceEventContext context = DeviceEventRequestBuilder
+			    .getContextForAssignment(getDeviceManagement(), assignment);
+		    getDeviceEventManagement().addDeviceStateChanges(context, create);
 		    return true;
 		}
 	    } catch (SiteWhereException e) {
@@ -229,7 +233,11 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
 	return ((IDeviceStateTenantEngine) getTenantEngine()).getDeviceStateManagement();
     }
 
-    private IDeviceEventManagementApiChannel<?> getDeviceEventManagementApiChannel() {
+    private IDeviceManagement getDeviceManagement() {
+	return ((IDeviceStateMicroservice) getMicroservice()).getDeviceManagement();
+    }
+
+    private IDeviceEventManagement getDeviceEventManagement() {
 	return ((IDeviceStateMicroservice) getMicroservice()).getDeviceEventManagementApiChannel();
     }
 }

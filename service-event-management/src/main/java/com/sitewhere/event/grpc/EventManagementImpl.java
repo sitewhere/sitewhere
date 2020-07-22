@@ -110,7 +110,7 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddDeviceEventBatchMethod());
 	    DeviceEventBatch apiRequest = EventModelConverter.asApiDeviceEventBatch(request.getRequest());
 	    IDeviceEventBatchResponse apiResult = getDeviceEventManagement()
-		    .addDeviceEventBatch(CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()), apiRequest);
+		    .addDeviceEventBatch(EventModelConverter.asApiDeviceEventContext(request.getContext()), apiRequest);
 	    GAddDeviceEventBatchResponse.Builder response = GAddDeviceEventBatchResponse.newBuilder();
 	    response.setResponse(EventModelConverter.asGrpcDeviceEventBatchResponse(apiResult));
 	    responseObserver.onNext(response.build());
@@ -189,8 +189,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    StreamObserver<GAddMeasurementsResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddMeasurementsMethod());
-	    List<IDeviceMeasurement> apiResult = getDeviceEventManagement().addDeviceMeasurements(
-		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
+	    List<? extends IDeviceMeasurement> apiResult = getDeviceEventManagement().addDeviceMeasurements(
+		    EventModelConverter.asApiDeviceEventContext(request.getContext()),
 		    EventModelConverter.asApiDeviceMeasurementCreateRequests(request.getRequestsList())
 			    .toArray(new IDeviceMeasurementCreateRequest[0]));
 	    GAddMeasurementsResponse.Builder response = GAddMeasurementsResponse.newBuilder();
@@ -247,8 +247,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
     public void addLocations(GAddLocationsRequest request, StreamObserver<GAddLocationsResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddLocationsMethod());
-	    List<IDeviceLocation> apiResult = getDeviceEventManagement().addDeviceLocations(
-		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
+	    List<? extends IDeviceLocation> apiResult = getDeviceEventManagement().addDeviceLocations(
+		    EventModelConverter.asApiDeviceEventContext(request.getContext()),
 		    EventModelConverter.asApiDeviceLocationCreateRequests(request.getRequestsList())
 			    .toArray(new IDeviceLocationCreateRequest[0]));
 	    GAddLocationsResponse.Builder response = GAddLocationsResponse.newBuilder();
@@ -305,8 +305,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
     public void addAlerts(GAddAlertsRequest request, StreamObserver<GAddAlertsResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddAlertsMethod());
-	    List<IDeviceAlert> apiResult = getDeviceEventManagement().addDeviceAlerts(
-		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
+	    List<? extends IDeviceAlert> apiResult = getDeviceEventManagement().addDeviceAlerts(
+		    EventModelConverter.asApiDeviceEventContext(request.getContext()),
 		    EventModelConverter.asApiDeviceAlertCreateRequests(request.getRequestsList())
 			    .toArray(new IDeviceAlertCreateRequest[0]));
 	    GAddAlertsResponse.Builder response = GAddAlertsResponse.newBuilder();
@@ -363,8 +363,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    StreamObserver<GAddCommandInvocationsResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddCommandInvocationsMethod());
-	    List<IDeviceCommandInvocation> apiResult = getDeviceEventManagement().addDeviceCommandInvocations(
-		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
+	    List<? extends IDeviceCommandInvocation> apiResult = getDeviceEventManagement().addDeviceCommandInvocations(
+		    EventModelConverter.asApiDeviceEventContext(request.getContext()),
 		    EventModelConverter.asApiDeviceCommandInvocationCreateRequests(request.getRequestsList())
 			    .toArray(new IDeviceCommandInvocationCreateRequest[0]));
 	    GAddCommandInvocationsResponse.Builder response = GAddCommandInvocationsResponse.newBuilder();
@@ -425,8 +425,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    StreamObserver<GAddCommandResponsesResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddCommandResponsesMethod());
-	    List<IDeviceCommandResponse> apiResult = getDeviceEventManagement().addDeviceCommandResponses(
-		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
+	    List<? extends IDeviceCommandResponse> apiResult = getDeviceEventManagement().addDeviceCommandResponses(
+		    EventModelConverter.asApiDeviceEventContext(request.getContext()),
 		    EventModelConverter.asApiDeviceCommandResponseCreateRequests(request.getRequestsList())
 			    .toArray(new IDeviceCommandResponseCreateRequest[0]));
 	    GAddCommandResponsesResponse.Builder response = GAddCommandResponsesResponse.newBuilder();
@@ -519,8 +519,8 @@ public class EventManagementImpl extends DeviceEventManagementGrpc.DeviceEventMa
 	    StreamObserver<GAddStateChangesResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, DeviceEventManagementGrpc.getAddStateChangesMethod());
-	    List<IDeviceStateChange> apiResult = getDeviceEventManagement().addDeviceStateChanges(
-		    CommonModelConverter.asApiUuid(request.getDeviceAssignmentId()),
+	    List<? extends IDeviceStateChange> apiResult = getDeviceEventManagement().addDeviceStateChanges(
+		    EventModelConverter.asApiDeviceEventContext(request.getContext()),
 		    EventModelConverter.asApiDeviceStateChangeCreateRequests(request.getRequestsList())
 			    .toArray(new IDeviceStateChangeCreateRequest[0]));
 	    GAddStateChangesResponse.Builder response = GAddStateChangesResponse.newBuilder();

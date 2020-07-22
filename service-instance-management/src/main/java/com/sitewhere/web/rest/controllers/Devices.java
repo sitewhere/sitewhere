@@ -38,7 +38,6 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.api.device.DeviceAssignmentMarshalHelper;
@@ -46,6 +45,7 @@ import com.sitewhere.microservice.api.device.DeviceGroupUtils;
 import com.sitewhere.microservice.api.device.DeviceMarshalHelper;
 import com.sitewhere.microservice.api.device.DeviceSummaryMarshalHelper;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.event.DeviceEventRequestBuilder;
 import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.microservice.api.label.ILabelGeneration;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
@@ -65,6 +65,7 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceSummary;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
@@ -542,7 +543,9 @@ public class Devices {
 		}
 	    }
 
-	    response = getDeviceEventManagement().addDeviceEventBatch(assignment.getId(), batch);
+	    IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(getDeviceManagement(),
+		    assignment);
+	    response = getDeviceEventManagement().addDeviceEventBatch(context, batch);
 	}
 
 	// TODO: Only returns the last response. Should this be refactored?
@@ -599,7 +602,7 @@ public class Devices {
     }
 
     protected IDeviceEventManagement getDeviceEventManagement() {
-	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiChannel());
+	return getMicroservice().getDeviceEventManagementApiChannel();
     }
 
     protected IAssetManagement getAssetManagement() {

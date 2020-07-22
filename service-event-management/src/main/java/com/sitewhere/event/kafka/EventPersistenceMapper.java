@@ -15,7 +15,6 @@ import org.apache.kafka.streams.KeyValue;
 
 import com.sitewhere.event.configuration.EventManagementTenantConfiguration;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
-import com.sitewhere.grpc.common.CommonModelConverter;
 import com.sitewhere.grpc.event.EventModelConverter;
 import com.sitewhere.grpc.model.DeviceEventModel.GAnyDeviceEventCreateRequest;
 import com.sitewhere.grpc.model.DeviceEventModel.GPreprocessedEventPayload;
@@ -25,6 +24,7 @@ import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.microservice.security.SystemUserCallable;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
@@ -87,31 +87,30 @@ public class EventPersistenceMapper
 	@Override
 	public List<? extends IDeviceEvent> runAsSystemUser() throws SiteWhereException {
 	    GAnyDeviceEventCreateRequest grpc = event.getEvent();
-	    UUID assignmentId = CommonModelConverter.asApiUuid(event.getDeviceAssignmentId());
+	    IDeviceEventContext context = EventModelConverter.asApiDeviceEventContext(event.getContext());
 	    IDeviceEventCreateRequest request = EventModelConverter.asApiDeviceEventCreateRequest(grpc);
 	    switch (request.getEventType()) {
 	    case Measurement:
 		PROCESSED_EVENTS.labels(buildLabels()).inc();
-		return getDeviceEventManagement().addDeviceMeasurements(assignmentId,
+		return getDeviceEventManagement().addDeviceMeasurements(context,
 			(IDeviceMeasurementCreateRequest) request);
 	    case Alert:
 		PROCESSED_EVENTS.labels(buildLabels()).inc();
-		return getDeviceEventManagement().addDeviceAlerts(assignmentId, (IDeviceAlertCreateRequest) request);
+		return getDeviceEventManagement().addDeviceAlerts(context, (IDeviceAlertCreateRequest) request);
 	    case CommandInvocation:
 		PROCESSED_EVENTS.labels(buildLabels()).inc();
-		return getDeviceEventManagement().addDeviceCommandInvocations(assignmentId,
+		return getDeviceEventManagement().addDeviceCommandInvocations(context,
 			(IDeviceCommandInvocationCreateRequest) request);
 	    case CommandResponse:
 		PROCESSED_EVENTS.labels(buildLabels()).inc();
-		return getDeviceEventManagement().addDeviceCommandResponses(assignmentId,
+		return getDeviceEventManagement().addDeviceCommandResponses(context,
 			(IDeviceCommandResponseCreateRequest) request);
 	    case Location:
 		PROCESSED_EVENTS.labels(buildLabels()).inc();
-		return getDeviceEventManagement().addDeviceLocations(assignmentId,
-			(IDeviceLocationCreateRequest) request);
+		return getDeviceEventManagement().addDeviceLocations(context, (IDeviceLocationCreateRequest) request);
 	    case StateChange:
 		PROCESSED_EVENTS.labels(buildLabels()).inc();
-		return getDeviceEventManagement().addDeviceStateChanges(assignmentId,
+		return getDeviceEventManagement().addDeviceStateChanges(context,
 			(IDeviceStateChangeCreateRequest) request);
 	    default:
 		getLogger()

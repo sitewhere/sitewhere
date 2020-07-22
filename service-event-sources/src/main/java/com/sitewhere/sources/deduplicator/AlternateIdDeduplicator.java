@@ -7,7 +7,6 @@
  */
 package com.sitewhere.sources.deduplicator;
 
-import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
@@ -54,7 +53,6 @@ public class AlternateIdDeduplicator extends TenantEngineLifecycleComponent impl
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {
-	return new BlockingDeviceEventManagement(
-		((IEventSourcesMicroservice) getMicroservice()).getDeviceEventManagementApiChannel());
+	return ((IEventSourcesMicroservice) getMicroservice()).getDeviceEventManagementApiChannel();
     }
 }

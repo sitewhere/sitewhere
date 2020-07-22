@@ -19,7 +19,7 @@ import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.device.event.kafka.IEnrichedEventPayload;
+import com.sitewhere.spi.device.event.kafka.IProcessedEventPayload;
 
 /**
  * Outbound connector that routes each event in a batch to a handler in a serial
@@ -32,8 +32,8 @@ public class SerialOutboundConnector extends FilteredOutboundConnector implement
      * processFilteredEventBatch(java.util.List)
      */
     @Override
-    public void processFilteredEventBatch(List<IEnrichedEventPayload> payloads) throws SiteWhereException {
-	for (IEnrichedEventPayload payload : payloads) {
+    public void processFilteredEventBatch(List<IProcessedEventPayload> payloads) throws SiteWhereException {
+	for (IProcessedEventPayload payload : payloads) {
 	    try {
 		IDeviceEventContext context = payload.getEventContext();
 		IDeviceEvent event = payload.getEvent();
@@ -78,7 +78,7 @@ public class SerialOutboundConnector extends FilteredOutboundConnector implement
      * sitewhere.spi.device.event.kafka.IEnrichedEventPayload, java.lang.Throwable)
      */
     @Override
-    public void handleFailedRecord(IEnrichedEventPayload payload, Throwable t) throws SiteWhereException {
+    public void handleFailedRecord(IProcessedEventPayload payload, Throwable t) throws SiteWhereException {
 	getLogger().warn("Failed to process outbound connector record.", t);
     }
 
@@ -140,5 +140,15 @@ public class SerialOutboundConnector extends FilteredOutboundConnector implement
      */
     @Override
     public void onStateChange(IDeviceEventContext context, IDeviceStateChange state) throws SiteWhereException {
+    }
+
+    /*
+     * @see
+     * com.sitewhere.connectors.spi.IOutboundConnector#handleFailedBatch(java.util.
+     * List, java.lang.Throwable)
+     */
+    @Override
+    public void handleFailedBatch(List<IProcessedEventPayload> payloads, Throwable failReason)
+	    throws SiteWhereException {
     }
 }

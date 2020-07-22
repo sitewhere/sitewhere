@@ -13,7 +13,7 @@ import java.util.List;
 import com.sitewhere.connectors.spi.IDeviceEventFilter;
 import com.sitewhere.connectors.spi.IFilteredOutboundConnector;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.kafka.IEnrichedEventPayload;
+import com.sitewhere.spi.device.event.kafka.IProcessedEventPayload;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
@@ -69,9 +69,9 @@ public abstract class FilteredOutboundConnector extends OutboundConnector implem
      * List)
      */
     @Override
-    public void processEventBatch(List<IEnrichedEventPayload> payloads) throws SiteWhereException {
-	List<IEnrichedEventPayload> notFiltered = new ArrayList<>();
-	for (IEnrichedEventPayload payload : payloads) {
+    public void processEventBatch(List<IProcessedEventPayload> payloads) throws SiteWhereException {
+	List<IProcessedEventPayload> notFiltered = new ArrayList<>();
+	for (IProcessedEventPayload payload : payloads) {
 	    if (!isFiltered(payload)) {
 		notFiltered.add(payload);
 	    }
@@ -86,7 +86,7 @@ public abstract class FilteredOutboundConnector extends OutboundConnector implem
      * @return
      * @throws SiteWhereException
      */
-    protected boolean isFiltered(IEnrichedEventPayload payload) throws SiteWhereException {
+    protected boolean isFiltered(IProcessedEventPayload payload) throws SiteWhereException {
 	for (IDeviceEventFilter filter : getFilters()) {
 	    if (filter.isFiltered(payload.getEventContext(), payload.getEvent())) {
 		getLogger().info(String.format("Event payload filtered for %s based on %s.",
