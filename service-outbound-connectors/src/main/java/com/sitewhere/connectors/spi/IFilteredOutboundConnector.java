@@ -10,7 +10,7 @@ package com.sitewhere.connectors.spi;
 import java.util.List;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.kafka.IEnrichedEventPayload;
+import com.sitewhere.spi.device.event.kafka.IProcessedEventPayload;
 
 /**
  * Adds concept of filtering to outbound connectors.
@@ -30,5 +30,5 @@ public interface IFilteredOutboundConnector extends IOutboundConnector {
      * @param payloads
      * @throws SiteWhereException
      */
-    public void processFilteredEventBatch(List<IEnrichedEventPayload> payloads) throws SiteWhereException;
+    public void processFilteredEventBatch(List<IProcessedEventPayload> payloads) throws SiteWhereException;
 }

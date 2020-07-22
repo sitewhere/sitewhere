@@ -26,7 +26,6 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.spi.SiteWhereException;
@@ -85,8 +84,8 @@ public class DeviceEvents {
 	return Response.ok(getDeviceEventManagement().getDeviceEventByAlternateId(alternateId)).build();
     }
 
-    private IDeviceEventManagement getDeviceEventManagement() {
-	return new BlockingDeviceEventManagement(getMicroservice().getDeviceEventManagementApiChannel());
+    protected IDeviceEventManagement getDeviceEventManagement() {
+	return getMicroservice().getDeviceEventManagementApiChannel();
     }
 
     protected IInstanceManagementMicroservice<?> getMicroservice() {

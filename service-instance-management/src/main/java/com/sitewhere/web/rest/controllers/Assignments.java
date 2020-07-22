@@ -42,7 +42,6 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
@@ -50,6 +49,7 @@ import com.sitewhere.microservice.api.device.ChartBuilder;
 import com.sitewhere.microservice.api.device.DeviceAssignmentMarshalHelper;
 import com.sitewhere.microservice.api.device.DeviceCommandInvocationMarshalHelper;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.event.DeviceEventRequestBuilder;
 import com.sitewhere.microservice.api.label.ILabelGeneration;
 import com.sitewhere.microservice.api.schedule.IScheduleManagement;
 import com.sitewhere.microservice.api.schedule.ScheduledJobHelper;
@@ -75,6 +75,7 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.DeviceEventIndex;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
@@ -353,8 +354,9 @@ public class Assignments {
 	    @RequestBody DeviceAssignmentBulkRequest bulk) throws SiteWhereException {
 	List<UUID> ids = getDeviceAssignmentIds(bulk);
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate);
-	return Response.ok(new BlockingDeviceEventManagement(getDeviceEventManagement())
-		.listDeviceMeasurementsForIndex(DeviceEventIndex.Assignment, ids, criteria)).build();
+	return Response.ok(
+		getDeviceEventManagement().listDeviceMeasurementsForIndex(DeviceEventIndex.Assignment, ids, criteria))
+		.build();
     }
 
     /**
@@ -380,8 +382,8 @@ public class Assignments {
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate);
-	return Response.ok(new BlockingDeviceEventManagement(getDeviceEventManagement()).listDeviceMeasurementsForIndex(
-		DeviceEventIndex.Assignment, Collections.singletonList(assignment.getId()), criteria)).build();
+	return Response.ok(getDeviceEventManagement().listDeviceMeasurementsForIndex(DeviceEventIndex.Assignment,
+		Collections.singletonList(assignment.getId()), criteria)).build();
     }
 
     /**
@@ -410,9 +412,8 @@ public class Assignments {
 	Map<String, List<IChartSeries<Double>>> results = new HashMap<String, List<IChartSeries<Double>>>();
 	for (String token : bulk.getDeviceAssignmentTokens()) {
 	    IDeviceAssignment assignment = assertDeviceAssignment(token);
-	    ISearchResults<IDeviceMeasurement> measurements = new BlockingDeviceEventManagement(
-		    getDeviceEventManagement()).listDeviceMeasurementsForIndex(DeviceEventIndex.Assignment,
-			    Collections.singletonList(assignment.getId()), criteria);
+	    ISearchResults<IDeviceMeasurement> measurements = getDeviceEventManagement().listDeviceMeasurementsForIndex(
+		    DeviceEventIndex.Assignment, Collections.singletonList(assignment.getId()), criteria);
 	    ChartBuilder builder = new ChartBuilder();
 	    results.put(token, builder.process(measurements.getResults(), measurementIds));
 	}
@@ -444,9 +445,8 @@ public class Assignments {
 	    throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	ISearchResults<IDeviceMeasurement> measurements = new BlockingDeviceEventManagement(getDeviceEventManagement())
-		.listDeviceMeasurementsForIndex(DeviceEventIndex.Assignment,
-			Collections.singletonList(assignment.getId()), criteria);
+	ISearchResults<IDeviceMeasurement> measurements = getDeviceEventManagement().listDeviceMeasurementsForIndex(
+		DeviceEventIndex.Assignment, Collections.singletonList(assignment.getId()), criteria);
 	ChartBuilder builder = new ChartBuilder();
 	return Response.ok(builder.process(measurements.getResults(), measurementIds)).build();
     }
@@ -466,8 +466,9 @@ public class Assignments {
 	    @Parameter(description = "Assignment token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return Response.ok(new BlockingDeviceEventManagement(getDeviceEventManagement())
-		.addDeviceMeasurements(assignment.getId(), input).get(0)).build();
+	IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(getDeviceManagement(),
+		assignment);
+	return Response.ok(getDeviceEventManagement().addDeviceMeasurements(context, input).get(0)).build();
     }
 
     /**
@@ -492,8 +493,9 @@ public class Assignments {
 	    @RequestBody DeviceAssignmentBulkRequest bulk) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate);
 	List<UUID> ids = getDeviceAssignmentIds(bulk);
-	return Response.ok(new BlockingDeviceEventManagement(getDeviceEventManagement())
-		.listDeviceLocationsForIndex(DeviceEventIndex.Assignment, ids, criteria)).build();
+	return Response
+		.ok(getDeviceEventManagement().listDeviceLocationsForIndex(DeviceEventIndex.Assignment, ids, criteria))
+		.build();
     }
 
     /**
@@ -519,8 +521,8 @@ public class Assignments {
 	    throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return Response.ok(new BlockingDeviceEventManagement(getDeviceEventManagement()).listDeviceLocationsForIndex(
-		DeviceEventIndex.Assignment, Collections.singletonList(assignment.getId()), criteria)).build();
+	return Response.ok(getDeviceEventManagement().listDeviceLocationsForIndex(DeviceEventIndex.Assignment,
+		Collections.singletonList(assignment.getId()), criteria)).build();
     }
 
     /**
@@ -538,8 +540,9 @@ public class Assignments {
 	    @Parameter(description = "Assignment token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return Response.ok(new BlockingDeviceEventManagement(getDeviceEventManagement())
-		.addDeviceLocations(assignment.getId(), input).get(0)).build();
+	IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(getDeviceManagement(),
+		assignment);
+	return Response.ok(getDeviceEventManagement().addDeviceLocations(context, input).get(0)).build();
     }
 
     /**
@@ -564,8 +567,9 @@ public class Assignments {
 	    @RequestBody DeviceAssignmentBulkRequest bulk) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate);
 	List<UUID> ids = getDeviceAssignmentIds(bulk);
-	return Response.ok(new BlockingDeviceEventManagement(getDeviceEventManagement())
-		.listDeviceAlertsForIndex(DeviceEventIndex.Assignment, ids, criteria)).build();
+	return Response
+		.ok(getDeviceEventManagement().listDeviceAlertsForIndex(DeviceEventIndex.Assignment, ids, criteria))
+		.build();
     }
 
     /**
@@ -591,8 +595,8 @@ public class Assignments {
 	    throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return Response.ok(new BlockingDeviceEventManagement(getDeviceEventManagement()).listDeviceAlertsForIndex(
-		DeviceEventIndex.Assignment, Collections.singletonList(assignment.getId()), criteria)).build();
+	return Response.ok(getDeviceEventManagement().listDeviceAlertsForIndex(DeviceEventIndex.Assignment,
+		Collections.singletonList(assignment.getId()), criteria)).build();
     }
 
     /**
@@ -610,8 +614,9 @@ public class Assignments {
 	    @Parameter(description = "Assignment token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return Response.ok(new BlockingDeviceEventManagement(getDeviceEventManagement())
-		.addDeviceAlerts(assignment.getId(), input).get(0)).build();
+	IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(getDeviceManagement(),
+		assignment);
+	return Response.ok(getDeviceEventManagement().addDeviceAlerts(context, input).get(0)).build();
     }
 
     /**
@@ -629,8 +634,10 @@ public class Assignments {
 	    @Parameter(description = "Assignment token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	IDeviceCommandInvocation result = new BlockingDeviceEventManagement(getDeviceEventManagement())
-		.addDeviceCommandInvocations(assignment.getId(), request).get(0);
+	IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(getDeviceManagement(),
+		assignment);
+	IDeviceCommandInvocation result = getDeviceEventManagement().addDeviceCommandInvocations(context, request)
+		.get(0);
 	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(getDeviceManagement());
 	return Response.ok(helper.convert(result)).build();
     }
@@ -682,7 +689,7 @@ public class Assignments {
 	    @RequestBody DeviceAssignmentBulkRequest bulk) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate);
 	List<UUID> ids = getDeviceAssignmentIds(bulk);
-	ISearchResults<IDeviceCommandInvocation> matches = new BlockingDeviceEventManagement(getDeviceEventManagement())
+	ISearchResults<IDeviceCommandInvocation> matches = getDeviceEventManagement()
 		.listDeviceCommandInvocationsForIndex(DeviceEventIndex.Assignment, ids, criteria);
 	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(getDeviceManagement());
 	helper.setIncludeCommand(includeCommand);
@@ -718,7 +725,7 @@ public class Assignments {
 	    throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	ISearchResults<IDeviceCommandInvocation> matches = new BlockingDeviceEventManagement(getDeviceEventManagement())
+	ISearchResults<IDeviceCommandInvocation> matches = getDeviceEventManagement()
 		.listDeviceCommandInvocationsForIndex(DeviceEventIndex.Assignment,
 			Collections.singletonList(assignment.getId()), criteria);
 	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(getDeviceManagement());
@@ -745,8 +752,9 @@ public class Assignments {
 	    @Parameter(description = "Assignment token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return Response.ok(new BlockingDeviceEventManagement(getDeviceEventManagement())
-		.addDeviceStateChanges(assignment.getId(), input).get(0)).build();
+	IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(getDeviceManagement(),
+		assignment);
+	return Response.ok(getDeviceEventManagement().addDeviceStateChanges(context, input).get(0)).build();
     }
 
     /**
@@ -771,8 +779,9 @@ public class Assignments {
 	    @RequestBody DeviceAssignmentBulkRequest bulk) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate);
 	List<UUID> ids = getDeviceAssignmentIds(bulk);
-	return Response.ok(new BlockingDeviceEventManagement(getDeviceEventManagement())
-		.listDeviceStateChangesForIndex(DeviceEventIndex.Assignment, ids, criteria)).build();
+	return Response.ok(
+		getDeviceEventManagement().listDeviceStateChangesForIndex(DeviceEventIndex.Assignment, ids, criteria))
+		.build();
     }
 
     /**
@@ -798,8 +807,8 @@ public class Assignments {
 	    throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return Response.ok(new BlockingDeviceEventManagement(getDeviceEventManagement()).listDeviceStateChangesForIndex(
-		DeviceEventIndex.Assignment, Collections.singletonList(assignment.getId()), criteria)).build();
+	return Response.ok(getDeviceEventManagement().listDeviceStateChangesForIndex(DeviceEventIndex.Assignment,
+		Collections.singletonList(assignment.getId()), criteria)).build();
     }
 
     /**
@@ -817,8 +826,9 @@ public class Assignments {
 	    @Parameter(description = "Assignment token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	IDeviceCommandResponse result = new BlockingDeviceEventManagement(getDeviceEventManagement())
-		.addDeviceCommandResponses(assignment.getId(), input).get(0);
+	IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(getDeviceManagement(),
+		assignment);
+	IDeviceCommandResponse result = getDeviceEventManagement().addDeviceCommandResponses(context, input).get(0);
 	return Response.ok(DeviceCommandResponse.copy(result)).build();
     }
 
@@ -844,8 +854,8 @@ public class Assignments {
 	    @RequestBody DeviceAssignmentBulkRequest bulk) throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate);
 	List<UUID> ids = getDeviceAssignmentIds(bulk);
-	return Response.ok(new BlockingDeviceEventManagement(getDeviceEventManagement())
-		.listDeviceCommandResponsesForIndex(DeviceEventIndex.Assignment, ids, criteria)).build();
+	return Response.ok(getDeviceEventManagement().listDeviceCommandResponsesForIndex(DeviceEventIndex.Assignment,
+		ids, criteria)).build();
     }
 
     /**
@@ -871,10 +881,8 @@ public class Assignments {
 	    throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = createDateRangeSearchCriteria(page, pageSize, startDate, endDate);
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	return Response
-		.ok(new BlockingDeviceEventManagement(getDeviceEventManagement()).listDeviceCommandResponsesForIndex(
-			DeviceEventIndex.Assignment, Collections.singletonList(assignment.getId()), criteria))
-		.build();
+	return Response.ok(getDeviceEventManagement().listDeviceCommandResponsesForIndex(DeviceEventIndex.Assignment,
+		Collections.singletonList(assignment.getId()), criteria)).build();
     }
 
     /**

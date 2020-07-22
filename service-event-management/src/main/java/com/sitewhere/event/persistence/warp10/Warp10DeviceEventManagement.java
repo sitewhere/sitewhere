@@ -27,8 +27,6 @@ import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.search.DeviceMeasurementsSearchResults;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.DeviceEventIndex;
 import com.sitewhere.spi.device.event.DeviceEventType;
@@ -38,6 +36,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
@@ -47,8 +46,6 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
-import com.sitewhere.spi.error.ErrorCode;
-import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
@@ -75,14 +72,13 @@ public class Warp10DeviceEventManagement extends TenantEngineLifecycleComponent 
 
     /*
      * @see com.sitewhere.microservice.api.event.IDeviceEventManagement#
-     * addDeviceEventBatch(java.util.UUID,
+     * addDeviceEventBatch(com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.IDeviceEventBatch)
      */
     @Override
-    public IDeviceEventBatchResponse addDeviceEventBatch(UUID deviceAssignmentId, IDeviceEventBatch batch)
+    public IDeviceEventBatchResponse addDeviceEventBatch(IDeviceEventContext context, IDeviceEventBatch batch)
 	    throws SiteWhereException {
-	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
-	return DeviceEventManagementPersistence.deviceEventBatchLogic(assignment, batch, this);
+	return DeviceEventManagementPersistence.deviceEventBatchLogic(context, batch, this);
     }
 
     /*
@@ -117,34 +113,18 @@ public class Warp10DeviceEventManagement extends TenantEngineLifecycleComponent 
 	return null;
     }
 
-    /**
-     * Assert that a device assignment exists and throw an exception if not.
-     *
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IDeviceAssignment assertDeviceAssignmentById(UUID id) throws SiteWhereException {
-	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(id);
-	if (assignment == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentId, ErrorLevel.ERROR);
-	}
-	return assignment;
-    }
-
     /*
      * @see com.sitewhere.microservice.api.event.IDeviceEventManagement#
-     * addDeviceMeasurements(java.util.UUID,
+     * addDeviceMeasurements(com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest[])
      */
     @Override
-    public List<IDeviceMeasurement> addDeviceMeasurements(UUID deviceAssignmentId,
+    public List<IDeviceMeasurement> addDeviceMeasurements(IDeviceEventContext context,
 	    IDeviceMeasurementCreateRequest... requests) throws SiteWhereException {
 	List<IDeviceMeasurement> result = new ArrayList<>();
-	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
-
 	for (IDeviceMeasurementCreateRequest request : requests) {
-	    DeviceMeasurement measurements = DeviceEventManagementPersistence.deviceMeasurementCreateLogic(request,
-		    assignment);
+	    DeviceMeasurement measurements = DeviceEventManagementPersistence.deviceMeasurementCreateLogic(context,
+		    request);
 	    GTSInput gtsMeasurement = Warp10DeviceMeasurement.toGTS(measurements, false);
 	    int ingress = getClient().insertGTS(gtsMeasurement);
 	    if (ingress == 200) {
@@ -181,19 +161,16 @@ public class Warp10DeviceEventManagement extends TenantEngineLifecycleComponent 
 
     /*
      * @see com.sitewhere.microservice.api.event.IDeviceEventManagement#
-     * addDeviceLocations(java.util.UUID,
+     * addDeviceLocations(com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest[])
      */
     @Override
-    public List<IDeviceLocation> addDeviceLocations(UUID deviceAssignmentId, IDeviceLocationCreateRequest... requests)
-	    throws SiteWhereException {
+    public List<IDeviceLocation> addDeviceLocations(IDeviceEventContext context,
+	    IDeviceLocationCreateRequest... requests) throws SiteWhereException {
 	List<IDeviceLocation> result = new ArrayList<>();
-	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
-
 	for (IDeviceLocationCreateRequest request : requests) {
-	    DeviceLocation location = DeviceEventManagementPersistence.deviceLocationCreateLogic(assignment, request);
+	    DeviceLocation location = DeviceEventManagementPersistence.deviceLocationCreateLogic(context, request);
 	    GTSInput gtsLocations = Warp10DeviceLocation.toGTS(location, false);
-
 	    int ingress = getClient().insertGTS(gtsLocations);
 	    if (ingress == 200) {
 		result.add(location);
@@ -228,17 +205,15 @@ public class Warp10DeviceEventManagement extends TenantEngineLifecycleComponent 
     /*
      * @see
      * com.sitewhere.microservice.api.event.IDeviceEventManagement#addDeviceAlerts(
-     * java.util.UUID,
+     * com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest[])
      */
     @Override
-    public List<IDeviceAlert> addDeviceAlerts(UUID deviceAssignmentId, IDeviceAlertCreateRequest... requests)
+    public List<IDeviceAlert> addDeviceAlerts(IDeviceEventContext context, IDeviceAlertCreateRequest... requests)
 	    throws SiteWhereException {
 	List<IDeviceAlert> result = new ArrayList<>();
-	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
-
 	for (IDeviceAlertCreateRequest request : requests) {
-	    DeviceAlert alert = DeviceEventManagementPersistence.deviceAlertCreateLogic(assignment, request);
+	    DeviceAlert alert = DeviceEventManagementPersistence.deviceAlertCreateLogic(context, request);
 	    GTSInput gtsAlert = Warp10DeviceAlert.toGTS(alert, false);
 	    int ingress = getClient().insertGTS(gtsAlert);
 	    if (ingress == 200) {
@@ -273,24 +248,22 @@ public class Warp10DeviceEventManagement extends TenantEngineLifecycleComponent 
 
     /*
      * @see com.sitewhere.microservice.api.event.IDeviceEventManagement#
-     * addDeviceCommandInvocations(java.util.UUID,
+     * addDeviceCommandInvocations(com.sitewhere.spi.device.event.
+     * IDeviceEventContext,
      * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest[
      * ])
      */
     @Override
-    public List<IDeviceCommandInvocation> addDeviceCommandInvocations(UUID deviceAssignmentId,
+    public List<IDeviceCommandInvocation> addDeviceCommandInvocations(IDeviceEventContext context,
 	    IDeviceCommandInvocationCreateRequest... requests) throws SiteWhereException {
 	List<IDeviceCommandInvocation> result = new ArrayList<>();
-	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
-
 	for (IDeviceCommandInvocationCreateRequest request : requests) {
-	    IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(assignment.getDeviceTypeId(),
+	    IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(context.getDeviceTypeId(),
 		    request.getCommandToken());
-	    DeviceCommandInvocation ci = DeviceEventManagementPersistence.deviceCommandInvocationCreateLogic(assignment,
+	    DeviceCommandInvocation ci = DeviceEventManagementPersistence.deviceCommandInvocationCreateLogic(context,
 		    command, request);
 
 	    GTSInput gtsCi = Warp10DeviceCommandInvocation.toGTS(ci);
-
 	    int ingress = getClient().insertGTS(gtsCi);
 	    if (ingress == 200) {
 		result.add(ci);
@@ -326,21 +299,19 @@ public class Warp10DeviceEventManagement extends TenantEngineLifecycleComponent 
 
     /*
      * @see com.sitewhere.microservice.api.event.IDeviceEventManagement#
-     * addDeviceCommandResponses(java.util.UUID,
+     * addDeviceCommandResponses(com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest[])
      */
     @Override
-    public List<IDeviceCommandResponse> addDeviceCommandResponses(UUID deviceAssignmentId,
+    public List<IDeviceCommandResponse> addDeviceCommandResponses(IDeviceEventContext context,
 	    IDeviceCommandResponseCreateRequest... requests) throws SiteWhereException {
 	List<IDeviceCommandResponse> result = new ArrayList<>();
-	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
-
 	for (IDeviceCommandResponseCreateRequest request : requests) {
-	    DeviceCommandResponse response = DeviceEventManagementPersistence
-		    .deviceCommandResponseCreateLogic(assignment, request);
+	    DeviceCommandResponse response = DeviceEventManagementPersistence.deviceCommandResponseCreateLogic(context,
+		    request);
+
 	    GTSInput gtsResponse = Warp10DeviceCommandResponse.toGTS(response);
 	    int ingress = getClient().insertGTS(gtsResponse);
-
 	    if (ingress == 200) {
 		result.add(response);
 	    }
@@ -395,17 +366,16 @@ public class Warp10DeviceEventManagement extends TenantEngineLifecycleComponent 
 
     /*
      * @see com.sitewhere.microservice.api.event.IDeviceEventManagement#
-     * addDeviceStateChanges(java.util.UUID,
+     * addDeviceStateChanges(com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest[])
      */
     @Override
-    public List<IDeviceStateChange> addDeviceStateChanges(UUID deviceAssignmentId,
+    public List<IDeviceStateChange> addDeviceStateChanges(IDeviceEventContext context,
 	    IDeviceStateChangeCreateRequest... requests) throws SiteWhereException {
 	List<IDeviceStateChange> result = new ArrayList<>();
-	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
 	for (IDeviceStateChangeCreateRequest request : requests) {
-	    DeviceStateChange state = DeviceEventManagementPersistence.deviceStateChangeCreateLogic(assignment,
-		    request);
+	    DeviceStateChange state = DeviceEventManagementPersistence.deviceStateChangeCreateLogic(context, request);
+
 	    GTSInput gtsState = Warp10DeviceStateChange.toGTS(state);
 	    int ingress = getClient().insertGTS(gtsState);
 	    if (ingress == 200) {

@@ -13,12 +13,14 @@ import java.util.UUID;
 
 import org.apache.kafka.streams.KeyValue;
 
-import com.sitewhere.grpc.common.CommonModelConverter;
+import com.sitewhere.grpc.event.EventModelConverter;
 import com.sitewhere.grpc.model.DeviceEventModel.GDecodedEventPayload;
 import com.sitewhere.grpc.model.DeviceEventModel.GPreprocessedEventPayload;
 import com.sitewhere.inbound.spi.processing.IInboundProcessingConfiguration;
 import com.sitewhere.microservice.kafka.KeyValueMapperComponent;
+import com.sitewhere.rest.model.device.event.DeviceEventContext;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 
 /**
@@ -38,19 +40,32 @@ public class PreprocessedEventMapper
     /**
      * Build preprocessed payload by adding assignment details to decoded event.
      * 
+     * @param device
      * @param assignment
-     * @param event
+     * @param payload
      * @return
      * @throws SiteWhereException
      */
-    protected GPreprocessedEventPayload buildPreProcessedEventPayload(IDeviceAssignment assignment,
-	    GDecodedEventPayload event) throws SiteWhereException {
+    protected GPreprocessedEventPayload buildPreProcessedEventPayload(IDevice device, IDeviceAssignment assignment,
+	    GDecodedEventPayload payload) throws SiteWhereException {
 	GPreprocessedEventPayload.Builder preproc = GPreprocessedEventPayload.newBuilder();
-	preproc.setSourceId(event.getSourceId());
-	preproc.setDeviceToken(event.getDeviceToken());
-	preproc.setEvent(event.getEvent());
-	preproc.setDeviceAssignmentId(CommonModelConverter.asGrpcUuid(assignment.getId()));
-	preproc.setDeviceId(CommonModelConverter.asGrpcUuid(assignment.getDeviceId()));
+
+	DeviceEventContext context = new DeviceEventContext();
+	context.setDeviceToken(device.getToken());
+	context.setDeviceId(device.getId());
+	context.setDeviceTypeId(device.getDeviceTypeId());
+	context.setParentDeviceId(device.getParentDeviceId());
+	context.setDeviceStatus(device.getStatus());
+	context.setDeviceMetadata(device.getMetadata());
+	context.setDeviceAssignmentId(assignment.getId());
+	context.setCustomerId(assignment.getCustomerId());
+	context.setAreaId(assignment.getAreaId());
+	context.setAssetId(assignment.getAssetId());
+	context.setDeviceAssignmentStatus(assignment.getStatus());
+	context.setDeviceAssignmentMetadata(assignment.getMetadata());
+	preproc.setContext(EventModelConverter.asGrpcDeviceEventContext(context));
+	preproc.setEvent(payload.getEvent());
+
 	return preproc.build();
     }
 
@@ -63,7 +78,7 @@ public class PreprocessedEventMapper
 	try {
 	    List<GPreprocessedEventPayload> payloads = new ArrayList<>();
 	    for (IDeviceAssignment assignment : context.getDeviceAssignments()) {
-		GPreprocessedEventPayload preproc = buildPreProcessedEventPayload(assignment,
+		GPreprocessedEventPayload preproc = buildPreProcessedEventPayload(context.getDevice(), assignment,
 			context.getDecodedEventPayload());
 		payloads.add(preproc);
 	    }

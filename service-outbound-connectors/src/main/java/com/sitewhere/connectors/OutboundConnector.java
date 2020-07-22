@@ -7,16 +7,11 @@
  */
 package com.sitewhere.connectors;
 
-import java.util.List;
-
 import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsMicroservice;
-import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
-import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.kafka.IEnrichedEventPayload;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
@@ -63,16 +58,6 @@ public abstract class OutboundConnector extends TenantEngineLifecycleComponent i
     }
 
     /*
-     * @see
-     * com.sitewhere.connectors.spi.IOutboundConnector#handleFailedBatch(java.util.
-     * List, java.lang.Throwable)
-     */
-    @Override
-    public void handleFailedBatch(List<IEnrichedEventPayload> payloads, Throwable failReason)
-	    throws SiteWhereException {
-    }
-
-    /*
      * @see com.sitewhere.connectors.spi.IOutboundConnector#getDeviceManagement()
      */
     @Override
@@ -86,7 +71,7 @@ public abstract class OutboundConnector extends TenantEngineLifecycleComponent i
      */
     @Override
     public IDeviceEventManagement getDeviceEventManagement() {
-	return new BlockingDeviceEventManagement(((IOutboundConnectorsMicroservice) getTenantEngine().getMicroservice())
-		.getDeviceEventManagementApiChannel());
+	return ((IOutboundConnectorsMicroservice) getTenantEngine().getMicroservice())
+		.getDeviceEventManagementApiChannel();
     }
 }

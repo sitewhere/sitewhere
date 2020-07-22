@@ -78,7 +78,7 @@ public class DeviceStatePipeline extends KafkaStreamPipeline {
      */
     @Override
     public void buildStreams(StreamsBuilder builder) {
-	builder.stream(getSourceTopicNames(), Consumed.with(Serdes.UUID(), SiteWhereSerdes.forEnrichedEventPayload()))
+	builder.stream(getSourceTopicNames(), Consumed.with(Serdes.UUID(), SiteWhereSerdes.forProcessedEventPayload()))
 		.groupByKey().windowedBy(TimeWindows.of(Duration.ofSeconds(WINDOW_LENGTH_IN_SECONDS)))
 		.aggregate(() -> new AggregatedDeviceState(), getAggregator(),
 			Materialized.as(

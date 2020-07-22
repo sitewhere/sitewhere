@@ -188,17 +188,17 @@ public class QrCodeGenerator extends TenantEngineLifecycleComponent implements I
      * @param argb
      * @return
      */
-    protected static int parse(String argb) {
-	if (argb.startsWith("0x")) {
-	    argb = argb.substring(2);
+    protected static int parse(String rgba) {
+	if (rgba.startsWith("0x")) {
+	    rgba = rgba.substring(2);
 	}
-	if (argb.length() != 8) {
+	if (rgba.length() != 8) {
 	    return 0;
 	}
-	byte a = (byte) Integer.parseInt(argb.substring(0, 2), 16);
-	byte r = (byte) Integer.parseInt(argb.substring(2, 4), 16);
-	byte g = (byte) Integer.parseInt(argb.substring(4, 6), 16);
-	byte b = (byte) Integer.parseInt(argb.substring(6, 8), 16);
+	byte r = (byte) Integer.parseInt(rgba.substring(0, 2), 16);
+	byte g = (byte) Integer.parseInt(rgba.substring(2, 4), 16);
+	byte b = (byte) Integer.parseInt(rgba.substring(4, 6), 16);
+	byte a = (byte) Integer.parseInt(rgba.substring(6, 8), 16);
 	return (a << 24) + ((r & 0xFF) << 16) + ((g & 0xFF) << 8) + (b & 0xFF);
     }
 }

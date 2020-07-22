@@ -12,7 +12,7 @@ import java.util.List;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.kafka.IEnrichedEventPayload;
+import com.sitewhere.spi.device.event.kafka.IProcessedEventPayload;
 import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
@@ -40,7 +40,7 @@ public interface IOutboundConnector extends ITenantEngineLifecycleComponent {
      * @param payloads
      * @throws SiteWhereException
      */
-    public void processEventBatch(List<IEnrichedEventPayload> payloads) throws SiteWhereException;
+    public void processEventBatch(List<IProcessedEventPayload> payloads) throws SiteWhereException;
 
     /**
      * Handle a batch of events that could not be processed.
@@ -49,7 +49,8 @@ public interface IOutboundConnector extends ITenantEngineLifecycleComponent {
      * @param failReason
      * @throws SiteWhereException
      */
-    public void handleFailedBatch(List<IEnrichedEventPayload> payloads, Throwable failReason) throws SiteWhereException;
+    public void handleFailedBatch(List<IProcessedEventPayload> payloads, Throwable failReason)
+	    throws SiteWhereException;
 
     /**
      * Get device management API.

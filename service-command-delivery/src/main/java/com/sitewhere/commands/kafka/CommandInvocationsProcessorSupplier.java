@@ -15,9 +15,9 @@ import org.apache.kafka.streams.processor.ProcessorContext;
 import com.sitewhere.commands.spi.ICommandProcessingStrategy;
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine;
 import com.sitewhere.grpc.event.EventModelConverter;
-import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
+import com.sitewhere.grpc.model.DeviceEventModel.GProcessedEventPayload;
 import com.sitewhere.microservice.kafka.ProcessorSupplierComponent;
-import com.sitewhere.rest.model.device.event.kafka.EnrichedEventPayload;
+import com.sitewhere.rest.model.device.event.kafka.ProcessedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 
@@ -25,14 +25,14 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
  * Takes command invocation events from the pipeline and applies the command
  * processing strategy.
  */
-public class CommandInvocationsProcessorSupplier extends ProcessorSupplierComponent<UUID, GEnrichedEventPayload> {
+public class CommandInvocationsProcessorSupplier extends ProcessorSupplierComponent<UUID, GProcessedEventPayload> {
 
     /*
      * @see org.apache.kafka.streams.processor.ProcessorSupplier#get()
      */
     @Override
-    public Processor<UUID, GEnrichedEventPayload> get() {
-	return new Processor<UUID, GEnrichedEventPayload>() {
+    public Processor<UUID, GProcessedEventPayload> get() {
+	return new Processor<UUID, GProcessedEventPayload>() {
 
 	    @SuppressWarnings("unused")
 	    private ProcessorContext context;
@@ -52,10 +52,10 @@ public class CommandInvocationsProcessorSupplier extends ProcessorSupplierCompon
 	     * java.lang.Object)
 	     */
 	    @Override
-	    public void process(UUID key, GEnrichedEventPayload event) {
+	    public void process(UUID key, GProcessedEventPayload event) {
 		try {
 		    // Convert payload to API object.
-		    EnrichedEventPayload payload = EventModelConverter.asApiEnrichedEventPayload(event);
+		    ProcessedEventPayload payload = EventModelConverter.asApiProcessedEventPayload(event);
 
 		    // Pass decoded payload to processing strategy implementation.
 		    ICommandProcessingStrategy strategy = ((ICommandDeliveryTenantEngine) getTenantEngine())

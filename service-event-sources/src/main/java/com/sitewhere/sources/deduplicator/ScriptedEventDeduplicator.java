@@ -7,7 +7,6 @@
  */
 package com.sitewhere.sources.deduplicator;
 
-import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
 import com.sitewhere.microservice.api.device.DeviceManagementRequestBuilder;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.api.event.DeviceEventRequestBuilder;
@@ -60,7 +59,6 @@ public class ScriptedEventDeduplicator extends ScriptingComponent<Boolean> imple
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {
-	return new BlockingDeviceEventManagement(
-		((IEventSourcesMicroservice) getTenantEngine().getMicroservice()).getDeviceEventManagementApiChannel());
+	return ((IEventSourcesMicroservice) getTenantEngine().getMicroservice()).getDeviceEventManagementApiChannel();
     }
 }

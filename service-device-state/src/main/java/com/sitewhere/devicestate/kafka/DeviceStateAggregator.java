@@ -18,15 +18,15 @@ import com.sitewhere.grpc.model.DeviceEventModel.GAnyDeviceEvent.EventCase;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceAlert;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceLocation;
 import com.sitewhere.grpc.model.DeviceEventModel.GDeviceMeasurement;
-import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
+import com.sitewhere.grpc.model.DeviceEventModel.GProcessedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
- * Aggregates enriched device event data into an object that retains only the
+ * Aggregates processed device event data into an object that retains only the
  * data that should be updated in the device state master schema at the end of
  * the processing window.
  */
-public class DeviceStateAggregator implements Aggregator<UUID, GEnrichedEventPayload, AggregatedDeviceState> {
+public class DeviceStateAggregator implements Aggregator<UUID, GProcessedEventPayload, AggregatedDeviceState> {
 
     /** Static logger instance */
     private static Logger LOGGER = LoggerFactory.getLogger(DeviceStateAggregator.class);
@@ -36,7 +36,7 @@ public class DeviceStateAggregator implements Aggregator<UUID, GEnrichedEventPay
      * java.lang.Object, java.lang.Object)
      */
     @Override
-    public AggregatedDeviceState apply(UUID key, GEnrichedEventPayload payload, AggregatedDeviceState aggregate) {
+    public AggregatedDeviceState apply(UUID key, GProcessedEventPayload payload, AggregatedDeviceState aggregate) {
 	AggregatedDeviceState updated = AggregatedDeviceState.copy(aggregate);
 
 	try {

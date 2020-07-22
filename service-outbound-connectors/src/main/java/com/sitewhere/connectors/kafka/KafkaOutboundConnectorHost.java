@@ -25,13 +25,13 @@ import org.apache.kafka.common.TopicPartition;
 import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.grpc.event.EventModelConverter;
 import com.sitewhere.grpc.event.EventModelMarshaler;
-import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
+import com.sitewhere.grpc.model.DeviceEventModel.GProcessedEventPayload;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaConsumer;
 import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.microservice.util.MarshalUtils;
-import com.sitewhere.rest.model.device.event.kafka.EnrichedEventPayload;
+import com.sitewhere.rest.model.device.event.kafka.ProcessedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.kafka.IEnrichedEventPayload;
+import com.sitewhere.spi.device.event.kafka.IProcessedEventPayload;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleStatus;
@@ -199,11 +199,11 @@ public class KafkaOutboundConnectorHost extends MicroserviceKafkaConsumer {
 	 */
 	@Override
 	public void runAsSystemUser() throws SiteWhereException {
-	    List<IEnrichedEventPayload> decoded = new ArrayList<>();
+	    List<IProcessedEventPayload> decoded = new ArrayList<>();
 	    for (ConsumerRecord<String, byte[]> record : getRecords()) {
 		try {
-		    GEnrichedEventPayload grpc = EventModelMarshaler.parseEnrichedEventPayloadMessage(record.value());
-		    EnrichedEventPayload payload = EventModelConverter.asApiEnrichedEventPayload(grpc);
+		    GProcessedEventPayload grpc = EventModelMarshaler.parseProcessedEventPayloadMessage(record.value());
+		    ProcessedEventPayload payload = EventModelConverter.asApiProcessedEventPayload(grpc);
 		    if (getLogger().isDebugEnabled()) {
 			getLogger().debug("Received enriched event payload:\n\n"
 				+ MarshalUtils.marshalJsonAsPrettyString(payload));
