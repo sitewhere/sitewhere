@@ -16,9 +16,9 @@ import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
- * Class for saving device measurements data to InfluxDB.
+ * Class for saving device measurement data to InfluxDB.
  */
-public class InfluxDbDeviceMeasurements {
+public class InfluxDbDeviceMeasurement {
 
     /** Measurement name field */
     public static final String MX_NAME = "mxname";
@@ -35,7 +35,7 @@ public class InfluxDbDeviceMeasurements {
      */
     public static DeviceMeasurement parse(Map<String, Object> values) throws SiteWhereException {
 	DeviceMeasurement mxs = new DeviceMeasurement();
-	InfluxDbDeviceMeasurements.loadFromMap(mxs, values);
+	InfluxDbDeviceMeasurement.loadFromMap(mxs, values);
 	return mxs;
     }
 
@@ -61,7 +61,7 @@ public class InfluxDbDeviceMeasurements {
      */
     public static void saveToBuilder(DeviceMeasurement event, Point.Builder builder) throws SiteWhereException {
 	builder.addField(MX_NAME, event.getName());
-	builder.addField(MX_VALUE, event.getValue());
+	builder.addField(MX_VALUE, event.getValue().doubleValue());
 	InfluxDbDeviceEvent.saveToBuilder(event, builder);
     }
 }

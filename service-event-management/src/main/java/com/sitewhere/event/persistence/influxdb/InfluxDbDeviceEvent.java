@@ -289,7 +289,7 @@ public class InfluxDbDeviceEvent {
 				break;
 			    }
 			    case Measurement: {
-				results.add(InfluxDbDeviceMeasurements.parse(valueMap));
+				results.add(InfluxDbDeviceMeasurement.parse(valueMap));
 				break;
 			    }
 			    case Alert: {

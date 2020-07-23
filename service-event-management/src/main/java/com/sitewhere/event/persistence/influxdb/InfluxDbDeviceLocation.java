@@ -52,9 +52,9 @@ public class InfluxDbDeviceLocation {
      */
     public static void loadFromMap(DeviceLocation event, Map<String, Object> values) throws SiteWhereException {
 	event.setEventType(DeviceEventType.Location);
-	event.setLatitude((BigDecimal) values.get(LOCATION_LATITUDE));
-	event.setLongitude((BigDecimal) values.get(LOCATION_LONGITUDE));
-	event.setElevation((BigDecimal) values.get(LOCATION_ELEVATION));
+	event.setLatitude(new BigDecimal((Double) values.get(LOCATION_LATITUDE)));
+	event.setLongitude(new BigDecimal((Double) values.get(LOCATION_LONGITUDE)));
+	event.setElevation(new BigDecimal((Double) values.get(LOCATION_ELEVATION)));
 	InfluxDbDeviceEvent.loadFromMap(event, values);
     }
 
@@ -66,9 +66,9 @@ public class InfluxDbDeviceLocation {
      * @throws SiteWhereException
      */
     public static void saveToBuilder(DeviceLocation event, Point.Builder builder) throws SiteWhereException {
-	builder.addField(LOCATION_LATITUDE, event.getLatitude());
-	builder.addField(LOCATION_LONGITUDE, event.getLongitude());
-	builder.addField(LOCATION_ELEVATION, event.getElevation());
+	builder.addField(LOCATION_LATITUDE, event.getLatitude().doubleValue());
+	builder.addField(LOCATION_LONGITUDE, event.getLongitude().doubleValue());
+	builder.addField(LOCATION_ELEVATION, event.getElevation().doubleValue());
 	InfluxDbDeviceEvent.saveToBuilder(event, builder);
     }
 }
