@@ -14,6 +14,7 @@ import java.util.UUID;
 
 import org.influxdb.dto.Point;
 
+import com.google.inject.Inject;
 import com.sitewhere.event.persistence.DeviceEventManagementPersistence;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.influxdb.InfluxDbClient;
@@ -73,8 +74,29 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     /** Assignment meta data tag to check for user defined retention policy */
     private final String ASSIGNMENT_META_DATA_RETENTION_POLICY = "INFLUX_RETENTION_POLICY";
 
-    public InfluxDbDeviceEventManagement() {
+    @Inject
+    public InfluxDbDeviceEventManagement(InfluxDbClient client) {
 	super(LifecycleComponentType.DataStore);
+	this.client = client;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.microservice.lifecycle.LifecycleComponent#initializeParameters(
+     * )
+     */
+    @Override
+    public void initializeParameters() throws SiteWhereException {
+	getClient().initializeParameters();
+    }
+
+    /*
+     * @see com.sitewhere.microservice.lifecycle.LifecycleComponent#initialize(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	getClient().initialize(monitor);
     }
 
     /*
@@ -86,9 +108,6 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if (getClient() == null) {
-	    throw new SiteWhereException("No InfluxDB client configured.");
-	}
 	getClient().start(monitor);
     }
 
@@ -188,7 +207,7 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
 	for (IDeviceMeasurementCreateRequest request : requests) {
 	    DeviceMeasurement mxs = DeviceEventManagementPersistence.deviceMeasurementCreateLogic(context, request);
 	    Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
-	    InfluxDbDeviceMeasurements.saveToBuilder(mxs, builder);
+	    InfluxDbDeviceMeasurement.saveToBuilder(mxs, builder);
 	    addUserDefinedTags(context, builder);
 	    getClient().getInflux().write(getClient().getDatabase().getValue(),
 		    getAssignmentSpecificRetentionPolicy(context), builder.build());
