@@ -415,10 +415,6 @@ public class DeviceManagementPersistence extends Persistence {
 	if (request.getDescription() != null) {
 	    target.setDescription(request.getDescription());
 	}
-	if (request.getParameters() != null) {
-	    target.getParameters().clear();
-	    target.getParameters().addAll(request.getParameters());
-	}
     }
 
     /**

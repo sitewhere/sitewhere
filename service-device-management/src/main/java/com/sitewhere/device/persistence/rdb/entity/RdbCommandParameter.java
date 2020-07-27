@@ -21,6 +21,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.ParameterType;
 
@@ -43,6 +44,7 @@ public class RdbCommandParameter implements ICommandParameter {
     @Column(name = "required")
     private boolean required;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "device_command_id", nullable = false)
     private RdbDeviceCommand deviceCommand;
@@ -55,6 +57,12 @@ public class RdbCommandParameter implements ICommandParameter {
 	this.name = name;
 	this.type = type;
 	this.required = required;
+    }
+
+    public RdbCommandParameter(ICommandParameter parameter) {
+	this.name = parameter.getName();
+	this.type = parameter.getType();
+	this.required = parameter.isRequired();
     }
 
     public UUID getId() {
