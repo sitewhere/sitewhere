@@ -9,7 +9,9 @@ package com.sitewhere.device.persistence.rdb;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.persistence.Query;
@@ -49,6 +51,7 @@ import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.rdb.RdbTenantComponent;
 import com.sitewhere.rdb.spi.IRdbEntityManagerProvider;
 import com.sitewhere.rdb.spi.IRdbQueryProvider;
+import com.sitewhere.rdb.spi.ITransactionCallback;
 import com.sitewhere.rest.model.area.Area;
 import com.sitewhere.rest.model.area.AreaType;
 import com.sitewhere.rest.model.area.Zone;
@@ -272,6 +275,55 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	return getEntityManagerProvider().findOne(query, RdbDeviceCommand.class);
     }
 
+    /**
+     * Merge parameter updates into persistent state.
+     * 
+     * @param request
+     * @param existing
+     * @throws SiteWhereException
+     */
+    protected void mergeDeviceCommandParameters(IDeviceCommandCreateRequest request, RdbDeviceCommand existing)
+	    throws SiteWhereException {
+	Map<String, ICommandParameter> updatedByName = new HashMap<>();
+	for (ICommandParameter updated : request.getParameters()) {
+	    updatedByName.put(updated.getName(), updated);
+	}
+
+	List<RdbCommandParameter> toDelete = new ArrayList<>();
+	Map<String, RdbCommandParameter> existingByName = new HashMap<>();
+	for (RdbCommandParameter rdb : existing.getParameters()) {
+	    if (updatedByName.get(rdb.getName()) == null) {
+		toDelete.add(rdb);
+	    }
+	    existingByName.put(rdb.getName(), rdb);
+	}
+	// Deleting parameters that are no longer used.
+	for (RdbCommandParameter parameter : toDelete) {
+	    getLogger().debug(
+		    String.format("Deleting parameter '%s' with id %s.", parameter.getName(), parameter.getId()));
+	    getEntityManagerProvider().remove(parameter.getId(), RdbCommandParameter.class);
+	    existing.getParameters().remove(parameter);
+	}
+
+	for (ICommandParameter updated : request.getParameters()) {
+	    if (existingByName.get(updated.getName()) == null) {
+		getLogger().debug(String.format("Creating parameter '%s'.", updated.getName()));
+		RdbCommandParameter created = new RdbCommandParameter(updated);
+		created.setDeviceCommand(existing);
+		existing.getParameters().add(getEntityManagerProvider().persist(created));
+	    }
+	    // Update existing parameter.
+	    else {
+		getLogger().debug(String.format("Updating parameter '%s'.", updated.getName()));
+		RdbCommandParameter rdb = existingByName.get(updated.getName());
+		rdb.setName(updated.getName());
+		rdb.setType(updated.getType());
+		rdb.setRequired(updated.isRequired());
+		getEntityManagerProvider().persist(rdb);
+	    }
+	}
+    }
+
     /*
      * @see
      * com.sitewhere.microservice.api.device.IDeviceManagement#updateDeviceCommand(
@@ -281,25 +333,31 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
     public RdbDeviceCommand updateDeviceCommand(UUID id, IDeviceCommandCreateRequest request)
 	    throws SiteWhereException {
 	RdbDeviceCommand existing = getEntityManagerProvider().findById(id, RdbDeviceCommand.class);
-	if (existing != null) {
-	    // Look up device type.
-	    IDeviceType deviceType = null;
-	    if (request.getDeviceTypeToken() == null) {
-		deviceType = getDeviceTypeByToken(request.getDeviceTypeToken());
-	    }
-
-	    // Look up existing commands.
-	    DeviceCommandSearchCriteria criteria = new DeviceCommandSearchCriteria(1, 0);
-	    criteria.setDeviceTypeToken(request.getDeviceTypeToken());
-	    ISearchResults<? extends IDeviceCommand> all = listDeviceCommands(criteria);
-
-	    // Use common update logic.
-	    DeviceCommand updates = new DeviceCommand();
-	    DeviceManagementPersistence.deviceCommandUpdateLogic(deviceType, request, updates, all.getResults());
-	    RdbDeviceType.copy(updates, existing);
-	    return getEntityManagerProvider().merge(existing);
+	if (existing == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandId, ErrorLevel.ERROR);
 	}
-	return null;
+	// Look up device type.
+	IDeviceType deviceType = request.getDeviceTypeToken() != null
+		? getDeviceTypeByToken(request.getDeviceTypeToken())
+		: null;
+
+	// Look up existing commands.
+	DeviceCommandSearchCriteria criteria = new DeviceCommandSearchCriteria(1, 0);
+	criteria.setDeviceTypeToken(request.getDeviceTypeToken());
+	ISearchResults<? extends IDeviceCommand> all = listDeviceCommands(criteria);
+
+	// Use common update logic.
+	return getEntityManagerProvider().runInTransaction(new ITransactionCallback<RdbDeviceCommand>() {
+
+	    @Override
+	    public RdbDeviceCommand process() throws SiteWhereException {
+		DeviceCommand updates = new DeviceCommand();
+		DeviceManagementPersistence.deviceCommandUpdateLogic(deviceType, request, updates, all.getResults());
+		mergeDeviceCommandParameters(request, existing);
+		RdbDeviceCommand.copy(updates, existing);
+		return getEntityManagerProvider().merge(existing);
+	    }
+	});
     }
 
     /*
