@@ -36,6 +36,7 @@ import com.sitewhere.device.persistence.rdb.entity.RdbCustomerType;
 import com.sitewhere.device.persistence.rdb.entity.RdbDevice;
 import com.sitewhere.device.persistence.rdb.entity.RdbDeviceAlarm;
 import com.sitewhere.device.persistence.rdb.entity.RdbDeviceAssignment;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceAssignmentSummary;
 import com.sitewhere.device.persistence.rdb.entity.RdbDeviceCommand;
 import com.sitewhere.device.persistence.rdb.entity.RdbDeviceGroup;
 import com.sitewhere.device.persistence.rdb.entity.RdbDeviceGroupElement;
@@ -88,6 +89,7 @@ import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAlarm;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceAssignmentSummary;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.IDeviceSummary;
@@ -954,6 +956,84 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 		return query.orderBy(cb.desc(root.get("createdDate")));
 	    }
 	}, RdbDeviceAssignment.class);
+    }
+
+    /*
+     * @see com.sitewhere.microservice.api.device.IDeviceManagement#
+     * listDeviceAssignmentSummaries(com.sitewhere.spi.search.device.
+     * IDeviceAssignmentSearchCriteria)
+     */
+    @Override
+    public ISearchResults<? extends IDeviceAssignmentSummary> listDeviceAssignmentSummaries(
+	    IDeviceAssignmentSearchCriteria criteria) throws SiteWhereException {
+	return getEntityManagerProvider().findWithCriteria(criteria,
+		new IRdbQueryProvider<RdbDeviceAssignmentSummary>() {
+
+		    /*
+		     * @see com.sitewhere.rdb.spi.IRdbQueryProvider#addPredicates(javax.persistence.
+		     * criteria.CriteriaBuilder, java.util.List, javax.persistence.criteria.Root)
+		     */
+		    @Override
+		    public void addPredicates(CriteriaBuilder cb, List<Predicate> predicates,
+			    Root<RdbDeviceAssignmentSummary> root) throws SiteWhereException {
+			if ((criteria.getAssignmentStatuses() != null)
+				&& (criteria.getAssignmentStatuses().size() > 0)) {
+			    Path<DeviceAssignmentStatus> path = root.get("status");
+			    predicates.add(path.in(criteria.getAssignmentStatuses()));
+			}
+			if ((criteria.getDeviceTokens() != null) && (criteria.getDeviceTokens().size() > 0)) {
+			    try {
+				List<UUID> ids = DeviceManagementUtils.getDeviceIds(criteria.getDeviceTokens(),
+					RdbDeviceManagement.this);
+				Path<UUID> path = root.get("deviceId");
+				predicates.add(path.in(ids));
+			    } catch (SiteWhereException e) {
+				throw new SiteWhereException("Unable to look up device ids.", e);
+			    }
+			}
+			if ((criteria.getCustomerTokens() != null) && (criteria.getCustomerTokens().size() > 0)) {
+			    try {
+				List<UUID> ids = DeviceManagementUtils.getCustomerIds(criteria.getCustomerTokens(),
+					RdbDeviceManagement.this);
+				Path<UUID> path = root.get("customerId");
+				predicates.add(path.in(ids));
+			    } catch (SiteWhereException e) {
+				throw new SiteWhereException("Unable to look up customer ids.", e);
+			    }
+			}
+			if ((criteria.getAreaTokens() != null) && (criteria.getAreaTokens().size() > 0)) {
+			    try {
+				List<UUID> ids = DeviceManagementUtils.getAreaIds(criteria.getAreaTokens(),
+					RdbDeviceManagement.this);
+				Path<UUID> path = root.get("areaId");
+				predicates.add(path.in(ids));
+			    } catch (SiteWhereException e) {
+				throw new SiteWhereException("Unable to look up area ids.", e);
+			    }
+			}
+			if ((criteria.getAssetTokens() != null) && (criteria.getAssetTokens().size() > 0)) {
+			    try {
+				List<UUID> ids = getAssetIds(criteria.getAssetTokens());
+				Path<UUID> path = root.get("assetId");
+				predicates.add(path.in(ids));
+			    } catch (SiteWhereException e) {
+				throw new SiteWhereException("Unable to look up asset ids.", e);
+			    }
+			}
+		    }
+
+		    /*
+		     * @see
+		     * com.sitewhere.rdb.spi.IRdbQueryProvider#addSort(javax.persistence.criteria.
+		     * CriteriaBuilder, javax.persistence.criteria.Root,
+		     * javax.persistence.criteria.CriteriaQuery)
+		     */
+		    @Override
+		    public CriteriaQuery<RdbDeviceAssignmentSummary> addSort(CriteriaBuilder cb,
+			    Root<RdbDeviceAssignmentSummary> root, CriteriaQuery<RdbDeviceAssignmentSummary> query) {
+			return query.orderBy(cb.desc(root.get("createdDate")));
+		    }
+		}, RdbDeviceAssignmentSummary.class);
     }
 
     /*

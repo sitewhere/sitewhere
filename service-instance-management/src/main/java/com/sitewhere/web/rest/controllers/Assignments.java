@@ -47,6 +47,7 @@ import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.api.device.ChartBuilder;
 import com.sitewhere.microservice.api.device.DeviceAssignmentMarshalHelper;
+import com.sitewhere.microservice.api.device.DeviceAssignmentSummaryMarshalHelper;
 import com.sitewhere.microservice.api.device.DeviceCommandInvocationMarshalHelper;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.api.event.DeviceEventRequestBuilder;
@@ -70,6 +71,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceAssignmentSummary;
 import com.sitewhere.spi.device.charting.IChartSeries;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.DeviceEventIndex;
@@ -330,6 +332,45 @@ public class Assignments {
 	    results.add(helper.convert(assn, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<IDeviceAssignment>(results, matches.getNumResults())).build();
+    }
+
+    /**
+     * Search device assignments for summary information.
+     * 
+     * @param includeAsset
+     * @param page
+     * @param pageSize
+     * @param criteria
+     * @return
+     * @throws SiteWhereException
+     */
+    @POST
+    @Path("/search/summaries")
+    @Operation(summary = "Device assignment summary advanced search", description = "Search device assignment summaries with advanced criteria")
+    public Response searchDeviceAssignmentSummaries(
+	    @Parameter(description = "Include asset information", required = false) @QueryParam("includeAsset") @DefaultValue("false") boolean includeAsset,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") Integer page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") Integer pageSize,
+	    @RequestBody DeviceAssignmentSearchCriteria criteria) throws SiteWhereException {
+	// Allow request parameters to override paging criteria.
+	if (page != null) {
+	    criteria.setPageNumber(page);
+	}
+	if (pageSize != null) {
+	    criteria.setPageSize(pageSize);
+	}
+
+	// Perform search.
+	ISearchResults<? extends IDeviceAssignmentSummary> matches = getDeviceManagement()
+		.listDeviceAssignmentSummaries(criteria);
+	DeviceAssignmentSummaryMarshalHelper helper = new DeviceAssignmentSummaryMarshalHelper();
+	helper.setIncludeAsset(includeAsset);
+
+	List<IDeviceAssignmentSummary> results = new ArrayList<>();
+	for (IDeviceAssignmentSummary assn : matches.getResults()) {
+	    results.add(helper.convert(assn, getAssetManagement()));
+	}
+	return Response.ok(new SearchResults<IDeviceAssignmentSummary>(results, matches.getNumResults())).build();
     }
 
     /**

@@ -603,10 +603,14 @@ create view devicemanagement.device_summary as
 
 create view devicemanagement.device_assignment_summary as
 	select assn.*,
+		dev.token as device_token,
+		devt.name as device_type_name, devt.image_url as device_type_image_url,
 		area.name as area_name, area.image_url as area_image_url,
 		cust.name as customer_name, cust.image_url as customer_image_url,
 		null as asset_name, null as asset_image_url
 			from devicemanagement.device_assignment assn 
+			join devicemanagement.device dev on assn.device_id = dev.id
+			join devicemanagement.device_type devt on assn.device_type_id = devt.id
 			left join devicemanagement.customer cust on assn.customer_id = cust.id
 			left join devicemanagement.area area on assn.area_id = area.id;
 	

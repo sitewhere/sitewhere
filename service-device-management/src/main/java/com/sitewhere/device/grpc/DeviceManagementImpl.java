@@ -20,6 +20,7 @@ import com.sitewhere.grpc.model.DeviceModel.GCustomerSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GCustomerTypeSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceAlarmSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceAssignmentSearchResults;
+import com.sitewhere.grpc.model.DeviceModel.GDeviceAssignmentSummarySearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceCommandSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupElementsSearchResults;
 import com.sitewhere.grpc.model.DeviceModel.GDeviceGroupSearchResults;
@@ -43,6 +44,7 @@ import com.sitewhere.spi.customer.request.ICustomerTypeCreateRequest;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAlarm;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceAssignmentSummary;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceStatus;
 import com.sitewhere.spi.device.IDeviceSummary;
@@ -2212,6 +2214,38 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 		    responseObserver);
 	} finally {
 	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getListDeviceAssignmentsMethod());
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * listDeviceAssignmentSummaries(com.sitewhere.grpc.service.
+     * GListDeviceAssignmentSummariesRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void listDeviceAssignmentSummaries(GListDeviceAssignmentSummariesRequest request,
+	    StreamObserver<GListDeviceAssignmentSummariesResponse> responseObserver) {
+	try {
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getListDeviceAssignmentSummariesMethod());
+	    ISearchResults<? extends IDeviceAssignmentSummary> apiResult = getDeviceManagement()
+		    .listDeviceAssignmentSummaries(
+			    DeviceModelConverter.asApiDeviceAssignmentSearchCriteria(request.getCriteria()));
+	    GListDeviceAssignmentSummariesResponse.Builder response = GListDeviceAssignmentSummariesResponse
+		    .newBuilder();
+	    GDeviceAssignmentSummarySearchResults.Builder results = GDeviceAssignmentSummarySearchResults.newBuilder();
+	    for (IDeviceAssignmentSummary api : apiResult.getResults()) {
+		results.addDeviceAssignmentSummaries(DeviceModelConverter.asGrpcDeviceAssignmentSummary(api));
+	    }
+	    results.setCount(apiResult.getNumResults());
+	    response.setResults(results.build());
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getListDeviceAssignmentSummariesMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getListDeviceAssignmentSummariesMethod());
 	}
     }
 
