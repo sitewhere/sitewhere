@@ -45,28 +45,28 @@ public class RdbDeviceGroupElement extends RdbPersistentEntity implements IDevic
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "group_id", insertable = false, updatable = false, nullable = false)
+    @Column(name = "group_id", nullable = false)
     private UUID groupId;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "group_id")
+    @JoinColumn(name = "group_id", insertable = false, updatable = false)
     private RdbDeviceGroup deviceGroup;
 
-    @Column(name = "device_id", insertable = false, updatable = false, nullable = true)
+    @Column(name = "device_id", nullable = true)
     private UUID deviceId;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "device_id")
+    @JoinColumn(name = "device_id", insertable = false, updatable = false)
     private RdbDevice device;
 
-    @Column(name = "nested_group_id", insertable = false, updatable = false, nullable = true)
+    @Column(name = "nested_group_id", nullable = true)
     private UUID nestedGroupId;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "nested_group_id")
+    @JoinColumn(name = "nested_group_id", insertable = false, updatable = false)
     private RdbDeviceGroup nestedGroup;
 
     /** List of roles for the element */
@@ -176,6 +176,7 @@ public class RdbDeviceGroupElement extends RdbPersistentEntity implements IDevic
     }
 
     public static void copy(IDeviceGroupElement source, RdbDeviceGroupElement target) {
+	target.setGroupId(source.getGroupId());
 	if (source.getDeviceId() != null) {
 	    target.setDeviceId(source.getDeviceId());
 	}
