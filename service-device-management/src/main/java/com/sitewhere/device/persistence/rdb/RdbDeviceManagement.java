@@ -2094,12 +2094,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	    DeviceGroupElement element = DeviceManagementPersistence.deviceGroupElementCreateLogic(request, group,
 		    device, nested);
 	    RdbDeviceGroupElement.copy(element, created);
-	    created.setDeviceGroup(group);
-	    created.setDevice(device);
-	    created.setNestedGroup(nested);
-	    getEntityManagerProvider().persist(created);
-
-	    results.add(created);
+	    results.add(getEntityManagerProvider().persist(created));
 	}
 
 	group.setElements(results);
@@ -2117,7 +2112,7 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	for (UUID elementId : elementIds) {
 	    RdbDeviceGroupElement match = getEntityManagerProvider().findById(elementId, RdbDeviceGroupElement.class);
 	    if (match != null) {
-		getEntityManagerProvider().remove(elementId, RdbDeviceGroupElement.class);
+		deleted.add(getEntityManagerProvider().remove(elementId, RdbDeviceGroupElement.class));
 	    }
 	}
 	return deleted;
