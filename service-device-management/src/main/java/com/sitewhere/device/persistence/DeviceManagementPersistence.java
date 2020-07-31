@@ -983,9 +983,6 @@ public class DeviceManagementPersistence extends Persistence {
 	require("Name", request.getName());
 	group.setName(request.getName());
 
-	require("Image URL", request.getImageUrl());
-	group.setImageUrl(request.getImageUrl());
-
 	if (request.getRoles() != null) {
 	    group.getRoles().addAll(request.getRoles());
 	}
