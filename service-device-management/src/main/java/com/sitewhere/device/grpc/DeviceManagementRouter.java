@@ -77,6 +77,24 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getContainedCustomerTypes(com.sitewhere.grpc.service.
+     * GGetContainedCustomerTypesRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getContainedCustomerTypes(GGetContainedCustomerTypesRequest request,
+	    StreamObserver<GGetContainedCustomerTypesResponse> responseObserver) {
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getContainedCustomerTypes(request, responseObserver);
+	    }
+	}, responseObserver);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
      * getCustomerTypeByToken(com.sitewhere.grpc.service.
      * GGetCustomerTypeByTokenRequest, io.grpc.stub.StreamObserver)
      */
@@ -319,6 +337,24 @@ public class DeviceManagementRouter extends DeviceManagementGrpc.DeviceManagemen
 	    @Override
 	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
 		tenantEngine.getDeviceManagementImpl().getAreaType(request, responseObserver);
+	    }
+	}, responseObserver);
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getContainedAreaTypes(com.sitewhere.grpc.service.
+     * GGetContainedAreaTypesRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getContainedAreaTypes(GGetContainedAreaTypesRequest request,
+	    StreamObserver<GGetContainedAreaTypesResponse> responseObserver) {
+	getGrpcTenantEngineProvider().executeInTenantEngine(new ITenantEngineCallback<IDeviceManagementTenantEngine>() {
+
+	    @Override
+	    public void executeInTenantEngine(IDeviceManagementTenantEngine tenantEngine) {
+		tenantEngine.getDeviceManagementImpl().getContainedAreaTypes(request, responseObserver);
 	    }
 	}, responseObserver);
     }

@@ -37,6 +37,7 @@ import com.sitewhere.microservice.api.device.AreaTypeMarshalHelper;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.api.label.ILabelGeneration;
 import com.sitewhere.rest.model.area.request.AreaTypeCreateRequest;
+import com.sitewhere.rest.model.device.marshaling.MarshaledAreaType;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
@@ -74,7 +75,10 @@ public class AreaTypes {
     @POST
     @Operation(summary = "Create area type", description = "Create new area type")
     public Response createAreaType(@RequestBody AreaTypeCreateRequest input) throws SiteWhereException {
-	return Response.ok(getDeviceManagement().createAreaType(input)).build();
+	AreaTypeMarshalHelper helper = new AreaTypeMarshalHelper(getDeviceManagement());
+	helper.setIncludeContainedAreaTypes(true);
+	MarshaledAreaType marshaled = helper.convert(getDeviceManagement().createAreaType(input));
+	return Response.ok(marshaled).build();
     }
 
     /**
@@ -90,7 +94,10 @@ public class AreaTypes {
     public Response getAreaTypeByToken(
 	    @Parameter(description = "Token that identifies area type", required = true) @PathParam("areaTypeToken") String areaTypeToken)
 	    throws SiteWhereException {
-	return Response.ok(assertAreaType(areaTypeToken)).build();
+	AreaTypeMarshalHelper helper = new AreaTypeMarshalHelper(getDeviceManagement());
+	helper.setIncludeContainedAreaTypes(true);
+	MarshaledAreaType marshaled = helper.convert(assertAreaType(areaTypeToken));
+	return Response.ok(marshaled).build();
     }
 
     /**
@@ -108,7 +115,10 @@ public class AreaTypes {
 	    @Parameter(description = "Token that identifies area type", required = true) @PathParam("areaTypeToken") String areaTypeToken,
 	    @RequestBody AreaTypeCreateRequest request) throws SiteWhereException {
 	IAreaType existing = assertAreaType(areaTypeToken);
-	return Response.ok(getDeviceManagement().updateAreaType(existing.getId(), request)).build();
+	AreaTypeMarshalHelper helper = new AreaTypeMarshalHelper(getDeviceManagement());
+	helper.setIncludeContainedAreaTypes(true);
+	MarshaledAreaType marshaled = helper.convert(getDeviceManagement().updateAreaType(existing.getId(), request));
+	return Response.ok(marshaled).build();
     }
 
     /**

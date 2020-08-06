@@ -139,6 +139,33 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
     /*
      * @see
      * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getContainedCustomerTypes(com.sitewhere.grpc.service.
+     * GGetContainedCustomerTypesRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getContainedCustomerTypes(GGetContainedCustomerTypesRequest request,
+	    StreamObserver<GGetContainedCustomerTypesResponse> responseObserver) {
+	try {
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetContainedCustomerTypesMethod());
+	    List<? extends ICustomerType> apiResult = getDeviceManagement()
+		    .getContainedCustomerTypes(CommonModelConverter.asApiUuid(request.getId()));
+	    GGetContainedCustomerTypesResponse.Builder response = GGetContainedCustomerTypesResponse.newBuilder();
+	    if (apiResult != null) {
+		response.addAllCustomerTypes(DeviceModelConverter.asGrpcCustomerTypes(apiResult));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetContainedCustomerTypesMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetContainedCustomerTypesMethod());
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
      * getCustomerTypeByToken(com.sitewhere.grpc.service.
      * GGetCustomerTypeByTokenRequest, io.grpc.stub.StreamObserver)
      */
@@ -495,6 +522,33 @@ public class DeviceManagementImpl extends DeviceManagementGrpc.DeviceManagementI
 	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetAreaTypeMethod(), e, responseObserver);
 	} finally {
 	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetAreaTypeMethod());
+	}
+    }
+
+    /*
+     * @see
+     * com.sitewhere.grpc.service.DeviceManagementGrpc.DeviceManagementImplBase#
+     * getContainedAreaTypes(com.sitewhere.grpc.service.
+     * GGetContainedAreaTypesRequest, io.grpc.stub.StreamObserver)
+     */
+    @Override
+    public void getContainedAreaTypes(GGetContainedAreaTypesRequest request,
+	    StreamObserver<GGetContainedAreaTypesResponse> responseObserver) {
+	try {
+	    GrpcUtils.handleServerMethodEntry(this, DeviceManagementGrpc.getGetContainedAreaTypesMethod());
+	    List<? extends IAreaType> apiResult = getDeviceManagement()
+		    .getContainedAreaTypes(CommonModelConverter.asApiUuid(request.getId()));
+	    GGetContainedAreaTypesResponse.Builder response = GGetContainedAreaTypesResponse.newBuilder();
+	    if (apiResult != null) {
+		response.addAllAreaTypes(DeviceModelConverter.asGrpcAreaTypes(apiResult));
+	    }
+	    responseObserver.onNext(response.build());
+	    responseObserver.onCompleted();
+	} catch (Throwable e) {
+	    GrpcUtils.handleServerMethodException(DeviceManagementGrpc.getGetContainedAreaTypesMethod(), e,
+		    responseObserver);
+	} finally {
+	    GrpcUtils.handleServerMethodExit(DeviceManagementGrpc.getGetContainedAreaTypesMethod());
 	}
     }
 
