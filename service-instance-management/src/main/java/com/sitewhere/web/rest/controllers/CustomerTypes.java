@@ -37,6 +37,7 @@ import com.sitewhere.microservice.api.device.CustomerTypeMarshalHelper;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.api.label.ILabelGeneration;
 import com.sitewhere.rest.model.customer.request.CustomerTypeCreateRequest;
+import com.sitewhere.rest.model.device.marshaling.MarshaledCustomerType;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
@@ -75,7 +76,10 @@ public class CustomerTypes {
     @POST
     @Operation(summary = "Create new customer type", description = "Create new customer type")
     public Response createCustomerType(@RequestBody CustomerTypeCreateRequest input) throws SiteWhereException {
-	return Response.ok(getDeviceManagement().createCustomerType(input)).build();
+	CustomerTypeMarshalHelper helper = new CustomerTypeMarshalHelper(getDeviceManagement());
+	helper.setIncludeContainedCustomerTypes(true);
+	MarshaledCustomerType marshaled = helper.convert(getDeviceManagement().createCustomerType(input));
+	return Response.ok(marshaled).build();
     }
 
     /**
@@ -91,7 +95,10 @@ public class CustomerTypes {
     public Response getCustomerTypeByToken(
 	    @Parameter(description = "Token that identifies customer type", required = true) @PathParam("customerTypeToken") String customerTypeToken)
 	    throws SiteWhereException {
-	return Response.ok(assertCustomerType(customerTypeToken)).build();
+	CustomerTypeMarshalHelper helper = new CustomerTypeMarshalHelper(getDeviceManagement());
+	helper.setIncludeContainedCustomerTypes(true);
+	MarshaledCustomerType marshaled = helper.convert(assertCustomerType(customerTypeToken));
+	return Response.ok(marshaled).build();
     }
 
     /**
@@ -109,7 +116,11 @@ public class CustomerTypes {
 	    @Parameter(description = "Token that identifies customer type", required = true) @PathParam("customerTypeToken") String customerTypeToken,
 	    @RequestBody CustomerTypeCreateRequest request) throws SiteWhereException {
 	ICustomerType existing = assertCustomerType(customerTypeToken);
-	return Response.ok(getDeviceManagement().updateCustomerType(existing.getId(), request)).build();
+	CustomerTypeMarshalHelper helper = new CustomerTypeMarshalHelper(getDeviceManagement());
+	helper.setIncludeContainedCustomerTypes(true);
+	ICustomerType updated = getDeviceManagement().updateCustomerType(existing.getId(), request);
+	MarshaledCustomerType marshaled = helper.convert(updated);
+	return Response.ok(marshaled).build();
     }
 
     /**
@@ -179,7 +190,11 @@ public class CustomerTypes {
 	    @Parameter(description = "Token that identifies customer type", required = true) @PathParam("customerTypeToken") String customerTypeToken)
 	    throws SiteWhereException {
 	ICustomerType existing = assertCustomerType(customerTypeToken);
-	return Response.ok(getDeviceManagement().deleteCustomerType(existing.getId())).build();
+	CustomerTypeMarshalHelper helper = new CustomerTypeMarshalHelper(getDeviceManagement());
+	helper.setIncludeContainedCustomerTypes(true);
+	ICustomerType deleted = getDeviceManagement().deleteCustomerType(existing.getId());
+	MarshaledCustomerType marshaled = helper.convert(deleted);
+	return Response.ok(marshaled).build();
     }
 
     /**
