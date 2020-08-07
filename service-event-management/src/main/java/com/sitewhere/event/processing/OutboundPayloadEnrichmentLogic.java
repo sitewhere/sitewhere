@@ -33,7 +33,7 @@ public class OutboundPayloadEnrichmentLogic {
      * Process a persited event payload by enriching it and forwarding to a topic
      * for further processing.
      * 
-     * @param payload
+     * @param event
      * @throws SiteWhereException
      */
     public static void enrichAndDeliver(IEventManagementTenantEngine engine, IDeviceEventContext context,
