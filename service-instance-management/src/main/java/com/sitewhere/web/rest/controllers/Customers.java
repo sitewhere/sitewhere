@@ -42,6 +42,7 @@ import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.api.device.CustomerMarshalHelper;
 import com.sitewhere.microservice.api.device.DeviceAssignmentMarshalHelper;
+import com.sitewhere.microservice.api.device.DeviceAssignmentSummaryMarshalHelper;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.api.device.asset.DeviceAlertWithAsset;
 import com.sitewhere.microservice.api.device.asset.DeviceCommandInvocationWithAsset;
@@ -53,6 +54,7 @@ import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.microservice.api.label.ILabelGeneration;
 import com.sitewhere.rest.model.customer.request.CustomerCreateRequest;
 import com.sitewhere.rest.model.device.DeviceAssignment;
+import com.sitewhere.rest.model.device.DeviceAssignmentSummary;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.customer.CustomerSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
@@ -61,6 +63,7 @@ import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.customer.ICustomer;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceAssignmentSummary;
 import com.sitewhere.spi.device.event.DeviceEventIndex;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -520,6 +523,46 @@ public class Customers {
 	    converted.add(helper.convert(assignment, getAssetManagement()));
 	}
 	return Response.ok(new SearchResults<DeviceAssignment>(converted, matches.getNumResults())).build();
+    }
+
+    /**
+     * List summary information for customer device assignments.
+     * 
+     * @param customerToken
+     * @param status
+     * @param includeAsset
+     * @param page
+     * @param pageSize
+     * @return
+     * @throws SiteWhereException
+     */
+    @GET
+    @Path("/{customerToken}/assignments/summaries")
+    @Operation(summary = "List device assignments for a customer", description = "List device assignments for a customer")
+    public Response listAssignmentSummariesForCustomer(
+	    @Parameter(description = "Token that identifies customer", required = true) @PathParam("customerToken") String customerToken,
+	    @Parameter(description = "Limit results to the given status", required = false) @QueryParam("status") String status,
+	    @Parameter(description = "Include asset information", required = false) @QueryParam("includeAsset") @DefaultValue("false") boolean includeAsset,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+	    throws SiteWhereException {
+	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(page, pageSize);
+	DeviceAssignmentStatus decodedStatus = (status != null) ? DeviceAssignmentStatus.valueOf(status) : null;
+	if (decodedStatus != null) {
+	    criteria.setAssignmentStatuses(Collections.singletonList(decodedStatus));
+	}
+	List<String> customers = resolveCustomerTokensRecursive(customerToken, true, getDeviceManagement());
+	criteria.setCustomerTokens(customers);
+
+	ISearchResults<? extends IDeviceAssignmentSummary> matches = getDeviceManagement()
+		.listDeviceAssignmentSummaries(criteria);
+	DeviceAssignmentSummaryMarshalHelper helper = new DeviceAssignmentSummaryMarshalHelper();
+	helper.setIncludeAsset(includeAsset);
+	List<DeviceAssignmentSummary> converted = new ArrayList<DeviceAssignmentSummary>();
+	for (IDeviceAssignmentSummary assignment : matches.getResults()) {
+	    converted.add(helper.convert(assignment, getAssetManagement()));
+	}
+	return Response.ok(new SearchResults<DeviceAssignmentSummary>(converted, matches.getNumResults())).build();
     }
 
     /**
