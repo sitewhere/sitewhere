@@ -24,8 +24,6 @@ import javax.naming.InitialContext;
 
 /**
  * Tests for EventHub messaging.
- * 
- * @author Derek
  */
 public class EventHubTest {
 

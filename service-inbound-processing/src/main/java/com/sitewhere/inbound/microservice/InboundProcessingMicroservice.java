@@ -7,41 +7,38 @@
  */
 package com.sitewhere.inbound.microservice;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
-import com.sitewhere.inbound.configuration.InboundProcessingModelProvider;
+import com.sitewhere.inbound.configuration.InboundProcessingConfiguration;
+import com.sitewhere.inbound.configuration.InboundProcessingModule;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingTenantEngine;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
-import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
-import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
+import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Microservice that provides inbound event processing functionality.
- * 
- * @author Derek
  */
-public class InboundProcessingMicroservice
-	extends MultitenantMicroservice<MicroserviceIdentifier, IInboundProcessingTenantEngine>
+@ApplicationScoped
+public class InboundProcessingMicroservice extends
+	MultitenantMicroservice<MicroserviceIdentifier, InboundProcessingConfiguration, IInboundProcessingTenantEngine>
 	implements IInboundProcessingMicroservice {
 
-    /** Microservice name */
-    private static final String NAME = "Inbound Processing";
-
     /** Device management API demux */
-    private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
-
-    /** Cached device management implementation */
-    private IDeviceManagement cachedDeviceManagement;
+    private CachedDeviceManagementApiChannel deviceManagement;
 
     /** Device event management API channel */
     private IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel;
@@ -51,7 +48,7 @@ public class InboundProcessingMicroservice
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Inbound Processing";
     }
 
     /*
@@ -63,45 +60,48 @@ public class InboundProcessingMicroservice
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<InboundProcessingConfiguration> getConfigurationClass() {
+	return InboundProcessingConfiguration.class;
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
      */
     @Override
-    public IConfigurationModel buildConfigurationModel() {
-	return new InboundProcessingModelProvider().buildModel();
+    public IMicroserviceModule<InboundProcessingConfiguration> createConfigurationModule() {
+	return new InboundProcessingModule(getMicroserviceConfiguration());
     }
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * createTenantEngine(com.sitewhere.spi.tenant.ITenant)
+     * createTenantEngine(io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine)
      */
     @Override
-    public IInboundProcessingTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new InboundProcessingTenantEngine(tenant);
+    public IInboundProcessingTenantEngine createTenantEngine(SiteWhereTenantEngine engine) throws SiteWhereException {
+	return new InboundProcessingTenantEngine(engine);
     }
 
     /*
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.multitenant.MultitenantMicroservice#initialize(com
+     * .sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+
 	// Create GRPC components.
 	createGrpcComponents();
 
 	// Composite step for initializing microservice.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
-	// Initialize device management API channel + cache.
-	init.addInitializeStep(this, getCachedDeviceManagement(), true);
+	// Initialize device management API channel.
+	init.addInitializeStep(this, getDeviceManagement(), true);
 
 	// Initialize device event management API channel.
 	init.addInitializeStep(this, getDeviceEventManagementApiChannel(), true);
@@ -111,17 +111,19 @@ public class InboundProcessingMicroservice
     }
 
     /*
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceStart(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.multitenant.MultitenantMicroservice#start(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
-	// Start device mangement API channel + cache.
-	start.addStartStep(this, getCachedDeviceManagement(), true);
+	// Start device mangement API channel.
+	start.addStartStep(this, getDeviceManagement(), true);
 
 	// Start device event mangement API channel.
 	start.addStartStep(this, getDeviceEventManagementApiChannel(), true);
@@ -131,23 +133,24 @@ public class InboundProcessingMicroservice
     }
 
     /*
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceStop(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#stop(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
-	// Stop device mangement API channel + cache.
-	stop.addStopStep(this, getCachedDeviceManagement());
+	// Stop device mangement API channel.
+	stop.addStopStep(this, getDeviceManagement());
 
 	// Stop device event mangement API channel.
 	stop.addStopStep(this, getDeviceEventManagementApiChannel());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
+
+	super.stop(monitor);
     }
 
     /**
@@ -155,8 +158,8 @@ public class InboundProcessingMicroservice
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
-	this.cachedDeviceManagement = new CachedDeviceManagementApiChannel(deviceManagementApiChannel,
+	IDeviceManagementApiChannel<?> wrapped = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagement = new CachedDeviceManagementApiChannel(wrapped,
 		new CachedDeviceManagementApiChannel.CacheSettings());
 
 	// Device event management.
@@ -165,28 +168,11 @@ public class InboundProcessingMicroservice
 
     /*
      * @see com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice#
-     * getDeviceManagementApiChannel()
+     * getDeviceManagement()
      */
     @Override
-    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
-	return deviceManagementApiChannel;
-    }
-
-    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
-	this.deviceManagementApiChannel = deviceManagementApiChannel;
-    }
-
-    /*
-     * @see com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice#
-     * getCachedDeviceManagement()
-     */
-    @Override
-    public IDeviceManagement getCachedDeviceManagement() {
-	return cachedDeviceManagement;
-    }
-
-    public void setCachedDeviceManagement(IDeviceManagement cachedDeviceManagement) {
-	this.cachedDeviceManagement = cachedDeviceManagement;
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
     }
 
     /*
@@ -196,10 +182,5 @@ public class InboundProcessingMicroservice
     @Override
     public IDeviceEventManagementApiChannel<?> getDeviceEventManagementApiChannel() {
 	return deviceEventManagementApiChannel;
-    }
-
-    public void setDeviceEventManagementApiChannel(
-	    IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel) {
-	this.deviceEventManagementApiChannel = deviceEventManagementApiChannel;
     }
 }

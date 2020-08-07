@@ -11,7 +11,7 @@ import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Interface for a component that builds a URL based on a device event.

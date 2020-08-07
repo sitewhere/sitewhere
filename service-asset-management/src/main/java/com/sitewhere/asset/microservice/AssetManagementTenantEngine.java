@@ -7,38 +7,35 @@
  */
 package com.sitewhere.asset.microservice;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
+import com.sitewhere.asset.configuration.AssetManagementTenantConfiguration;
+import com.sitewhere.asset.configuration.AssetManagementTenantEngineModule;
 import com.sitewhere.asset.grpc.AssetManagementImpl;
-import com.sitewhere.asset.initializer.GroovyAssetModelInitializer;
+import com.sitewhere.asset.persistence.rdb.entity.RdbAsset;
+import com.sitewhere.asset.persistence.rdb.entity.RdbAssetType;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
-import com.sitewhere.microservice.groovy.GroovyConfiguration;
-import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
-import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.LifecycleProgressContext;
-import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
+import com.sitewhere.microservice.api.asset.AssetManagementRequestBuilder;
+import com.sitewhere.microservice.api.asset.IAssetManagement;
+import com.sitewhere.microservice.datastore.DatastoreDefinition;
+import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.microservice.scripting.Binding;
+import com.sitewhere.rdb.RdbTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
+import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.spring.AssetManagementBeans;
-import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
+import com.sitewhere.spi.microservice.scripting.IScriptVariables;
+
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Implementation of {@link IMicroserviceTenantEngine} that implements asset
  * management functionality.
- * 
- * @author Derek
  */
-public class AssetManagementTenantEngine extends MicroserviceTenantEngine implements IAssetManagementTenantEngine {
+public class AssetManagementTenantEngine extends RdbTenantEngine<AssetManagementTenantConfiguration>
+	implements IAssetManagementTenantEngine {
 
     /** Asset management persistence API */
     private IAssetManagement assetManagement;
@@ -46,27 +43,76 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
     /** Responds to asset management GRPC requests */
     private AssetManagementGrpc.AssetManagementImplBase assetManagementImpl;
 
-    public AssetManagementTenantEngine(ITenant tenant) {
-	super(tenant);
+    public AssetManagementTenantEngine(SiteWhereTenantEngine tenantEngineResource) {
+	super(tenantEngineResource);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
-     * tenantInitialize(com.sitewhere.spi.server.lifecycle.
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationClass()
+     */
+    @Override
+    public Class<AssetManagementTenantConfiguration> getConfigurationClass() {
+	return AssetManagementTenantConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * createConfigurationModule()
+     */
+    @Override
+    public ITenantEngineModule<AssetManagementTenantConfiguration> createConfigurationModule() {
+	return new AssetManagementTenantEngineModule(this, getActiveConfiguration());
+    }
+
+    /*
+     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getDatastoreDefinition()
+     */
+    @Override
+    public DatastoreDefinition getDatastoreDefinition() {
+	return getActiveConfiguration().getDatastore();
+    }
+
+    /*
+     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getEntityClasses()
+     */
+    @Override
+    public Class<?>[] getEntityClasses() {
+	return new Class<?>[] { RdbAsset.class, RdbAssetType.class };
+    }
+
+    /*
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * loadEngineComponents()
+     */
+    @Override
+    public void loadEngineComponents() throws SiteWhereException {
+	this.assetManagement = getInjector().getInstance(IAssetManagement.class);
+	this.assetManagementImpl = new AssetManagementImpl((IAssetManagementMicroservice) getMicroservice(),
+		getAssetManagement());
+    }
+
+    /*
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * setDatasetBootstrapBindings(com.sitewhere.microservice.scripting.Binding)
+     */
+    @Override
+    public void setDatasetBootstrapBindings(Binding binding) throws SiteWhereException {
+	binding.setVariable(IScriptVariables.VAR_ASSET_MANAGEMENT_BUILDER,
+		new AssetManagementRequestBuilder(getAssetManagement()));
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * tenantInitialize(com.sitewhere.spi.microservice.lifecycle.
      * ILifecycleProgressMonitor)
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Initialize underlying APIs.
-	initializeAssetManagementApis();
+	super.tenantInitialize(monitor);
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
-
-	// Initialize discoverable lifecycle components.
-	init.addStep(initializeDiscoverableBeans(getModuleContext()));
 
 	// Initialize asset management persistence.
 	init.addInitializeStep(this, getAssetManagement(), true);
@@ -75,31 +121,17 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
 	init.execute(monitor);
     }
 
-    /**
-     * Initialize underlying APIs from Spring.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void initializeAssetManagementApis() throws SiteWhereException {
-	this.assetManagement = (IAssetManagement) getModuleContext()
-		.getBean(AssetManagementBeans.BEAN_ASSET_MANAGEMENT);
-	this.assetManagementImpl = new AssetManagementImpl((IAssetManagementMicroservice) getMicroservice(),
-		getAssetManagement());
-    }
-
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
-     * tenantStart(com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * tenantStart(com.sitewhere.spi.microservice.lifecycle.
+     * ILifecycleProgressMonitor)
      */
     @Override
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.tenantStart(monitor);
+
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
-
-	// Start discoverable lifecycle components.
-	start.addStep(startDiscoverableBeans(getModuleContext()));
 
 	// Start asset management persistence.
 	start.addStartStep(this, getAssetManagement(), true);
@@ -110,46 +142,8 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * tenantBootstrap(com.sitewhere.spi.microservice.multitenant.IDatasetTemplate,
-     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void tenantBootstrap(IDatasetTemplate template, ILifecycleProgressMonitor monitor)
-	    throws SiteWhereException {
-	List<String> scripts = Collections.emptyList();
-	if (template.getInitializers() != null) {
-	    scripts = template.getInitializers().getAssetManagement();
-	    for (String script : scripts) {
-		getTenantScriptSynchronizer().add(script);
-	    }
-	}
-
-	// Execute remote calls as superuser.
-	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
-	try {
-	    SecurityContextHolder.getContext()
-		    .setAuthentication(getMicroservice().getSystemUser().getAuthenticationForTenant(getTenant()));
-	    GroovyConfiguration groovy = new GroovyConfiguration(getTenantScriptSynchronizer());
-	    groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize asset model."),
-		    getMicroservice()));
-	    for (String script : scripts) {
-		getLogger().info(String.format("Applying bootstrap script '%s'.", script));
-		GroovyAssetModelInitializer initializer = new GroovyAssetModelInitializer(groovy, script);
-		initializer.initialize(getAssetManagement());
-	    }
-	} catch (Throwable e) {
-	    getLogger().error("Unhandled exception in bootstrap script.", e);
-	    throw new SiteWhereException(e);
-	} finally {
-	    SecurityContextHolder.getContext().setAuthentication(previous);
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
-     * tenantStop(com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * tenantStop(com.sitewhere.spi.microservice.lifecycle.
+     * ILifecycleProgressMonitor)
      */
     @Override
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -159,16 +153,13 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
 	// Stop asset management persistence.
 	stop.addStopStep(this, getAssetManagement());
 
-	// Stop discoverable lifecycle components.
-	stop.addStep(stopDiscoverableBeans(getModuleContext()));
-
 	// Execute shutdown steps.
 	stop.execute(monitor);
+
+	super.tenantStop(monitor);
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine#
      * getAssetManagement()
      */
@@ -177,22 +168,12 @@ public class AssetManagementTenantEngine extends MicroserviceTenantEngine implem
 	return assetManagement;
     }
 
-    public void setAssetManagement(IAssetManagement assetManagement) {
-	this.assetManagement = assetManagement;
-    }
-
     /*
-     * (non-Javadoc)
-     * 
      * @see com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine#
      * getAssetManagementImpl()
      */
     @Override
     public AssetManagementGrpc.AssetManagementImplBase getAssetManagementImpl() {
 	return assetManagementImpl;
-    }
-
-    public void setAssetManagementImpl(AssetManagementGrpc.AssetManagementImplBase assetManagementImpl) {
-	this.assetManagementImpl = assetManagementImpl;
     }
 }

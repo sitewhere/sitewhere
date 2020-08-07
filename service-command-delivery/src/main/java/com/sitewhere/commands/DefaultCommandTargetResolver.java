@@ -12,19 +12,17 @@ import java.util.List;
 
 import com.sitewhere.commands.spi.ICommandTargetResolver;
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryMicroservice;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
  * Uses information in an {@link IDeviceCommandInvocation} to determine a list
  * of target {@link IDeviceAssignment} objects. This implementation returns the
  * {@link IDeviceAssignment} associated with the invocation.
- * 
- * @author Derek
  */
 public class DefaultCommandTargetResolver extends TenantEngineLifecycleComponent implements ICommandTargetResolver {
 
@@ -40,14 +38,13 @@ public class DefaultCommandTargetResolver extends TenantEngineLifecycleComponent
      */
     @Override
     public List<IDeviceAssignment> resolveTargets(IDeviceCommandInvocation invocation) throws SiteWhereException {
-	IDeviceAssignment assignment = getDeviceManagementApiChannel()
-		.getDeviceAssignment(invocation.getDeviceAssignmentId());
+	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(invocation.getDeviceAssignmentId());
 	List<IDeviceAssignment> results = new ArrayList<IDeviceAssignment>();
 	results.add(assignment);
 	return results;
     }
 
-    private IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
-	return ((ICommandDeliveryMicroservice) getMicroservice()).getDeviceManagementApiChannel();
+    private IDeviceManagement getDeviceManagement() {
+	return ((ICommandDeliveryMicroservice) getMicroservice()).getDeviceManagement();
     }
 }

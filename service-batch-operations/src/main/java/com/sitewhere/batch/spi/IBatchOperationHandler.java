@@ -12,12 +12,10 @@ import com.sitewhere.spi.batch.ElementProcessingStatus;
 import com.sitewhere.spi.batch.IBatchElement;
 import com.sitewhere.spi.batch.IBatchOperation;
 import com.sitewhere.spi.batch.request.IBatchElementCreateRequest;
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Handler registered for a type of batch operation.
- * 
- * @author Derek
  */
 public interface IBatchOperationHandler extends ITenantEngineLifecycleComponent {
 

@@ -9,34 +9,29 @@ package com.sitewhere.instance.user.persistence;
 
 import java.util.List;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import com.sitewhere.persistence.Persistence;
+import com.sitewhere.microservice.persistence.Persistence;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.tenant.ITenantManagement;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.tenant.ITenant;
-import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
 
 /**
  * Persistence logic for user management components.
- * 
- * @author Derek
  */
 public class UserManagementPersistenceLogic extends Persistence {
 
-    /** Password encoder */
-    private static PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    // TODO: Replace with globally configurable method.
+    private static PasswordEncoder PASSWORD_ENCODER = new PasswordEncoder();
 
     /**
      * Common logic for creating a user based on an incoming request.
-     * 
+     *
      * @param source
      * @param encodePassword
      * @return
@@ -47,7 +42,8 @@ public class UserManagementPersistenceLogic extends Persistence {
 	Persistence.entityCreateLogic(request, user);
 
 	require("Username", request.getUsername());
-	String password = (encodePassword) ? passwordEncoder.encode(request.getPassword()) : request.getPassword();
+	String password = (encodePassword) ? getPasswordEncoder().encrypt(request.getPassword())
+		: request.getPassword();
 
 	user.setUsername(request.getUsername());
 	user.setHashedPassword(password);
@@ -55,15 +51,13 @@ public class UserManagementPersistenceLogic extends Persistence {
 	user.setLastName(request.getLastName());
 	user.setLastLogin(null);
 	user.setStatus(request.getStatus());
-	user.setAuthorities(request.getAuthorities());
-
 	return user;
     }
 
     /**
      * Common code for copying information from an update request to an existing
      * user.
-     * 
+     *
      * @param source
      * @param target
      * @param encodePassword
@@ -77,7 +71,8 @@ public class UserManagementPersistenceLogic extends Persistence {
 	    target.setUsername(request.getUsername());
 	}
 	if (request.getPassword() != null) {
-	    String password = (encodePassword) ? passwordEncoder.encode(request.getPassword()) : request.getPassword();
+	    String password = (encodePassword) ? getPasswordEncoder().encrypt(request.getPassword())
+		    : request.getPassword();
 	    target.setHashedPassword(password);
 	}
 	if (request.getFirstName() != null) {
@@ -89,18 +84,15 @@ public class UserManagementPersistenceLogic extends Persistence {
 	if (request.getStatus() != null) {
 	    target.setStatus(request.getStatus());
 	}
-	if (request.getAuthorities() != null) {
-	    target.setAuthorities(request.getAuthorities());
-	}
 	if (request.getStatus() != null) {
-		target.setStatus(request.getStatus());
+	    target.setStatus(request.getStatus());
 	}
     }
 
     /**
      * Common logic for deleting a user. Takes care of related tasks such as
      * deleting user id from tenant authorized users.
-     * 
+     *
      * @param username
      * @param tenantManagement
      * @throws SiteWhereException
@@ -113,14 +105,14 @@ public class UserManagementPersistenceLogic extends Persistence {
 		List<String> ids = tenant.getAuthorizedUserIds();
 		ids.remove(username);
 		request.setAuthorizedUserIds(ids);
-		tenantManagement.updateTenant(tenant.getId(), request);
+		tenantManagement.updateTenant(null, request);
 	    }
 	}
     }
 
     /**
      * Common logic for creating a granted authority based on an incoming request.
-     * 
+     *
      * @param request
      * @return
      * @throws SiteWhereException
@@ -140,11 +132,15 @@ public class UserManagementPersistenceLogic extends Persistence {
 
     /**
      * Common logic for encoding a plaintext password.
-     * 
+     *
      * @param plaintext
      * @return
      */
     public static boolean passwordMatches(String plaintext, String encoded) {
-	return passwordEncoder.matches(plaintext, encoded);
+	return getPasswordEncoder().decrypt(encoded).equals(plaintext);
+    }
+
+    protected static PasswordEncoder getPasswordEncoder() {
+	return PASSWORD_ENCODER;
     }
 }

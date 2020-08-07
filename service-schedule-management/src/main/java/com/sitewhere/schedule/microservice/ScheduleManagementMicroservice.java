@@ -7,31 +7,31 @@
  */
 package com.sitewhere.schedule.microservice;
 
-import com.sitewhere.microservice.grpc.ScheduleManagementGrpcServer;
+import javax.enterprise.context.ApplicationScoped;
+
+import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
-import com.sitewhere.schedule.configuration.ScheduleManagementModelProvider;
+import com.sitewhere.schedule.configuration.ScheduleManagementConfiguration;
+import com.sitewhere.schedule.configuration.ScheduleManagementModule;
+import com.sitewhere.schedule.grpc.ScheduleManagementGrpcServer;
 import com.sitewhere.schedule.spi.grpc.IScheduleManagementGrpcServer;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementTenantEngine;
-import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
-import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
+import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Microservice that provides schedule management functionality.
- * 
- * @author Derek
  */
-public class ScheduleManagementMicroservice
-	extends MultitenantMicroservice<MicroserviceIdentifier, IScheduleManagementTenantEngine>
+@ApplicationScoped
+public class ScheduleManagementMicroservice extends
+	MultitenantMicroservice<MicroserviceIdentifier, ScheduleManagementConfiguration, IScheduleManagementTenantEngine>
 	implements IScheduleManagementMicroservice {
-
-    /** Microservice name */
-    private static final String NAME = "Schedule Management";
 
     /** Provides server for schedule management GRPC requests */
     private IScheduleManagementGrpcServer scheduleManagementGrpcServer;
@@ -41,7 +41,7 @@ public class ScheduleManagementMicroservice
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Schedule Management";
     }
 
     /*
@@ -53,39 +53,40 @@ public class ScheduleManagementMicroservice
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<ScheduleManagementConfiguration> getConfigurationClass() {
+	return ScheduleManagementConfiguration.class;
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
      */
     @Override
-    public IConfigurationModel buildConfigurationModel() {
-	return new ScheduleManagementModelProvider().buildModel();
+    public IMicroserviceModule<ScheduleManagementConfiguration> createConfigurationModule() {
+	return new ScheduleManagementModule(getMicroserviceConfiguration());
     }
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * createTenantEngine(com.sitewhere.spi.tenant.ITenant)
+     * createTenantEngine(io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine)
      */
     @Override
-    public IScheduleManagementTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new ScheduleManagementTenantEngine(tenant);
+    public IScheduleManagementTenantEngine createTenantEngine(SiteWhereTenantEngine engine) throws SiteWhereException {
+	return new ScheduleManagementTenantEngine(engine);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.multitenant.MultitenantMicroservice#initialize(com
+     * .sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+
 	// Create schedule management GRPC server.
 	this.scheduleManagementGrpcServer = new ScheduleManagementGrpcServer(this);
 
@@ -100,14 +101,14 @@ public class ScheduleManagementMicroservice
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceStart(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.multitenant.MultitenantMicroservice#start(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
@@ -119,14 +120,11 @@ public class ScheduleManagementMicroservice
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceStop(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#stop(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
@@ -135,6 +133,8 @@ public class ScheduleManagementMicroservice
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
+
+	super.stop(monitor);
     }
 
     /*
@@ -144,9 +144,5 @@ public class ScheduleManagementMicroservice
     @Override
     public IScheduleManagementGrpcServer getScheduleManagementGrpcServer() {
 	return scheduleManagementGrpcServer;
-    }
-
-    protected void setScheduleManagementGrpcServer(IScheduleManagementGrpcServer scheduleManagementGrpcServer) {
-	this.scheduleManagementGrpcServer = scheduleManagementGrpcServer;
     }
 }

@@ -13,12 +13,10 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Extracts delivery parameters from
- * 
- * @author Derek
  * 
  * @param <T>
  */
@@ -33,6 +31,6 @@ public interface ICommandDeliveryParameterExtractor<T> extends ITenantEngineLife
      * @return
      * @throws SiteWhereException
      */
-    public T extractDeliveryParameters(IDeviceNestingContext nesting, List<IDeviceAssignment> assignments,
+    public T extractDeliveryParameters(IDeviceNestingContext nesting, List<? extends IDeviceAssignment> assignments,
 	    IDeviceCommandExecution execution) throws SiteWhereException;
 }

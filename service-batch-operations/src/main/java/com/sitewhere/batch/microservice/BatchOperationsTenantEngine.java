@@ -8,6 +8,14 @@
 package com.sitewhere.batch.microservice;
 
 import com.sitewhere.batch.BatchManagementTriggers;
+import com.sitewhere.batch.configuration.BatchOperationsTenantConfiguration;
+import com.sitewhere.batch.configuration.BatchOperationsTenantEngineModule;
+import com.sitewhere.batch.grpc.BatchManagementImpl;
+import com.sitewhere.batch.kafka.FailedBatchElementsProducer;
+import com.sitewhere.batch.kafka.UnprocessedBatchElementsProducer;
+import com.sitewhere.batch.kafka.UnprocessedBatchOperationsProducer;
+import com.sitewhere.batch.persistence.rdb.entity.RdbBatchElement;
+import com.sitewhere.batch.persistence.rdb.entity.RdbBatchOperation;
 import com.sitewhere.batch.spi.IBatchOperationManager;
 import com.sitewhere.batch.spi.kafka.IFailedBatchElementsProducer;
 import com.sitewhere.batch.spi.kafka.IUnprocessedBatchElementsProducer;
@@ -15,28 +23,25 @@ import com.sitewhere.batch.spi.kafka.IUnprocessedBatchOperationsProducer;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
 import com.sitewhere.grpc.service.BatchManagementGrpc;
-import com.sitewhere.microservice.grpc.BatchManagementImpl;
-import com.sitewhere.microservice.kafka.FailedBatchElementsProducer;
-import com.sitewhere.microservice.kafka.UnprocessedBatchElementsProducer;
-import com.sitewhere.microservice.kafka.UnprocessedBatchOperationsProducer;
-import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
-import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.microservice.api.batch.IBatchManagement;
+import com.sitewhere.microservice.datastore.DatastoreDefinition;
+import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.rdb.RdbPersistenceOptions;
+import com.sitewhere.rdb.RdbTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.batch.IBatchManagement;
-import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
+import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.spring.BatchManagementBeans;
-import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
+
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Implementation of {@link IMicroserviceTenantEngine} that implements batch
  * operations functionality.
- * 
- * @author Derek
  */
-public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implements IBatchOperationsTenantEngine {
+public class BatchOperationsTenantEngine extends RdbTenantEngine<BatchOperationsTenantConfiguration>
+	implements IBatchOperationsTenantEngine {
 
     /** Batch management persistence implementation */
     private IBatchManagement batchManagement;
@@ -56,27 +61,75 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
     /** Failed batch elements producer */
     private IFailedBatchElementsProducer failedBatchElementsProducer;
 
-    public BatchOperationsTenantEngine(ITenant tenant) {
-	super(tenant);
+    public BatchOperationsTenantEngine(SiteWhereTenantEngine engine) {
+	super(engine);
     }
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * tenantInitialize(com.sitewhere.spi.server.lifecycle.
+     * getConfigurationClass()
+     */
+    @Override
+    public Class<BatchOperationsTenantConfiguration> getConfigurationClass() {
+	return BatchOperationsTenantConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * createConfigurationModule()
+     */
+    @Override
+    public ITenantEngineModule<BatchOperationsTenantConfiguration> createConfigurationModule() {
+	return new BatchOperationsTenantEngineModule(this, getActiveConfiguration());
+    }
+
+    /*
+     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getDatastoreDefinition()
+     */
+    @Override
+    public DatastoreDefinition getDatastoreDefinition() {
+	return getActiveConfiguration().getDatastore();
+    }
+
+    /*
+     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getEntityClasses()
+     */
+    @Override
+    public Class<?>[] getEntityClasses() {
+	return new Class<?>[] { RdbBatchOperation.class, RdbBatchElement.class };
+    }
+
+    /*
+     * @see com.sitewhere.rdb.RdbTenantEngine#getPersistenceOptions()
+     */
+    @Override
+    public RdbPersistenceOptions getPersistenceOptions() {
+	RdbPersistenceOptions options = new RdbPersistenceOptions();
+	// options.setHbmToDdlAuto("update");
+	return options;
+    }
+
+    /*
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * loadEngineComponents()
+     */
+    @Override
+    public void loadEngineComponents() throws SiteWhereException {
+	IBatchManagement implementation = getInjector().getInstance(IBatchManagement.class);
+	this.batchManagement = new BatchManagementTriggers(implementation);
+	this.batchManagementImpl = new BatchManagementImpl((IBatchOperationsMicroservice) getMicroservice(),
+		getBatchManagement());
+	this.batchOperationManager = getInjector().getInstance(IBatchOperationManager.class);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * tenantInitialize(com.sitewhere.spi.microservice.lifecycle.
      * ILifecycleProgressMonitor)
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Create management interfaces.
-	IBatchManagement implementation = (IBatchManagement) getModuleContext()
-		.getBean(BatchManagementBeans.BEAN_BATCH_MANAGEMENT);
-	this.batchManagement = new BatchManagementTriggers(implementation);
-	this.batchManagementImpl = new BatchManagementImpl((IBatchOperationsMicroservice) getMicroservice(),
-		getBatchManagement());
-
-	// Load configured batch operation manager.
-	this.batchOperationManager = (IBatchOperationManager) getModuleContext()
-		.getBean(BatchManagementBeans.BEAN_BATCH_OPERATION_MANAGER);
+	super.tenantInitialize(monitor);
 
 	// Create Kafka components.
 	this.unprocessedBatchOperationsProducer = new UnprocessedBatchOperationsProducer();
@@ -85,9 +138,6 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
-
-	// Initialize discoverable lifecycle components.
-	init.addStep(initializeDiscoverableBeans(getModuleContext()));
 
 	// Initialize batch management persistence.
 	init.addInitializeStep(this, getBatchManagement(), true);
@@ -110,15 +160,15 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * tenantStart(com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * tenantStart(com.sitewhere.spi.microservice.lifecycle.
+     * ILifecycleProgressMonitor)
      */
     @Override
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.tenantStart(monitor);
+
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
-
-	// Start discoverable lifecycle components.
-	start.addStep(startDiscoverableBeans(getModuleContext()));
 
 	// Start batch management persistence.
 	start.addStartStep(this, getBatchManagement(), true);
@@ -141,20 +191,13 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * tenantBootstrap(com.sitewhere.spi.microservice.multitenant.IDatasetTemplate,
-     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void tenantBootstrap(IDatasetTemplate template, ILifecycleProgressMonitor monitor)
-	    throws SiteWhereException {
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * tenantStop(com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * tenantStop(com.sitewhere.spi.microservice.lifecycle.
+     * ILifecycleProgressMonitor)
      */
     @Override
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.tenantStop(monitor);
+
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getComponentName());
 
@@ -172,9 +215,6 @@ public class BatchOperationsTenantEngine extends MicroserviceTenantEngine implem
 
 	// Stop batch management persistence.
 	stop.addStopStep(this, getBatchManagement());
-
-	// Stop discoverable lifecycle components.
-	stop.addStep(stopDiscoverableBeans(getModuleContext()));
 
 	// Execute shutdown steps.
 	stop.execute(monitor);

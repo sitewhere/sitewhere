@@ -10,8 +10,6 @@ package com.sitewhere.connectors.filter;
 /**
  * Used to indicate if matches should be included or excluded from the result
  * set.
- * 
- * @author Derek
  */
 public enum FilterOperation {
 

@@ -1,17 +1,13 @@
-buildscript {
-	repositories {
-		maven { url "https://plugins.gradle.org/m2/" }
- 	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.0.RELEASE")
-		classpath 'com.netflix.nebula:gradle-extra-configurations-plugin:3.0.3'
-		classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.3'
-		classpath 'io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE'
-		classpath 'com.bmuschko:gradle-docker-plugin:4.3.0'
-		classpath "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0"
-		classpath "com.moowork.gradle:gradle-node-plugin:1.2.0"
-    	classpath "org.ajoberstar:grgit:2.2.1"
-	}
+plugins {
+    id 'java'
+    id 'checkstyle'
+    id 'distribution'
+    id 'com.sitewhere' version '3.0.0.alpha2' apply false
+    id 'io.quarkus' version '1.2.1.Final'
+    id 'com.bmuschko.docker-remote-api' version '5.3.0'
+    id 'org.ajoberstar.grgit' version '2.2.1'
+    id 'com.github.hierynomus.license' version '0.15.0'
+    id 'com.moowork.node' version '1.3.1'
 }
 
 ext {
@@ -24,57 +20,37 @@ ext['git.revision.abbrev'] = ext.git.head().abbreviatedId
 ext['docker.base.image'] = 'openjdk:8-jre-alpine'
 ext['docker.maintainer'] = 'admin@sitewhere.com'
 
-ext['sitewhere.grpc.api.version'] = '2.1.9'
+ext['sitewhere.microservice.api.version'] = '3.0.0.beta21'
+ext['sitewhere.integration.api.version'] = '3.0.0.beta14'
 ext['kafka.version'] = '2.0.0'
-ext['zookeeper.version'] = '3.4.8'
-ext['curator.version'] = '2.12.0'
 ext['protobuf.version'] = '3.5.1'
-ext['grpc.version'] = '1.21.0'
+ext['grpc.version'] = '1.25.0'
 ext['guava.version'] = '27.1-jre'
-ext['netty.version'] = '4.1.34.Final'
 ext['groovy.version'] = '2.4.12'
-ext['mongodb.version'] = '3.10.1'
-ext['solr.version'] = '6.4.0'
 ext['siddhi.version'] = '3.1.2'
-
-apply plugin: 'distribution'
+ext['jackson.version'] = '2.9.10'
 
 allprojects {
     group = 'com.sitewhere'
-	version = '2.1.1'
+	version = '3.0.0.beta1'
 
     repositories {
-        maven { url "https://repo.maven.apache.org/maven2" }
-        maven { url 'https://maven.restlet.org' }
-        maven { url "https://jitpack.io" }
-        maven { url "https://oss.jfrog.org/artifactory/oss-release-local/" }
-        maven { url "https://oss.sonatype.org/content/repositories/ksoap2-android-releases/" }
-    	maven { url "https://repo.spring.io/libs-milestone" }
-        maven { url "https://maven.wso2.org/nexus/content/repositories/releases/" }
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
 		mavenLocal()
+        maven { url "https://repo.maven.apache.org/maven2" }
+        maven { url 'http://maven.restlet.org' }
+        maven { url "https://jitpack.io" }
+        maven { url "http://oss.jfrog.org/artifactory/oss-release-local/" }
+        maven { url "http://maven.wso2.org/nexus/content/repositories/releases/" }
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     }
 }
 
 subprojects {
-	apply plugin: 'eclipse'
-
 	apply plugin: "com.github.hierynomus.license"
 	license {
 		header rootProject.file('HEADER')
     	include "**/*.java"
 	}
-
-    // Use Spring dependency management.
- 	apply plugin: 'io.spring.dependency-management'
-	dependencyManagement {
-		imports {
-			mavenBom 'io.spring.platform:platform-bom:Cairo-SR1'
-		}
-	}
-
-	// Use Docker plugin to allow for creating/pushing an image.
-	apply plugin: 'com.bmuschko.docker-remote-api'
 
 	// Allow Docker settings to be overridden by build environment.
 	if (System.getenv("DOCKER_REGISTRY_URL") != null) registryUrl = System.getenv("DOCKER_REGISTRY_URL")
@@ -82,8 +58,24 @@ subprojects {
 	if (System.getenv("DOCKER_REGISTRY_PASSWORD") != null) registryPassword = System.getenv("DOCKER_REGISTRY_PASSWORD")
 	if (System.getenv("DOCKER_REGISTRY_EMAIL") != null) registryEmail = System.getenv("DOCKER_REGISTRY_EMAIL")
 
+	// Apply SiteWhere.
+	apply plugin: 'com.sitewhere'
+	sitewhere {
+		standardImage {
+			jvmImage = "oracle/graalvm-ce:20.0.0-java8"
+		}
+		nativeImage {
+			graalImage = "sitewhere/graalvm-gradle:19.2.1"
+			dockerRepository = dockerRepository
+		}
+		debug {
+			enabled = true
+		}
+	}
+
+	// Apply Docker plugin.
+	apply plugin: 'com.bmuschko.docker-remote-api'
 	docker {
-	    url = (System.getenv("DOCKER_HOST") != null) ? System.getenv("DOCKER_HOST") : dockerProtocol + '://' + dockerHostname + ':' + dockerPort
 	    registryCredentials {
 	        url = registryUrl
 	        username = registryUsername
@@ -92,13 +84,40 @@ subprojects {
 	    }
 	}
 
+	// Apply Quarkus.
+	apply plugin: 'io.quarkus'
+	buildNative {
+		additionalBuildArgs = [
+			'-H:EnableURLProtocols=http,https',
+			'--enable-all-security-services',
+			'-H:+JNI'
+		]
+	}
+
  	// Choose Java settings.
     apply plugin: 'java'
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
+	// Replace tokens with version info.
+	processResources {
+	    from(sourceSets.main.resources.srcDirs) {
+	        include '**/*.properties'
+	        filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
+	            'build.timestamp': new java.text.SimpleDateFormat('yyyyMMddHHmmss').format(new Date()),
+	            'version.identifier' : project.version,
+	            'git.revision': rootProject.ext['git.revision'],
+	            'git.revision.abbrev': rootProject.ext['git.revision.abbrev']
+	        ])
+	    }
+	}
+
     // Common dependencies used for all projects.
     dependencies {
-        testCompile group: 'junit', name: 'junit'
+		// Confirm to Quarkus BOM.
+  		compile platform('io.quarkus:quarkus-bom:1.2.1.Final')
+
+    	// Testing dependencies.
+		testCompile group: 'junit', name: 'junit', version: '4.12'
     }
 }

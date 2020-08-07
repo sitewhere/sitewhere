@@ -7,20 +7,19 @@
  */
 package com.sitewhere.commands.spi.microservice;
 
+import com.sitewhere.commands.configuration.CommandDeliveryTenantConfiguration;
 import com.sitewhere.commands.spi.ICommandDestinationsManager;
 import com.sitewhere.commands.spi.ICommandProcessingStrategy;
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
-import com.sitewhere.commands.spi.kafka.IEnrichedCommandInvocationsConsumer;
+import com.sitewhere.commands.spi.kafka.IEnrichedCommandInvocationsPipeline;
 import com.sitewhere.commands.spi.kafka.IUndeliveredCommandInvocationsProducer;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
  * Extends {@link IMicroserviceTenantEngine} with features specific to command
  * delivery.
- * 
- * @author Derek
  */
-public interface ICommandDeliveryTenantEngine extends IMicroserviceTenantEngine {
+public interface ICommandDeliveryTenantEngine extends IMicroserviceTenantEngine<CommandDeliveryTenantConfiguration> {
 
     /**
      * Get command processing strategy.
@@ -44,11 +43,11 @@ public interface ICommandDeliveryTenantEngine extends IMicroserviceTenantEngine 
     public ICommandDestinationsManager getCommandDestinationsManager();
 
     /**
-     * Get Kafka consumer for command invocations.
+     * Get Kafka Streams pipeline for command invocations.
      * 
      * @return
      */
-    public IEnrichedCommandInvocationsConsumer getEnrichedCommandInvocationsConsumer();
+    public IEnrichedCommandInvocationsPipeline getEnrichedCommandInvocationsPipeline();
 
     /**
      * Get Kafka producer for undelivered command invocations.

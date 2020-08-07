@@ -10,21 +10,19 @@ package com.sitewhere.media.persistence.cassandra;
 import java.util.UUID;
 
 import com.sitewhere.cassandra.CassandraClient;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.api.stream.IDeviceStreamDataManagement;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.streaming.IDeviceStreamData;
-import com.sitewhere.spi.device.streaming.IDeviceStreamDataManagement;
 import com.sitewhere.spi.device.streaming.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IDeviceStreamDataManagement} that stores data in
  * Apache Cassandra.
- * 
- * @author Derek
  */
 public class CassandraDeviceStreamManagement extends TenantEngineLifecycleComponent
 	implements IDeviceStreamDataManagement {

@@ -19,21 +19,19 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
 
+import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
+import com.sitewhere.spi.microservice.tenant.ITenantManagement;
 import com.sitewhere.spi.scheduling.JobConstants;
 import com.sitewhere.spi.tenant.ITenant;
-import com.sitewhere.spi.tenant.ITenantManagement;
 
 /**
  * Creates an {@link IDeviceCommandInvocation} as the result of a Quarz
  * schedule.
- * 
- * @author Derek
  */
 public class CommandInvocationJob implements Job {
 
@@ -64,7 +62,7 @@ public class CommandInvocationJob implements Job {
 	    throw new JobExecutionException("Command token not provided.");
 	}
 	try {
-	    ITenant tenant = getTenantManagement().getTenantByToken(context.getScheduler().getSchedulerName());
+	    ITenant tenant = getTenantManagement().getTenant(context.getScheduler().getSchedulerName());
 	    IDeviceEventManagement events = getDeviceEventManagement(tenant);
 	    DeviceCommandInvocationCreateRequest create = new DeviceCommandInvocationCreateRequest();
 	    create.setCommandToken(getCommandToken());

@@ -7,32 +7,33 @@
  */
 package com.sitewhere.search.microservice;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
-import com.sitewhere.search.configuration.EventSearchModelProvider;
+import com.sitewhere.search.configuration.EventSearchConfiguration;
+import com.sitewhere.search.configuration.EventSearchModule;
 import com.sitewhere.search.spi.microservice.IEventSearchMicroservice;
 import com.sitewhere.search.spi.microservice.IEventSearchTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
+
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Microservice that provides event search functionality.
- * 
- * @author Derek
  */
-public class EventSearchMicroservice extends MultitenantMicroservice<MicroserviceIdentifier, IEventSearchTenantEngine>
+@ApplicationScoped
+public class EventSearchMicroservice
+	extends MultitenantMicroservice<MicroserviceIdentifier, EventSearchConfiguration, IEventSearchTenantEngine>
 	implements IEventSearchMicroservice {
-
-    /** Microservice name */
-    private static final String NAME = "Event Search";
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Event Search";
     }
 
     /*
@@ -44,27 +45,28 @@ public class EventSearchMicroservice extends MultitenantMicroservice<Microservic
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<EventSearchConfiguration> getConfigurationClass() {
+	return EventSearchConfiguration.class;
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
      */
     @Override
-    public IConfigurationModel buildConfigurationModel() {
-	return new EventSearchModelProvider().buildModel();
+    public IMicroserviceModule<EventSearchConfiguration> createConfigurationModule() {
+	return new EventSearchModule(getMicroserviceConfiguration());
     }
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * createTenantEngine(com.sitewhere.spi.tenant.ITenant)
+     * createTenantEngine(io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine)
      */
     @Override
-    public IEventSearchTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new EventSearchTenantEngine(tenant);
+    public IEventSearchTenantEngine createTenantEngine(SiteWhereTenantEngine engine) throws SiteWhereException {
+	return new EventSearchTenantEngine(engine);
     }
 }

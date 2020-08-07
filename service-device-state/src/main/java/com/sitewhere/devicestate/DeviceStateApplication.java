@@ -7,22 +7,19 @@
  */
 package com.sitewhere.devicestate;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.ComponentScan;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
 
 /**
- * Spring Boot application for device state management microservice.
- * 
- * @author Derek
+ * Main application which runs the device state microservice.
  */
-@ComponentScan
+@ApplicationScoped
 public class DeviceStateApplication extends MicroserviceApplication<IDeviceStateMicroservice> {
 
-    @Autowired
+    @Inject
     private IDeviceStateMicroservice microservice;
 
     /*
@@ -34,14 +31,5 @@ public class DeviceStateApplication extends MicroserviceApplication<IDeviceState
     @Override
     public IDeviceStateMicroservice getMicroservice() {
 	return microservice;
-    }
-
-    /**
-     * Entry point for Spring Boot.
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-	SpringApplication.run(DeviceStateApplication.class, args);
     }
 }

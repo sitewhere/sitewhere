@@ -21,8 +21,6 @@ import com.sitewhere.sources.spi.IInboundEventReceiver;
 /**
  * Implementation of {@link WebSocketEventReceiver} that operates on String
  * payloads.
- * 
- * @author Derek
  */
 public class StringWebSocketEventReceiver extends WebSocketEventReceiver<String> {
 
@@ -42,8 +40,6 @@ public class StringWebSocketEventReceiver extends WebSocketEventReceiver<String>
 
     /**
      * Implementation of {@link Endpoint} that operates on String payloads.
-     * 
-     * @author Derek
      */
     public static class StringWebSocketClient extends Endpoint {
 

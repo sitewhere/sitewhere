@@ -21,13 +21,11 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.command.ISystemCommand;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Implementation of {@link IOutboundCommandRouter} that assumes a single
  * {@link ICommandDestination} is available and delivers commands to it.
- * 
- * @author Derek
  */
 public class SingleChoiceCommandRouter extends OutboundCommandRouter {
 
@@ -42,7 +40,7 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
      */
     @Override
     public List<ICommandDestination<?, ?>> getDestinationsFor(IDeviceCommandExecution execution,
-	    IDeviceNestingContext nesting, List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    IDeviceNestingContext nesting, List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	return destinations;
     }
 
@@ -54,7 +52,7 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
      */
     @Override
     public List<ICommandDestination<?, ?>> getDestinationsFor(ISystemCommand command, IDeviceNestingContext nesting,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	return destinations;
     }
 
@@ -69,7 +67,8 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.start(monitor);
 
-	Map<String, ICommandDestination<?, ?>> destinations = getCommandDestinationsManager().getCommandDestinations();
+	Map<String, ICommandDestination<?, ?>> destinations = getCommandDestinationsManager()
+		.getCommandDestinationsMap();
 	if (destinations.size() != 1) {
 	    throw new SiteWhereException(
 		    "Expected exactly one destination for command routing but found " + destinations.size() + ".");

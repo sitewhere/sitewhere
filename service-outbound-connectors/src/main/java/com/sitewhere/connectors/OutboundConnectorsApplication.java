@@ -7,22 +7,19 @@
  */
 package com.sitewhere.connectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.ComponentScan;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
 
 /**
- * Spring Boot application for outbound connectors microservice.
- * 
- * @author Derek
+ * Main application which runs the outbound connectors microservice.
  */
-@ComponentScan
+@ApplicationScoped
 public class OutboundConnectorsApplication extends MicroserviceApplication<IOutboundConnectorsMicroservice> {
 
-    @Autowired
+    @Inject
     private IOutboundConnectorsMicroservice microservice;
 
     /*
@@ -34,14 +31,5 @@ public class OutboundConnectorsApplication extends MicroserviceApplication<IOutb
     @Override
     public IOutboundConnectorsMicroservice getMicroservice() {
 	return microservice;
-    }
-
-    /**
-     * Entry point for Spring Boot.
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-	SpringApplication.run(OutboundConnectorsApplication.class, args);
     }
 }

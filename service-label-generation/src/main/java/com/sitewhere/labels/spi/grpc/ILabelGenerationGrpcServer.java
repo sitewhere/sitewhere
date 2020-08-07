@@ -7,12 +7,10 @@
  */
 package com.sitewhere.labels.spi.grpc;
 
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Binds to a port and listens for label generation GRPC requests.
- * 
- * @author Derek
  */
 public interface ILabelGenerationGrpcServer extends ITenantEngineLifecycleComponent {
 }

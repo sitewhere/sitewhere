@@ -9,8 +9,6 @@ package com.sitewhere.commands.destination.coap;
 
 /**
  * Parameters required for a CoAP client request.
- * 
- * @author Derek
  */
 public class CoapParameters {
 

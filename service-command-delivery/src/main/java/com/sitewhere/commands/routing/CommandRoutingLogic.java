@@ -12,15 +12,15 @@ import java.util.List;
 import com.sitewhere.commands.spi.ICommandDestination;
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
 import com.sitewhere.commands.spi.kafka.IUndeliveredCommandInvocationsProducer;
-import com.sitewhere.grpc.client.event.EventModelMarshaler;
-import com.sitewhere.rest.model.device.event.kafka.EnrichedEventPayload;
+import com.sitewhere.grpc.event.EventModelMarshaler;
+import com.sitewhere.rest.model.device.event.kafka.ProcessedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
-import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleStatus;
 
 public class CommandRoutingLogic {
 
@@ -37,7 +37,7 @@ public class CommandRoutingLogic {
      */
     public static void routeCommand(IOutboundCommandRouter router, IUndeliveredCommandInvocationsProducer undelivered,
 	    IDeviceEventContext eventContext, IDeviceCommandExecution execution, IDeviceNestingContext nesting,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	List<ICommandDestination<?, ?>> destinations = router.getDestinationsFor(execution, nesting, assignments);
 	boolean deliveredToAll = true;
 	for (ICommandDestination<?, ?> destination : destinations) {
@@ -54,10 +54,10 @@ public class CommandRoutingLogic {
 	}
 	// If any command destination was not available, add to undelivered topic.
 	if (!deliveredToAll) {
-	    EnrichedEventPayload payload = new EnrichedEventPayload();
+	    ProcessedEventPayload payload = new ProcessedEventPayload();
 	    payload.setEventContext(eventContext);
 	    payload.setEvent(execution.getInvocation());
-	    byte[] message = EventModelMarshaler.buildEnrichedEventPayloadMessage(payload);
+	    byte[] message = EventModelMarshaler.buildProcessedEventPayloadMessage(payload);
 	    undelivered.send(eventContext.getDeviceId().toString(), message);
 	    router.getLogger().warn("Due to delivery failure, pushed command to undeliverable topic.");
 	}
@@ -73,7 +73,7 @@ public class CommandRoutingLogic {
      * @throws SiteWhereException
      */
     public static void routeSystemCommand(IOutboundCommandRouter router, ISystemCommand command,
-	    IDeviceNestingContext nesting, List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    IDeviceNestingContext nesting, List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	List<ICommandDestination<?, ?>> destinations = router.getDestinationsFor(command, nesting, assignments);
 	for (ICommandDestination<?, ?> destination : destinations) {
 	    deliverSystemCommand(destination, command, nesting, assignments);
@@ -91,7 +91,7 @@ public class CommandRoutingLogic {
      * @throws SiteWhereException
      */
     public static void deliverCommand(ICommandDestination<?, ?> destination, IDeviceCommandExecution execution,
-	    IDeviceNestingContext nesting, List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    IDeviceNestingContext nesting, List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	destination.deliverCommand(execution, nesting, assignments);
     }
 
@@ -105,7 +105,7 @@ public class CommandRoutingLogic {
      * @throws SiteWhereException
      */
     public static void deliverSystemCommand(ICommandDestination<?, ?> destination, ISystemCommand command,
-	    IDeviceNestingContext nesting, List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    IDeviceNestingContext nesting, List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	destination.deliverSystemCommand(command, nesting, assignments);
     }
 }

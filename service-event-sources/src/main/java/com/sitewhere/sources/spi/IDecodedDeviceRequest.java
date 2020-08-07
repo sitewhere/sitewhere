@@ -12,8 +12,6 @@ import java.io.Serializable;
 /**
  * Contains information decoded by an {@link IDeviceEventDecoder} including
  * hardware id and originator of the event.
- * 
- * @author Derek
  */
 public interface IDecodedDeviceRequest<T> extends Serializable {
 

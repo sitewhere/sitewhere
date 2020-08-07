@@ -25,8 +25,6 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 
 /**
  * Class for saving device command response data to InfluxDB.
- * 
- * @author Derek
  */
 public class InfluxDbDeviceCommandResponse {
 

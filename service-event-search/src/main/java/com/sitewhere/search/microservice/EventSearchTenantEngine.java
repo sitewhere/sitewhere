@@ -7,43 +7,62 @@
  */
 package com.sitewhere.search.microservice;
 
+import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
+import com.sitewhere.search.configuration.EventSearchTenantConfiguration;
+import com.sitewhere.search.configuration.EventSearchTenantEngineModule;
 import com.sitewhere.search.spi.ISearchProvidersManager;
 import com.sitewhere.search.spi.microservice.IEventSearchTenantEngine;
-import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
+import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.spring.EventSearchBeans;
-import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
+
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Implementation of {@link IMicroserviceTenantEngine} that implements event
  * search functionality.
- * 
- * @author Derek
  */
-public class EventSearchTenantEngine extends MicroserviceTenantEngine implements IEventSearchTenantEngine {
+public class EventSearchTenantEngine extends MicroserviceTenantEngine<EventSearchTenantConfiguration>
+	implements IEventSearchTenantEngine {
 
     /** Manages the outbound connectors for this tenant */
     private ISearchProvidersManager searchProvidersManager;
 
-    public EventSearchTenantEngine(ITenant tenant) {
-	super(tenant);
+    public EventSearchTenantEngine(SiteWhereTenantEngine engine) {
+	super(engine);
     }
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * tenantInitialize(com.sitewhere.spi.server.lifecycle.
+     * getConfigurationClass()
+     */
+    @Override
+    public Class<EventSearchTenantConfiguration> getConfigurationClass() {
+	return EventSearchTenantConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * createConfigurationModule()
+     */
+    @Override
+    public ITenantEngineModule<EventSearchTenantConfiguration> createConfigurationModule() {
+	return new EventSearchTenantEngineModule(this, getActiveConfiguration());
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * tenantInitialize(com.sitewhere.spi.microservice.lifecycle.
      * ILifecycleProgressMonitor)
      */
     @Override
     public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Create search providers manager.
-	this.searchProvidersManager = (ISearchProvidersManager) getModuleContext()
-		.getBean(EventSearchBeans.BEAN_SEARCH_PROVIDERS_MANAGER);
+	// // Create search providers manager.
+	// this.searchProvidersManager = (ISearchProvidersManager) getModuleContext()
+	// .getBean(EventSearchBeans.BEAN_SEARCH_PROVIDERS_MANAGER);
 
 	// Create step that will initialize components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
@@ -57,7 +76,8 @@ public class EventSearchTenantEngine extends MicroserviceTenantEngine implements
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * tenantStart(com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * tenantStart(com.sitewhere.spi.microservice.lifecycle.
+     * ILifecycleProgressMonitor)
      */
     @Override
     public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -73,17 +93,8 @@ public class EventSearchTenantEngine extends MicroserviceTenantEngine implements
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * tenantBootstrap(com.sitewhere.spi.microservice.multitenant.IDatasetTemplate,
-     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void tenantBootstrap(IDatasetTemplate template, ILifecycleProgressMonitor monitor)
-	    throws SiteWhereException {
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * tenantStop(com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * tenantStop(com.sitewhere.spi.microservice.lifecycle.
+     * ILifecycleProgressMonitor)
      */
     @Override
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {

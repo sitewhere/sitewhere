@@ -18,8 +18,6 @@ import com.sitewhere.spi.device.command.ISystemCommand;
 
 /**
  * Wraps data sent when executing a command so it can be marshaled to JSON.
- * 
- * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
 public class EncodedCommandExecution {
@@ -34,17 +32,17 @@ public class EncodedCommandExecution {
     private IDeviceNestingContext nestingContext;
 
     /** Device assignment information */
-    private List<IDeviceAssignment> assignments;
+    private List<? extends IDeviceAssignment> assignments;
 
     public EncodedCommandExecution(IDeviceCommandExecution command, IDeviceNestingContext nestingContext,
-	    List<IDeviceAssignment> assignments) {
+	    List<? extends IDeviceAssignment> assignments) {
 	this.command = command;
 	this.nestingContext = nestingContext;
 	this.assignments = assignments;
     }
 
     public EncodedCommandExecution(ISystemCommand systemCommand, IDeviceNestingContext nestingContext,
-	    List<IDeviceAssignment> assignments) {
+	    List<? extends IDeviceAssignment> assignments) {
 	this.systemCommand = systemCommand;
 	this.nestingContext = nestingContext;
 	this.assignments = assignments;
@@ -74,11 +72,11 @@ public class EncodedCommandExecution {
 	this.nestingContext = nestingContext;
     }
 
-    public List<IDeviceAssignment> getAssignments() {
+    public List<? extends IDeviceAssignment> getAssignments() {
 	return assignments;
     }
 
-    public void setAssignments(List<IDeviceAssignment> assignments) {
+    public void setAssignments(List<? extends IDeviceAssignment> assignments) {
 	this.assignments = assignments;
     }
 }

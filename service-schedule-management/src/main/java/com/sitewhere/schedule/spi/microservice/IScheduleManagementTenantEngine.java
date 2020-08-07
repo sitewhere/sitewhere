@@ -8,16 +8,17 @@
 package com.sitewhere.schedule.spi.microservice;
 
 import com.sitewhere.grpc.service.ScheduleManagementGrpc;
+import com.sitewhere.microservice.api.schedule.IScheduleManagement;
+import com.sitewhere.rdb.spi.IRdbEntityManagerProvider;
+import com.sitewhere.schedule.configuration.ScheduleManagementTenantConfiguration;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.scheduling.IScheduleManagement;
 
 /**
  * Extends {@link IMicroserviceTenantEngine} with features specific to schedule
  * management.
- * 
- * @author Derek
  */
-public interface IScheduleManagementTenantEngine extends IMicroserviceTenantEngine {
+public interface IScheduleManagementTenantEngine
+	extends IMicroserviceTenantEngine<ScheduleManagementTenantConfiguration> {
 
     /**
      * Get associated schedule management implementation.
@@ -33,4 +34,11 @@ public interface IScheduleManagementTenantEngine extends IMicroserviceTenantEngi
      * @return
      */
     public ScheduleManagementGrpc.ScheduleManagementImplBase getScheduleManagementImpl();
+
+    /**
+     * Get provider which provides an RDB entity manager for this tenant.
+     * 
+     * @return
+     */
+    public IRdbEntityManagerProvider getRdbEntityManagerProvider();
 }

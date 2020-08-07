@@ -7,22 +7,14 @@
  */
 package com.sitewhere.search;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.ComponentScan;
-
 import com.sitewhere.microservice.MicroserviceApplication;
 import com.sitewhere.search.spi.microservice.IEventSearchMicroservice;
 
 /**
  * Spring Boot application for event search microservice.
- * 
- * @author Derek
  */
-@ComponentScan
 public class EventSearchApplication extends MicroserviceApplication<IEventSearchMicroservice> {
 
-    @Autowired
     private IEventSearchMicroservice microservice;
 
     /*
@@ -34,14 +26,5 @@ public class EventSearchApplication extends MicroserviceApplication<IEventSearch
     @Override
     public IEventSearchMicroservice getMicroservice() {
 	return microservice;
-    }
-
-    /**
-     * Entry point for Spring Boot.
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-	SpringApplication.run(EventSearchApplication.class, args);
     }
 }

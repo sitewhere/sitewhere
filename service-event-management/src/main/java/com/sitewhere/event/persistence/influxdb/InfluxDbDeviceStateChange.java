@@ -17,8 +17,6 @@ import com.sitewhere.spi.device.event.DeviceEventType;
 
 /**
  * Class for saving device state change data to InfluxDB.
- * 
- * @author Derek
  */
 public class InfluxDbDeviceStateChange {
 

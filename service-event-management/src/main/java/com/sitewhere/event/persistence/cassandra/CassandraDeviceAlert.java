@@ -19,8 +19,6 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
 
 /**
  * Handles mapping of device alert event fields to Cassandra records.
- * 
- * @author Derek
  */
 public class CassandraDeviceAlert implements ICassandraEventBinder<IDeviceAlert> {
 

@@ -11,18 +11,16 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
  * Implements {@link ICommandDeliveryParameterExtractor} for
  * {@link SmsParameters}.
- * 
- * @author Derek
  */
 public class SmsParameterExtractor extends TenantEngineLifecycleComponent
 	implements ICommandDeliveryParameterExtractor<SmsParameters> {
@@ -43,8 +41,9 @@ public class SmsParameterExtractor extends TenantEngineLifecycleComponent
      * java.util.List, com.sitewhere.spi.device.command.IDeviceCommandExecution)
      */
     @Override
-    public SmsParameters extractDeliveryParameters(IDeviceNestingContext nesting, List<IDeviceAssignment> assignments,
-	    IDeviceCommandExecution execution) throws SiteWhereException {
+    public SmsParameters extractDeliveryParameters(IDeviceNestingContext nesting,
+	    List<? extends IDeviceAssignment> assignments, IDeviceCommandExecution execution)
+	    throws SiteWhereException {
 	SmsParameters params = new SmsParameters();
 
 	// Load hostname and port from device metadata.

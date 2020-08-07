@@ -14,20 +14,22 @@ import java.util.UUID;
 
 import org.influxdb.dto.Point;
 
+import com.google.inject.Inject;
 import com.sitewhere.event.persistence.DeviceEventManagementPersistence;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.influxdb.InfluxDbClient;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.event.IDeviceEventManagement;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.DeviceEventIndex;
 import com.sitewhere.spi.device.event.DeviceEventType;
@@ -37,7 +39,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
@@ -49,16 +51,14 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IDeviceEventManagement} that stores events in
  * InfluxDB.
- * 
- * @author Derek
  */
 public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponent implements IDeviceEventManagement {
 
@@ -74,8 +74,29 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     /** Assignment meta data tag to check for user defined retention policy */
     private final String ASSIGNMENT_META_DATA_RETENTION_POLICY = "INFLUX_RETENTION_POLICY";
 
-    public InfluxDbDeviceEventManagement() {
+    @Inject
+    public InfluxDbDeviceEventManagement(InfluxDbClient client) {
 	super(LifecycleComponentType.DataStore);
+	this.client = client;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.microservice.lifecycle.LifecycleComponent#initializeParameters(
+     * )
+     */
+    @Override
+    public void initializeParameters() throws SiteWhereException {
+	getClient().initializeParameters();
+    }
+
+    /*
+     * @see com.sitewhere.microservice.lifecycle.LifecycleComponent#initialize(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
+     */
+    @Override
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	getClient().initialize(monitor);
     }
 
     /*
@@ -87,22 +108,18 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if (getClient() == null) {
-	    throw new SiteWhereException("No InfluxDB client configured.");
-	}
 	getClient().start(monitor);
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceEventBatch(
-     * java.util.UUID, com.sitewhere.spi.device.event.IDeviceEventBatch)
+     * @see com.sitewhere.microservice.api.event.IDeviceEventManagement#
+     * addDeviceEventBatch(com.sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceEventBatch)
      */
     @Override
-    public IDeviceEventBatchResponse addDeviceEventBatch(UUID deviceAssignmentId, IDeviceEventBatch batch)
+    public IDeviceEventBatchResponse addDeviceEventBatch(IDeviceEventContext context, IDeviceEventBatch batch)
 	    throws SiteWhereException {
-	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
-	return DeviceEventManagementPersistence.deviceEventBatchLogic(assignment, batch, this);
+	return DeviceEventManagementPersistence.deviceEventBatchLogic(context, batch, this);
     }
 
     /**
@@ -111,11 +128,11 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
      * will be removed and a new tag created using the remaining characters as the
      * tag name with value metadata.key assigned to it.
      *
-     * @param assignment
+     * @param context
      * @param builder
      */
-    protected void addUserDefinedTags(IDeviceAssignment assignment, Point.Builder builder) {
-	Map<String, String> assignmentMetaData = assignment.getMetadata();
+    protected void addUserDefinedTags(IDeviceEventContext context, Point.Builder builder) {
+	Map<String, String> assignmentMetaData = context.getDeviceAssignmentMetadata();
 
 	if (assignmentMetaData != null) {
 	    for (Map.Entry<String, String> metaData : assignmentMetaData.entrySet()) {
@@ -162,12 +179,15 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
 	return InfluxDbDeviceEvent.getEventByAlternateId(alternateId, getClient());
     }
 
-    /*
+    /**
      * Check if the user has specific a retention policy in the assignment meta-data
      * If so, override the default one.
+     * 
+     * @param context
+     * @return
      */
-    private String getAssignmentSpecificRetentionPolicy(IDeviceAssignment assignment) {
-	String policy = assignment.getMetadata().get(ASSIGNMENT_META_DATA_RETENTION_POLICY);
+    private String getAssignmentSpecificRetentionPolicy(IDeviceEventContext context) {
+	String policy = context.getDeviceAssignmentMetadata().get(ASSIGNMENT_META_DATA_RETENTION_POLICY);
 
 	if (policy == null) {
 	    return getClient().getConfiguration().getRetention();
@@ -176,23 +196,21 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceMeasurements(
-     * java.util.UUID,
+     * @see com.sitewhere.microservice.api.event.IDeviceEventManagement#
+     * addDeviceMeasurements(com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest[])
      */
     @Override
-    public List<IDeviceMeasurement> addDeviceMeasurements(UUID deviceAssignmentId,
+    public List<IDeviceMeasurement> addDeviceMeasurements(IDeviceEventContext context,
 	    IDeviceMeasurementCreateRequest... requests) throws SiteWhereException {
 	List<IDeviceMeasurement> result = new ArrayList<>();
-	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
 	for (IDeviceMeasurementCreateRequest request : requests) {
-	    DeviceMeasurement mxs = DeviceEventManagementPersistence.deviceMeasurementCreateLogic(request, assignment);
+	    DeviceMeasurement mxs = DeviceEventManagementPersistence.deviceMeasurementCreateLogic(context, request);
 	    Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
-	    InfluxDbDeviceMeasurements.saveToBuilder(mxs, builder);
-	    addUserDefinedTags(assignment, builder);
+	    InfluxDbDeviceMeasurement.saveToBuilder(mxs, builder);
+	    addUserDefinedTags(context, builder);
 	    getClient().getInflux().write(getClient().getDatabase().getValue(),
-		    getAssignmentSpecificRetentionPolicy(assignment), builder.build());
+		    getAssignmentSpecificRetentionPolicy(context), builder.build());
 	    result.add(mxs);
 	}
 	return result;
@@ -212,23 +230,21 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocations(java
-     * .util.UUID,
+     * @see com.sitewhere.microservice.api.event.IDeviceEventManagement#
+     * addDeviceLocations(com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest[])
      */
     @Override
-    public List<IDeviceLocation> addDeviceLocations(UUID deviceAssignmentId, IDeviceLocationCreateRequest... requests)
-	    throws SiteWhereException {
+    public List<IDeviceLocation> addDeviceLocations(IDeviceEventContext context,
+	    IDeviceLocationCreateRequest... requests) throws SiteWhereException {
 	List<IDeviceLocation> result = new ArrayList<>();
-	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
 	for (IDeviceLocationCreateRequest request : requests) {
-	    DeviceLocation location = DeviceEventManagementPersistence.deviceLocationCreateLogic(assignment, request);
+	    DeviceLocation location = DeviceEventManagementPersistence.deviceLocationCreateLogic(context, request);
 	    Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	    InfluxDbDeviceLocation.saveToBuilder(location, builder);
-	    addUserDefinedTags(assignment, builder);
+	    addUserDefinedTags(context, builder);
 	    getClient().getInflux().write(getClient().getDatabase().getValue(),
-		    getAssignmentSpecificRetentionPolicy(assignment), builder.build());
+		    getAssignmentSpecificRetentionPolicy(context), builder.build());
 	    result.add(location);
 	}
 	return result;
@@ -248,22 +264,21 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceAlerts(java.
-     * util.UUID,
+     * com.sitewhere.microservice.api.event.IDeviceEventManagement#addDeviceAlerts(
+     * com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest[])
      */
     @Override
-    public List<IDeviceAlert> addDeviceAlerts(UUID deviceAssignmentId, IDeviceAlertCreateRequest... requests)
+    public List<IDeviceAlert> addDeviceAlerts(IDeviceEventContext context, IDeviceAlertCreateRequest... requests)
 	    throws SiteWhereException {
 	List<IDeviceAlert> result = new ArrayList<>();
-	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
 	for (IDeviceAlertCreateRequest request : requests) {
-	    DeviceAlert alert = DeviceEventManagementPersistence.deviceAlertCreateLogic(assignment, request);
+	    DeviceAlert alert = DeviceEventManagementPersistence.deviceAlertCreateLogic(context, request);
 	    Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	    InfluxDbDeviceAlert.saveToBuilder(alert, builder);
-	    addUserDefinedTags(assignment, builder);
+	    addUserDefinedTags(context, builder);
 	    getClient().getInflux().write(getClient().getDatabase().getValue(),
-		    getAssignmentSpecificRetentionPolicy(assignment), builder.build());
+		    getAssignmentSpecificRetentionPolicy(context), builder.build());
 	    result.add(alert);
 	}
 	return result;
@@ -282,26 +297,26 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     }
 
     /*
-     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * addDeviceCommandInvocations(java.util.UUID,
+     * @see com.sitewhere.microservice.api.event.IDeviceEventManagement#
+     * addDeviceCommandInvocations(com.sitewhere.spi.device.event.
+     * IDeviceEventContext,
      * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest[
      * ])
      */
     @Override
-    public List<IDeviceCommandInvocation> addDeviceCommandInvocations(UUID deviceAssignmentId,
+    public List<IDeviceCommandInvocation> addDeviceCommandInvocations(IDeviceEventContext context,
 	    IDeviceCommandInvocationCreateRequest... requests) throws SiteWhereException {
 	List<IDeviceCommandInvocation> result = new ArrayList<>();
-	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
 	for (IDeviceCommandInvocationCreateRequest request : requests) {
-	    IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(assignment.getDeviceTypeId(),
+	    IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(context.getDeviceTypeId(),
 		    request.getCommandToken());
-	    DeviceCommandInvocation ci = DeviceEventManagementPersistence.deviceCommandInvocationCreateLogic(assignment,
+	    DeviceCommandInvocation ci = DeviceEventManagementPersistence.deviceCommandInvocationCreateLogic(context,
 		    command, request);
 	    Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	    InfluxDbDeviceCommandInvocation.saveToBuilder(ci, builder);
-	    addUserDefinedTags(assignment, builder);
+	    addUserDefinedTags(context, builder);
 	    getClient().getInflux().write(getClient().getDatabase().getValue(),
-		    getAssignmentSpecificRetentionPolicy(assignment), builder.build());
+		    getAssignmentSpecificRetentionPolicy(context), builder.build());
 	    result.add(ci);
 	}
 	return result;
@@ -332,23 +347,22 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     }
 
     /*
-     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * addDeviceCommandResponses(java.util.UUID,
+     * @see com.sitewhere.microservice.api.event.IDeviceEventManagement#
+     * addDeviceCommandResponses(com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest[])
      */
     @Override
-    public List<IDeviceCommandResponse> addDeviceCommandResponses(UUID deviceAssignmentId,
+    public List<IDeviceCommandResponse> addDeviceCommandResponses(IDeviceEventContext context,
 	    IDeviceCommandResponseCreateRequest... requests) throws SiteWhereException {
 	List<IDeviceCommandResponse> result = new ArrayList<>();
-	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
 	for (IDeviceCommandResponseCreateRequest request : requests) {
-	    DeviceCommandResponse cr = DeviceEventManagementPersistence.deviceCommandResponseCreateLogic(assignment,
+	    DeviceCommandResponse cr = DeviceEventManagementPersistence.deviceCommandResponseCreateLogic(context,
 		    request);
 	    Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	    InfluxDbDeviceCommandResponse.saveToBuilder(cr, builder);
-	    addUserDefinedTags(assignment, builder);
+	    addUserDefinedTags(context, builder);
 	    getClient().getInflux().write(getClient().getDatabase().getValue(),
-		    getAssignmentSpecificRetentionPolicy(assignment), builder.build());
+		    getAssignmentSpecificRetentionPolicy(context), builder.build());
 	    result.add(cr);
 	}
 	return result;
@@ -368,23 +382,21 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceStateChanges(
-     * java.util.UUID,
+     * @see com.sitewhere.microservice.api.event.IDeviceEventManagement#
+     * addDeviceStateChanges(com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest[])
      */
     @Override
-    public List<IDeviceStateChange> addDeviceStateChanges(UUID deviceAssignmentId,
+    public List<IDeviceStateChange> addDeviceStateChanges(IDeviceEventContext context,
 	    IDeviceStateChangeCreateRequest... requests) throws SiteWhereException {
 	List<IDeviceStateChange> result = new ArrayList<>();
-	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
 	for (IDeviceStateChangeCreateRequest request : requests) {
-	    DeviceStateChange sc = DeviceEventManagementPersistence.deviceStateChangeCreateLogic(assignment, request);
+	    DeviceStateChange sc = DeviceEventManagementPersistence.deviceStateChangeCreateLogic(context, request);
 	    Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	    InfluxDbDeviceStateChange.saveToBuilder(sc, builder);
-	    addUserDefinedTags(assignment, builder);
+	    addUserDefinedTags(context, builder);
 	    getClient().getInflux().write(getClient().getDatabase().getValue(),
-		    getAssignmentSpecificRetentionPolicy(assignment), builder.build());
+		    getAssignmentSpecificRetentionPolicy(context), builder.build());
 	    result.add(sc);
 	}
 	return result;
@@ -419,7 +431,7 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     }
 
     protected IDeviceManagement getDeviceManagement() {
-	return ((IEventManagementMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
+	return ((IEventManagementMicroservice) getTenantEngine().getMicroservice()).getDeviceManagement();
     }
 
     public InfluxDbClient getClient() {

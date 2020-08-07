@@ -23,12 +23,10 @@ import javax.websocket.WebSocketContainer;
 
 import com.sitewhere.sources.InboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Event receiver that pulls data from a web socket.
- * 
- * @author Derek
  *
  * @param <T>
  */
@@ -104,8 +102,6 @@ public abstract class WebSocketEventReceiver<T> extends InboundEventReceiver<T> 
 
     /**
      * Configurator that passes in configured headers.
-     * 
-     * @author Derek
      */
     private class WebSocketConfigurator extends ClientEndpointConfig.Configurator {
 	@Override

@@ -7,91 +7,88 @@
  */
 package com.sitewhere.instance.microservice;
 
-import java.util.List;
+import javax.enterprise.context.ApplicationScoped;
 
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.zookeeper.data.Stat;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import com.sitewhere.instance.configuration.InstanceManagementModelProvider;
-import com.sitewhere.instance.initializer.GroovyTenantModelInitializer;
-import com.sitewhere.instance.initializer.GroovyUserModelInitializer;
-import com.sitewhere.instance.spi.instance.grpc.IInstanceManagementGrpcServer;
+import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
+import com.sitewhere.grpc.client.asset.CachedAssetManagementApiChannel;
+import com.sitewhere.grpc.client.batch.BatchManagementApiChannel;
+import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
+import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
+import com.sitewhere.grpc.client.devicestate.DeviceStateApiChannel;
+import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
+import com.sitewhere.grpc.client.label.LabelGenerationApiChannel;
+import com.sitewhere.grpc.client.schedule.ScheduleManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IBatchManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceStateApiChannel;
+import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiChannel;
+import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
+import com.sitewhere.instance.configuration.InstanceManagementConfiguration;
+import com.sitewhere.instance.configuration.InstanceManagementModule;
+import com.sitewhere.instance.grpc.tenant.TenantManagementGrpcServer;
+import com.sitewhere.instance.grpc.user.UserManagementGrpcServer;
+import com.sitewhere.instance.spi.microservice.IInstanceBootstrapper;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
-import com.sitewhere.instance.spi.templates.IInstanceTemplate;
-import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
 import com.sitewhere.instance.spi.tenant.grpc.ITenantManagementGrpcServer;
-import com.sitewhere.instance.spi.tenant.kafka.ITenantBootstrapModelConsumer;
-import com.sitewhere.instance.spi.tenant.templates.IDatasetTemplateManager;
-import com.sitewhere.instance.spi.tenant.templates.ITenantTemplateManager;
 import com.sitewhere.instance.spi.user.grpc.IUserManagementGrpcServer;
-import com.sitewhere.instance.templates.InstanceTemplateManager;
-import com.sitewhere.instance.tenant.templates.DatasetTemplateManager;
-import com.sitewhere.instance.tenant.templates.TenantTemplateManager;
-import com.sitewhere.instance.user.persistence.SyncopeUserManagement;
-import com.sitewhere.microservice.GlobalMicroservice;
-import com.sitewhere.microservice.groovy.GroovyConfiguration;
-import com.sitewhere.microservice.grpc.instance.InstanceManagementGrpcServer;
-import com.sitewhere.microservice.grpc.tenant.TenantManagementGrpcServer;
-import com.sitewhere.microservice.grpc.user.UserManagementGrpcServer;
-import com.sitewhere.microservice.kafka.tenant.TenantBootstrapModelConsumer;
-import com.sitewhere.microservice.kafka.user.UserManagementKafkaTriggers;
-import com.sitewhere.microservice.scripting.InstanceScriptSynchronizer;
-import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.LifecycleProgressContext;
-import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
-import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
+import com.sitewhere.microservice.api.asset.IAssetManagement;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.user.IUserManagement;
+import com.sitewhere.microservice.configuration.ConfigurableMicroservice;
+import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.instance.IInstanceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
-import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
-import com.sitewhere.spi.microservice.multitenant.ITenantTemplate;
-import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
-import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.ILifecycleStep;
-import com.sitewhere.spi.user.IUserManagement;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
+import com.sitewhere.spi.microservice.configuration.IScriptSpecUpdates;
+import com.sitewhere.spi.microservice.configuration.IScriptVersionSpecUpdates;
+import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+
+import io.sitewhere.k8s.crd.tenant.scripting.SiteWhereScript;
+import io.sitewhere.k8s.crd.tenant.scripting.version.SiteWhereScriptVersion;
 
 /**
  * Microservice that provides instance management functionality.
  */
-public class InstanceManagementMicroservice extends GlobalMicroservice<MicroserviceIdentifier>
-	implements IInstanceManagementMicroservice<MicroserviceIdentifier>, IInstanceManagement {
+@ApplicationScoped
+public class InstanceManagementMicroservice
+	extends ConfigurableMicroservice<MicroserviceIdentifier, InstanceManagementConfiguration>
+	implements IInstanceManagementMicroservice<MicroserviceIdentifier> {
 
-    /** Microservice name */
-    private static final String NAME = "Instance Management";
-
-    /** User management configuration file name */
-    private static final String CONFIGURATION_PATH = MicroserviceIdentifier.InstanceManagement.getPath() + ".xml";
-
-    /** Instance template manager */
-    private IInstanceTemplateManager instanceTemplateManager = new InstanceTemplateManager();
-
-    /** Instance script synchronizer */
-    private IScriptSynchronizer instanceScriptSynchronizer;
-
-    /** Provides server for instance management GRPC requests */
-    private IInstanceManagementGrpcServer instanceManagementGrpcServer;
-
-    /** Responds to user management GRPC requests */
-    private IUserManagementGrpcServer userManagementGrpcServer;
+    /** Instance dataset bootstrapper */
+    private IInstanceBootstrapper instanceBootstrapper;
 
     /** User management implementation */
     private IUserManagement userManagement;
 
+    /** Responds to user management GRPC requests */
+    private IUserManagementGrpcServer userManagementGrpcServer;
+
     /** Responds to tenant management GRPC requests */
     private ITenantManagementGrpcServer tenantManagementGrpcServer;
 
-    /** Tenant template manager */
-    private ITenantTemplateManager tenantConfigurationTemplateManager = new TenantTemplateManager();
+    /** Device management API channel */
+    private CachedDeviceManagementApiChannel deviceManagementApiChannel;
 
-    /** Dataset template manager */
-    private IDatasetTemplateManager tenantDatasetTemplateManager = new DatasetTemplateManager();
+    /** Device event management API channel */
+    private IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel;
 
-    /** Watches tenant model updates and bootstraps new tenants */
-    private ITenantBootstrapModelConsumer tenantBootstrapModelConsumer;
+    /** Asset management API channel */
+    private CachedAssetManagementApiChannel assetManagementApiChannel;
+
+    /** Batch management API channel */
+    private IBatchManagementApiChannel<?> batchManagementApiChannel;
+
+    /** Schedule management API channel */
+    private IScheduleManagementApiChannel<?> scheduleManagementApiChannel;
+
+    /** Label generation API channel */
+    private ILabelGenerationApiChannel<?> labelGenerationApiChannel;
+
+    /** Device state API channel */
+    private IDeviceStateApiChannel<?> deviceStateApiChannel;
 
     /*
      * (non-Javadoc)
@@ -100,7 +97,7 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Instance Management";
     }
 
     /*
@@ -112,72 +109,33 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
-     */
-    @Override
-    public boolean isGlobal() {
-	return true;
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
-     */
-    @Override
-    public IConfigurationModel buildConfigurationModel() {
-	return new InstanceManagementModelProvider().buildModel();
-    }
-
-    /*
      * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
-     * getConfigurationPath()
+     * getConfigurationClass()
      */
     @Override
-    public String getConfigurationPath() throws SiteWhereException {
-	return CONFIGURATION_PATH;
+    public Class<InstanceManagementConfiguration> getConfigurationClass() {
+	return InstanceManagementConfiguration.class;
     }
 
     /*
-     * @see com.sitewhere.microservice.Microservice#waitForInstanceInitialization()
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
      */
     @Override
-    public void waitForInstanceInitialization() throws SiteWhereException {
-	// Prevent deadlock waiting for self.
+    public IMicroserviceModule<InstanceManagementConfiguration> createConfigurationModule() {
+	return new InstanceManagementModule(getMicroserviceConfiguration());
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.configuration.IConfigurationListener#
-     * onConfigurationCacheInitialized()
+     * @see
+     * com.sitewhere.microservice.configuration.ConfigurableMicroservice#initialize(
+     * com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void onConfigurationCacheInitialized() {
-	// Override default configuration loading behavior because instance bootstrap
-	// must be done first.
-	setConfigurationCacheReady(true);
-    }
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
 
-    /*
-     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
-     * waitForConfigurationReady()
-     */
-    @Override
-    public void waitForConfigurationReady() throws SiteWhereException {
-	// Configuration will be loaded manually after instance bootstrap.
-    }
-
-    /*
-     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
-     * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
-     */
-    @Override
-    public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Create script synchronizer.
-	this.instanceScriptSynchronizer = new InstanceScriptSynchronizer();
-
-	// Create Kafka components.
-	createKafkaComponents();
+	// Create dataset bootstrapper.
+	this.instanceBootstrapper = new InstanceBootstrapper();
 
 	// Create management implementations.
 	createManagementImplementations();
@@ -185,32 +143,41 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Create GRPC components.
 	createGrpcComponents();
 
-	// Create step that will start components.
+	// Composite step for initializing microservice.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
-
-	// Initialize tenant configuration template manager.
-	init.addInitializeStep(this, getTenantConfigurationTemplateManager(), true);
-
-	// Initialize tenant dataset template manager.
-	init.addInitializeStep(this, getTenantDatasetTemplateManager(), true);
-
-	// Initialize instance management GRPC server.
-	init.addInitializeStep(this, getInstanceManagementGrpcServer(), true);
 
 	// Initialize tenant management GRPC server.
 	init.addInitializeStep(this, getTenantManagementGrpcServer(), true);
 
-	// Initialize tenant bootstrap model consumer.
-	init.addInitializeStep(this, getTenantBootstrapModelConsumer(), true);
-
 	// Initialize user management implementation.
 	init.addInitializeStep(this, getUserManagement(), true);
+
+	// Initialize dataset bootstrapper.
+	init.addInitializeStep(this, getInstanceBootstrapper(), true);
 
 	// Initialize user management GRPC server.
 	init.addInitializeStep(this, getUserManagementGrpcServer(), true);
 
-	// Initialize instance script synchronizer.
-	init.addInitializeStep(this, getInstanceScriptSynchronizer(), true);
+	// Initialize device management API channel.
+	init.addInitializeStep(this, getDeviceManagement(), true);
+
+	// Initialize device event management API channel.
+	init.addInitializeStep(this, getDeviceEventManagementApiChannel(), true);
+
+	// Initialize asset management API channel.
+	init.addInitializeStep(this, getAssetManagement(), true);
+
+	// Initialize batch management API channel.
+	init.addInitializeStep(this, getBatchManagementApiChannel(), true);
+
+	// Initialize schedule management API channel.
+	init.addInitializeStep(this, getScheduleManagementApiChannel(), true);
+
+	// Initialize label generation API channel.
+	init.addInitializeStep(this, getLabelGenerationApiChannel(), true);
+
+	// Initialize device state API channel.
+	init.addInitializeStep(this, getDeviceStateApiChannel(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
@@ -220,89 +187,123 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
      * Create management implementations.
      */
     protected void createManagementImplementations() {
-	this.userManagement = new UserManagementKafkaTriggers(new SyncopeUserManagement());
+	this.userManagement = getInjector().getInstance(IUserManagement.class);
     }
 
     /**
      * Create components that interact via GRPC.
-     */
-    protected void createGrpcComponents() {
-	this.instanceManagementGrpcServer = new InstanceManagementGrpcServer(this, this);
-	this.userManagementGrpcServer = new UserManagementGrpcServer(this, getUserManagement());
-	this.tenantManagementGrpcServer = new TenantManagementGrpcServer(this, getTenantManagement());
-    }
-
-    /**
-     * Create Apache Kafka components.
      * 
      * @throws SiteWhereException
      */
-    protected void createKafkaComponents() throws SiteWhereException {
-	this.tenantBootstrapModelConsumer = new TenantBootstrapModelConsumer();
+    protected void createGrpcComponents() throws SiteWhereException {
+	this.userManagementGrpcServer = new UserManagementGrpcServer(this, getUserManagement());
+	this.tenantManagementGrpcServer = new TenantManagementGrpcServer(this, getTenantManagement());
+
+	// Device management.
+	IDeviceManagementApiChannel<?> deviceManagement = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(deviceManagement,
+		new CachedDeviceManagementApiChannel.CacheSettings());
+
+	// Device event management.
+	this.deviceEventManagementApiChannel = new DeviceEventManagementApiChannel(getInstanceSettings());
+
+	// Asset management.
+	IAssetManagementApiChannel<?> assetManagement = new AssetManagementApiChannel(getInstanceSettings());
+	this.assetManagementApiChannel = new CachedAssetManagementApiChannel(assetManagement,
+		new CachedAssetManagementApiChannel.CacheSettings());
+
+	// Batch management.
+	this.batchManagementApiChannel = new BatchManagementApiChannel(getInstanceSettings());
+
+	// Schedule management.
+	this.scheduleManagementApiChannel = new ScheduleManagementApiChannel(getInstanceSettings());
+
+	// Label generation.
+	this.labelGenerationApiChannel = new LabelGenerationApiChannel(getInstanceSettings());
+
+	// Device state.
+	this.deviceStateApiChannel = new DeviceStateApiChannel(getInstanceSettings());
     }
 
     /*
-     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
-     * microserviceStart(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.lifecycle.LifecycleComponent#start(com.sitewhere.
+     * spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Create step that will start components.
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+
+	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
-
-	// Start instance template manager.
-	start.addStartStep(this, getInstanceTemplateManager(), true);
-
-	// Start instance script synchronizer.
-	start.addStartStep(this, getInstanceScriptSynchronizer(), true);
-
-	// Verify or create Zk configuration based on instance template.
-	start.addStep(verifyOrBootstrapInstanceConfigurationModel());
-
-	// Start tenant configuration template manager.
-	start.addStartStep(this, getTenantConfigurationTemplateManager(), true);
-
-	// Start tenant dataset template manager.
-	start.addStartStep(this, getTenantDatasetTemplateManager(), true);
-
-	// Start instance management GRPC server.
-	start.addStartStep(this, getInstanceManagementGrpcServer(), true);
 
 	// Start tenant management GRPC server.
 	start.addStartStep(this, getTenantManagementGrpcServer(), true);
 
-	// Start tenant bootstrap model consumer.
-	start.addStartStep(this, getTenantBootstrapModelConsumer(), true);
-
-	// Boostrap tenants from instance template configuration.
-	start.addStep(initializeTenantModelFromInstanceTemplate());
-
 	// Start user management implementation.
 	start.addStartStep(this, getUserManagement(), true);
+
+	// Start dataset bootstrapper.
+	start.addStartStep(this, getInstanceBootstrapper(), true);
 
 	// Start user management GRPC server.
 	start.addStartStep(this, getUserManagementGrpcServer(), true);
 
-	// Boostrap users from instance template configuration.
-	start.addStep(initializeUserModelFromInstanceTemplate());
+	// Start device mangement API channel.
+	start.addStartStep(this, getDeviceManagement(), true);
 
-	// Execute initialization steps.
+	// Start device event mangement API channel.
+	start.addStartStep(this, getDeviceEventManagementApiChannel(), true);
+
+	// Start asset mangement API channel.
+	start.addStartStep(this, getAssetManagement(), true);
+
+	// Start batch mangement API channel.
+	start.addStartStep(this, getBatchManagementApiChannel(), true);
+
+	// Start schedule mangement API channel.
+	start.addStartStep(this, getScheduleManagementApiChannel(), true);
+
+	// Start label generation API channel.
+	start.addStartStep(this, getLabelGenerationApiChannel(), true);
+
+	// Start device state API channel.
+	start.addStartStep(this, getDeviceStateApiChannel(), true);
+
+	// Execute startup steps.
 	start.execute(monitor);
     }
 
     /*
-     * @see com.sitewhere.microservice.configuration.ConfigurableMicroservice#
-     * microserviceStop(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.lifecycle.LifecycleComponent#stop(com.sitewhere.
+     * spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Create step that will stop components.
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
-	// Stop tenant bootstrap model consumer.
-	stop.addStopStep(this, getTenantBootstrapModelConsumer());
+	// Stop device mangement API channel .
+	stop.addStopStep(this, getDeviceManagement());
+
+	// Stop device event mangement API channel.
+	stop.addStopStep(this, getDeviceEventManagementApiChannel());
+
+	// Stop asset mangement API channel.
+	stop.addStopStep(this, getAssetManagement());
+
+	// Stop batch mangement API channel.
+	stop.addStopStep(this, getBatchManagementApiChannel());
+
+	// Stop schedule mangement API channel.
+	stop.addStopStep(this, getScheduleManagementApiChannel());
+
+	// Stop label generation API channel.
+	stop.addStopStep(this, getLabelGenerationApiChannel());
+
+	// Stop device state API channel.
+	stop.addStopStep(this, getDeviceStateApiChannel());
 
 	// Stop user management GRPC server.
 	stop.addStopStep(this, getUserManagementGrpcServer());
@@ -310,339 +311,81 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	// Stop tenant management GRPC manager.
 	stop.addStopStep(this, getTenantManagementGrpcServer());
 
-	// Stop instance management GRPC manager.
-	stop.addStopStep(this, getInstanceManagementGrpcServer());
-
-	// Stop tenant dataset template manager.
-	stop.addStopStep(this, getTenantDatasetTemplateManager());
-
-	// Stop tenant configuration template manager.
-	stop.addStopStep(this, getTenantConfigurationTemplateManager());
-
-	// Stop instance script synchronizer.
-	stop.addStopStep(this, getInstanceScriptSynchronizer());
-
-	// Stop instance template manager.
-	stop.addStopStep(this, getInstanceTemplateManager());
-
 	// Stop user management implementation.
 	stop.addStopStep(this, getUserManagement());
 
+	// Stop dataset bootstrapper.
+	stop.addStopStep(this, getInstanceBootstrapper());
+
 	// Execute shutdown steps.
 	stop.execute(monitor);
-    }
 
-    /**
-     * Verify that a Zk node exists to hold instance information. Create the folder
-     * if it does not exist. Other microservices block while waiting on this node to
-     * be created.
-     * 
-     * @return
-     */
-    public ILifecycleStep verifyOrBootstrapInstanceConfigurationModel() {
-	return new SimpleLifecycleStep("Verify instance bootstrapped") {
-
-	    @Override
-	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-		try {
-		    Stat existing = getZookeeperManager().getCurator().checkExists().forPath(getInstanceZkPath());
-		    if (existing == null) {
-			getLogger().info("Zk node for instance not found. Creating...");
-			getZookeeperManager().getCurator().create().forPath(getInstanceZkPath());
-			getLogger().info("Created instance Zk node.");
-		    } else {
-			getLogger().info("Found Zk node for instance.");
-		    }
-		    verifyOrBootstrapInstanceConfiguration();
-		} catch (Exception e) {
-		    throw new SiteWhereException(e);
-		}
-	    }
-	};
-    }
-
-    /**
-     * Verify that a Zk node exists to hold instance configuration information.
-     * Create the folder and bootstrap from the instance template if it does not
-     * exist. Other microservices block while waiting on this node to be created.
-     * 
-     * @return
-     */
-    public void verifyOrBootstrapInstanceConfiguration() throws SiteWhereException {
-	try {
-	    // Verify that instance state path exists.
-	    Stat existing = getZookeeperManager().getCurator().checkExists().forPath(getInstanceStatePath());
-	    if (existing == null) {
-		getLogger().info("Instance state path '" + getInstanceStatePath() + "' not found. Creating...");
-		getZookeeperManager().getCurator().create().forPath(getInstanceStatePath());
-	    }
-
-	    // Check for existing configuration bootstrap marker.
-	    existing = getZookeeperManager().getCurator().checkExists().forPath(getInstanceConfigBootstrappedMarker());
-	    if (existing == null) {
-		getLogger().info("Configuration bootstrap marker node '" + getInstanceConfigBootstrappedMarker()
-			+ "' not found. Bootstrapping configuration...");
-		bootstrapInstanceConfiguration();
-		getLogger().info("Bootstrapped instance configuration from template.");
-	    } else {
-		getLogger().info("Found configuration bootstrap marker node. Skipping configuration bootstrap.");
-	    }
-	} catch (Exception e) {
-	    throw new SiteWhereException(e);
-	}
-    }
-
-    /**
-     * Bootstrap instance configuration data from chosen instance template and
-     * create root paths for configuring users and tenants.
-     * 
-     * @throws SiteWhereException
-     */
-    protected void bootstrapInstanceConfiguration() throws SiteWhereException {
-	try {
-	    getLogger().info("Copying instance template contents to Zookeeper...");
-	    getInstanceTemplateManager().copyTemplateContentsToZk(getInstanceSettings().getInstanceTemplateId(),
-		    getZookeeperManager().getCurator(), getInstanceZkPath());
-
-	    // Create root path for configuring users.
-	    createUsersConfigurationRootIfNotFound(getZookeeperManager().getCurator());
-
-	    // Create root path for configuring tenants.
-	    createTenantsConfigurationRootIfNotFound(getZookeeperManager().getCurator());
-
-	    getLogger().info("Marking instance configuration as bootstrapped.");
-	    getZookeeperManager().getCurator().create().forPath(getInstanceConfigBootstrappedMarker());
-	} catch (Exception e) {
-	    throw new SiteWhereException(e);
-	}
-    }
-
-    /**
-     * Verify that instance users configuration node has been created.
-     * 
-     * @param curator
-     * @throws Exception
-     */
-    protected void createUsersConfigurationRootIfNotFound(CuratorFramework curator) throws Exception {
-	Stat existing = curator.checkExists().forPath(getInstanceUsersConfigurationPath());
-	if (existing == null) {
-	    getLogger().info("Zk node for user configurations not found. Creating...");
-	    curator.create().forPath(getInstanceUsersConfigurationPath());
-	    getLogger().info("Created user configurations Zk node.");
-	} else {
-	    getLogger().info("Found Zk node for user configurations.");
-	}
-    }
-
-    /**
-     * Verify that instance tenants configuration node has been created.
-     * 
-     * @param curator
-     * @throws Exception
-     */
-    protected void createTenantsConfigurationRootIfNotFound(CuratorFramework curator) throws Exception {
-	Stat existing = curator.checkExists().forPath(getInstanceTenantsConfigurationPath());
-	if (existing == null) {
-	    getLogger().info("Zk node for tenant configurations not found. Creating...");
-	    curator.create().forPath(getInstanceTenantsConfigurationPath());
-	    getLogger().info("Created tenant configurations Zk node.");
-	} else {
-	    getLogger().info("Found Zk node for tenant configurations.");
-	}
-    }
-
-    /**
-     * Initialize user model based on scripts in instance template.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    protected ILifecycleStep initializeUserModelFromInstanceTemplate() throws SiteWhereException {
-	return new SimpleLifecycleStep("Verify instance users configured") {
-
-	    @Override
-	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-		Authentication previous = SecurityContextHolder.getContext().getAuthentication();
-		try {
-		    Stat existing = getZookeeperManager().getCurator().checkExists()
-			    .forPath(getInstanceUsersBootstrappedMarker());
-		    if (existing != null) {
-			getLogger().info("Found users bootstrap marker node. Skipping users bootstrap.");
-			return;
-		    }
-		    getLogger().info("Users bootstrap marker node '" + getInstanceConfigBootstrappedMarker()
-			    + "' not found. Bootstrapping user data...");
-
-		    SecurityContextHolder.getContext().setAuthentication(getSystemUser().getAuthentication());
-		    IInstanceTemplate template = getChosenInstanceTemplate();
-		    getLogger().info("Initializing instance users from template '" + template.getName() + "'.");
-		    String templatePath = getInstanceZkPath() + "/" + template.getId();
-		    if (template.getInitializers() != null) {
-			List<String> userScripts = template.getInitializers().getUserManagement();
-			initializeUserModelFromInstanceTemplateScripts(templatePath, userScripts);
-		    }
-		    getZookeeperManager().getCurator().create().forPath(getInstanceUsersBootstrappedMarker());
-		} catch (Exception e) {
-		    throw new SiteWhereException(e);
-		} finally {
-		    SecurityContextHolder.getContext().setAuthentication(previous);
-		}
-	    }
-	};
-    }
-
-    /**
-     * Initialize user model from scripts included in instance template scripts.
-     * 
-     * @param templatePath
-     * @param scripts
-     * @throws SiteWhereException
-     */
-    protected void initializeUserModelFromInstanceTemplateScripts(String templatePath, List<String> scripts)
-	    throws SiteWhereException {
-	for (String script : scripts) {
-	    getInstanceScriptSynchronizer().add(script);
-	}
-
-	GroovyConfiguration groovy = new GroovyConfiguration(getInstanceScriptSynchronizer());
-	groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize user model."), this));
-	for (String script : scripts) {
-	    GroovyUserModelInitializer initializer = new GroovyUserModelInitializer(groovy, script);
-	    initializer.initialize(getUserManagement());
-	}
-    }
-
-    /**
-     * Initialize tenant model based on scripts in instance template.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    protected ILifecycleStep initializeTenantModelFromInstanceTemplate() throws SiteWhereException {
-	return new SimpleLifecycleStep("Verify instance tenants configured") {
-
-	    @Override
-	    public void execute(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-		Authentication previous = SecurityContextHolder.getContext().getAuthentication();
-		try {
-		    Stat existing = getZookeeperManager().getCurator().checkExists()
-			    .forPath(getInstanceTenantsBootstrappedMarker());
-		    if (existing != null) {
-			getLogger().info("Found tenants bootstrap marker node. Skipping tenants bootstrap.");
-			return;
-		    }
-		    getLogger().info("Tenants bootstrap marker node '" + getInstanceConfigBootstrappedMarker()
-			    + "' not found. Bootstrapping tenant data...");
-
-		    SecurityContextHolder.getContext().setAuthentication(getSystemUser().getAuthentication());
-		    IInstanceTemplate template = getChosenInstanceTemplate();
-		    getLogger().info("Initializing instance tenants from template '" + template.getName() + "'.");
-		    String templatePath = getInstanceZkPath() + "/" + template.getId();
-		    if (template.getInitializers() != null) {
-			List<String> tenantScripts = template.getInitializers().getTenantManagement();
-			initializeTenantModelFromInstanceTemplateScripts(templatePath, tenantScripts);
-		    }
-		    getZookeeperManager().getCurator().create().forPath(getInstanceTenantsBootstrappedMarker());
-		} catch (Exception e) {
-		    throw new SiteWhereException(e);
-		} finally {
-		    SecurityContextHolder.getContext().setAuthentication(previous);
-		}
-	    }
-	};
-    }
-
-    /**
-     * Initialize tenant model from scripts included in instance template scripts.
-     * 
-     * @param templatePath
-     * @param scripts
-     * @throws SiteWhereException
-     */
-    protected void initializeTenantModelFromInstanceTemplateScripts(String templatePath, List<String> scripts)
-	    throws SiteWhereException {
-	for (String script : scripts) {
-	    getInstanceScriptSynchronizer().add(script);
-	}
-
-	GroovyConfiguration groovy = new GroovyConfiguration(getInstanceScriptSynchronizer());
-	groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize tenant model."), this));
-	for (String script : scripts) {
-	    GroovyTenantModelInitializer initializer = new GroovyTenantModelInitializer(groovy, script);
-	    initializer.initialize(getTenantManagement());
-	}
-    }
-
-    /**
-     * Get instance template chosen via enviroment variable or default.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IInstanceTemplate getChosenInstanceTemplate() throws SiteWhereException {
-	String templateId = getInstanceSettings().getInstanceTemplateId();
-	IInstanceTemplate template = getInstanceTemplateManager().getInstanceTemplates().get(templateId);
-	if (template == null) {
-	    throw new SiteWhereException("Unable to locate instance template: " + templateId);
-	}
-	return template;
+	super.stop(monitor);
     }
 
     /*
-     * @see com.sitewhere.spi.instance.IInstanceManagement#getTenantTemplates()
+     * @see
+     * com.sitewhere.spi.microservice.configuration.IScriptConfigurationListener#
+     * onScriptAdded(io.sitewhere.k8s.crd.tenant.scripting.SiteWhereScript)
      */
     @Override
-    public List<ITenantTemplate> getTenantTemplates() throws SiteWhereException {
-	return getTenantConfigurationTemplateManager().getTenantTemplates();
+    public void onScriptAdded(SiteWhereScript script) {
     }
 
     /*
-     * @see com.sitewhere.spi.instance.IInstanceManagement#getDatasetTemplates()
+     * @see
+     * com.sitewhere.spi.microservice.configuration.IScriptConfigurationListener#
+     * onScriptUpdated(io.sitewhere.k8s.crd.tenant.scripting.SiteWhereScript,
+     * com.sitewhere.spi.microservice.configuration.IScriptSpecUpdates)
      */
     @Override
-    public List<IDatasetTemplate> getDatasetTemplates() throws SiteWhereException {
-	return getTenantDatasetTemplateManager().getDatasetTemplates();
+    public void onScriptUpdated(SiteWhereScript script, IScriptSpecUpdates updates) {
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.instance.spi.microservice.IInstanceManagement#
-     * getInstanceTemplateManager()
+     * @see
+     * com.sitewhere.spi.microservice.configuration.IScriptConfigurationListener#
+     * onScriptDeleted(io.sitewhere.k8s.crd.tenant.scripting.SiteWhereScript)
      */
     @Override
-    public IInstanceTemplateManager getInstanceTemplateManager() {
-	return instanceTemplateManager;
+    public void onScriptDeleted(SiteWhereScript script) {
     }
 
-    public void setInstanceTemplateManager(IInstanceTemplateManager instanceTemplateManager) {
-	this.instanceTemplateManager = instanceTemplateManager;
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.
+     * IScriptVersionConfigurationListener#onScriptVersionAdded(io.sitewhere.k8s.crd
+     * .tenant.scripting.version.SiteWhereScriptVersion)
+     */
+    @Override
+    public void onScriptVersionAdded(SiteWhereScriptVersion version) {
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.
+     * IScriptVersionConfigurationListener#onScriptVersionUpdated(io.sitewhere.k8s.
+     * crd.tenant.scripting.version.SiteWhereScriptVersion,
+     * com.sitewhere.spi.microservice.configuration.IScriptVersionSpecUpdates)
+     */
+    @Override
+    public void onScriptVersionUpdated(SiteWhereScriptVersion version, IScriptVersionSpecUpdates updates) {
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.configuration.
+     * IScriptVersionConfigurationListener#onScriptVersionDeleted(io.sitewhere.k8s.
+     * crd.tenant.scripting.version.SiteWhereScriptVersion)
+     */
+    @Override
+    public void onScriptVersionDeleted(SiteWhereScriptVersion version) {
     }
 
     /*
      * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
-     * getInstanceScriptSynchronizer()
+     * getInstanceBootstrapper()
      */
     @Override
-    public IScriptSynchronizer getInstanceScriptSynchronizer() {
-	return instanceScriptSynchronizer;
-    }
-
-    public void setInstanceScriptSynchronizer(IScriptSynchronizer instanceScriptSynchronizer) {
-	this.instanceScriptSynchronizer = instanceScriptSynchronizer;
-    }
-
-    /*
-     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
-     * getInstanceManagementGrpcServer()
-     */
-    @Override
-    public IInstanceManagementGrpcServer getInstanceManagementGrpcServer() {
-	return instanceManagementGrpcServer;
-    }
-
-    public void setInstanceManagementGrpcServer(IInstanceManagementGrpcServer instanceManagementGrpcServer) {
-	this.instanceManagementGrpcServer = instanceManagementGrpcServer;
+    public IInstanceBootstrapper getInstanceBootstrapper() {
+	return instanceBootstrapper;
     }
 
     /*
@@ -654,10 +397,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	return userManagementGrpcServer;
     }
 
-    public void setUserManagementGrpcServer(IUserManagementGrpcServer userManagementGrpcServer) {
-	this.userManagementGrpcServer = userManagementGrpcServer;
-    }
-
     /*
      * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
      * getUserManagement()
@@ -665,10 +404,6 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
     @Override
     public IUserManagement getUserManagement() {
 	return userManagement;
-    }
-
-    public void setUserManagement(IUserManagement userManagement) {
-	this.userManagement = userManagement;
     }
 
     /*
@@ -680,46 +415,66 @@ public class InstanceManagementMicroservice extends GlobalMicroservice<Microserv
 	return tenantManagementGrpcServer;
     }
 
-    public void setTenantManagementGrpcServer(ITenantManagementGrpcServer tenantManagementGrpcServer) {
-	this.tenantManagementGrpcServer = tenantManagementGrpcServer;
+    /*
+     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * getDeviceManagement()
+     */
+    @Override
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagementApiChannel;
     }
 
     /*
      * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
-     * getTenantConfigurationTemplateManager()
+     * getDeviceEventManagementApiChannel()
      */
     @Override
-    public ITenantTemplateManager getTenantConfigurationTemplateManager() {
-	return tenantConfigurationTemplateManager;
-    }
-
-    public void setTenantConfigurationTemplateManager(ITenantTemplateManager tenantConfigurationTemplateManager) {
-	this.tenantConfigurationTemplateManager = tenantConfigurationTemplateManager;
+    public IDeviceEventManagementApiChannel<?> getDeviceEventManagementApiChannel() {
+	return deviceEventManagementApiChannel;
     }
 
     /*
      * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
-     * getTenantDatasetTemplateManager()
+     * getAssetManagement()
      */
     @Override
-    public IDatasetTemplateManager getTenantDatasetTemplateManager() {
-	return tenantDatasetTemplateManager;
-    }
-
-    public void setTenantDatasetTemplateManager(IDatasetTemplateManager tenantDatasetTemplateManager) {
-	this.tenantDatasetTemplateManager = tenantDatasetTemplateManager;
+    public IAssetManagement getAssetManagement() {
+	return assetManagementApiChannel;
     }
 
     /*
      * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
-     * getTenantBootstrapModelConsumer()
+     * getBatchManagementApiChannel()
      */
     @Override
-    public ITenantBootstrapModelConsumer getTenantBootstrapModelConsumer() {
-	return tenantBootstrapModelConsumer;
+    public IBatchManagementApiChannel<?> getBatchManagementApiChannel() {
+	return batchManagementApiChannel;
     }
 
-    public void setTenantBootstrapModelConsumer(ITenantBootstrapModelConsumer tenantBootstrapModelConsumer) {
-	this.tenantBootstrapModelConsumer = tenantBootstrapModelConsumer;
+    /*
+     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * getScheduleManagementApiChannel()
+     */
+    @Override
+    public IScheduleManagementApiChannel<?> getScheduleManagementApiChannel() {
+	return scheduleManagementApiChannel;
+    }
+
+    /*
+     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * getLabelGenerationApiChannel()
+     */
+    @Override
+    public ILabelGenerationApiChannel<?> getLabelGenerationApiChannel() {
+	return labelGenerationApiChannel;
+    }
+
+    /*
+     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
+     * getDeviceStateApiChannel()
+     */
+    @Override
+    public IDeviceStateApiChannel<?> getDeviceStateApiChannel() {
+	return deviceStateApiChannel;
     }
 }

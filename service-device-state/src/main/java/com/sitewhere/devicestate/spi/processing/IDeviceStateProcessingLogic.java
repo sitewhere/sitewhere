@@ -12,12 +12,10 @@ import java.util.List;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Logic applied to enriched event payloads to process device state.
- * 
- * @author Derek
  */
 public interface IDeviceStateProcessingLogic extends ITenantEngineLifecycleComponent {
 

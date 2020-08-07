@@ -7,18 +7,16 @@
  */
 package com.sitewhere.sources.decoder.composite;
 
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder.IDecoderChoice;
 import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder.IDeviceContext;
 import com.sitewhere.sources.spi.IDeviceEventDecoder;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
  * Decoder choice which applies if the device is of a given device type.
- * 
- * @author Derek
  *
  * @param <T>
  */
@@ -64,10 +62,9 @@ public class DeviceTypeDecoderChoice<T> extends TenantEngineLifecycleComponent i
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.lifecycle.LifecycleComponent#start(com.sitewhere.
+     * spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -75,11 +72,9 @@ public class DeviceTypeDecoderChoice<T> extends TenantEngineLifecycleComponent i
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
-     * .spi.server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.microservice.lifecycle.LifecycleComponent#stop(com.sitewhere.
+     * spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {

@@ -9,7 +9,7 @@ package com.sitewhere.media.persistence;
 
 import java.util.UUID;
 
-import com.sitewhere.persistence.Persistence;
+import com.sitewhere.microservice.persistence.Persistence;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;

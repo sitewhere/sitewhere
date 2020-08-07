@@ -19,8 +19,6 @@ import javax.websocket.Session;
 
 /**
  * Endpoint that sends a binary payload every second.
- * 
- * @author Derek
  */
 public class BinarySender extends Endpoint {
 

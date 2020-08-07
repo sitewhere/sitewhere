@@ -7,46 +7,43 @@
  */
 package com.sitewhere.commands.microservice;
 
-import com.sitewhere.commands.configuration.CommandDeliveryModelProvider;
+import javax.enterprise.context.ApplicationScoped;
+
+import com.sitewhere.commands.configuration.CommandDeliveryConfiguration;
+import com.sitewhere.commands.configuration.CommandDeliveryModule;
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryMicroservice;
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine;
 import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
-import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
-import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
+import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Microservice that provides command delivery functionality.
- * 
- * @author Derek
  */
-public class CommandDeliveryMicroservice
-	extends MultitenantMicroservice<MicroserviceIdentifier, ICommandDeliveryTenantEngine>
+@ApplicationScoped
+public class CommandDeliveryMicroservice extends
+	MultitenantMicroservice<MicroserviceIdentifier, CommandDeliveryConfiguration, ICommandDeliveryTenantEngine>
 	implements ICommandDeliveryMicroservice {
 
-    /** Microservice name */
-    private static final String NAME = "Command Delivery";
-
     /** Device management API channel */
-    private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
-
-    /** Cached device management implementation */
-    private IDeviceManagement cachedDeviceManagement;
+    private CachedDeviceManagementApiChannel deviceManagement;
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Command Delivery";
     }
 
     /*
@@ -58,82 +55,88 @@ public class CommandDeliveryMicroservice
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<CommandDeliveryConfiguration> getConfigurationClass() {
+	return CommandDeliveryConfiguration.class;
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
      */
     @Override
-    public IConfigurationModel buildConfigurationModel() {
-	return new CommandDeliveryModelProvider().buildModel();
+    public IMicroserviceModule<CommandDeliveryConfiguration> createConfigurationModule() {
+	return new CommandDeliveryModule(getMicroserviceConfiguration());
     }
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * createTenantEngine(com.sitewhere.spi.tenant.ITenant)
+     * createTenantEngine(io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine)
      */
     @Override
-    public ICommandDeliveryTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new CommandDeliveryTenantEngine(tenant);
+    public ICommandDeliveryTenantEngine createTenantEngine(SiteWhereTenantEngine engine) throws SiteWhereException {
+	return new CommandDeliveryTenantEngine(engine);
     }
 
     /*
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.multitenant.MultitenantMicroservice#initialize(com
+     * .sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+
 	// Create GRPC components.
 	createGrpcComponents();
 
 	// Composite step for initializing microservice.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
-	// Initialize device management API channel + cache.
-	init.addInitializeStep(this, getCachedDeviceManagement(), true);
+	// Initialize device management API channel.
+	init.addInitializeStep(this, getDeviceManagement(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
     }
 
     /*
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceStart(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.multitenant.MultitenantMicroservice#start(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
-	// Start device mangement API channel + cache.
-	start.addStartStep(this, getCachedDeviceManagement(), true);
+	// Start device mangement API channel.
+	start.addStartStep(this, getDeviceManagement(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
     }
 
     /*
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceStop(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#stop(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
-	// Stop device mangement API channel + cache.
-	stop.addStopStep(this, getCachedDeviceManagement());
+	// Stop device mangement API channel.
+	stop.addStopStep(this, getDeviceManagement());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
+
+	super.stop(monitor);
     }
 
     /**
@@ -141,34 +144,17 @@ public class CommandDeliveryMicroservice
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
-	this.cachedDeviceManagement = new CachedDeviceManagementApiChannel(deviceManagementApiChannel,
+	IDeviceManagementApiChannel<?> wrapped = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagement = new CachedDeviceManagementApiChannel(wrapped,
 		new CachedDeviceManagementApiChannel.CacheSettings());
     }
 
     /*
      * @see com.sitewhere.commands.spi.microservice.ICommandDeliveryMicroservice#
-     * getDeviceManagementApiChannel()
+     * getDeviceManagement()
      */
     @Override
-    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
-	return deviceManagementApiChannel;
-    }
-
-    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
-	this.deviceManagementApiChannel = deviceManagementApiChannel;
-    }
-
-    /*
-     * @see com.sitewhere.commands.spi.microservice.ICommandDeliveryMicroservice#
-     * getCachedDeviceManagement()
-     */
-    @Override
-    public IDeviceManagement getCachedDeviceManagement() {
-	return cachedDeviceManagement;
-    }
-
-    public void setCachedDeviceManagement(IDeviceManagement cachedDeviceManagement) {
-	this.cachedDeviceManagement = cachedDeviceManagement;
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
     }
 }

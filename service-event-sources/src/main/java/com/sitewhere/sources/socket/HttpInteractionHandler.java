@@ -23,19 +23,17 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.DefaultBHttpServerConnection;
 import org.apache.http.message.BasicHttpResponse;
 
-import com.sitewhere.server.lifecycle.LifecycleComponent;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.lifecycle.LifecycleComponent;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.sources.spi.socket.ISocketInteractionHandler;
 import com.sitewhere.sources.spi.socket.ISocketInteractionHandlerFactory;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
  * Handles interactions where a remote client sends an HTTP request to be
  * processed by SiteWhere.
- * 
- * @author Derek
  */
 public class HttpInteractionHandler extends TenantEngineLifecycleComponent
 	implements ISocketInteractionHandler<byte[]> {
@@ -86,8 +84,6 @@ public class HttpInteractionHandler extends TenantEngineLifecycleComponent
 
     /**
      * Factory class that produces {@link HttpInteractionHandler} instances.
-     * 
-     * @author Derek
      */
     public static class Factory extends LifecycleComponent implements ISocketInteractionHandlerFactory<byte[]> {
 

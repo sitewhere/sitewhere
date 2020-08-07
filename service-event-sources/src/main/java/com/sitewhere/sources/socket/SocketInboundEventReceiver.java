@@ -18,13 +18,11 @@ import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.sources.spi.socket.ISocketInteractionHandler;
 import com.sitewhere.sources.spi.socket.ISocketInteractionHandlerFactory;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that creates a server socket
  * and spawns threads to service requests.
- * 
- * @author Derek
  */
 public class SocketInboundEventReceiver<T> extends InboundEventReceiver<T> {
 
@@ -136,8 +134,6 @@ public class SocketInboundEventReceiver<T> extends InboundEventReceiver<T> {
 
     /**
      * Handles loop that processes server requests.
-     * 
-     * @author Derek
      */
     private class ServerProcessingThread implements Runnable {
 
@@ -166,8 +162,6 @@ public class SocketInboundEventReceiver<T> extends InboundEventReceiver<T> {
 
     /**
      * Handles processing for a single request.
-     * 
-     * @author Derek
      */
     private class RequestProcessingThread implements Runnable {
 

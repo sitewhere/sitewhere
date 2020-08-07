@@ -7,14 +7,13 @@
  */
 package com.sitewhere.media.spi.microservice;
 
+import com.sitewhere.media.configuration.StreamingMediaConfiguration;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
  * Microservice that provides streaming media functionality.
- * 
- * @author Derek
  */
-public interface IStreamingMediaMicroservice
-	extends IMultitenantMicroservice<MicroserviceIdentifier, IStreamingMediaTenantEngine> {
+public interface IStreamingMediaMicroservice extends
+	IMultitenantMicroservice<MicroserviceIdentifier, StreamingMediaConfiguration, IStreamingMediaTenantEngine> {
 }

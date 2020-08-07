@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.sitewhere.batch.BatchOperationTypes;
-import com.sitewhere.persistence.Persistence;
+import com.sitewhere.microservice.persistence.Persistence;
 import com.sitewhere.rest.model.batch.BatchElement;
 import com.sitewhere.rest.model.batch.BatchOperation;
 import com.sitewhere.rest.model.batch.request.BatchOperationCreateRequest;
@@ -28,8 +28,6 @@ import com.sitewhere.spi.device.IDevice;
 
 /**
  * Common methods needed by batch management implementations.
- * 
- * @author Derek
  */
 public class BatchManagementPersistence extends Persistence {
 
@@ -119,14 +117,13 @@ public class BatchManagementPersistence extends Persistence {
      * {@link IBatchOperationCreateRequest} format.
      * 
      * @param request
-     * @param uuid
      * @return
      * @throws SiteWhereException
      */
-    public static IBatchOperationCreateRequest batchCommandInvocationCreateLogic(IBatchCommandInvocationRequest request,
-	    String uuid) throws SiteWhereException {
+    public static IBatchOperationCreateRequest batchCommandInvocationCreateLogic(IBatchCommandInvocationRequest request)
+	    throws SiteWhereException {
 	BatchOperationCreateRequest batch = new BatchOperationCreateRequest();
-	batch.setToken(uuid);
+	batch.setToken(request.getToken());
 	batch.setOperationType(BatchOperationTypes.OPERATION_BATCH_COMMAND_INVOCATION);
 	batch.setDeviceTokens(request.getDeviceTokens());
 	batch.getParameters().put(IBatchCommandInvocationRequest.PARAM_COMMAND_TOKEN, request.getCommandToken());

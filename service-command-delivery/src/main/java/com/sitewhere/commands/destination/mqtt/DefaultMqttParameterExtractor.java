@@ -7,46 +7,32 @@
  */
 package com.sitewhere.commands.destination.mqtt;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.lang3.text.StrSubstitutor;
-
+import com.sitewhere.commands.configuration.extractors.mqtt.DefaultMqttParameterExtractorConfiguration;
 import com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
  * Implements {@link ICommandDeliveryParameterExtractor} for
  * {@link MqttParameters}, allowing expressions to be defined such that the
  * tenant id and device token may be included in the topic name to target a
  * specific device.
- * 
- * @author Derek
  */
-@SuppressWarnings("deprecation")
 public class DefaultMqttParameterExtractor extends TenantEngineLifecycleComponent
 	implements ICommandDeliveryParameterExtractor<MqttParameters> {
 
-    /** Default command topic */
-    public static final String DEFAULT_COMMAND_TOPIC = "SiteWhere/${tenant}/command/${device}";
+    /** Configuration */
+    private DefaultMqttParameterExtractorConfiguration configuration;
 
-    /** Default system topic */
-    public static final String DEFAULT_SYSTEM_TOPIC = "SiteWhere/${tenant}/system/${device}";
-
-    /** Command topic prefix */
-    private String commandTopicExpr = DEFAULT_COMMAND_TOPIC;
-
-    /** System topic prefix */
-    private String systemTopicExpr = DEFAULT_SYSTEM_TOPIC;
-
-    public DefaultMqttParameterExtractor() {
+    public DefaultMqttParameterExtractor(DefaultMqttParameterExtractorConfiguration configuration) {
 	super(LifecycleComponentType.CommandParameterExtractor);
+	this.configuration = configuration;
     }
 
     /*
@@ -55,39 +41,16 @@ public class DefaultMqttParameterExtractor extends TenantEngineLifecycleComponen
      * java.util.List, com.sitewhere.spi.device.command.IDeviceCommandExecution)
      */
     @Override
-    public MqttParameters extractDeliveryParameters(IDeviceNestingContext nesting, List<IDeviceAssignment> assignments,
-	    IDeviceCommandExecution execution) throws SiteWhereException {
+    public MqttParameters extractDeliveryParameters(IDeviceNestingContext nesting,
+	    List<? extends IDeviceAssignment> assignments, IDeviceCommandExecution execution)
+	    throws SiteWhereException {
 	MqttParameters params = new MqttParameters();
-
-	Map<String, String> values = new HashMap<>();
-	values.put("tenant", getTenantEngine().getTenant().getToken());
-	values.put("device", nesting.getGateway().getToken());
-
-	// TODO: Does targeting based on assignment make sense?
-	// values.put("assignment", assignment.getToken());
-
-	String commandTopic = StrSubstitutor.replace(getCommandTopicExpr(), values);
-	params.setCommandTopic(commandTopic);
-
-	String systemTopic = StrSubstitutor.replace(getSystemTopicExpr(), values);
-	params.setSystemTopic(systemTopic);
-
+	params.setCommandTopic(getConfiguration().getCommandTopicExpression());
+	params.setSystemTopic(getConfiguration().getSystemTopicExpression());
 	return params;
     }
 
-    public String getCommandTopicExpr() {
-	return commandTopicExpr;
-    }
-
-    public void setCommandTopicExpr(String commandTopicExpr) {
-	this.commandTopicExpr = commandTopicExpr;
-    }
-
-    public String getSystemTopicExpr() {
-	return systemTopicExpr;
-    }
-
-    public void setSystemTopicExpr(String systemTopicExpr) {
-	this.systemTopicExpr = systemTopicExpr;
+    protected DefaultMqttParameterExtractorConfiguration getConfiguration() {
+	return configuration;
     }
 }

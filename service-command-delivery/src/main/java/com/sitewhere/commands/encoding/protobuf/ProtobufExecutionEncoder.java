@@ -14,7 +14,6 @@ import java.util.List;
 import com.google.protobuf.ByteString;
 import com.sitewhere.commands.spi.ICommandExecutionEncoder;
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryMicroservice;
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.communication.protobuf.ProtobufMessageBuilder;
 import com.sitewhere.communication.protobuf.proto.SiteWhere.Device.Command;
 import com.sitewhere.communication.protobuf.proto.SiteWhere.Device.DeviceStreamAck;
@@ -26,11 +25,12 @@ import com.sitewhere.communication.protobuf.proto.SiteWhere.Device.RegistrationA
 import com.sitewhere.communication.protobuf.proto.SiteWhere.DeviceEvent.DeviceStreamData;
 import com.sitewhere.communication.protobuf.proto.SiteWhere.GOptionalFixed64;
 import com.sitewhere.communication.protobuf.proto.SiteWhere.GOptionalString;
-import com.sitewhere.core.DataUtils;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.util.DataUtils;
+import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.command.IDeviceStreamAckCommand;
@@ -38,7 +38,7 @@ import com.sitewhere.spi.device.command.IRegistrationAckCommand;
 import com.sitewhere.spi.device.command.IRegistrationFailureCommand;
 import com.sitewhere.spi.device.command.ISendDeviceStreamDataCommand;
 import com.sitewhere.spi.device.command.ISystemCommand;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link ICommandExecutionEncoder} that uses Google Protocol
@@ -59,9 +59,9 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
      */
     @Override
     public byte[] encode(IDeviceCommandExecution execution, IDeviceNestingContext nested,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	byte[] encoded = ProtobufMessageBuilder.createMessage(execution, nested, assignments,
-		getTenantEngine().getTenant(), getDeviceManagement());
+		getTenantEngine().getTenantResource(), getDeviceManagement());
 	getLogger().debug("Protobuf message: 0x" + DataUtils.bytesToHex(encoded));
 	return encoded;
     }
@@ -74,7 +74,7 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
      */
     @Override
     public byte[] encodeSystemCommand(ISystemCommand command, IDeviceNestingContext nested,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	switch (command.getType()) {
 	case RegistrationAck: {
 	    IRegistrationAckCommand ack = (IRegistrationAckCommand) command;
@@ -213,6 +213,6 @@ public class ProtobufExecutionEncoder extends TenantEngineLifecycleComponent
     }
 
     private IDeviceManagement getDeviceManagement() {
-	return ((ICommandDeliveryMicroservice) getMicroservice()).getDeviceManagementApiChannel();
+	return ((ICommandDeliveryMicroservice) getMicroservice()).getDeviceManagement();
     }
 }

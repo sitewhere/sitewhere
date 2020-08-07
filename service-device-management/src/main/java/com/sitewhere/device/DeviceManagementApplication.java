@@ -7,22 +7,19 @@
  */
 package com.sitewhere.device;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.ComponentScan;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
 
 /**
- * Spring Boot application for device management microservice.
- * 
- * @author Derek
+ * Main application which runs the device management microservice.
  */
-@ComponentScan
+@ApplicationScoped
 public class DeviceManagementApplication extends MicroserviceApplication<IDeviceManagementMicroservice> {
 
-    @Autowired
+    @Inject
     private IDeviceManagementMicroservice microservice;
 
     /*
@@ -34,14 +31,5 @@ public class DeviceManagementApplication extends MicroserviceApplication<IDevice
     @Override
     public IDeviceManagementMicroservice getMicroservice() {
 	return microservice;
-    }
-
-    /**
-     * Entry point for Spring Boot.
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-	SpringApplication.run(DeviceManagementApplication.class, args);
     }
 }

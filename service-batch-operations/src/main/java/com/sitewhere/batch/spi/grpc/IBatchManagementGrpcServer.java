@@ -7,12 +7,10 @@
  */
 package com.sitewhere.batch.spi.grpc;
 
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Binds to a port and listens for batch management GRPC requests.
- * 
- * @author Derek
  */
 public interface IBatchManagementGrpcServer extends ITenantEngineLifecycleComponent {
 }

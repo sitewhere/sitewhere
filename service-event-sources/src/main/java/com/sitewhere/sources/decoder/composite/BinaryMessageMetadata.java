@@ -11,8 +11,6 @@ import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder.IMessageMetadata;
 
 /**
  * Device criteria model object.
- * 
- * @author Derek
  */
 public class BinaryMessageMetadata implements IMessageMetadata<byte[]> {
 

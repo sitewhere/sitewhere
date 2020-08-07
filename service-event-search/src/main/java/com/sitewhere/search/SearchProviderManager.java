@@ -12,19 +12,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sitewhere.microservice.api.search.ISearchProvider;
+import com.sitewhere.microservice.lifecycle.LifecycleComponent;
 import com.sitewhere.search.spi.ISearchProvidersManager;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.search.ISearchProvider;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleStatus;
 
 /**
  * Manages a list of {@link ISearchProvider} that are available for querying
  * device events
- * 
- * @author Derek
  */
 public class SearchProviderManager extends LifecycleComponent implements ISearchProvidersManager {
 
@@ -57,10 +55,9 @@ public class SearchProviderManager extends LifecycleComponent implements ISearch
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.lifecycle.LifecycleComponent#start(com.sitewhere.
+     * spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -78,11 +75,9 @@ public class SearchProviderManager extends LifecycleComponent implements ISearch
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
-     * .spi.server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.microservice.lifecycle.LifecycleComponent#stop(com.sitewhere.
+     * spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {

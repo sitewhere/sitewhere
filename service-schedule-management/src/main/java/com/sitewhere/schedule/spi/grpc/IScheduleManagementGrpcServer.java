@@ -7,12 +7,10 @@
  */
 package com.sitewhere.schedule.spi.grpc;
 
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Binds to a port and listens for schedule management GRPC requests.
- * 
- * @author Derek
  */
 public interface IScheduleManagementGrpcServer extends ITenantEngineLifecycleComponent {
 }

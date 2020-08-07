@@ -14,13 +14,14 @@ import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.QoS;
 
 import com.sitewhere.commands.spi.ICommandDeliveryProvider;
+import com.sitewhere.communication.mqtt.IMqttConfiguration;
 import com.sitewhere.communication.mqtt.MqttLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link ICommandDeliveryProvider} that publishes commands to
@@ -33,8 +34,8 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
     /** Shared MQTT connection */
     private FutureConnection connection;
 
-    public MqttCommandDeliveryProvider() {
-	super(LifecycleComponentType.CommandDeliveryProvider);
+    public MqttCommandDeliveryProvider(IMqttConfiguration configuration) {
+	super(LifecycleComponentType.CommandDeliveryProvider, configuration);
     }
 
     /*
@@ -48,7 +49,8 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.start(monitor);
 
-	getLogger().info("Connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
+	getLogger().info("Connecting to MQTT broker at '" + getConfiguration().getHostname() + ":"
+		+ getConfiguration().getPort() + "'...");
 	connection = getConnection();
 	getLogger().info("Connected to MQTT broker.");
     }
@@ -82,7 +84,7 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
      * java.lang.Object)
      */
     @Override
-    public void deliver(IDeviceNestingContext nested, List<IDeviceAssignment> assignments,
+    public void deliver(IDeviceNestingContext nested, List<? extends IDeviceAssignment> assignments,
 	    IDeviceCommandExecution execution, byte[] encoded, MqttParameters params) throws SiteWhereException {
 	try {
 	    getLogger().info("About to publish command message to topic: " + params.getCommandTopic());
@@ -100,8 +102,8 @@ public class MqttCommandDeliveryProvider extends MqttLifecycleComponent
      * java.lang.Object)
      */
     @Override
-    public void deliverSystemCommand(IDeviceNestingContext nested, List<IDeviceAssignment> assignments, byte[] encoded,
-	    MqttParameters params) throws SiteWhereException {
+    public void deliverSystemCommand(IDeviceNestingContext nested, List<? extends IDeviceAssignment> assignments,
+	    byte[] encoded, MqttParameters params) throws SiteWhereException {
 	try {
 	    getLogger().info("About to publish system message to topic: " + params.getSystemTopic());
 	    connection.publish(params.getSystemTopic(), encoded, QoS.AT_LEAST_ONCE, false);

@@ -9,8 +9,6 @@ package com.sitewhere.commands.destination.sms;
 
 /**
  * Parameters needed to send an SMS message.
- * 
- * @author Derek
  */
 public class SmsParameters {
 

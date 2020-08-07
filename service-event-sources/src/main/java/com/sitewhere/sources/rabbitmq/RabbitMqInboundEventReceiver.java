@@ -24,42 +24,17 @@ import com.rabbitmq.client.Envelope;
 import com.rabbitmq.client.ShutdownListener;
 import com.rabbitmq.client.ShutdownSignalException;
 import com.sitewhere.sources.InboundEventReceiver;
+import com.sitewhere.sources.configuration.eventsource.rabbitmq.RabbitMqConfiguration;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Binary inbound event source that consumes messages from a RabbitMQ broker.
- * 
- * @author Derek
  */
 public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
-    /** Default connection URI */
-    private static final String DEFAULT_CONNECTION_URI = "amqp://localhost";
-
-    /** Default queue name */
-    private static final String DEFAULT_QUEUE_NAME = "sitewhere.input";
-
-    /** Default number of consumers if not specified */
-    private static final int DEFAULT_NUM_CONSUMERS = 5;
-
-    /** Default period in which to attempt connects/re-connects to RabbitMQ */
-    private static final int DEFAULT_RECONNECT_INTERVAL = 10;
-
-    /** Connection URI */
-    private String connectionUri = DEFAULT_CONNECTION_URI;
-
-    /** Queue name */
-    private String queueName = DEFAULT_QUEUE_NAME;
-
-    /** Number of consumers to use */
-    private int numConsumers = DEFAULT_NUM_CONSUMERS;
-
-    /** Reconnect interval */
-    private int reconnectInterval = DEFAULT_RECONNECT_INTERVAL;
-
-    /** Indicates if queue should be durable */
-    private boolean durable = false;
+    /** Configuration */
+    private RabbitMqConfiguration configuration;
 
     /** RabbitMQ connection factory **/
     private ConnectionFactory factory;
@@ -79,6 +54,10 @@ public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
     /** Shedules reconnection attempts */
     private ScheduledExecutorService connectionExecutor;
 
+    public RabbitMqInboundEventReceiver(RabbitMqConfiguration configuration) {
+	this.configuration = configuration;
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -88,12 +67,12 @@ public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	executors = Executors.newFixedThreadPool(getNumConsumers());
+	executors = Executors.newFixedThreadPool(getConfiguration().getNumConsumers());
 	connectionExecutor = Executors.newScheduledThreadPool(1);
 	factory = new ConnectionFactory();
 
 	try {
-	    factory.setUri(getConnectionUri());
+	    factory.setUri(getConfiguration().getConnectionUri());
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to start RabbitMQ event receiver.", e);
 	}
@@ -113,7 +92,8 @@ public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
 	getLogger().info("Scheduling reconnect");
 
 	Runnable task = () -> connect();
-	connectionFuture = connectionExecutor.schedule(task, this.getReconnectInterval(), TimeUnit.SECONDS);
+	connectionFuture = connectionExecutor.schedule(task, getConfiguration().getReconnectInterval(),
+		TimeUnit.SECONDS);
 
     }
 
@@ -140,11 +120,12 @@ public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
 	    this.channel = connection.createChannel();
 
-	    getLogger().info("RabbitMQ receiver connected to: " + getConnectionUri());
+	    getLogger().info("RabbitMQ receiver connected to: " + getConfiguration().getConnectionUri());
 
-	    channel.queueDeclare(getQueueName(), isDurable(), false, false, null);
+	    channel.queueDeclare(getConfiguration().getQueueName(), getConfiguration().isDurable(), false, false, null);
 
-	    getLogger().info("RabbitMQ receiver using " + (isDurable() ? "durable " : "") + "queue: " + getQueueName());
+	    getLogger().info("RabbitMQ receiver using " + (getConfiguration().isDurable() ? "durable " : "") + "queue: "
+		    + getConfiguration().getQueueName());
 
 	    // Add consumer callback for channel.
 	    Consumer consumer = new DefaultConsumer(channel) {
@@ -155,7 +136,7 @@ public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
 		}
 	    };
 
-	    channel.basicConsume(getQueueName(), true, consumer);
+	    channel.basicConsume(getConfiguration().getQueueName(), true, consumer);
 
 	} catch (Exception e) {
 	    getLogger().error("Connection Error", e);
@@ -203,46 +184,10 @@ public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
      */
     @Override
     public String getDisplayName() {
-	return "RabbitMQ uri=" + getConnectionUri() + " queue=" + getQueueName();
+	return "RabbitMQ uri=" + getConfiguration().getConnectionUri() + " queue=" + getConfiguration().getQueueName();
     }
 
-    public int getReconnectInterval() {
-	return this.reconnectInterval;
-    }
-
-    public void setReconnectInterval(int reconnectInterval) {
-	this.reconnectInterval = reconnectInterval;
-    }
-
-    public String getConnectionUri() {
-	return connectionUri;
-    }
-
-    public void setConnectionUri(String connectionUri) {
-	this.connectionUri = connectionUri;
-    }
-
-    public String getQueueName() {
-	return queueName;
-    }
-
-    public void setQueueName(String queueName) {
-	this.queueName = queueName;
-    }
-
-    public int getNumConsumers() {
-	return numConsumers;
-    }
-
-    public void setNumConsumers(int numConsumers) {
-	this.numConsumers = numConsumers;
-    }
-
-    public boolean isDurable() {
-	return durable;
-    }
-
-    public void setDurable(boolean durable) {
-	this.durable = durable;
+    protected RabbitMqConfiguration getConfiguration() {
+	return configuration;
     }
 }

@@ -11,8 +11,6 @@ import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaConsumer;
 
 /**
  * Consumer for batch elements that have not been processed.
- * 
- * @author Derek
  */
 public interface IUnprocessedBatchElementsConsumer extends IMicroserviceKafkaConsumer {
 }

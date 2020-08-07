@@ -9,9 +9,7 @@ package com.sitewhere.search.solr;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -24,29 +22,25 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.common.util.NamedList;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sitewhere.configuration.instance.solr.SolrConfiguration;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.microservice.api.search.IDeviceEventSearchProvider;
+import com.sitewhere.microservice.api.search.ISearchProvider;
+import com.sitewhere.microservice.lifecycle.LifecycleComponent;
 import com.sitewhere.solr.SiteWhereSolrFactory;
+import com.sitewhere.solr.SolrConfiguration;
 import com.sitewhere.solr.SolrConnection;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
-import com.sitewhere.spi.search.IDeviceEventSearchProvider;
-import com.sitewhere.spi.search.ISearchProvider;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link ISearchProvider} that executes queries against a
  * Solr server.
- * 
- * @author Derek
  */
 public class SolrSearchProvider extends LifecycleComponent implements IDeviceEventSearchProvider {
 
@@ -107,13 +101,15 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
      * @return
      */
     protected SolrParams createParamsFromQueryString(String queryString) {
-	MultiValueMap<String, String> parsed = UriComponentsBuilder.fromHttpUrl("http://localhost?" + queryString)
-		.build().getQueryParams();
-	Map<String, String[]> params = new HashMap<String, String[]>();
-	for (String key : parsed.keySet()) {
-	    params.put(key, parsed.get(key).toArray(new String[0]));
-	}
-	return new ModifiableSolrParams(params);
+	// MultiValueMap<String, String> parsed =
+	// UriComponentsBuilder.fromHttpUrl("http://localhost?" + queryString)
+	// .build().getQueryParams();
+	// Map<String, String[]> params = new HashMap<String, String[]>();
+	// for (String key : parsed.keySet()) {
+	// params.put(key, parsed.get(key).toArray(new String[0]));
+	// }
+	// return new ModifiableSolrParams(params);
+	return null;
     }
 
     /*

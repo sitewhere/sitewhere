@@ -7,12 +7,10 @@
  */
 package com.sitewhere.event.spi.grpc;
 
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Binds to a port and listens for event management GRPC requests.
- * 
- * @author Derek
  */
 public interface IEventManagementGrpcServer extends ITenantEngineLifecycleComponent {
 }

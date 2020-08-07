@@ -7,7 +7,11 @@
  */
 package com.sitewhere.devicestate.microservice;
 
-import com.sitewhere.devicestate.configuration.DeviceStateModelProvider;
+import javax.enterprise.context.ApplicationScoped;
+
+import com.sitewhere.devicestate.configuration.DeviceStateConfiguration;
+import com.sitewhere.devicestate.configuration.DeviceStateModule;
+import com.sitewhere.devicestate.grpc.DeviceStateGrpcServer;
 import com.sitewhere.devicestate.spi.grpc.IDeviceStateGrpcServer;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
@@ -19,43 +23,34 @@ import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
-import com.sitewhere.microservice.grpc.DeviceStateGrpcServer;
+import com.sitewhere.microservice.api.asset.IAssetManagement;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
-import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
-import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
+import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Microservice that provides device state mangagement functionality.
- * 
- * @author Derek
  */
-public class DeviceStateMicroservice extends MultitenantMicroservice<MicroserviceIdentifier, IDeviceStateTenantEngine>
+@ApplicationScoped
+public class DeviceStateMicroservice
+	extends MultitenantMicroservice<MicroserviceIdentifier, DeviceStateConfiguration, IDeviceStateTenantEngine>
 	implements IDeviceStateMicroservice {
-
-    /** Microservice name */
-    private static final String NAME = "Presence Management";
 
     /** Provides server for device management GRPC requests */
     private IDeviceStateGrpcServer deviceStateGrpcServer;
 
     /** Device management API channel */
-    private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
-
-    /** Cached device management implementation */
-    private IDeviceManagement cachedDeviceManagement;
+    private CachedDeviceManagementApiChannel deviceManagement;
 
     /** Asset management API channel */
-    private IAssetManagementApiChannel<?> assetManagementApiChannel;
-
-    /** Cached asset management implementation */
-    private IAssetManagement cachedAssetManagement;
+    private CachedAssetManagementApiChannel assetManagement;
 
     /** Device event management API channel */
     private IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel;
@@ -65,7 +60,7 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
      */
     @Override
     public String getName() {
-	return NAME;
+	return "State Management";
     }
 
     /*
@@ -77,37 +72,40 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<DeviceStateConfiguration> getConfigurationClass() {
+	return DeviceStateConfiguration.class;
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
      */
     @Override
-    public IConfigurationModel buildConfigurationModel() {
-	return new DeviceStateModelProvider().buildModel();
+    public IMicroserviceModule<DeviceStateConfiguration> createConfigurationModule() {
+	return new DeviceStateModule(getMicroserviceConfiguration());
     }
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * createTenantEngine(com.sitewhere.spi.tenant.ITenant)
+     * createTenantEngine(io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine)
      */
     @Override
-    public IDeviceStateTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new DeviceStateTenantEngine(tenant);
+    public IDeviceStateTenantEngine createTenantEngine(SiteWhereTenantEngine engine) throws SiteWhereException {
+	return new DeviceStateTenantEngine(engine);
     }
 
     /*
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.multitenant.MultitenantMicroservice#initialize(com
+     * .sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+
 	// Create GRPC components.
 	createGrpcComponents();
 
@@ -117,11 +115,11 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
 	// Initialize device state GRPC server.
 	init.addInitializeStep(this, getDeviceStateGrpcServer(), true);
 
-	// Initialize device management API channel + cache.
-	init.addInitializeStep(this, getCachedDeviceManagement(), true);
+	// Initialize device management API channel.
+	init.addInitializeStep(this, getDeviceManagement(), true);
 
-	// Initialize asset management API channel + cache.
-	init.addInitializeStep(this, getCachedAssetManagement(), true);
+	// Initialize asset management API channel.
+	init.addInitializeStep(this, getAssetManagement(), true);
 
 	// Initialize device event management API channel.
 	init.addInitializeStep(this, getDeviceEventManagementApiChannel(), true);
@@ -131,23 +129,25 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
     }
 
     /*
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceStart(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.multitenant.MultitenantMicroservice#start(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
 	// Start device state GRPC server.
 	start.addStartStep(this, getDeviceStateGrpcServer(), true);
 
-	// Start device mangement API channel + cache.
-	start.addStartStep(this, getCachedDeviceManagement(), true);
+	// Start device mangement API channel.
+	start.addStartStep(this, getDeviceManagement(), true);
 
-	// Start asset mangement API channel + cache.
-	start.addStartStep(this, getCachedAssetManagement(), true);
+	// Start asset mangement API channel.
+	start.addStartStep(this, getAssetManagement(), true);
 
 	// Start device event mangement API channel.
 	start.addStartStep(this, getDeviceEventManagementApiChannel(), true);
@@ -157,20 +157,19 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
     }
 
     /*
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceStop(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#stop(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
-	// Stop device mangement API channel + cache.
-	stop.addStopStep(this, getCachedDeviceManagement());
+	// Stop device mangement API channel.
+	stop.addStopStep(this, getDeviceManagement());
 
-	// Stop asset mangement API channel + cache.
-	stop.addStopStep(this, getCachedAssetManagement());
+	// Stop asset mangement API channel.
+	stop.addStopStep(this, getAssetManagement());
 
 	// Stop device event mangement API channel.
 	stop.addStopStep(this, getDeviceEventManagementApiChannel());
@@ -180,6 +179,8 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
+
+	super.stop(monitor);
     }
 
     /**
@@ -190,13 +191,13 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
 	this.deviceStateGrpcServer = new DeviceStateGrpcServer(this);
 
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
-	this.cachedDeviceManagement = new CachedDeviceManagementApiChannel(deviceManagementApiChannel,
+	IDeviceManagementApiChannel<?> dmWrapped = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagement = new CachedDeviceManagementApiChannel(dmWrapped,
 		new CachedDeviceManagementApiChannel.CacheSettings());
 
 	// Asset management.
-	this.assetManagementApiChannel = new AssetManagementApiChannel(getInstanceSettings());
-	this.cachedAssetManagement = new CachedAssetManagementApiChannel(assetManagementApiChannel,
+	IAssetManagementApiChannel<?> amWrapped = new AssetManagementApiChannel(getInstanceSettings());
+	this.assetManagement = new CachedAssetManagementApiChannel(amWrapped,
 		new CachedAssetManagementApiChannel.CacheSettings());
 
 	// Device event management.
@@ -212,60 +213,22 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
 	return deviceStateGrpcServer;
     }
 
-    public void setDeviceStateGrpcServer(IDeviceStateGrpcServer deviceStateGrpcServer) {
-	this.deviceStateGrpcServer = deviceStateGrpcServer;
+    /*
+     * @see com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice#
+     * getDeviceManagement()
+     */
+    @Override
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
     }
 
     /*
      * @see com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice#
-     * getDeviceManagementApiChannel()
+     * getAssetManagement()
      */
     @Override
-    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
-	return deviceManagementApiChannel;
-    }
-
-    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
-	this.deviceManagementApiChannel = deviceManagementApiChannel;
-    }
-
-    /*
-     * @see com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice#
-     * getCachedDeviceManagement()
-     */
-    @Override
-    public IDeviceManagement getCachedDeviceManagement() {
-	return cachedDeviceManagement;
-    }
-
-    public void setCachedDeviceManagement(IDeviceManagement cachedDeviceManagement) {
-	this.cachedDeviceManagement = cachedDeviceManagement;
-    }
-
-    /*
-     * @see com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice#
-     * getAssetManagementApiChannel()
-     */
-    @Override
-    public IAssetManagementApiChannel<?> getAssetManagementApiChannel() {
-	return assetManagementApiChannel;
-    }
-
-    public void setAssetManagementApiChannel(IAssetManagementApiChannel<?> assetManagementApiChannel) {
-	this.assetManagementApiChannel = assetManagementApiChannel;
-    }
-
-    /*
-     * @see com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice#
-     * getCachedAssetManagement()
-     */
-    @Override
-    public IAssetManagement getCachedAssetManagement() {
-	return cachedAssetManagement;
-    }
-
-    public void setCachedAssetManagement(IAssetManagement cachedAssetManagement) {
-	this.cachedAssetManagement = cachedAssetManagement;
+    public IAssetManagement getAssetManagement() {
+	return assetManagement;
     }
 
     /*
@@ -275,10 +238,5 @@ public class DeviceStateMicroservice extends MultitenantMicroservice<Microservic
     @Override
     public IDeviceEventManagementApiChannel<?> getDeviceEventManagementApiChannel() {
 	return deviceEventManagementApiChannel;
-    }
-
-    public void setDeviceEventManagementApiChannel(
-	    IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel) {
-	this.deviceEventManagementApiChannel = deviceEventManagementApiChannel;
     }
 }

@@ -7,46 +7,43 @@
  */
 package com.sitewhere.registration.microservice;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
-import com.sitewhere.registration.configuration.DeviceRegistrationModelProvider;
+import com.sitewhere.registration.configuration.DeviceRegistrationConfiguration;
+import com.sitewhere.registration.configuration.DeviceRegistrationModule;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationTenantEngine;
-import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
-import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
+import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Microservice that provides device registration functionality.
- * 
- * @author Derek
  */
-public class DeviceRegistrationMicroservice
-	extends MultitenantMicroservice<MicroserviceIdentifier, IDeviceRegistrationTenantEngine>
+@ApplicationScoped
+public class DeviceRegistrationMicroservice extends
+	MultitenantMicroservice<MicroserviceIdentifier, DeviceRegistrationConfiguration, IDeviceRegistrationTenantEngine>
 	implements IDeviceRegistrationMicroservice {
 
-    /** Microservice name */
-    private static final String NAME = "Device Registration";
-
     /** Device management API channel */
-    private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
-
-    /** Cached device management implementation */
-    private IDeviceManagement cachedDeviceManagement;
+    private CachedDeviceManagementApiChannel deviceManagement;
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Device Registration";
     }
 
     /*
@@ -58,82 +55,88 @@ public class DeviceRegistrationMicroservice
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<DeviceRegistrationConfiguration> getConfigurationClass() {
+	return DeviceRegistrationConfiguration.class;
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
      */
     @Override
-    public IConfigurationModel buildConfigurationModel() {
-	return new DeviceRegistrationModelProvider().buildModel();
+    public IMicroserviceModule<DeviceRegistrationConfiguration> createConfigurationModule() {
+	return new DeviceRegistrationModule(getMicroserviceConfiguration());
     }
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * createTenantEngine(com.sitewhere.spi.tenant.ITenant)
+     * createTenantEngine(io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine)
      */
     @Override
-    public IDeviceRegistrationTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new DeviceRegistrationTenantEngine(tenant);
+    public IDeviceRegistrationTenantEngine createTenantEngine(SiteWhereTenantEngine engine) throws SiteWhereException {
+	return new DeviceRegistrationTenantEngine(engine);
     }
 
     /*
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.multitenant.MultitenantMicroservice#initialize(com
+     * .sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+
 	// Create GRPC components.
 	createGrpcComponents();
 
 	// Composite step for initializing microservice.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
 
-	// Initialize device management API channel + cache.
-	init.addInitializeStep(this, getCachedDeviceManagement(), true);
+	// Initialize device management API channel.
+	init.addInitializeStep(this, getDeviceManagement(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
     }
 
     /*
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceStart(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.multitenant.MultitenantMicroservice#start(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
-	// Start device mangement API channel + cache.
-	start.addStartStep(this, getCachedDeviceManagement(), true);
+	// Start device mangement API channel.
+	start.addStartStep(this, getDeviceManagement(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
     }
 
     /*
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceStop(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#stop(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
-	// Stop device mangement API channel + cache.
-	stop.addStopStep(this, getCachedDeviceManagement());
+	// Stop device mangement API channel.
+	stop.addStopStep(this, getDeviceManagement());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
+
+	super.stop(monitor);
     }
 
     /**
@@ -141,36 +144,18 @@ public class DeviceRegistrationMicroservice
      */
     private void createGrpcComponents() {
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
-	this.cachedDeviceManagement = new CachedDeviceManagementApiChannel(deviceManagementApiChannel,
+	IDeviceManagementApiChannel<?> wrapped = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagement = new CachedDeviceManagementApiChannel(wrapped,
 		new CachedDeviceManagementApiChannel.CacheSettings());
     }
 
     /*
      * @see
      * com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice#
-     * getDeviceManagementApiChannel()
+     * getDeviceManagement()
      */
     @Override
-    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
-	return deviceManagementApiChannel;
-    }
-
-    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
-	this.deviceManagementApiChannel = deviceManagementApiChannel;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice#
-     * getCachedDeviceManagement()
-     */
-    @Override
-    public IDeviceManagement getCachedDeviceManagement() {
-	return cachedDeviceManagement;
-    }
-
-    public void setCachedDeviceManagement(IDeviceManagement cachedDeviceManagement) {
-	this.cachedDeviceManagement = cachedDeviceManagement;
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
     }
 }

@@ -14,18 +14,8 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Hashtable;
 
-import javax.jms.BytesMessage;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
 import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.connectors.SerialOutboundConnector;
 import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.spi.SiteWhereException;
@@ -36,13 +26,11 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Implementation of {@link IOutboundConnector} that sends events to an EventHub
  * running on Azure.
- * 
- * @author Derek
  */
 public class EventHubOutboundConnector extends SerialOutboundConnector {
 
@@ -59,18 +47,16 @@ public class EventHubOutboundConnector extends SerialOutboundConnector {
     private String eventHubName;
 
     /** JMS objects */
-    private ConnectionFactory factory;
-    private Destination destination;
-    private Connection connection;
-    private Session session;
-    private MessageProducer sender;
+    // private ConnectionFactory factory;
+    // private Destination destination;
+    // private Connection connection;
+    // private Session session;
+    // private MessageProducer sender;
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#start
-     * (com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.connectors.FilteredOutboundConnector#start(com.sitewhere.spi.
+     * microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -92,53 +78,53 @@ public class EventHubOutboundConnector extends SerialOutboundConnector {
 	    env.put(Context.INITIAL_CONTEXT_FACTORY,
 		    "org.apache.qpid.amqp_1_0.jms.jndi.PropertiesFileInitialContextFactory");
 	    env.put(Context.PROVIDER_URL, file.getAbsolutePath());
-	    Context context = new InitialContext(env);
+	    // Context context = new InitialContext(env);
 
-	    this.factory = (ConnectionFactory) context.lookup("SBCF");
-	    this.destination = (Destination) context.lookup("EVENTHUB");
-	    this.connection = factory.createConnection();
-	    this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-	    this.sender = session.createProducer(destination);
+	    // this.factory = (ConnectionFactory) context.lookup("SBCF");
+	    // this.destination = (Destination) context.lookup("EVENTHUB");
+	    // this.connection = factory.createConnection();
+	    // this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+	    // this.sender = session.createProducer(destination);
 	} catch (IOException e) {
 	    throw new SiteWhereException(e);
-	} catch (NamingException e) {
-	    throw new SiteWhereException(e);
-	} catch (JMSException e) {
-	    throw new SiteWhereException(e);
 	}
+	// catch (NamingException e) {
+	// throw new SiteWhereException(e);
+	// }
+	// catch (JMSException e) {
+	// throw new SiteWhereException(e);
+	// }
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#stop(
-     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.connectors.FilteredOutboundConnector#stop(com.sitewhere.spi.
+     * microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	super.stop(monitor);
-	if (sender != null) {
-	    try {
-		sender.close();
-	    } catch (JMSException e) {
-		getLogger().warn("Error closing message source for EventHub processor.", e);
-	    }
-	}
-	if (session != null) {
-	    try {
-		session.close();
-	    } catch (JMSException e) {
-		getLogger().warn("Error closing session for EventHub processor.", e);
-	    }
-	}
-	if (connection != null) {
-	    try {
-		connection.close();
-	    } catch (JMSException e) {
-		getLogger().warn("Error closing session for EventHub processor.", e);
-	    }
-	}
+	// if (sender != null) {
+	// try {
+	// sender.close();
+	// } catch (JMSException e) {
+	// getLogger().warn("Error closing message source for EventHub processor.", e);
+	// }
+	// }
+	// if (session != null) {
+	// try {
+	// session.close();
+	// } catch (JMSException e) {
+	// getLogger().warn("Error closing session for EventHub processor.", e);
+	// }
+	// }
+	// if (connection != null) {
+	// try {
+	// connection.close();
+	// } catch (JMSException e) {
+	// getLogger().warn("Error closing session for EventHub processor.", e);
+	// }
+	// }
     }
 
     /*
@@ -204,14 +190,14 @@ public class EventHubOutboundConnector extends SerialOutboundConnector {
      * @throws SiteWhereException
      */
     protected void sendEvent(IDeviceEvent event) throws SiteWhereException {
-	try {
-	    BytesMessage message = session.createBytesMessage();
-	    message.writeBytes(MarshalUtils.marshalJson(event));
-	    message.setJMSMessageID("ID:" + event.getId());
-	    sender.send(message);
-	} catch (JMSException e) {
-	    throw new SiteWhereException(e);
-	}
+	// try {
+	// BytesMessage message = session.createBytesMessage();
+	// message.writeBytes(MarshalUtils.marshalJson(event));
+	// message.setJMSMessageID("ID:" + event.getId());
+	// sender.send(message);
+	// } catch (JMSException e) {
+	// throw new SiteWhereException(e);
+	// }
     }
 
     public String getSasName() {

@@ -8,10 +8,10 @@
 package com.sitewhere.asset.grpc;
 
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
+import com.sitewhere.grpc.asset.AssetModelConverter;
 import com.sitewhere.grpc.client.GrpcUtils;
-import com.sitewhere.grpc.client.asset.AssetModelConverter;
-import com.sitewhere.grpc.client.common.converter.CommonModelConverter;
 import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
+import com.sitewhere.grpc.common.CommonModelConverter;
 import com.sitewhere.grpc.model.AssetModel.GAssetSearchResults;
 import com.sitewhere.grpc.model.AssetModel.GAssetTypeSearchResults;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
@@ -39,8 +39,8 @@ import com.sitewhere.grpc.service.GUpdateAssetRequest;
 import com.sitewhere.grpc.service.GUpdateAssetResponse;
 import com.sitewhere.grpc.service.GUpdateAssetTypeRequest;
 import com.sitewhere.grpc.service.GUpdateAssetTypeResponse;
+import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAsset;
-import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.asset.request.IAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IAssetTypeCreateRequest;
@@ -50,8 +50,6 @@ import io.grpc.stub.StreamObserver;
 
 /**
  * Implements server logic for asset management GRPC requests.
- * 
- * @author Derek
  */
 public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImplBase implements IGrpcApiImplementation {
 
@@ -196,7 +194,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
 	    StreamObserver<GListAssetTypesResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, AssetManagementGrpc.getListAssetTypesMethod());
-	    ISearchResults<IAssetType> apiResult = getAssetManagement()
+	    ISearchResults<? extends IAssetType> apiResult = getAssetManagement()
 		    .listAssetTypes(AssetModelConverter.asApiAssetTypeSearchCriteria(request.getCriteria()));
 	    GListAssetTypesResponse.Builder response = GListAssetTypesResponse.newBuilder();
 	    GAssetTypeSearchResults.Builder results = GAssetTypeSearchResults.newBuilder();
@@ -342,7 +340,7 @@ public class AssetManagementImpl extends AssetManagementGrpc.AssetManagementImpl
     public void listAssets(GListAssetsRequest request, StreamObserver<GListAssetsResponse> responseObserver) {
 	try {
 	    GrpcUtils.handleServerMethodEntry(this, AssetManagementGrpc.getListAssetsMethod());
-	    ISearchResults<IAsset> apiResult = getAssetManagement()
+	    ISearchResults<? extends IAsset> apiResult = getAssetManagement()
 		    .listAssets(AssetModelConverter.asApiAssetSearchCriteria(request.getCriteria()));
 	    GListAssetsResponse.Builder response = GListAssetsResponse.newBuilder();
 	    GAssetSearchResults.Builder results = GAssetSearchResults.newBuilder();

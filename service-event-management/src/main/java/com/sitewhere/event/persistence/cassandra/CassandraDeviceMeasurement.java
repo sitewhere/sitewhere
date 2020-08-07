@@ -7,6 +7,8 @@
  */
 package com.sitewhere.event.persistence.cassandra;
 
+import java.math.BigDecimal;
+
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.UDTValue;
@@ -17,8 +19,6 @@ import com.sitewhere.spi.device.event.IDeviceMeasurement;
 
 /**
  * Handles mapping of device measurements event fields to Cassandra records.
- * 
- * @author Derek
  */
 public class CassandraDeviceMeasurement implements ICassandraEventBinder<IDeviceMeasurement> {
 
@@ -85,7 +85,7 @@ public class CassandraDeviceMeasurement implements ICassandraEventBinder<IDevice
 
 	UDTValue udt = client.getMeasurementType().newValue();
 	udt.setString(FIELD_MXNAME, mx.getName());
-	udt.setDouble(FIELD_MXVALUE, mx.getValue());
+	udt.setDouble(FIELD_MXVALUE, mx.getValue().doubleValue());
 	bound.setUDTValue(FIELD_MEASUREMENT, udt);
     }
 
@@ -103,6 +103,6 @@ public class CassandraDeviceMeasurement implements ICassandraEventBinder<IDevice
 
 	UDTValue udt = row.getUDTValue(FIELD_MEASUREMENT);
 	mx.setName(udt.getString(FIELD_MXNAME));
-	mx.setValue(udt.getDouble(FIELD_MXVALUE));
+	mx.setValue(new BigDecimal(udt.getDouble(FIELD_MXVALUE)));
     }
 }

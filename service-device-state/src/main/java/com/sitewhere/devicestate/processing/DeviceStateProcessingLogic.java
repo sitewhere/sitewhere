@@ -12,31 +12,26 @@ import java.util.List;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
 import com.sitewhere.devicestate.spi.processing.IDeviceStateProcessingLogic;
-import com.sitewhere.grpc.client.event.EventModelConverter;
-import com.sitewhere.grpc.client.event.EventModelMarshaler;
-import com.sitewhere.grpc.model.DeviceEventModel.GEnrichedEventPayload;
-import com.sitewhere.rest.model.device.event.kafka.EnrichedEventPayload;
+import com.sitewhere.grpc.event.EventModelConverter;
+import com.sitewhere.grpc.event.EventModelMarshaler;
+import com.sitewhere.grpc.model.DeviceEventModel.GProcessedEventPayload;
+import com.sitewhere.microservice.api.state.IDeviceStateManagement;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.util.MarshalUtils;
+import com.sitewhere.rest.model.device.event.kafka.ProcessedEventPayload;
 import com.sitewhere.rest.model.device.state.request.DeviceStateCreateRequest;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
-import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.state.IDeviceState;
-import com.sitewhere.spi.device.state.IDeviceStateManagement;
 
 import io.prometheus.client.Counter;
 
 /**
  * Processing logic applied to enriched inbound event payloads in order to
  * capture device state.
- * 
- * @author Derek
  */
 public class DeviceStateProcessingLogic extends TenantEngineLifecycleComponent implements IDeviceStateProcessingLogic {
 
@@ -81,8 +76,8 @@ public class DeviceStateProcessingLogic extends TenantEngineLifecycleComponent i
     protected void processRecord(ConsumerRecord<String, byte[]> record) throws SiteWhereException {
 	PROCESSED_EVENTS.labels(buildLabels()).inc();
 	try {
-	    GEnrichedEventPayload grpc = EventModelMarshaler.parseEnrichedEventPayloadMessage(record.value());
-	    EnrichedEventPayload payload = EventModelConverter.asApiEnrichedEventPayload(grpc);
+	    GProcessedEventPayload grpc = EventModelMarshaler.parseProcessedEventPayloadMessage(record.value());
+	    ProcessedEventPayload payload = EventModelConverter.asApiProcessedEventPayload(grpc);
 	    if (getLogger().isDebugEnabled()) {
 		getLogger().debug(
 			"Received enriched event payload:\n\n" + MarshalUtils.marshalJsonAsPrettyString(payload));
@@ -101,12 +96,14 @@ public class DeviceStateProcessingLogic extends TenantEngineLifecycleComponent i
      * @param payload
      * @throws SiteWhereException
      */
-    protected void processDeviceStateEvent(EnrichedEventPayload payload) throws SiteWhereException {
+    @SuppressWarnings("unused")
+    protected void processDeviceStateEvent(ProcessedEventPayload payload) throws SiteWhereException {
 	// Only process events that affect state.
 	IDeviceEvent event = payload.getEvent();
 	IDeviceEventContext context = payload.getEventContext();
-	IDeviceState original = getDeviceStateManagement()
-		.getDeviceStateByDeviceAssignmentId(event.getDeviceAssignmentId());
+	// IDeviceState original = getDeviceStateManagement()
+	// .getDeviceStateByDeviceAssignmentId(event.getDeviceAssignmentId());
+	IDeviceState original = null;
 	switch (event.getEventType()) {
 	case Alert:
 	case Location:
@@ -130,62 +127,12 @@ public class DeviceStateProcessingLogic extends TenantEngineLifecycleComponent i
 	request.setLastInteractionDate(new Date());
 	request.setPresenceMissingDate(null);
 
-	// Merge alert information.
-	if (event instanceof IDeviceLocation) {
-	    mergeDeviceLocation((IDeviceLocation) event, original, request);
-	} else if (event instanceof IDeviceAlert) {
-	    mergeDeviceAlert((IDeviceAlert) event, original, request);
-	} else if (event instanceof IDeviceMeasurement) {
-	    mergeDeviceMeasurements((IDeviceMeasurement) event, original, request);
-	}
-
 	// Create or update device state.
 	if (original != null) {
 	    getDeviceStateManagement().updateDeviceState(original.getId(), request);
 	} else {
 	    getDeviceStateManagement().createDeviceState(request);
 	}
-    }
-
-    /**
-     * Merge location information.
-     * 
-     * @param location
-     * @param original
-     * @param request
-     */
-    protected void mergeDeviceLocation(IDeviceLocation location, IDeviceState original,
-	    DeviceStateCreateRequest request) {
-	request.setLastLocationEventId(location.getId());
-    }
-
-    /**
-     * Merge alert information.
-     * 
-     * @param alert
-     * @param original
-     * @param request
-     */
-    protected void mergeDeviceAlert(IDeviceAlert alert, IDeviceState original, DeviceStateCreateRequest request) {
-	if (original != null) {
-	    request.getLastAlertEventIds().putAll(original.getLastAlertEventIds());
-	}
-	request.getLastAlertEventIds().put(alert.getType(), alert.getId());
-    }
-
-    /**
-     * Merge measurement information.
-     * 
-     * @param mx
-     * @param original
-     * @param request
-     */
-    protected void mergeDeviceMeasurements(IDeviceMeasurement mx, IDeviceState original,
-	    DeviceStateCreateRequest request) {
-	if (original != null) {
-	    request.getLastMeasurementEventIds().putAll(original.getLastMeasurementEventIds());
-	}
-	request.getLastMeasurementEventIds().put(mx.getName(), mx.getId());
     }
 
     protected IDeviceStateManagement getDeviceStateManagement() {

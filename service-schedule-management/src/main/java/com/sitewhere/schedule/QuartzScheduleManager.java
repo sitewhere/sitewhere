@@ -9,6 +9,7 @@ package com.sitewhere.schedule;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -19,24 +20,22 @@ import org.quartz.impl.DirectSchedulerFactory;
 import org.quartz.simpl.RAMJobStore;
 import org.quartz.simpl.SimpleThreadPool;
 
+import com.sitewhere.microservice.api.schedule.IScheduleManagement;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.schedule.jobs.QuartzBuilder;
 import com.sitewhere.schedule.spi.IScheduleManager;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.scheduling.ISchedule;
-import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IScheduleManager} that uses Quartz to handle
  * schedule management.
- * 
- * @author Derek
  */
 public class QuartzScheduleManager extends TenantEngineLifecycleComponent implements IScheduleManager {
 
@@ -53,7 +52,7 @@ public class QuartzScheduleManager extends TenantEngineLifecycleComponent implem
     private int numProcessingThreads = DEFAULT_THREAD_COUNT;
 
     /** Cache schedules by token */
-    private Map<String, ISchedule> schedulesByToken = new HashMap<String, ISchedule>();
+    private Map<UUID, ISchedule> schedulesById = new HashMap<UUID, ISchedule>();
 
     public QuartzScheduleManager(IScheduleManagement scheduleManagement) {
 	super(LifecycleComponentType.ScheduleManager);
@@ -66,10 +65,11 @@ public class QuartzScheduleManager extends TenantEngineLifecycleComponent implem
      * (com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine)
      */
     @Override
-    public void setTenantEngine(IMicroserviceTenantEngine tenantEngine) {
+    public void setTenantEngine(IMicroserviceTenantEngine<?> tenantEngine) {
 	super.setTenantEngine(tenantEngine);
 	try {
-	    DirectSchedulerFactory.getInstance().createScheduler(tenantEngine.getTenant().getToken(), INSTANCE_ID,
+	    DirectSchedulerFactory.getInstance().createScheduler(
+		    tenantEngine.getTenantResource().getMetadata().getName(), INSTANCE_ID,
 		    new SimpleThreadPool(getNumProcessingThreads(), Thread.NORM_PRIORITY), new RAMJobStore());
 	} catch (SchedulerException e) {
 	    throw new RuntimeException("Unable to create Quartz scheduler for schedule manager.", e);
@@ -100,13 +100,13 @@ public class QuartzScheduleManager extends TenantEngineLifecycleComponent implem
      * @throws SiteWhereException
      */
     protected void cacheSchedules() throws SiteWhereException {
-	Map<String, ISchedule> updated = new HashMap<String, ISchedule>();
-	ISearchResults<ISchedule> schedules = getScheduleManagement().listSchedules(SearchCriteria.ALL);
+	Map<UUID, ISchedule> updated = new HashMap<UUID, ISchedule>();
+	ISearchResults<? extends ISchedule> schedules = getScheduleManagement().listSchedules(SearchCriteria.ALL);
 	for (ISchedule schedule : schedules.getResults()) {
-	    updated.put(schedule.getToken(), schedule);
+	    updated.put(schedule.getId(), schedule);
 	}
-	this.schedulesByToken = updated;
-	getLogger().info("Updated cache with " + getSchedulesByToken().size() + " schedules.");
+	this.schedulesById = updated;
+	getLogger().info("Updated cache with " + getSchedulesById().size() + " schedules.");
     }
 
     /**
@@ -115,7 +115,7 @@ public class QuartzScheduleManager extends TenantEngineLifecycleComponent implem
      * @throws SiteWhereException
      */
     protected void scheduleJobs() throws SiteWhereException {
-	ISearchResults<IScheduledJob> jobs = getScheduleManagement().listScheduledJobs(SearchCriteria.ALL);
+	ISearchResults<? extends IScheduledJob> jobs = getScheduleManagement().listScheduledJobs(SearchCriteria.ALL);
 	for (IScheduledJob job : jobs.getResults()) {
 	    scheduleJob(job);
 	}
@@ -169,9 +169,10 @@ public class QuartzScheduleManager extends TenantEngineLifecycleComponent implem
     @Override
     public void scheduleJob(IScheduledJob job) throws SiteWhereException {
 	JobDetail detail = QuartzBuilder.buildJobDetail(job);
-	ISchedule schedule = getSchedulesByToken().get(job.getScheduleToken());
+	ISchedule schedule = getSchedulesById().get(job.getScheduleId());
 	if (schedule == null) {
-	    throw new SiteWhereException("Job references unknown schedule: " + job.getScheduleToken());
+	    throw new SiteWhereException(
+		    String.format("Job references unknown schedule: %s", job.getScheduleId().toString()));
 	}
 
 	getLogger().info("Scheduling job " + job.getToken() + " for '" + schedule.getName() + "'.");
@@ -207,33 +208,22 @@ public class QuartzScheduleManager extends TenantEngineLifecycleComponent implem
      */
     public Scheduler getScheduler() throws SiteWhereException {
 	try {
-	    return DirectSchedulerFactory.getInstance().getScheduler(getTenantEngine().getTenant().getToken());
+	    return DirectSchedulerFactory.getInstance()
+		    .getScheduler(getTenantEngine().getTenantResource().getMetadata().getName());
 	} catch (SchedulerException e) {
 	    throw new SiteWhereException("Unable to get scheduler instance.", e);
 	}
     }
 
-    public IScheduleManagement getScheduleManagement() {
+    protected IScheduleManagement getScheduleManagement() {
 	return scheduleManagement;
     }
 
-    public void setScheduleManagement(IScheduleManagement scheduleManagement) {
-	this.scheduleManagement = scheduleManagement;
-    }
-
-    public int getNumProcessingThreads() {
+    protected int getNumProcessingThreads() {
 	return numProcessingThreads;
     }
 
-    public void setNumProcessingThreads(int numProcessingThreads) {
-	this.numProcessingThreads = numProcessingThreads;
-    }
-
-    public Map<String, ISchedule> getSchedulesByToken() {
-	return schedulesByToken;
-    }
-
-    public void setSchedulesByToken(Map<String, ISchedule> schedulesByToken) {
-	this.schedulesByToken = schedulesByToken;
+    protected Map<UUID, ISchedule> getSchedulesById() {
+	return schedulesById;
     }
 }

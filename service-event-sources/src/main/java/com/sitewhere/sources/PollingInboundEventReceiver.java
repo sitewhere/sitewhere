@@ -11,13 +11,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Abstract base class for event receivers that poll an external source at a
  * given interval.
- * 
- * @author Derek
  *
  * @param <T>
  */
@@ -68,8 +66,6 @@ public abstract class PollingInboundEventReceiver<T> extends InboundEventReceive
 
     /**
      * Class that excutes polling code at a given interval.
-     * 
-     * @author Derek
      */
     public class Poller implements Runnable {
 

@@ -7,22 +7,19 @@
  */
 package com.sitewhere.devicestate.spi.microservice;
 
+import com.sitewhere.devicestate.configuration.DeviceStateConfiguration;
 import com.sitewhere.devicestate.spi.grpc.IDeviceStateGrpcServer;
-import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
-import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.microservice.api.asset.IAssetManagement;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
  * Microservice that provides device state management functionality.
- * 
- * @author Derek
  */
 public interface IDeviceStateMicroservice
-	extends IMultitenantMicroservice<MicroserviceIdentifier, IDeviceStateTenantEngine> {
+	extends IMultitenantMicroservice<MicroserviceIdentifier, DeviceStateConfiguration, IDeviceStateTenantEngine> {
 
     /**
      * Get device state GRPC server.
@@ -36,28 +33,14 @@ public interface IDeviceStateMicroservice
      * 
      * @return
      */
-    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel();
-
-    /**
-     * Caching wrapper around device management API channel.
-     * 
-     * @return
-     */
-    public IDeviceManagement getCachedDeviceManagement();
+    public IDeviceManagement getDeviceManagement();
 
     /**
      * Get asset management API access via GRPC channel.
      * 
      * @return
      */
-    public IAssetManagementApiChannel<?> getAssetManagementApiChannel();
-
-    /**
-     * Caching wrapper around asset management API channel.
-     * 
-     * @return
-     */
-    public IAssetManagement getCachedAssetManagement();
+    public IAssetManagement getAssetManagement();
 
     /**
      * Get device event management API access via GRPC channel.

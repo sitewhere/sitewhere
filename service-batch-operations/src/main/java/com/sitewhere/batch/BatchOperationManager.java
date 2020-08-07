@@ -17,6 +17,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.sitewhere.batch.handler.BatchCommandInvocationHandler;
+import com.sitewhere.batch.kafka.UnprocessedBatchElementsConsumer;
+import com.sitewhere.batch.kafka.UnprocessedBatchOperationsConsumer;
 import com.sitewhere.batch.spi.IBatchOperationHandler;
 import com.sitewhere.batch.spi.IBatchOperationManager;
 import com.sitewhere.batch.spi.kafka.IFailedBatchElementsProducer;
@@ -25,38 +27,34 @@ import com.sitewhere.batch.spi.kafka.IUnprocessedBatchElementsProducer;
 import com.sitewhere.batch.spi.kafka.IUnprocessedBatchOperationsConsumer;
 import com.sitewhere.batch.spi.kafka.IUnprocessedBatchOperationsProducer;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
-import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.grpc.client.batch.BatchModelConverter;
-import com.sitewhere.grpc.client.batch.BatchModelMarshaler;
-import com.sitewhere.microservice.kafka.UnprocessedBatchElementsConsumer;
-import com.sitewhere.microservice.kafka.UnprocessedBatchOperationsConsumer;
+import com.sitewhere.grpc.batch.BatchModelConverter;
+import com.sitewhere.grpc.batch.BatchModelMarshaler;
+import com.sitewhere.microservice.api.batch.IBatchManagement;
+import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.microservice.lifecycle.SimpleLifecycleStep;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.microservice.security.SystemUserRunnable;
+import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.rest.model.batch.kafka.UnprocessedBatchElement;
 import com.sitewhere.rest.model.batch.kafka.UnprocessedBatchOperation;
 import com.sitewhere.rest.model.batch.request.BatchElementCreateRequest;
 import com.sitewhere.rest.model.batch.request.BatchOperationUpdateRequest;
-import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.SimpleLifecycleStep;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.batch.BatchOperationStatus;
 import com.sitewhere.spi.batch.ElementProcessingStatus;
 import com.sitewhere.spi.batch.IBatchElement;
-import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.batch.IBatchOperation;
 import com.sitewhere.spi.batch.kafka.IUnprocessedBatchElement;
 import com.sitewhere.spi.batch.kafka.IUnprocessedBatchOperation;
 import com.sitewhere.spi.batch.request.IBatchElementCreateRequest;
-import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
+import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleStatus;
 
 /**
  * Default implementation of {@link IBatchOperationManager}. Uses multiple
  * threads to process batch operations.
- * 
- * @author Derek
  */
 public class BatchOperationManager extends TenantEngineLifecycleComponent implements IBatchOperationManager {
 
@@ -122,10 +120,9 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.lifecycle.LifecycleComponent#start(com.sitewhere.
+     * spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -169,11 +166,9 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
-     * .spi.server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.microservice.lifecycle.LifecycleComponent#stop(com.sitewhere.
+     * spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -258,8 +253,6 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 
     /**
      * Creates an unprocessed batch operation in a separate thread.
-     * 
-     * @author Derek
      */
     private class BatchOperationCreator implements Runnable {
 
@@ -306,8 +299,6 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 
     /**
      * Initializes a batch operation in a separate thread.
-     * 
-     * @author Derek
      */
     private class BatchOperationInitializer extends SystemUserRunnable {
 
@@ -315,8 +306,7 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 	private IUnprocessedBatchOperation unprocessed;
 
 	public BatchOperationInitializer(IUnprocessedBatchOperation unprocessed) {
-	    super(BatchOperationManager.this.getMicroservice(),
-		    BatchOperationManager.this.getTenantEngine().getTenant());
+	    super(BatchOperationManager.this);
 	    this.unprocessed = unprocessed;
 	}
 
@@ -394,8 +384,6 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 
     /**
      * Processes a batch element in a separate thread.
-     * 
-     * @author Derek
      */
     private class BatchElementProcessor extends SystemUserRunnable {
 
@@ -403,8 +391,7 @@ public class BatchOperationManager extends TenantEngineLifecycleComponent implem
 	private IUnprocessedBatchElement unprocessed;
 
 	public BatchElementProcessor(IUnprocessedBatchElement unprocessed) {
-	    super(BatchOperationManager.this.getMicroservice(),
-		    BatchOperationManager.this.getTenantEngine().getTenant());
+	    super(BatchOperationManager.this);
 	    this.unprocessed = unprocessed;
 	}
 

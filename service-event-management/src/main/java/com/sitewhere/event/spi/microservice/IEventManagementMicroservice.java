@@ -7,30 +7,21 @@
  */
 package com.sitewhere.event.spi.microservice;
 
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
-import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.event.configuration.EventManagementConfiguration;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
  * Microservice that provides event management functionality.
- * 
- * @author Derek
  */
-public interface IEventManagementMicroservice
-	extends IMultitenantMicroservice<MicroserviceIdentifier, IEventManagementTenantEngine> {
+public interface IEventManagementMicroservice extends
+	IMultitenantMicroservice<MicroserviceIdentifier, EventManagementConfiguration, IEventManagementTenantEngine> {
 
     /**
      * Get device management API access via GRPC channel.
      * 
      * @return
      */
-    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel();
-
-    /**
-     * Caching wrapper around device management API channel.
-     * 
-     * @return
-     */
-    public IDeviceManagement getCachedDeviceManagement();
+    public IDeviceManagement getDeviceManagement();
 }

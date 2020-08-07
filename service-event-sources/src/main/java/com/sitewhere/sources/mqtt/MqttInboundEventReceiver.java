@@ -22,32 +22,22 @@ import org.fusesource.mqtt.client.QoS;
 import org.fusesource.mqtt.client.Topic;
 
 import com.sitewhere.communication.mqtt.MqttLifecycleComponent;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.sources.configuration.eventsource.mqtt.MqttConfiguration;
 import com.sitewhere.sources.messages.EventSourcesMessages;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.sources.spi.IInboundEventSource;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 import io.prometheus.client.Counter;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that subscribes to an MQTT
  * topic and pulls the message contents into SiteWhere for processing.
- * 
- * @author Derek
  */
 public class MqttInboundEventReceiver extends MqttLifecycleComponent implements IInboundEventReceiver<byte[]> {
-
-    /** Default subscribed topic name */
-    public static final String DEFAULT_TOPIC = "SiteWhere/input/protobuf";
-
-    /** Number of threads used for processing events */
-    public static final int DEFAULT_NUM_THREADS = 5;
-
-    /** MQTT Topic Quality of Service */
-    public static final QoS DEFAULT_QoS = QoS.AT_LEAST_ONCE;
 
     /** Meter for counting received events */
     private static final Counter RECEIVED_EVENTS = TenantEngineLifecycleComponent
@@ -56,11 +46,8 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
     /** Parent event source */
     private IInboundEventSource<byte[]> eventSource;
 
-    /** Topic name */
-    private String topic = DEFAULT_TOPIC;
-
-    /** Number of threads used for processing */
-    private int numThreads = DEFAULT_NUM_THREADS;
+    /** Configuration */
+    private MqttConfiguration configuration;
 
     /** Shared MQTT connection */
     private FutureConnection connection;
@@ -71,8 +58,9 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
     /** Used to process MQTT events in a thread pool */
     private ExecutorService processorsExecutor;
 
-    public MqttInboundEventReceiver() {
-	super(LifecycleComponentType.InboundEventReceiver);
+    public MqttInboundEventReceiver(MqttConfiguration configuration) {
+	super(LifecycleComponentType.InboundEventReceiver, configuration);
+	this.configuration = configuration;
     }
 
     /*
@@ -87,24 +75,27 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 	super.start(monitor);
 
 	this.subscriptionExecutor = Executors.newSingleThreadExecutor(new SubscribersThreadFactory());
-	this.processorsExecutor = Executors.newFixedThreadPool(getNumThreads(), new ProcessorsThreadFactory());
+	this.processorsExecutor = Executors.newFixedThreadPool(getConfiguration().getNumThreads(),
+		new ProcessorsThreadFactory());
 
 	getLogger().info("Receiver connecting to MQTT broker at '" + getBrokerInfo() + "'...");
 	connection = getConnection();
 	getLogger().info("Receiver connected to MQTT broker.");
 
-	getLogger().info("Suscribing using QoS: " + getQos());
-	QoS qos = qosFromConfig(getQos());
+	getLogger().info("Suscribing using QoS: " + getConfiguration().getQos());
+	QoS qos = qosFromConfig(getConfiguration().getQos());
 
 	// Subscribe to chosen topic.
-	Topic[] topics = { new Topic(getTopic(), qos) };
+	Topic[] topics = { new Topic(getConfiguration().getTopic(), qos) };
 	try {
 	    Future<byte[]> future = connection.subscribe(topics);
 	    future.await();
 
-	    getLogger().info(EventSourcesMessages.SUBSCRIBED_TO_EVENTS_MQTT, getTopic(), getNumThreads());
+	    getLogger().info(EventSourcesMessages.SUBSCRIBED_TO_EVENTS_MQTT, getConfiguration().getTopic(),
+		    getConfiguration().getNumThreads());
 	} catch (Exception e) {
-	    throw new SiteWhereException("Exception while attempting to subscribe to MQTT topic: " + getTopic(), e);
+	    throw new SiteWhereException(
+		    "Exception while attempting to subscribe to MQTT topic: " + getConfiguration().getTopic(), e);
 	}
 
 	// Handle message processing in separate thread.
@@ -117,14 +108,15 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
      * @param qos
      * @return
      */
-    private static QoS qosFromConfig(String qos) {
-	if ("0".equals(qos) || "AT_MOST_ONCE".equals(qos))
+    private static QoS qosFromConfig(int qos) {
+	if (qos == 0) {
 	    return QoS.AT_MOST_ONCE;
-	if ("1".equals(qos) || "AT_LEAST_ONCE".equals(qos))
+	} else if (qos == 1) {
 	    return QoS.AT_LEAST_ONCE;
-	if ("2".equals(qos) || "EXACTLY_ONCE".equals(qos))
+	} else if (qos == 2) {
 	    return QoS.EXACTLY_ONCE;
-	return DEFAULT_QoS;
+	}
+	return QoS.AT_LEAST_ONCE;
     }
 
     /**
@@ -144,7 +136,8 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
      */
     @Override
     public String getDisplayName() {
-	return getProtocol() + "://" + getHostname() + ":" + getPort() + "/" + getTopic();
+	return getConfiguration().getProtocol() + "://" + getConfiguration().getHostname() + ":"
+		+ getConfiguration().getPort() + "/" + getConfiguration().getTopic();
     }
 
     /*
@@ -160,8 +153,6 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
     /**
      * Pulls messages from the MQTT topic and puts them on the queue for this
      * receiver.
-     * 
-     * @author Derek
      */
     private class MqttSubscriptionProcessor implements Runnable {
 
@@ -188,8 +179,6 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 
     /**
      * Processes MQTT message payloads in a separate thread.
-     * 
-     * @author Derek
      */
     private class MqttPayloadProcessor implements Runnable {
 
@@ -260,20 +249,8 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 	this.eventSource = eventSource;
     }
 
-    public String getTopic() {
-	return topic;
-    }
-
-    public void setTopic(String topic) {
-	this.topic = topic;
-    }
-
-    public int getNumThreads() {
-	return numThreads;
-    }
-
-    public void setNumThreads(int numThreads) {
-	this.numThreads = numThreads;
+    protected MqttConfiguration getConfiguration() {
+	return configuration;
     }
 
     /** Used for naming consumer threads */
@@ -283,8 +260,8 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 	private AtomicInteger counter = new AtomicInteger();
 
 	public Thread newThread(Runnable r) {
-	    return new Thread(r, "SiteWhere MQTT(" + getEventSource().getSourceId() + " - " + getTopic() + ") Receiver "
-		    + counter.incrementAndGet());
+	    return new Thread(r, "SiteWhere MQTT(" + getEventSource().getSourceId() + " - "
+		    + getConfiguration().getTopic() + ") Receiver " + counter.incrementAndGet());
 	}
     }
 
@@ -295,8 +272,8 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 	private AtomicInteger counter = new AtomicInteger();
 
 	public Thread newThread(Runnable r) {
-	    return new Thread(r, "SiteWhere MQTT(" + getEventSource().getSourceId() + " - " + getTopic()
-		    + ") Processor " + counter.incrementAndGet());
+	    return new Thread(r, "SiteWhere MQTT(" + getEventSource().getSourceId() + " - "
+		    + getConfiguration().getTopic() + ") Processor " + counter.incrementAndGet());
 	}
     }
 }

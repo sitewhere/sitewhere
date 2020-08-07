@@ -12,20 +12,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 
-import com.sitewhere.server.lifecycle.LifecycleComponent;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.lifecycle.LifecycleComponent;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.sources.spi.socket.ISocketInteractionHandler;
 import com.sitewhere.sources.spi.socket.ISocketInteractionHandlerFactory;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link ISocketInteractionHandler} that reads everything
  * from the socket and sends the resulting byte array to the parent event
  * source.
- * 
- * @author Derek
  */
 public class ReadAllInteractionHandler extends TenantEngineLifecycleComponent
 	implements ISocketInteractionHandler<byte[]> {
@@ -55,8 +53,6 @@ public class ReadAllInteractionHandler extends TenantEngineLifecycleComponent
 
     /**
      * Factory class that produces {@link ReadAllInteractionHandler} instances.
-     * 
-     * @author Derek
      */
     public static class Factory extends LifecycleComponent implements ISocketInteractionHandlerFactory<byte[]> {
 

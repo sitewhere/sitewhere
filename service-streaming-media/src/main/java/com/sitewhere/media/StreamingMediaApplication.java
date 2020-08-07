@@ -7,22 +7,14 @@
  */
 package com.sitewhere.media;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.ComponentScan;
-
 import com.sitewhere.media.spi.microservice.IStreamingMediaMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
 
 /**
  * Spring Boot application for streaming media microservice.
- * 
- * @author Derek
  */
-@ComponentScan
 public class StreamingMediaApplication extends MicroserviceApplication<IStreamingMediaMicroservice> {
 
-    @Autowired
     private IStreamingMediaMicroservice microservice;
 
     /*
@@ -34,14 +26,5 @@ public class StreamingMediaApplication extends MicroserviceApplication<IStreamin
     @Override
     public IStreamingMediaMicroservice getMicroservice() {
 	return microservice;
-    }
-
-    /**
-     * Entry point for Spring Boot.
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-	SpringApplication.run(StreamingMediaApplication.class, args);
     }
 }

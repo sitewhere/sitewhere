@@ -7,19 +7,19 @@
  */
 package com.sitewhere.devicestate.spi.microservice;
 
+import com.sitewhere.devicestate.configuration.DeviceStateTenantConfiguration;
 import com.sitewhere.devicestate.spi.IDevicePresenceManager;
-import com.sitewhere.devicestate.spi.kafka.IDeviceStateEnrichedEventsConsumer;
+import com.sitewhere.devicestate.spi.IDeviceStateMergeStrategy;
 import com.sitewhere.grpc.service.DeviceStateGrpc;
-import com.sitewhere.spi.device.state.IDeviceStateManagement;
+import com.sitewhere.microservice.api.state.IDeviceStateManagement;
+import com.sitewhere.rdb.spi.IRdbEntityManagerProvider;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
  * Extends {@link IMicroserviceTenantEngine} with features specific to device
  * state management.
- * 
- * @author Derek
  */
-public interface IDeviceStateTenantEngine extends IMicroserviceTenantEngine {
+public interface IDeviceStateTenantEngine extends IMicroserviceTenantEngine<DeviceStateTenantConfiguration> {
 
     /**
      * Get associated device state management implementation.
@@ -36,11 +36,11 @@ public interface IDeviceStateTenantEngine extends IMicroserviceTenantEngine {
     public DeviceStateGrpc.DeviceStateImplBase getDeviceStateImpl();
 
     /**
-     * Get Kafka consumer that delivers enriched events for processing.
+     * Get merge strategy used for assembling device state.
      * 
      * @return
      */
-    public IDeviceStateEnrichedEventsConsumer getDeviceStateEnrichedEventsConsumer();
+    public IDeviceStateMergeStrategy<?> getDeviceStateMergeStrategy();
 
     /**
      * Get presence manager implementation.
@@ -48,4 +48,11 @@ public interface IDeviceStateTenantEngine extends IMicroserviceTenantEngine {
      * @return
      */
     public IDevicePresenceManager getDevicePresenceManager();
+
+    /**
+     * Get provider which provides an RDB entity manager for this tenant.
+     * 
+     * @return
+     */
+    public IRdbEntityManagerProvider getRdbEntityManagerProvider();
 }

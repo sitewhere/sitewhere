@@ -20,8 +20,6 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 /**
  * Handles mapping of device command invocation event fields to Cassandra
  * records.
- * 
- * @author Derek
  */
 public class CassandraDeviceCommandInvocation implements ICassandraEventBinder<IDeviceCommandInvocation> {
 

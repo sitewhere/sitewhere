@@ -9,12 +9,10 @@ package com.sitewhere.connectors.spi;
 
 import java.util.List;
 
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Manages the list of outbound connectors for a tenant.
- * 
- * @author Derek
  */
 public interface IOutboundConnectorsManager extends ITenantEngineLifecycleComponent {
 

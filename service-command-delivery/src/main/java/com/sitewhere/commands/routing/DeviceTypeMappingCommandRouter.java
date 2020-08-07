@@ -7,19 +7,22 @@
  */
 package com.sitewhere.commands.routing;
 
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
+import com.sitewhere.commands.configuration.router.devicetypemapping.DeviceTypeMapping;
+import com.sitewhere.commands.configuration.router.devicetypemapping.DeviceTypeMappingConfiguration;
 import com.sitewhere.commands.spi.ICommandDestination;
 import com.sitewhere.commands.spi.ICommandDestinationsManager;
 import com.sitewhere.commands.spi.IOutboundCommandRouter;
+import com.sitewhere.commands.spi.microservice.ICommandDeliveryMicroservice;
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.command.ISystemCommand;
 
@@ -29,11 +32,12 @@ import com.sitewhere.spi.device.command.ISystemCommand;
  */
 public class DeviceTypeMappingCommandRouter extends OutboundCommandRouter {
 
-    /** Map of specification tokens to command destination ids */
-    private Map<UUID, String> mappings = new HashMap<UUID, String>();
+    /** Configuration */
+    private DeviceTypeMappingConfiguration configuration;
 
-    /** Default destination for unmapped specifications */
-    private String defaultDestination = null;
+    public DeviceTypeMappingCommandRouter(DeviceTypeMappingConfiguration configuration) {
+	this.configuration = configuration;
+    }
 
     /*
      * @see
@@ -43,8 +47,8 @@ public class DeviceTypeMappingCommandRouter extends OutboundCommandRouter {
      */
     @Override
     public List<ICommandDestination<?, ?>> getDestinationsFor(IDeviceCommandExecution execution,
-	    IDeviceNestingContext nesting, List<IDeviceAssignment> assignments) throws SiteWhereException {
-	return Collections.singletonList(getDestinationForDevice(nesting));
+	    IDeviceNestingContext nesting, List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
+	return getDestinationsForDevice(nesting);
     }
 
     /*
@@ -55,54 +59,56 @@ public class DeviceTypeMappingCommandRouter extends OutboundCommandRouter {
      */
     @Override
     public List<ICommandDestination<?, ?>> getDestinationsFor(ISystemCommand command, IDeviceNestingContext nesting,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException {
-	return Collections.singletonList(getDestinationForDevice(nesting));
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
+	return getDestinationsForDevice(nesting);
     }
 
     /**
-     * Get {@link ICommandDestination} for device based on specification token
-     * associated with the device.
+     * Get {@link ICommandDestination} entries for device based on specification
+     * token associated with the device.
      * 
      * @param nesting
      * @return
      * @throws SiteWhereException
      */
-    protected ICommandDestination<?, ?> getDestinationForDevice(IDeviceNestingContext nesting)
+    protected List<ICommandDestination<?, ?>> getDestinationsForDevice(IDeviceNestingContext nesting)
 	    throws SiteWhereException {
 	UUID deviceTypeId = nesting.getGateway().getDeviceTypeId();
-	String destinationId = mappings.get(deviceTypeId);
-	if (destinationId == null) {
-	    if (getDefaultDestination() != null) {
-		destinationId = getDefaultDestination();
-	    } else {
-		throw new SiteWhereException("No command destination mapping for device type: " + deviceTypeId);
+	IDeviceType deviceType = getDeviceManagement().getDeviceType(deviceTypeId);
+	List<ICommandDestination<?, ?>> matches = new ArrayList<>();
+	for (DeviceTypeMapping mapping : getConfiguration().getMappings()) {
+	    if (mapping.getDeviceTypeToken() == deviceType.getToken()) {
+		ICommandDestination<?, ?> destination = getCommandDestinationsManager().getCommandDestinationsMap()
+			.get(mapping.getDestinationId());
+		if (destination == null) {
+		    getLogger().error(String.format("Destination not found: %s", mapping.getDestinationId()));
+		} else {
+		    matches.add(destination);
+		}
 	    }
 	}
-	ICommandDestination<?, ?> destination = getCommandDestinationsManager().getCommandDestinations()
-		.get(destinationId);
-	if (destination == null) {
-	    throw new SiteWhereException("No destination found for destination id: " + destinationId);
+	if (matches.isEmpty()) {
+	    String destinationId = getConfiguration().getDefaultDestination();
+	    ICommandDestination<?, ?> destination = getCommandDestinationsManager().getCommandDestinationsMap()
+		    .get(destinationId);
+	    if (destination == null) {
+		getLogger().error(String.format("Default destination not found: %s", destinationId));
+	    } else {
+		matches.add(destination);
+	    }
 	}
-	return destination;
+	return matches;
     }
 
-    public Map<UUID, String> getMappings() {
-	return mappings;
-    }
-
-    public void setMappings(Map<UUID, String> mappings) {
-	this.mappings = mappings;
-    }
-
-    public String getDefaultDestination() {
-	return defaultDestination;
-    }
-
-    public void setDefaultDestination(String defaultDestination) {
-	this.defaultDestination = defaultDestination;
+    protected IDeviceManagement getDeviceManagement() {
+	return ((ICommandDeliveryMicroservice) getMicroservice()).getDeviceManagement();
     }
 
     protected ICommandDestinationsManager getCommandDestinationsManager() {
 	return ((ICommandDeliveryTenantEngine) getTenantEngine()).getCommandDestinationsManager();
+    }
+
+    protected DeviceTypeMappingConfiguration getConfiguration() {
+	return configuration;
     }
 }

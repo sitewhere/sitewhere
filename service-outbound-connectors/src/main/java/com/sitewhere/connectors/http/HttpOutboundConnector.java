@@ -7,9 +7,6 @@
  */
 package com.sitewhere.connectors.http;
 
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
-
 import com.sitewhere.connectors.SerialOutboundConnector;
 import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.connectors.spi.common.IPayloadBuilder;
@@ -23,7 +20,7 @@ import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Implementation of {@link IOutboundConnector} that sends a payload to an HTTP
@@ -32,7 +29,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
 public class HttpOutboundConnector extends SerialOutboundConnector {
 
     /** Use Spring RestTemplate to send requests */
-    private RestTemplate client;
+    // private RestTemplate client;
 
     /** HTTP method to be invoked */
     private String method = "post";
@@ -68,11 +65,9 @@ public class HttpOutboundConnector extends SerialOutboundConnector {
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#start
-     * (com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.connectors.FilteredOutboundConnector#start(com.sitewhere.spi.
+     * microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -89,7 +84,7 @@ public class HttpOutboundConnector extends SerialOutboundConnector {
 	    startNestedComponent(getPayloadBuilder(), monitor, true);
 	}
 
-	this.client = new RestTemplate();
+	// this.client = new RestTemplate();
     }
 
     /*
@@ -167,29 +162,31 @@ public class HttpOutboundConnector extends SerialOutboundConnector {
      * @throws SiteWhereException
      */
     protected void processDeviceEvent(IDeviceEventContext context, IDeviceEvent event) throws SiteWhereException {
-	try {
-	    if ((getUriBuilder() != null) && (getPayloadBuilder() != null)) {
-		String uri = getUriBuilder().buildUri(this, context, event);
-		byte[] payload = getPayloadBuilder().buildPayload(this, context, event);
-		if ("post".equalsIgnoreCase(method)) {
-		    getClient().postForLocation(uri, payload);
-		} else if ("put".equalsIgnoreCase(method)) {
-		    getClient().put(uri, payload);
-		}
-	    } else {
-		getLogger().warn("Skipping HTTP outbound event due to missing configuration.");
-	    }
-	} catch (RestClientException e) {
-	    getLogger().error(String.format("Unable to send HTTP payload: %s", e.getMessage()));
-	    if (getLogger().isDebugEnabled()) {
-		getLogger().error("Error sending payload via REST client.", e);
-	    }
-	}
+	// try {
+	// if ((getUriBuilder() != null) && (getPayloadBuilder() != null)) {
+	// String uri = getUriBuilder().buildUri(this, context, event);
+	// byte[] payload = getPayloadBuilder().buildPayload(this, context, event);
+	// if ("post".equalsIgnoreCase(method)) {
+	// getClient().postForLocation(uri, payload);
+	// } else if ("put".equalsIgnoreCase(method)) {
+	// getClient().put(uri, payload);
+	// }
+	// } else {
+	// getLogger().warn("Skipping HTTP outbound event due to missing
+	// configuration.");
+	// }
+	// } catch (RestClientException e) {
+	// getLogger().error(String.format("Unable to send HTTP payload: %s",
+	// e.getMessage()));
+	// if (getLogger().isDebugEnabled()) {
+	// getLogger().error("Error sending payload via REST client.", e);
+	// }
+	// }
     }
 
-    protected RestTemplate getClient() {
-	return client;
-    }
+    // protected RestTemplate getClient() {
+    // return client;
+    // }
 
     public IUriBuilder getUriBuilder() {
 	return uriBuilder;

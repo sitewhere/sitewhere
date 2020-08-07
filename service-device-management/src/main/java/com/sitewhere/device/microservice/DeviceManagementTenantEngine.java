@@ -7,44 +7,62 @@
  */
 package com.sitewhere.device.microservice;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
 import com.sitewhere.device.DeviceManagementTriggers;
-import com.sitewhere.device.initializer.GroovyDeviceModelInitializer;
+import com.sitewhere.device.configuration.DeviceManagementTenantConfiguration;
+import com.sitewhere.device.configuration.DeviceManagementTenantEngineModule;
+import com.sitewhere.device.grpc.DeviceManagementImpl;
+import com.sitewhere.device.kafka.DeviceInteractionEventsProducer;
+import com.sitewhere.device.persistence.rdb.entity.RdbArea;
+import com.sitewhere.device.persistence.rdb.entity.RdbAreaBoundary;
+import com.sitewhere.device.persistence.rdb.entity.RdbAreaType;
+import com.sitewhere.device.persistence.rdb.entity.RdbCommandParameter;
+import com.sitewhere.device.persistence.rdb.entity.RdbCustomer;
+import com.sitewhere.device.persistence.rdb.entity.RdbCustomerType;
+import com.sitewhere.device.persistence.rdb.entity.RdbDevice;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceAlarm;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceAssignment;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceAssignmentSummary;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceCommand;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceElementMapping;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceElementSchema;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceGroup;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceGroupElement;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceSlot;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceStatus;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceSummary;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceType;
+import com.sitewhere.device.persistence.rdb.entity.RdbDeviceUnit;
+import com.sitewhere.device.persistence.rdb.entity.RdbLocation;
+import com.sitewhere.device.persistence.rdb.entity.RdbZone;
+import com.sitewhere.device.persistence.rdb.entity.RdbZoneBoundary;
 import com.sitewhere.device.spi.kafka.IDeviceInteractionEventsProducer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
 import com.sitewhere.grpc.service.DeviceManagementGrpc;
-import com.sitewhere.microservice.groovy.GroovyConfiguration;
-import com.sitewhere.microservice.grpc.DeviceManagementImpl;
-import com.sitewhere.microservice.kafka.DeviceInteractionEventsProducer;
-import com.sitewhere.microservice.multitenant.MicroserviceTenantEngine;
-import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.LifecycleProgressContext;
-import com.sitewhere.server.lifecycle.LifecycleProgressMonitor;
+import com.sitewhere.microservice.api.device.DeviceManagementRequestBuilder;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.datastore.DatastoreDefinition;
+import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.microservice.scripting.Binding;
+import com.sitewhere.rdb.RdbPersistenceOptions;
+import com.sitewhere.rdb.RdbTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetManagement;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.multitenant.IDatasetTemplate;
+import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
-import com.sitewhere.spi.microservice.spring.DeviceManagementBeans;
-import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
+import com.sitewhere.spi.microservice.scripting.IScriptVariables;
+
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Implementation of {@link IMicroserviceTenantEngine} that implements device
  * management functionality.
- * 
- * @author Derek
  */
-public class DeviceManagementTenantEngine extends MicroserviceTenantEngine implements IDeviceManagementTenantEngine {
+public class DeviceManagementTenantEngine extends RdbTenantEngine<DeviceManagementTenantConfiguration>
+	implements IDeviceManagementTenantEngine {
 
     /** Device management persistence API */
     private IDeviceManagement deviceManagement;
@@ -55,67 +73,80 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
     /** Produces events generated by device interactions */
     private IDeviceInteractionEventsProducer deviceInteractionEventsProducer;
 
-    public DeviceManagementTenantEngine(ITenant tenant) {
-	super(tenant);
+    public DeviceManagementTenantEngine(SiteWhereTenantEngine engine) {
+	super(engine);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
-     * tenantInitialize(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * getConfigurationClass()
      */
     @Override
-    public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Create management interfaces.
-	IDeviceManagement implementation = (IDeviceManagement) getModuleContext()
-		.getBean(DeviceManagementBeans.BEAN_DEVICE_MANAGEMENT);
+    public Class<DeviceManagementTenantConfiguration> getConfigurationClass() {
+	return DeviceManagementTenantConfiguration.class;
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * createConfigurationModule()
+     */
+    @Override
+    public ITenantEngineModule<DeviceManagementTenantConfiguration> createConfigurationModule() {
+	return new DeviceManagementTenantEngineModule(this, getActiveConfiguration());
+    }
+
+    /*
+     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getDatastoreDefinition()
+     */
+    @Override
+    public DatastoreDefinition getDatastoreDefinition() {
+	return getActiveConfiguration().getDatastore();
+    }
+
+    /*
+     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getEntityClasses()
+     */
+    @Override
+    public Class<?>[] getEntityClasses() {
+	return new Class<?>[] { RdbArea.class, RdbAreaBoundary.class, RdbAreaType.class, RdbCommandParameter.class,
+		RdbCustomer.class, RdbCustomerType.class, RdbDevice.class, RdbDeviceSummary.class, RdbDeviceAlarm.class,
+		RdbDeviceAssignment.class, RdbDeviceAssignmentSummary.class, RdbDeviceCommand.class,
+		RdbDeviceElementMapping.class, RdbDeviceElementSchema.class, RdbDeviceGroup.class,
+		RdbDeviceGroupElement.class, RdbDeviceSlot.class, RdbDeviceStatus.class, RdbDeviceType.class,
+		RdbDeviceUnit.class, RdbLocation.class, RdbZone.class, RdbZoneBoundary.class };
+    }
+
+    /*
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * loadEngineComponents()
+     */
+    @Override
+    public void loadEngineComponents() throws SiteWhereException {
+	// // Create management interfaces.
+	IDeviceManagement implementation = getInjector().getInstance(IDeviceManagement.class);
 	this.deviceManagement = new DeviceManagementTriggers(implementation, this);
 	this.deviceManagementImpl = new DeviceManagementImpl((IDeviceManagementMicroservice) getMicroservice(),
 		getDeviceManagement());
-
-	// Device interaction events producer.
-	this.deviceInteractionEventsProducer = new DeviceInteractionEventsProducer();
-
-	// Create step that will initialize components.
-	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
-
-	// Initialize discoverable lifecycle components.
-	init.addStep(initializeDiscoverableBeans(getModuleContext()));
-
-	// Initialize device management persistence.
-	init.addInitializeStep(this, getDeviceManagement(), true);
-
-	// Initialize device interaction events producer.
-	init.addInitializeStep(this, getDeviceInteractionEventsProducer(), true);
-
-	// Execute initialization steps.
-	init.execute(monitor);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
-     * tenantStart(com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * @see com.sitewhere.rdb.RdbTenantEngine#getPersistenceOptions()
      */
     @Override
-    public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Create step that will start components.
-	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
+    public RdbPersistenceOptions getPersistenceOptions() {
+	RdbPersistenceOptions options = new RdbPersistenceOptions();
+	// options.setHbmToDdlAuto("update");
+	return options;
+    }
 
-	// Start discoverable lifecycle components.
-	start.addStep(startDiscoverableBeans(getModuleContext()));
-
-	// Start device management persistence.
-	start.addStartStep(this, getDeviceManagement(), true);
-
-	// Start device interaction events producer.
-	start.addStartStep(this, getDeviceInteractionEventsProducer(), true);
-
-	// Execute startup steps.
-	start.execute(monitor);
+    /*
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * setDatasetBootstrapBindings(com.sitewhere.microservice.scripting.Binding)
+     */
+    @Override
+    public void setDatasetBootstrapBindings(Binding binding) throws SiteWhereException {
+	binding.setVariable(IScriptVariables.VAR_DEVICE_MANAGEMENT_BUILDER,
+		new DeviceManagementRequestBuilder(getDeviceManagement()));
     }
 
     /*
@@ -129,46 +160,55 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
-     * tenantBootstrap(com.sitewhere.spi.microservice.multitenant.IDatasetTemplate,
-     * com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * tenantInitialize(com.sitewhere.spi.microservice.lifecycle.
+     * ILifecycleProgressMonitor)
      */
     @Override
-    public void tenantBootstrap(IDatasetTemplate template, ILifecycleProgressMonitor monitor)
-	    throws SiteWhereException {
-	List<String> scripts = Collections.emptyList();
-	if (template.getInitializers() != null) {
-	    scripts = template.getInitializers().getDeviceManagement();
-	    for (String script : scripts) {
-		getTenantScriptSynchronizer().add(script);
-	    }
-	}
+    public void tenantInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.tenantInitialize(monitor);
 
-	// Execute remote calls as superuser.
-	Authentication previous = SecurityContextHolder.getContext().getAuthentication();
-	try {
-	    SecurityContextHolder.getContext()
-		    .setAuthentication(getMicroservice().getSystemUser().getAuthenticationForTenant(getTenant()));
-	    GroovyConfiguration groovy = new GroovyConfiguration(getTenantScriptSynchronizer());
-	    groovy.start(new LifecycleProgressMonitor(new LifecycleProgressContext(1, "Initialize device model."),
-		    getMicroservice()));
-	    for (String script : scripts) {
-		getLogger().info(String.format("Applying bootstrap script '%s'.", script));
-		GroovyDeviceModelInitializer initializer = new GroovyDeviceModelInitializer(groovy, script);
-		initializer.initialize(getDeviceManagement(), getAssetManagement());
-	    }
-	} catch (Throwable e) {
-	    getLogger().error("Unhandled exception in bootstrap script.", e);
-	    throw new SiteWhereException(e);
-	} finally {
-	    SecurityContextHolder.getContext().setAuthentication(previous);
-	}
+	// Device interaction events producer.
+	this.deviceInteractionEventsProducer = new DeviceInteractionEventsProducer();
+
+	// Create step that will initialize components.
+	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getComponentName());
+
+	// Initialize device management persistence.
+	init.addInitializeStep(this, getDeviceManagement(), true);
+
+	// Initialize device interaction events producer.
+	init.addInitializeStep(this, getDeviceInteractionEventsProducer(), true);
+
+	// Execute initialization steps.
+	init.execute(monitor);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.multitenant.IMicroserviceTenantEngine#
-     * tenantStop(com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * tenantStart(com.sitewhere.spi.microservice.lifecycle.
+     * ILifecycleProgressMonitor)
+     */
+    @Override
+    public void tenantStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.tenantStart(monitor);
+
+	// Create step that will start components.
+	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getComponentName());
+
+	// Start device management persistence.
+	start.addStartStep(this, getDeviceManagement(), true);
+
+	// Start device interaction events producer.
+	start.addStartStep(this, getDeviceInteractionEventsProducer(), true);
+
+	// Execute startup steps.
+	start.execute(monitor);
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine#
+     * tenantStop(com.sitewhere.spi.microservice.lifecycle.
+     * ILifecycleProgressMonitor)
      */
     @Override
     public void tenantStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -181,11 +221,10 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	// Stop device management persistence.
 	stop.addStopStep(this, getDeviceManagement());
 
-	// Stop discoverable lifecycle components.
-	stop.addStep(stopDiscoverableBeans(getModuleContext()));
-
 	// Execute shutdown steps.
 	stop.execute(monitor);
+
+	super.tenantStop(monitor);
     }
 
     /*
@@ -199,10 +238,6 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	return deviceManagement;
     }
 
-    public void setDeviceManagement(IDeviceManagement deviceManagement) {
-	this.deviceManagement = deviceManagement;
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -214,10 +249,6 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
 	return deviceManagementImpl;
     }
 
-    public void setDeviceManagementImpl(DeviceManagementGrpc.DeviceManagementImplBase deviceManagementImpl) {
-	this.deviceManagementImpl = deviceManagementImpl;
-    }
-
     /*
      * @see com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine#
      * getDeviceInteractionEventsProducer()
@@ -225,13 +256,5 @@ public class DeviceManagementTenantEngine extends MicroserviceTenantEngine imple
     @Override
     public IDeviceInteractionEventsProducer getDeviceInteractionEventsProducer() {
 	return deviceInteractionEventsProducer;
-    }
-
-    public void setDeviceInteractionEventsProducer(IDeviceInteractionEventsProducer deviceInteractionEventsProducer) {
-	this.deviceInteractionEventsProducer = deviceInteractionEventsProducer;
-    }
-
-    public IAssetManagement getAssetManagement() {
-	return ((IDeviceManagementMicroservice) getMicroservice()).getCachedAssetManagement();
     }
 }

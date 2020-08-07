@@ -7,19 +7,16 @@
  */
 package com.sitewhere.devicestate.spi;
 
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Manages monitoring of device assignment state to determine when device
  * presence changes.
- * 
- * @author Derek
  */
 public interface IDevicePresenceManager extends ITenantEngineLifecycleComponent {
 
     /**
-     * Get notification strategy that controls how often presence events are
-     * sent.
+     * Get notification strategy that controls how often presence events are sent.
      * 
      * @return
      */

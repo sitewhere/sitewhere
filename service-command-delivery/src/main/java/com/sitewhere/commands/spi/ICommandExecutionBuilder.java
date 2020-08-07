@@ -11,13 +11,11 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleComponent;
 
 /**
  * Used to build an {@link IDeviceCommandExecution} from an
  * {@link IDeviceCommand} and a {@link IDeviceCommandInvocation}.
- * 
- * @author Derek
  */
 public interface ICommandExecutionBuilder extends ILifecycleComponent {
 

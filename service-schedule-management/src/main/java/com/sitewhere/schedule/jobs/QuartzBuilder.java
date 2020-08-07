@@ -24,8 +24,6 @@ import com.sitewhere.spi.scheduling.TriggerConstants;
 
 /**
  * Builds Quartz jobs based on an {@link IScheduledJob}.
- * 
- * @author Derek
  */
 public class QuartzBuilder {
 

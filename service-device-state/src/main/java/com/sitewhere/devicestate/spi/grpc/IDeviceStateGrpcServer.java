@@ -7,12 +7,10 @@
  */
 package com.sitewhere.devicestate.spi.grpc;
 
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Binds to a port and listens for device state GRPC requests.
- * 
- * @author Derek
  */
 public interface IDeviceStateGrpcServer extends ITenantEngineLifecycleComponent {
 }

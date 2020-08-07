@@ -7,22 +7,19 @@
  */
 package com.sitewhere.event;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.ComponentScan;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
 
 /**
- * Spring Boot application for device event management microservice.
- * 
- * @author Derek
+ * Main application which runs the event management microservice.
  */
-@ComponentScan
+@ApplicationScoped
 public class EventManagementApplication extends MicroserviceApplication<IEventManagementMicroservice> {
 
-    @Autowired
+    @Inject
     private IEventManagementMicroservice microservice;
 
     /*
@@ -34,14 +31,5 @@ public class EventManagementApplication extends MicroserviceApplication<IEventMa
     @Override
     public IEventManagementMicroservice getMicroservice() {
 	return microservice;
-    }
-
-    /**
-     * Entry point for Spring Boot.
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-	SpringApplication.run(EventManagementApplication.class, args);
     }
 }

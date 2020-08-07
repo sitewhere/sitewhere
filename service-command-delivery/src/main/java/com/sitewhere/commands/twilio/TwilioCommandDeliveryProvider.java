@@ -15,13 +15,13 @@ import org.apache.http.message.BasicNameValuePair;
 
 import com.sitewhere.commands.destination.sms.SmsParameters;
 import com.sitewhere.commands.spi.ICommandDeliveryProvider;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.twilio.sdk.TwilioRestClient;
 import com.twilio.sdk.TwilioRestException;
 import com.twilio.sdk.resource.factory.MessageFactory;
@@ -30,8 +30,6 @@ import com.twilio.sdk.resource.instance.Account;
 /**
  * Implementation of {@link ICommandDeliveryProvider} that sends an SMS message
  * via Twilio.
- * 
- * @author Derek
  */
 public class TwilioCommandDeliveryProvider extends TenantEngineLifecycleComponent
 	implements ICommandDeliveryProvider<String, SmsParameters> {
@@ -83,7 +81,7 @@ public class TwilioCommandDeliveryProvider extends TenantEngineLifecycleComponen
      * java.lang.Object)
      */
     @Override
-    public void deliver(IDeviceNestingContext nested, List<IDeviceAssignment> assignments,
+    public void deliver(IDeviceNestingContext nested, List<? extends IDeviceAssignment> assignments,
 	    IDeviceCommandExecution execution, String encoded, SmsParameters params) throws SiteWhereException {
 	getLogger().info("Delivering SMS command to " + params.getSmsPhoneNumber() + ".");
 	sendSms(encoded, getFromPhoneNumber(), params.getSmsPhoneNumber());
@@ -96,8 +94,8 @@ public class TwilioCommandDeliveryProvider extends TenantEngineLifecycleComponen
      * java.lang.Object)
      */
     @Override
-    public void deliverSystemCommand(IDeviceNestingContext nested, List<IDeviceAssignment> assignments, String encoded,
-	    SmsParameters params) throws SiteWhereException {
+    public void deliverSystemCommand(IDeviceNestingContext nested, List<? extends IDeviceAssignment> assignments,
+	    String encoded, SmsParameters params) throws SiteWhereException {
 	throw new UnsupportedOperationException();
     }
 

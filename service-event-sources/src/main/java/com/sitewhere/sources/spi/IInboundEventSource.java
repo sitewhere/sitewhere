@@ -10,13 +10,11 @@ package com.sitewhere.sources.spi;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Entity that receives events from one or more {@link IInboundEventReceiver},
  * decodes them, and forwards them for processing.
- * 
- * @author Derek
  */
 public interface IInboundEventSource<T> extends ITenantEngineLifecycleComponent {
 

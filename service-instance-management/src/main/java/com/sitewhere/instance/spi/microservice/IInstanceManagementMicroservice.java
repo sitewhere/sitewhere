@@ -7,43 +7,32 @@
  */
 package com.sitewhere.instance.spi.microservice;
 
-import com.sitewhere.instance.spi.instance.grpc.IInstanceManagementGrpcServer;
-import com.sitewhere.instance.spi.templates.IInstanceTemplateManager;
+import com.sitewhere.grpc.client.spi.client.IBatchManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IDeviceStateApiChannel;
+import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiChannel;
+import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
+import com.sitewhere.instance.configuration.InstanceManagementConfiguration;
 import com.sitewhere.instance.spi.tenant.grpc.ITenantManagementGrpcServer;
-import com.sitewhere.instance.spi.tenant.kafka.ITenantBootstrapModelConsumer;
-import com.sitewhere.instance.spi.tenant.templates.IDatasetTemplateManager;
-import com.sitewhere.instance.spi.tenant.templates.ITenantTemplateManager;
 import com.sitewhere.instance.spi.user.grpc.IUserManagementGrpcServer;
+import com.sitewhere.microservice.api.asset.IAssetManagement;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
-import com.sitewhere.spi.microservice.IGlobalMicroservice;
-import com.sitewhere.spi.microservice.scripting.IScriptSynchronizer;
-import com.sitewhere.spi.user.IUserManagement;
+import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 
 /**
- * API for instance management microservice.
+ * Microservice that provides web/REST functionality.
  */
-public interface IInstanceManagementMicroservice<T extends IFunctionIdentifier> extends IGlobalMicroservice<T> {
+public interface IInstanceManagementMicroservice<F extends IFunctionIdentifier>
+	extends IConfigurableMicroservice<F, InstanceManagementConfiguration> {
 
     /**
-     * Get instance template manager instance.
+     * Get component which bootstraps instance with data.
      * 
      * @return
      */
-    public IInstanceTemplateManager getInstanceTemplateManager();
-
-    /**
-     * Get instance script synchronizer.
-     * 
-     * @return
-     */
-    public IScriptSynchronizer getInstanceScriptSynchronizer();
-
-    /**
-     * Get instance management gRPC server.
-     * 
-     * @return
-     */
-    public IInstanceManagementGrpcServer getInstanceManagementGrpcServer();
+    public IInstanceBootstrapper getInstanceBootstrapper();
 
     /**
      * Get user management implementation.
@@ -67,23 +56,51 @@ public interface IInstanceManagementMicroservice<T extends IFunctionIdentifier> 
     public ITenantManagementGrpcServer getTenantManagementGrpcServer();
 
     /**
-     * Get tenant template manager.
+     * Device management API access via cached API channel.
      * 
      * @return
      */
-    public ITenantTemplateManager getTenantConfigurationTemplateManager();
+    public IDeviceManagement getDeviceManagement();
 
     /**
-     * Get tenant dataset template manager.
+     * Device event management API access via GRPC channel.
      * 
      * @return
      */
-    public IDatasetTemplateManager getTenantDatasetTemplateManager();
+    public IDeviceEventManagementApiChannel<?> getDeviceEventManagementApiChannel();
 
     /**
-     * Get tenant bootstrap model producer.
+     * Asset management API access via GRPC channel.
      * 
      * @return
      */
-    public ITenantBootstrapModelConsumer getTenantBootstrapModelConsumer();
+    public IAssetManagement getAssetManagement();
+
+    /**
+     * Batch management API access via GRPC channel.
+     * 
+     * @return
+     */
+    public IBatchManagementApiChannel<?> getBatchManagementApiChannel();
+
+    /**
+     * Schedule management API access via GRPC channel.
+     * 
+     * @return
+     */
+    public IScheduleManagementApiChannel<?> getScheduleManagementApiChannel();
+
+    /**
+     * Label generation API access via GRPC channel.
+     * 
+     * @return
+     */
+    public ILabelGenerationApiChannel<?> getLabelGenerationApiChannel();
+
+    /**
+     * Device state API access via GRPC channel.
+     * 
+     * @return
+     */
+    public IDeviceStateApiChannel<?> getDeviceStateApiChannel();
 }

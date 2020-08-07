@@ -16,8 +16,6 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 /**
  * Interface for objects that handle binding event data into Cassandra bound
  * statements.
- * 
- * @author Derek
  *
  * @param <T>
  */

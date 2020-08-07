@@ -7,24 +7,21 @@
  */
 package com.sitewhere.sources.deduplicator;
 
-import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.api.event.IDeviceEventManagement;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IDeviceEventDeduplicator;
 import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IDeviceEventDeduplicator} that checks the alternate
  * id (if present) in an event against the index already stored in the
  * datastore. If the alternate id is already present, the event is considered a
  * duplicate.
- * 
- * @author Derek
  */
 public class AlternateIdDeduplicator extends TenantEngineLifecycleComponent implements IDeviceEventDeduplicator {
 
@@ -56,7 +53,6 @@ public class AlternateIdDeduplicator extends TenantEngineLifecycleComponent impl
     }
 
     private IDeviceEventManagement getDeviceEventManagement() {
-	return new BlockingDeviceEventManagement(
-		((IEventSourcesMicroservice) getMicroservice()).getDeviceEventManagementApiChannel());
+	return ((IEventSourcesMicroservice) getMicroservice()).getDeviceEventManagementApiChannel();
     }
 }

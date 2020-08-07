@@ -7,44 +7,41 @@
  */
 package com.sitewhere.event.microservice;
 
-import com.sitewhere.event.configuration.EventManagementModelProvider;
+import javax.enterprise.context.ApplicationScoped;
+
+import com.sitewhere.event.configuration.EventManagementConfiguration;
+import com.sitewhere.event.configuration.EventManagementModule;
+import com.sitewhere.event.grpc.EventManagementGrpcServer;
 import com.sitewhere.event.spi.grpc.IEventManagementGrpcServer;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
 import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
-import com.sitewhere.microservice.grpc.EventManagementGrpcServer;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
-import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
-import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
+import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Microservice that provides device event management functionality.
- * 
- * @author Derek
  */
-public class EventManagementMicroservice
-	extends MultitenantMicroservice<MicroserviceIdentifier, IEventManagementTenantEngine>
+@ApplicationScoped
+public class EventManagementMicroservice extends
+	MultitenantMicroservice<MicroserviceIdentifier, EventManagementConfiguration, IEventManagementTenantEngine>
 	implements IEventManagementMicroservice {
-
-    /** Microservice name */
-    private static final String NAME = "Event Management";
 
     /** Provides server for event management GRPC requests */
     private IEventManagementGrpcServer eventManagementGrpcServer;
 
     /** Device management API channel */
-    private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
-
-    /** Cached device management implementation */
-    private IDeviceManagement cachedDeviceManagement;
+    private IDeviceManagement deviceManagement;
 
     /*
      * (non-Javadoc)
@@ -53,7 +50,7 @@ public class EventManagementMicroservice
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Event Management";
     }
 
     /*
@@ -65,41 +62,40 @@ public class EventManagementMicroservice
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<EventManagementConfiguration> getConfigurationClass() {
+	return EventManagementConfiguration.class;
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
      */
     @Override
-    public IConfigurationModel buildConfigurationModel() {
-	return new EventManagementModelProvider().buildModel();
+    public IMicroserviceModule<EventManagementConfiguration> createConfigurationModule() {
+	return new EventManagementModule(getMicroserviceConfiguration());
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice#
-     * createTenantEngine(com.sitewhere.spi.tenant.ITenant)
+     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
+     * createTenantEngine(io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine)
      */
     @Override
-    public IEventManagementTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new EventManagementTenantEngine(tenant);
+    public IEventManagementTenantEngine createTenantEngine(SiteWhereTenantEngine engine) throws SiteWhereException {
+	return new EventManagementTenantEngine(engine);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.multitenant.MultitenantMicroservice#initialize(com
+     * .sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+
 	// Create GRPC components.
 	createGrpcComponents();
 
@@ -109,55 +105,54 @@ public class EventManagementMicroservice
 	// Initialize event management GRPC server.
 	init.addInitializeStep(this, getEventManagementGrpcServer(), true);
 
-	// Initialize device management API channel + cache.
-	init.addInitializeStep(this, getCachedDeviceManagement(), true);
+	// Initialize device management API channel.
+	init.addInitializeStep(this, getDeviceManagement(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceStart(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.multitenant.MultitenantMicroservice#start(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
 	// Start event management GRPC server.
 	start.addStartStep(this, getEventManagementGrpcServer(), true);
 
-	// Start device mangement API channel + cache.
-	start.addStartStep(this, getCachedDeviceManagement(), true);
+	// Start device mangement API channel.
+	start.addStartStep(this, getDeviceManagement(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceStop(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#stop(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop event management GRPC server.
 	stop.addStopStep(this, getEventManagementGrpcServer());
 
-	// Stop device mangement API channel + cache.
-	stop.addStopStep(this, getCachedDeviceManagement());
+	// Stop device mangement API channel.
+	stop.addStopStep(this, getDeviceManagement());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
+
+	super.stop(monitor);
     }
 
     /**
@@ -168,42 +163,21 @@ public class EventManagementMicroservice
 	this.eventManagementGrpcServer = new EventManagementGrpcServer(this);
 
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
-	this.cachedDeviceManagement = new CachedDeviceManagementApiChannel(deviceManagementApiChannel,
+	IDeviceManagementApiChannel<?> dmWrapped = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagement = new CachedDeviceManagementApiChannel(dmWrapped,
 		new CachedDeviceManagementApiChannel.CacheSettings());
     }
 
     /*
      * @see com.sitewhere.event.spi.microservice.IEventManagementMicroservice#
-     * getDeviceManagementApiChannel()
+     * getDeviceManagement()
      */
     @Override
-    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
-	return deviceManagementApiChannel;
-    }
-
-    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
-	this.deviceManagementApiChannel = deviceManagementApiChannel;
-    }
-
-    /*
-     * @see com.sitewhere.event.spi.microservice.IEventManagementMicroservice#
-     * getCachedDeviceManagement()
-     */
-    @Override
-    public IDeviceManagement getCachedDeviceManagement() {
-	return cachedDeviceManagement;
-    }
-
-    public void setCachedDeviceManagement(IDeviceManagement cachedDeviceManagement) {
-	this.cachedDeviceManagement = cachedDeviceManagement;
+    public IDeviceManagement getDeviceManagement() {
+	return deviceManagement;
     }
 
     public IEventManagementGrpcServer getEventManagementGrpcServer() {
 	return eventManagementGrpcServer;
-    }
-
-    public void setEventManagementGrpcServer(IEventManagementGrpcServer eventManagementGrpcServer) {
-	this.eventManagementGrpcServer = eventManagementGrpcServer;
     }
 }

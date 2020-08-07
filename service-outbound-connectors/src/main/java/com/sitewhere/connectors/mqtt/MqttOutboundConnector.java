@@ -10,20 +10,19 @@ package com.sitewhere.connectors.mqtt;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.fusesource.hawtdispatch.Dispatch;
-import org.fusesource.hawtdispatch.DispatchQueue;
 import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
 
-import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.communication.mqtt.IMqttComponent;
+import com.sitewhere.communication.mqtt.MqttConfigurer;
 import com.sitewhere.communication.mqtt.MqttLifecycleComponent;
 import com.sitewhere.connectors.SerialOutboundConnector;
+import com.sitewhere.connectors.configuration.connector.MqttOutboundConnectorConfiguration;
 import com.sitewhere.connectors.spi.IMulticastingOutboundConnector;
 import com.sitewhere.connectors.spi.multicast.IDeviceEventMulticaster;
 import com.sitewhere.connectors.spi.routing.IRouteBuilder;
+import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -34,59 +33,24 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Outbound connector that sends events to an MQTT topic.
- * 
- * @author Derek
  */
-public class MqttOutboundConnector extends SerialOutboundConnector
-	implements IMulticastingOutboundConnector<String>, IMqttComponent {
+public class MqttOutboundConnector extends SerialOutboundConnector implements IMulticastingOutboundConnector<String> {
 
-    private String protocol = MqttLifecycleComponent.DEFAULT_PROTOCOL;
+    /** Default outbound topic */
+    private static final String DEFAULT_OUTBOUND_TOPIC = "SiteWhere/%s/outbound/%s";
 
-    /** Host name */
-    private String hostname = MqttLifecycleComponent.DEFAULT_HOSTNAME;
+    /** Configuration */
+    private MqttOutboundConnectorConfiguration configuration;
 
-    /** Port */
-    private String port = MqttLifecycleComponent.DEFAULT_PORT;
-
-    /** TrustStore path */
-    private String trustStorePath;
-
-    /** TrustStore password */
-    private String trustStorePassword;
-
-    /** KeyStore path */
-    private String keyStorePath;
-
-    /** KeyStore password */
-    private String keyStorePassword;
-
-    /** Topic events are posted to */
+    /** Topic */
     private String topic;
-
-    /** Broker username */
-    private String username;
-
-    /** Broker password */
-    private String password;
-
-    /** Client id */
-    private String clientId;
-
-    /** Clean session flag */
-    private boolean cleanSession = true;
-
-    /** Quality of service */
-    private String qos = QoS.AT_LEAST_ONCE.name();
 
     /** MQTT client */
     private MQTT mqtt;
-
-    /** Hawtdispatch queue */
-    private DispatchQueue queue;
 
     /** Shared MQTT connection */
     private FutureConnection connection;
@@ -97,6 +61,10 @@ public class MqttOutboundConnector extends SerialOutboundConnector
     /** Route builder for generating topics */
     private IRouteBuilder<String> routeBuilder;
 
+    public MqttOutboundConnector(MqttOutboundConnectorConfiguration configuration) {
+	this.configuration = configuration;
+    }
+
     /*
      * @see
      * com.sitewhere.connectors.FilteredOutboundConnector#start(com.sitewhere.spi.
@@ -104,9 +72,10 @@ public class MqttOutboundConnector extends SerialOutboundConnector
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	if ((getTopic() == null) && (getMulticaster() == null) && (getRouteBuilder() == null)) {
-	    this.topic = String.format("SiteWhere/%1$s/outbound/%2$s", getTenantEngine().getTenant().getToken(),
-		    getConnectorId());
+	if ((getConfiguration().getOutboundTopic() == null) && (getMulticaster() == null)
+		&& (getRouteBuilder() == null)) {
+	    this.topic = String.format(DEFAULT_OUTBOUND_TOPIC,
+		    getTenantEngine().getTenantResource().getMetadata().getName(), getConnectorId());
 	    getLogger().warn(String.format(
 		    "No topic specified and no multicaster or route builder configured. Defaulting to topic '%s'",
 		    getTopic()));
@@ -126,10 +95,10 @@ public class MqttOutboundConnector extends SerialOutboundConnector
 	}
 
 	// Use common MQTT configuration setup.
-	this.queue = Dispatch.createQueue(getComponentId().toString());
-	this.mqtt = MqttLifecycleComponent.configure(this, queue);
+	this.mqtt = MqttConfigurer.configure(getConfiguration());
 
-	getLogger().info(String.format("Connecting to MQTT broker at %s:%s ...", getHostname(), getPort()));
+	getLogger().info(String.format("Connecting to MQTT broker at %s:%s ...", getConfiguration().getHostname(),
+		getConfiguration().getPort()));
 	connection = mqtt.futureConnection();
 	try {
 	    Future<Void> future = connection.connect();
@@ -164,9 +133,6 @@ public class MqttOutboundConnector extends SerialOutboundConnector
 	    } catch (Exception e) {
 		getLogger().error("Error shutting down MQTT device event receiver.", e);
 	    }
-	}
-	if (queue != null) {
-	    queue.suspend();
 	}
 	super.stop(monitor);
     }
@@ -247,7 +213,7 @@ public class MqttOutboundConnector extends SerialOutboundConnector
 		IDevice device = getDeviceManagement().getDevice(assignment.getDeviceId());
 		publish(event, getRouteBuilder().build(event, device, assignment));
 	    } else {
-		publish(event, getTopic());
+		publish(event, getConfiguration().getOutboundTopic());
 	    }
 	}
     }
@@ -271,10 +237,6 @@ public class MqttOutboundConnector extends SerialOutboundConnector
 	return multicaster;
     }
 
-    public void setMulticaster(IDeviceEventMulticaster<String> multicaster) {
-	this.multicaster = multicaster;
-    }
-
     /*
      * @see
      * com.sitewhere.connectors.spi.IMulticastingOutboundConnector#getRouteBuilder()
@@ -284,159 +246,11 @@ public class MqttOutboundConnector extends SerialOutboundConnector
 	return routeBuilder;
     }
 
-    public void setRouteBuilder(IRouteBuilder<String> routeBuilder) {
-	this.routeBuilder = routeBuilder;
+    protected MqttOutboundConnectorConfiguration getConfiguration() {
+	return configuration;
     }
 
-    /*
-     * @see com.sitewhere.communication.mqtt.IMqttComponent#getProtocol()
-     */
-    @Override
-    public String getProtocol() {
-	return protocol;
-    }
-
-    public void setProtocol(String protocol) {
-	this.protocol = protocol;
-    }
-
-    /*
-     * @see com.sitewhere.communication.mqtt.IMqttComponent#getHostname()
-     */
-    @Override
-    public String getHostname() {
-	return hostname;
-    }
-
-    public void setHostname(String hostname) {
-	this.hostname = hostname;
-    }
-
-    /*
-     * @see com.sitewhere.communication.mqtt.IMqttComponent#getPort()
-     */
-    @Override
-    public String getPort() {
-	return port;
-    }
-
-    public void setPort(String port) {
-	this.port = port;
-    }
-
-    /*
-     * @see com.sitewhere.communication.mqtt.IMqttComponent#getUsername()
-     */
-    @Override
-    public String getUsername() {
-	return username;
-    }
-
-    public void setUsername(String username) {
-	this.username = username;
-    }
-
-    /*
-     * @see com.sitewhere.communication.mqtt.IMqttComponent#getPassword()
-     */
-    @Override
-    public String getPassword() {
-	return password;
-    }
-
-    public void setPassword(String password) {
-	this.password = password;
-    }
-
-    /*
-     * @see com.sitewhere.communication.mqtt.IMqttComponent#getTrustStorePath()
-     */
-    @Override
-    public String getTrustStorePath() {
-	return trustStorePath;
-    }
-
-    public void setTrustStorePath(String trustStorePath) {
-	this.trustStorePath = trustStorePath;
-    }
-
-    /*
-     * @see com.sitewhere.communication.mqtt.IMqttComponent#getTrustStorePassword()
-     */
-    @Override
-    public String getTrustStorePassword() {
-	return trustStorePassword;
-    }
-
-    public void setTrustStorePassword(String trustStorePassword) {
-	this.trustStorePassword = trustStorePassword;
-    }
-
-    /*
-     * @see com.sitewhere.communication.mqtt.IMqttComponent#getKeyStorePath()
-     */
-    @Override
-    public String getKeyStorePath() {
-	return keyStorePath;
-    }
-
-    public void setKeyStorePath(String keyStorePath) {
-	this.keyStorePath = keyStorePath;
-    }
-
-    /*
-     * @see com.sitewhere.communication.mqtt.IMqttComponent#getKeyStorePassword()
-     */
-    @Override
-    public String getKeyStorePassword() {
-	return keyStorePassword;
-    }
-
-    public void setKeyStorePassword(String keyStorePassword) {
-	this.keyStorePassword = keyStorePassword;
-    }
-
-    /*
-     * @see com.sitewhere.communication.mqtt.IMqttComponent#getClientId()
-     */
-    @Override
-    public String getClientId() {
-	return clientId;
-    }
-
-    public void setClientId(String clientId) {
-	this.clientId = clientId;
-    }
-
-    /*
-     * @see com.sitewhere.communication.mqtt.IMqttComponent#isCleanSession()
-     */
-    @Override
-    public boolean isCleanSession() {
-	return cleanSession;
-    }
-
-    public void setCleanSession(boolean cleanSession) {
-	this.cleanSession = cleanSession;
-    }
-
-    /*
-     * @see com.sitewhere.communication.mqtt.IMqttComponent#getQos()
-     */
-    @Override
-    public String getQos() {
-	return qos;
-    }
-
-    public void setQos(String qos) {
-	this.qos = qos;
-    }
-
-    public String getTopic() {
+    protected String getTopic() {
 	return topic;
-    }
-
-    public void setTopic(String topic) {
-	this.topic = topic;
     }
 }

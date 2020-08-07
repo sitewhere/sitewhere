@@ -14,12 +14,10 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.command.ISystemCommand;
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Routes commands to one or more {@link ICommandDestination} implementations.
- * 
- * @author Derek
  */
 public interface IOutboundCommandRouter extends ITenantEngineLifecycleComponent {
 
@@ -33,7 +31,7 @@ public interface IOutboundCommandRouter extends ITenantEngineLifecycleComponent 
      * @throws SiteWhereException
      */
     public List<ICommandDestination<?, ?>> getDestinationsFor(IDeviceCommandExecution execution,
-	    IDeviceNestingContext nesting, List<IDeviceAssignment> assignments) throws SiteWhereException;
+	    IDeviceNestingContext nesting, List<? extends IDeviceAssignment> assignments) throws SiteWhereException;
 
     /**
      * Compute list of destinations for the given system command.
@@ -45,5 +43,5 @@ public interface IOutboundCommandRouter extends ITenantEngineLifecycleComponent 
      * @throws SiteWhereException
      */
     public List<ICommandDestination<?, ?>> getDestinationsFor(ISystemCommand command, IDeviceNestingContext nesting,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException;
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException;
 }

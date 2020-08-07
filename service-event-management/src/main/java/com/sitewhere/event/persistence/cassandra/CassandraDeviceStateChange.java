@@ -17,8 +17,6 @@ import com.sitewhere.spi.device.event.IDeviceStateChange;
 
 /**
  * Handles mapping of device state change event fields to Cassandra records.
- * 
- * @author Derek
  */
 public class CassandraDeviceStateChange implements ICassandraEventBinder<IDeviceStateChange> {
 

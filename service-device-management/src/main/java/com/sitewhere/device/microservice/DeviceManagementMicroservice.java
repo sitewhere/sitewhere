@@ -7,44 +7,39 @@
  */
 package com.sitewhere.device.microservice;
 
-import com.sitewhere.device.configuration.DeviceManagementModelProvider;
+import javax.enterprise.context.ApplicationScoped;
+
+import com.sitewhere.device.configuration.DeviceManagementConfiguration;
+import com.sitewhere.device.configuration.DeviceManagementModule;
+import com.sitewhere.device.grpc.DeviceManagementGrpcServer;
 import com.sitewhere.device.spi.grpc.IDeviceManagementGrpcServer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
 import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
-import com.sitewhere.grpc.client.asset.CachedAssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
-import com.sitewhere.microservice.grpc.DeviceManagementGrpcServer;
+import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
-import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
-import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
+import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Microservice that provides device management functionality.
- * 
- * @author Derek
  */
-public class DeviceManagementMicroservice
-	extends MultitenantMicroservice<MicroserviceIdentifier, IDeviceManagementTenantEngine>
+@ApplicationScoped
+public class DeviceManagementMicroservice extends
+	MultitenantMicroservice<MicroserviceIdentifier, DeviceManagementConfiguration, IDeviceManagementTenantEngine>
 	implements IDeviceManagementMicroservice {
-
-    /** Microservice name */
-    private static final String NAME = "Device Management";
 
     /** Provides server for device management GRPC requests */
     private IDeviceManagementGrpcServer deviceManagementGrpcServer;
 
     /** Asset management API channel */
     private IAssetManagementApiChannel<?> assetManagementApiChannel;
-
-    /** Cached asset management implementation */
-    private IAssetManagement cachedAssetManagement;
 
     /*
      * (non-Javadoc)
@@ -53,7 +48,7 @@ public class DeviceManagementMicroservice
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Device Management";
     }
 
     /*
@@ -65,48 +60,45 @@ public class DeviceManagementMicroservice
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<DeviceManagementConfiguration> getConfigurationClass() {
+	return DeviceManagementConfiguration.class;
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
      */
     @Override
-    public IConfigurationModel buildConfigurationModel() {
-	return new DeviceManagementModelProvider().buildModel();
+    public IMicroserviceModule<DeviceManagementConfiguration> createConfigurationModule() {
+	return new DeviceManagementModule(getMicroserviceConfiguration());
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.spi.multitenant.IMultitenantMicroservice#
-     * createTenantEngine(com.sitewhere.spi.tenant.ITenant)
+     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
+     * createTenantEngine(io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine)
      */
     @Override
-    public IDeviceManagementTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new DeviceManagementTenantEngine(tenant);
+    public IDeviceManagementTenantEngine createTenantEngine(SiteWhereTenantEngine engine) throws SiteWhereException {
+	return new DeviceManagementTenantEngine(engine);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.multitenant.MultitenantMicroservice#initialize(com
+     * .sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+
 	// Create device management GRPC server.
 	this.deviceManagementGrpcServer = new DeviceManagementGrpcServer(this);
 
 	// Asset management microservice connectivity.
 	this.assetManagementApiChannel = new AssetManagementApiChannel(getInstanceSettings());
-	this.cachedAssetManagement = new CachedAssetManagementApiChannel(assetManagementApiChannel,
-		new CachedAssetManagementApiChannel.CacheSettings());
 
 	// Create step that will start components.
 	ICompositeLifecycleStep init = new CompositeLifecycleStep("Initialize " + getName());
@@ -114,55 +106,54 @@ public class DeviceManagementMicroservice
 	// Initialize device management GRPC server.
 	init.addInitializeStep(this, getDeviceManagementGrpcServer(), true);
 
-	// Initialize asset management GRPC channel + cache.
-	init.addInitializeStep(this, getCachedAssetManagement(), true);
+	// Initialize asset management GRPC channel.
+	init.addInitializeStep(this, getAssetManagementApiChannel(), true);
 
 	// Execute initialization steps.
 	init.execute(monitor);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceStart(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.multitenant.MultitenantMicroservice#start(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+
 	// Create step that will start components.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
 	// Start device management GRPC server.
 	start.addStartStep(this, getDeviceManagementGrpcServer(), true);
 
-	// Start asset management API channel + cache.
-	start.addStartStep(this, getCachedAssetManagement(), true);
+	// Start asset management API channel.
+	start.addStartStep(this, getAssetManagementApiChannel(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceStop(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#stop(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Create step that will stop components.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop device management GRPC server.
 	stop.addStopStep(this, getDeviceManagementGrpcServer());
 
-	// Stop asset management API channel + cache.
-	stop.addStopStep(this, getCachedAssetManagement());
+	// Stop asset management API channel.
+	stop.addStopStep(this, getAssetManagementApiChannel());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
+
+	super.stop(monitor);
     }
 
     /*
@@ -174,10 +165,6 @@ public class DeviceManagementMicroservice
 	return deviceManagementGrpcServer;
     }
 
-    public void setDeviceManagementGrpcServer(IDeviceManagementGrpcServer deviceManagementGrpcServer) {
-	this.deviceManagementGrpcServer = deviceManagementGrpcServer;
-    }
-
     /*
      * @see com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice#
      * getAssetManagementApiChannel()
@@ -185,22 +172,5 @@ public class DeviceManagementMicroservice
     @Override
     public IAssetManagementApiChannel<?> getAssetManagementApiChannel() {
 	return assetManagementApiChannel;
-    }
-
-    public void setAssetManagementApiChannel(IAssetManagementApiChannel<?> assetManagementApiChannel) {
-	this.assetManagementApiChannel = assetManagementApiChannel;
-    }
-
-    /*
-     * @see com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice#
-     * getCachedAssetManagement()
-     */
-    @Override
-    public IAssetManagement getCachedAssetManagement() {
-	return cachedAssetManagement;
-    }
-
-    public void setCachedAssetManagement(IAssetManagement cachedAssetManagement) {
-	this.cachedAssetManagement = cachedAssetManagement;
     }
 }

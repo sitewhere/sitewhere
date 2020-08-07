@@ -7,21 +7,27 @@
  */
 package com.sitewhere.commands.spi;
 
+import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.spi.server.lifecycle.ITenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 /**
  * Manages command invocation logic.
- * 
- * @author Derek
  */
 public interface ICommandDestinationsManager extends ITenantEngineLifecycleComponent {
 
     /**
-     * Get map of command destinations indexed by destination id.
+     * Get list of command destinations.
      * 
      * @return
      */
-    public Map<String, ICommandDestination<?, ?>> getCommandDestinations();
+    public List<ICommandDestination<?, ?>> getCommandDestinations();
+
+    /**
+     * Get map of command destinations by destination id.
+     * 
+     * @return
+     */
+    public Map<String, ICommandDestination<?, ?>> getCommandDestinationsMap();
 }

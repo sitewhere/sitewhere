@@ -14,9 +14,6 @@ script:
   if [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_BRANCH" == "master" ]]; then
     echo "On Branch $TRAVIS_BRANCH, building Latest images"
     ./gradlew dockerPushLatest
-  elif [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ $TRAVIS_BRANCH =~ (^sitewhere-) ]]; then
-    echo "On Branch $TRAVIS_BRANCH, building Edge images"
-    ./gradlew dockerPushEdge
   else
     echo "On Branch $TRAVIS_BRANCH, checking build"
     ./gradlew check

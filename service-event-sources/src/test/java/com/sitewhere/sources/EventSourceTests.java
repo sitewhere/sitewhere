@@ -33,12 +33,10 @@ import com.microsoft.azure.eventhubs.EventHubClient;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.sitewhere.common.MarshalUtils;
+import com.sitewhere.microservice.util.MarshalUtils;
 
 /**
  * Test cases for various types of event sources.
- * 
- * @author Derek
  */
 public class EventSourceTests {
 

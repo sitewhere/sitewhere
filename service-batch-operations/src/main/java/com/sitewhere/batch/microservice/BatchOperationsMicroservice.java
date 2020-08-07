@@ -7,7 +7,11 @@
  */
 package com.sitewhere.batch.microservice;
 
-import com.sitewhere.batch.configuration.BatchOperationsModelProvider;
+import javax.enterprise.context.ApplicationScoped;
+
+import com.sitewhere.batch.configuration.BatchOperationsConfiguration;
+import com.sitewhere.batch.configuration.BatchOperationsModule;
+import com.sitewhere.batch.grpc.BatchManagementGrpcServer;
 import com.sitewhere.batch.spi.grpc.IBatchManagementGrpcServer;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
@@ -16,47 +20,40 @@ import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
-import com.sitewhere.microservice.grpc.BatchManagementGrpcServer;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
-import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
-import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
+import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Microservice that provides batch operations functionality.
- * 
- * @author Derek
  */
-public class BatchOperationsMicroservice
-	extends MultitenantMicroservice<MicroserviceIdentifier, IBatchOperationsTenantEngine>
+@ApplicationScoped
+public class BatchOperationsMicroservice extends
+	MultitenantMicroservice<MicroserviceIdentifier, BatchOperationsConfiguration, IBatchOperationsTenantEngine>
 	implements IBatchOperationsMicroservice {
-
-    /** Microservice name */
-    private static final String NAME = "Batch Operations";
 
     /** Provides server for batch management GRPC requests */
     private IBatchManagementGrpcServer batchManagementGrpcServer;
 
     /** Device management API demux */
-    private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
+    private CachedDeviceManagementApiChannel deviceManagementApiChannel;
 
     /** Device event management API demux */
     private IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel;
-
-    /** Cached device management implementation */
-    private IDeviceManagement cachedDeviceManagement;
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Batch Operations";
     }
 
     /*
@@ -68,37 +65,40 @@ public class BatchOperationsMicroservice
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<BatchOperationsConfiguration> getConfigurationClass() {
+	return BatchOperationsConfiguration.class;
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
      */
     @Override
-    public IConfigurationModel buildConfigurationModel() {
-	return new BatchOperationsModelProvider().buildModel();
+    public IMicroserviceModule<BatchOperationsConfiguration> createConfigurationModule() {
+	return new BatchOperationsModule(getMicroserviceConfiguration());
     }
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * createTenantEngine(com.sitewhere.spi.tenant.ITenant)
+     * createTenantEngine(io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine)
      */
     @Override
-    public IBatchOperationsTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new BatchOperationsTenantEngine(tenant);
+    public IBatchOperationsTenantEngine createTenantEngine(SiteWhereTenantEngine engine) throws SiteWhereException {
+	return new BatchOperationsTenantEngine(engine);
     }
 
     /*
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceInitialize(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.multitenant.MultitenantMicroservice#initialize(com
+     * .sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceInitialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.initialize(monitor);
+
 	// Create GRPC components.
 	createGrpcComponents();
 
@@ -108,8 +108,8 @@ public class BatchOperationsMicroservice
 	// Initialize batch management GRPC server.
 	init.addInitializeStep(this, getBatchManagementGrpcServer(), true);
 
-	// Initialize device management API channel + cache.
-	init.addInitializeStep(this, getCachedDeviceManagement(), true);
+	// Initialize device management API channel.
+	init.addInitializeStep(this, getDeviceManagement(), true);
 
 	// Initialize device event management API channel.
 	init.addInitializeStep(this, getDeviceEventManagementApiChannel(), true);
@@ -119,20 +119,22 @@ public class BatchOperationsMicroservice
     }
 
     /*
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceStart(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.multitenant.MultitenantMicroservice#start(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStart(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+	super.start(monitor);
+
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
 	// Start batch management GRPC server.
 	start.addStartStep(this, getBatchManagementGrpcServer(), true);
 
-	// Start device mangement API channel + cache.
-	start.addStartStep(this, getCachedDeviceManagement(), true);
+	// Start device mangement API channel.
+	start.addStartStep(this, getDeviceManagement(), true);
 
 	// Start device event mangement API channel.
 	start.addStartStep(this, getDeviceEventManagementApiChannel(), true);
@@ -142,26 +144,27 @@ public class BatchOperationsMicroservice
     }
 
     /*
-     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#
-     * microserviceStop(com.sitewhere.spi.server.lifecycle.
-     * ILifecycleProgressMonitor)
+     * @see com.sitewhere.microservice.multitenant.MultitenantMicroservice#stop(com.
+     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
-    public void microserviceStop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
+    public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
 	// Stop batch management GRPC server.
 	stop.addStopStep(this, getBatchManagementGrpcServer());
 
-	// Stop device mangement API channel + cache.
-	stop.addStopStep(this, getCachedDeviceManagement());
+	// Stop device mangement API channel.
+	stop.addStopStep(this, getDeviceManagement());
 
 	// Stop device event mangement API channel.
 	stop.addStopStep(this, getDeviceEventManagementApiChannel());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
+
+	super.stop(monitor);
     }
 
     /**
@@ -172,8 +175,8 @@ public class BatchOperationsMicroservice
 	this.batchManagementGrpcServer = new BatchManagementGrpcServer(this);
 
 	// Device management.
-	this.deviceManagementApiChannel = new DeviceManagementApiChannel(getInstanceSettings());
-	this.cachedDeviceManagement = new CachedDeviceManagementApiChannel(deviceManagementApiChannel,
+	IDeviceManagementApiChannel<?> wrapped = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagementApiChannel = new CachedDeviceManagementApiChannel(wrapped,
 		new CachedDeviceManagementApiChannel.CacheSettings());
 
 	// Device event management.
@@ -189,34 +192,13 @@ public class BatchOperationsMicroservice
 	return batchManagementGrpcServer;
     }
 
-    public void setBatchManagementGrpcServer(IBatchManagementGrpcServer batchManagementGrpcServer) {
-	this.batchManagementGrpcServer = batchManagementGrpcServer;
-    }
-
     /*
      * @see com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice#
-     * getDeviceManagementApiChannel()
+     * getDeviceManagement()
      */
     @Override
-    public IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
+    public IDeviceManagement getDeviceManagement() {
 	return deviceManagementApiChannel;
-    }
-
-    public void setDeviceManagementApiChannel(IDeviceManagementApiChannel<?> deviceManagementApiChannel) {
-	this.deviceManagementApiChannel = deviceManagementApiChannel;
-    }
-
-    /*
-     * @see com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice#
-     * getCachedDeviceManagement()
-     */
-    @Override
-    public IDeviceManagement getCachedDeviceManagement() {
-	return cachedDeviceManagement;
-    }
-
-    public void setCachedDeviceManagement(IDeviceManagement cachedDeviceManagement) {
-	this.cachedDeviceManagement = cachedDeviceManagement;
     }
 
     /*
@@ -226,10 +208,5 @@ public class BatchOperationsMicroservice
     @Override
     public IDeviceEventManagementApiChannel<?> getDeviceEventManagementApiChannel() {
 	return deviceEventManagementApiChannel;
-    }
-
-    public void setDeviceEventManagementApiChannel(
-	    IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel) {
-	this.deviceEventManagementApiChannel = deviceEventManagementApiChannel;
     }
 }

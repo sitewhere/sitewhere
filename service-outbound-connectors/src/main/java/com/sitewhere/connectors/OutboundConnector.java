@@ -7,22 +7,15 @@
  */
 package com.sitewhere.connectors;
 
-import java.util.List;
-
 import com.sitewhere.connectors.spi.IOutboundConnector;
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsMicroservice;
-import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
-import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
-import com.sitewhere.spi.device.event.kafka.IEnrichedEventPayload;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.event.IDeviceEventManagement;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
  * Default implementation of {@link IOutboundConnector}.
- * 
- * @author Derek
  */
 public abstract class OutboundConnector extends TenantEngineLifecycleComponent implements IOutboundConnector {
 
@@ -65,21 +58,11 @@ public abstract class OutboundConnector extends TenantEngineLifecycleComponent i
     }
 
     /*
-     * @see
-     * com.sitewhere.connectors.spi.IOutboundConnector#handleFailedBatch(java.util.
-     * List, java.lang.Throwable)
-     */
-    @Override
-    public void handleFailedBatch(List<IEnrichedEventPayload> payloads, Throwable failReason)
-	    throws SiteWhereException {
-    }
-
-    /*
      * @see com.sitewhere.connectors.spi.IOutboundConnector#getDeviceManagement()
      */
     @Override
     public IDeviceManagement getDeviceManagement() {
-	return ((IOutboundConnectorsMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
+	return ((IOutboundConnectorsMicroservice) getTenantEngine().getMicroservice()).getDeviceManagement();
     }
 
     /*
@@ -88,7 +71,7 @@ public abstract class OutboundConnector extends TenantEngineLifecycleComponent i
      */
     @Override
     public IDeviceEventManagement getDeviceEventManagement() {
-	return new BlockingDeviceEventManagement(((IOutboundConnectorsMicroservice) getTenantEngine().getMicroservice())
-		.getDeviceEventManagementApiChannel());
+	return ((IOutboundConnectorsMicroservice) getTenantEngine().getMicroservice())
+		.getDeviceEventManagementApiChannel();
     }
 }

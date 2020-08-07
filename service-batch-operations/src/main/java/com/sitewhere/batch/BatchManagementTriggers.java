@@ -9,8 +9,9 @@ package com.sitewhere.batch;
 
 import com.sitewhere.batch.spi.IBatchOperationManager;
 import com.sitewhere.batch.spi.microservice.IBatchOperationsTenantEngine;
+import com.sitewhere.microservice.api.batch.BatchManagementDecorator;
+import com.sitewhere.microservice.api.batch.IBatchManagement;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.batch.IBatchManagement;
 import com.sitewhere.spi.batch.IBatchOperation;
 import com.sitewhere.spi.batch.request.IBatchCommandInvocationRequest;
 

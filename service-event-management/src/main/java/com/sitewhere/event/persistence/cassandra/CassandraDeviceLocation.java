@@ -7,6 +7,8 @@
  */
 package com.sitewhere.event.persistence.cassandra;
 
+import java.math.BigDecimal;
+
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.UDTValue;
@@ -17,8 +19,6 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
 
 /**
  * Handles mapping of device location event fields to Cassandra records.
- * 
- * @author Derek
  */
 public class CassandraDeviceLocation implements ICassandraEventBinder<IDeviceLocation> {
 
@@ -86,9 +86,9 @@ public class CassandraDeviceLocation implements ICassandraEventBinder<IDeviceLoc
 	CassandraDeviceEvent.bindEventFields(bound, location);
 
 	UDTValue udt = client.getLocationType().newValue();
-	udt.setDouble(FIELD_LATITUDE, location.getLatitude());
-	udt.setDouble(FIELD_LONGITUDE, location.getLongitude());
-	udt.setDouble(FIELD_ELEVATION, location.getElevation());
+	udt.setDouble(FIELD_LATITUDE, location.getLatitude().doubleValue());
+	udt.setDouble(FIELD_LONGITUDE, location.getLongitude().doubleValue());
+	udt.setDouble(FIELD_ELEVATION, location.getElevation().doubleValue());
 	bound.setUDTValue(FIELD_LOCATION, udt);
     }
 
@@ -105,8 +105,8 @@ public class CassandraDeviceLocation implements ICassandraEventBinder<IDeviceLoc
 	CassandraDeviceEvent.loadEventFields(location, row);
 
 	UDTValue udt = row.getUDTValue(FIELD_LOCATION);
-	location.setLatitude(udt.getDouble(FIELD_LATITUDE));
-	location.setLongitude(udt.getDouble(FIELD_LONGITUDE));
-	location.setElevation(udt.getDouble(FIELD_ELEVATION));
+	location.setLatitude(new BigDecimal(udt.getDouble(FIELD_LATITUDE)));
+	location.setLongitude(new BigDecimal(udt.getDouble(FIELD_LONGITUDE)));
+	location.setElevation(new BigDecimal(udt.getDouble(FIELD_ELEVATION)));
     }
 }

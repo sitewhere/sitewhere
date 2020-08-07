@@ -7,33 +7,33 @@
  */
 package com.sitewhere.media.microservice;
 
-import com.sitewhere.media.configuration.StreamingMediaModelProvider;
+import javax.enterprise.context.ApplicationScoped;
+
+import com.sitewhere.media.configuration.StreamingMediaConfiguration;
+import com.sitewhere.media.configuration.StreamingMediaModule;
 import com.sitewhere.media.spi.microservice.IStreamingMediaMicroservice;
 import com.sitewhere.media.spi.microservice.IStreamingMediaTenantEngine;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
-import com.sitewhere.spi.microservice.configuration.model.IConfigurationModel;
-import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
+
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Microservice that provides streaming media functionality.
- * 
- * @author Derek
  */
-public class StreamingMediaMicroservice
-	extends MultitenantMicroservice<MicroserviceIdentifier, IStreamingMediaTenantEngine>
+@ApplicationScoped
+public class StreamingMediaMicroservice extends
+	MultitenantMicroservice<MicroserviceIdentifier, StreamingMediaConfiguration, IStreamingMediaTenantEngine>
 	implements IStreamingMediaMicroservice {
-
-    /** Microservice name */
-    private static final String NAME = "Streaming Media";
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
      */
     @Override
     public String getName() {
-	return NAME;
+	return "Streaming Media";
     }
 
     /*
@@ -45,27 +45,28 @@ public class StreamingMediaMicroservice
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#isGlobal()
+     * @see com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice#
+     * getConfigurationClass()
      */
     @Override
-    public boolean isGlobal() {
-	return false;
+    public Class<StreamingMediaConfiguration> getConfigurationClass() {
+	return StreamingMediaConfiguration.class;
     }
 
     /*
-     * @see com.sitewhere.spi.microservice.IMicroservice#buildConfigurationModel()
+     * @see com.sitewhere.spi.microservice.IMicroservice#createConfigurationModule()
      */
     @Override
-    public IConfigurationModel buildConfigurationModel() {
-	return new StreamingMediaModelProvider().buildModel();
+    public IMicroserviceModule<StreamingMediaConfiguration> createConfigurationModule() {
+	return new StreamingMediaModule(getMicroserviceConfiguration());
     }
 
     /*
      * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
-     * createTenantEngine(com.sitewhere.spi.tenant.ITenant)
+     * createTenantEngine(io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine)
      */
     @Override
-    public IStreamingMediaTenantEngine createTenantEngine(ITenant tenant) throws SiteWhereException {
-	return new StreamingMediaTenantEngine(tenant);
+    public IStreamingMediaTenantEngine createTenantEngine(SiteWhereTenantEngine engine) throws SiteWhereException {
+	return new StreamingMediaTenantEngine(engine);
     }
 }

@@ -7,9 +7,10 @@
  */
 package com.sitewhere.sources;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
-import com.sitewhere.common.MarshalUtils;
+import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.rest.model.device.communication.DeviceRequest;
 import com.sitewhere.rest.model.device.communication.DeviceRequest.Type;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementCreateRequest;
@@ -18,8 +19,6 @@ import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Helper class for generating encoded messages using the SiteWhere GPB format.
- * 
- * @author Derek
  */
 public class EventsHelper {
 
@@ -60,7 +59,7 @@ public class EventsHelper {
 	DeviceMeasurementCreateRequest mx = new DeviceMeasurementCreateRequest();
 	mx.setEventDate(new Date());
 	mx.setName("fuel.level");
-	mx.setValue(123.4);
+	mx.setValue(new BigDecimal("123.4"));
 	request.setRequest(mx);
 	return request;
     }

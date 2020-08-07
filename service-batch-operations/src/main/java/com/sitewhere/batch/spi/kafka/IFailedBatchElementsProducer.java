@@ -12,8 +12,6 @@ import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer;
 /**
  * Kafka producer that sends sends failed batch elements to a topic for further
  * processing.
- * 
- * @author Derek
  */
-public interface IFailedBatchElementsProducer extends IMicroserviceKafkaProducer {
+public interface IFailedBatchElementsProducer extends IMicroserviceKafkaProducer<String, byte[]> {
 }

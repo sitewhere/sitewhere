@@ -15,8 +15,8 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.DecodedDeviceRequest;
 import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
@@ -24,7 +24,7 @@ import com.sitewhere.sources.spi.IDeviceEventDecoder;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
  * Event decoder that converts a binary payload into the default SiteWhere REST
@@ -33,8 +33,6 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * DEPRECATED: This only supports events that can be wrapped in a
  * {@link DeviceEventBatch} object and does not offer full-featured support. Use
  * {@link JsonDeviceRequestDecoder} instead.
- * 
- * @author Derek
  */
 public class JsonBatchEventDecoder extends TenantEngineLifecycleComponent implements IDeviceEventDecoder<byte[]> {
 

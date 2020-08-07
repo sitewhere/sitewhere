@@ -15,12 +15,10 @@ import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.device.event.kafka.IEnrichedEventPayload;
+import com.sitewhere.spi.device.event.kafka.IProcessedEventPayload;
 
 /**
  * Outbound connector that processes each batch event individually.
- * 
- * @author Derek
  */
 public interface ISerialOutboundConnector extends IOutboundConnector {
 
@@ -87,5 +85,5 @@ public interface ISerialOutboundConnector extends IOutboundConnector {
      * @param t
      * @throws SiteWhereException
      */
-    public void handleFailedRecord(IEnrichedEventPayload payload, Throwable t) throws SiteWhereException;
+    public void handleFailedRecord(IProcessedEventPayload payload, Throwable t) throws SiteWhereException;
 }

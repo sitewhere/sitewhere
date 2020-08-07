@@ -11,29 +11,29 @@ import org.eclipse.californium.core.CoapServer;
 import org.eclipse.californium.core.network.config.NetworkConfig;
 
 import com.sitewhere.sources.InboundEventReceiver;
+import com.sitewhere.sources.configuration.eventsource.coap.CoapServerConfiguration;
 import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that starts a CoAP server
  * using the Eclipse Californium implementation.
- * 
- * @author Derek
  */
 public class CoapServerEventReceiver extends InboundEventReceiver<byte[]> {
 
-    /** Supplies standard CoAP port */
-    private static final int COAP_PORT = 8583;
-
-    /** Port for binding socket */
-    private int port = COAP_PORT;
+    /** Configuration */
+    private CoapServerConfiguration configuration;
 
     /** Customized SiteWhere CoAP server */
     private CoapServer server;
 
     /** CoAP message deliverer */
     private CoapMessageDeliverer messageDeliverer;
+
+    public CoapServerEventReceiver(CoapServerConfiguration configuration) {
+	this.configuration = configuration;
+    }
 
     /*
      * @see
@@ -43,7 +43,7 @@ public class CoapServerEventReceiver extends InboundEventReceiver<byte[]> {
     @Override
     public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	this.messageDeliverer = new CoapMessageDeliverer(this);
-	this.server = new CoapServer(NetworkConfig.createStandardWithoutFile(), getPort());
+	this.server = new CoapServer(NetworkConfig.createStandardWithoutFile(), getConfiguration().getPort());
 	server.setMessageDeliverer(getMessageDeliverer());
     }
 
@@ -71,6 +71,10 @@ public class CoapServerEventReceiver extends InboundEventReceiver<byte[]> {
 	getServer().stop();
     }
 
+    protected CoapServerConfiguration getConfiguration() {
+	return configuration;
+    }
+
     protected CoapServer getServer() {
 	return server;
     }
@@ -85,13 +89,5 @@ public class CoapServerEventReceiver extends InboundEventReceiver<byte[]> {
 
     protected void setMessageDeliverer(CoapMessageDeliverer messageDeliverer) {
 	this.messageDeliverer = messageDeliverer;
-    }
-
-    public int getPort() {
-	return port;
-    }
-
-    public void setPort(int port) {
-	this.port = port;
     }
 }

@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IDeviceEventDecoder;
@@ -22,15 +22,13 @@ import com.sitewhere.sources.spi.IInboundEventReceiver;
 import com.sitewhere.sources.spi.IInboundEventSource;
 import com.sitewhere.sources.spi.microservice.IEventSourcesTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 import io.prometheus.client.Counter;
 
 /**
  * Default implementation of {@link IInboundEventSource}.
- * 
- * @author Derek
  * 
  * @param <T>
  */
@@ -188,8 +186,8 @@ public abstract class InboundEventSource<T> extends TenantEngineLifecycleCompone
     @Override
     public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encoded, Map<String, Object> metadata) {
 	if (getLogger().isDebugEnabled()) {
-	    getLogger().debug(
-		    String.format("Received encoded event payload on receiver '%s'.", receiver.getDisplayName()));
+	    getLogger()
+		    .info(String.format("Received encoded event payload on receiver '%s'.", receiver.getDisplayName()));
 	}
 	List<IDecodedDeviceRequest<?>> requests = decodeEvent(encoded, metadata);
 	if (requests != null) {

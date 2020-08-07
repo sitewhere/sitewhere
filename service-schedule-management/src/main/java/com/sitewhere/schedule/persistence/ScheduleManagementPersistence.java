@@ -7,21 +7,17 @@
  */
 package com.sitewhere.schedule.persistence;
 
-import com.sitewhere.persistence.Persistence;
+import com.sitewhere.microservice.persistence.Persistence;
 import com.sitewhere.rest.model.scheduling.Schedule;
 import com.sitewhere.rest.model.scheduling.ScheduledJob;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.error.ErrorCode;
-import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.ScheduledJobState;
 import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 
 /**
  * Persistence logic for schedule components.
- * 
- * @author Derek
  */
 public class ScheduleManagementPersistence extends Persistence {
 
@@ -29,24 +25,19 @@ public class ScheduleManagementPersistence extends Persistence {
      * Handle common logic for creating a schedule.
      * 
      * @param request
-     * @param token
      * @return
      * @throws SiteWhereException
      */
-    public static Schedule scheduleCreateLogic(IScheduleCreateRequest request, String token) throws SiteWhereException {
+    public static Schedule scheduleCreateLogic(IScheduleCreateRequest request) throws SiteWhereException {
 	Schedule schedule = new Schedule();
 	Persistence.entityCreateLogic(request, schedule);
 
 	// Name is required.
-	if (request.getName() == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
-	}
+	require("Name", request.getName());
 	schedule.setName(request.getName());
 
 	// Trigger type is required.
-	if (request.getTriggerType() == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
-	}
+	requireNotNull("Trigger Type", request.getTriggerType());
 	schedule.setTriggerType(request.getTriggerType());
 	schedule.setTriggerConfiguration(request.getTriggerConfiguration());
 
@@ -86,28 +77,19 @@ public class ScheduleManagementPersistence extends Persistence {
      * Handle common logic for creating a scheduled job.
      * 
      * @param request
-     * @param token
      * @return
      * @throws SiteWhereException
      */
-    public static ScheduledJob scheduledJobCreateLogic(IScheduledJobCreateRequest request, String token)
+    public static ScheduledJob scheduledJobCreateLogic(ISchedule schedule, IScheduledJobCreateRequest request)
 	    throws SiteWhereException {
 	ScheduledJob job = new ScheduledJob();
 	Persistence.entityCreateLogic(request, job);
-
-	// Schedule token is required.
-	if (request.getScheduleToken() == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
-	}
-	job.setScheduleToken(request.getScheduleToken());
+	job.setScheduleId(schedule.getId());
 
 	// Job type is required.
-	if (request.getJobType() == null) {
-	    throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
-	}
+	requireNotNull("Job Type", request.getJobType());
 	job.setJobType(request.getJobType());
 	job.setJobConfiguration(request.getJobConfiguration());
-
 	job.setJobState(ScheduledJobState.Unsubmitted);
 
 	return job;
@@ -124,9 +106,6 @@ public class ScheduleManagementPersistence extends Persistence {
 	    throws SiteWhereException {
 	Persistence.entityUpdateLogic(request, job);
 
-	if (request.getScheduleToken() != null) {
-	    job.setScheduleToken(request.getScheduleToken());
-	}
 	if (request.getJobType() != null) {
 	    job.setJobType(request.getJobType());
 	}

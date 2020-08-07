@@ -7,7 +7,7 @@
  */
 package com.sitewhere.instance.spi.user.grpc;
 
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleComponent;
 
 /**
  * Binds to a port and listens for user management GRPC requests.

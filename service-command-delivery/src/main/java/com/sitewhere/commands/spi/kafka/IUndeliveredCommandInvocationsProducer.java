@@ -11,8 +11,6 @@ import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer;
 
 /**
  * Kafka producer that produces events for undelivered command invocations.
- * 
- * @author Derek
  */
-public interface IUndeliveredCommandInvocationsProducer extends IMicroserviceKafkaProducer {
+public interface IUndeliveredCommandInvocationsProducer extends IMicroserviceKafkaProducer<String, byte[]> {
 }

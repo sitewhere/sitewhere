@@ -11,20 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.sources.spi.EventDecodeException;
 import com.sitewhere.sources.spi.IDecodedDeviceRequest;
 import com.sitewhere.sources.spi.IDeviceEventDecoder;
-import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link InboundEventSource} where event receivers return
  * decoded events and the decoder just passes the events through without
  * changing them.
- * 
- * @author Derek
  */
 public class DecodedInboundEventSource extends InboundEventSource<DecodedDeviceRequest<?>> {
 
@@ -44,8 +40,6 @@ public class DecodedInboundEventSource extends InboundEventSource<DecodedDeviceR
 
     /**
      * Decoder that just returns the decoded events.
-     * 
-     * @author Derek
      */
     public static class NoOpDecoder extends TenantEngineLifecycleComponent
 	    implements IDeviceEventDecoder<DecodedDeviceRequest<?>> {
@@ -66,26 +60,6 @@ public class DecodedInboundEventSource extends InboundEventSource<DecodedDeviceR
 	    List<IDecodedDeviceRequest<?>> results = new ArrayList<IDecodedDeviceRequest<?>>();
 	    results.add(payload);
 	    return results;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
-	 * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
-	 */
-	@Override
-	public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.
-	 * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
-	 */
-	@Override
-	public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	}
     }
 }

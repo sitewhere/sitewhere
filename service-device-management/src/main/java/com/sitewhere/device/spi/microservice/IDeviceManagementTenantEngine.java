@@ -7,18 +7,18 @@
  */
 package com.sitewhere.device.spi.microservice;
 
+import com.sitewhere.device.configuration.DeviceManagementTenantConfiguration;
 import com.sitewhere.device.spi.kafka.IDeviceInteractionEventsProducer;
 import com.sitewhere.grpc.service.DeviceManagementGrpc;
-import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.rdb.spi.IRdbEntityManagerProvider;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
  * Extends {@link IMicroserviceTenantEngine} with features specific to device
  * management.
- * 
- * @author Derek
  */
-public interface IDeviceManagementTenantEngine extends IMicroserviceTenantEngine {
+public interface IDeviceManagementTenantEngine extends IMicroserviceTenantEngine<DeviceManagementTenantConfiguration> {
 
     /**
      * Get associated device management implementation.
@@ -40,4 +40,11 @@ public interface IDeviceManagementTenantEngine extends IMicroserviceTenantEngine
      * @return
      */
     public IDeviceInteractionEventsProducer getDeviceInteractionEventsProducer();
+
+    /**
+     * Get provider which provides an RDB entity manager for this tenant.
+     * 
+     * @return
+     */
+    public IRdbEntityManagerProvider getRdbEntityManagerProvider();
 }

@@ -14,12 +14,12 @@ import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 
 import com.sitewhere.commands.spi.ICommandDeliveryProvider;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
  * Delivers commands via CoAP by creating a client request to send command data
@@ -40,7 +40,7 @@ public class CoapCommandDeliveryProvider extends TenantEngineLifecycleComponent
      * java.lang.Object)
      */
     @Override
-    public void deliver(IDeviceNestingContext nested, List<IDeviceAssignment> assignments,
+    public void deliver(IDeviceNestingContext nested, List<? extends IDeviceAssignment> assignments,
 	    IDeviceCommandExecution execution, byte[] encoded, CoapParameters parameters) throws SiteWhereException {
 	CoapClient client = createCoapClient(parameters);
 	CoapResponse response = null;
@@ -65,8 +65,8 @@ public class CoapCommandDeliveryProvider extends TenantEngineLifecycleComponent
      * java.lang.Object)
      */
     @Override
-    public void deliverSystemCommand(IDeviceNestingContext nested, List<IDeviceAssignment> assignments, byte[] encoded,
-	    CoapParameters parameters) throws SiteWhereException {
+    public void deliverSystemCommand(IDeviceNestingContext nested, List<? extends IDeviceAssignment> assignments,
+	    byte[] encoded, CoapParameters parameters) throws SiteWhereException {
 	CoapClient client = createCoapClient(parameters);
 	CoapResponse response = null;
 	getLogger().debug(parameters.toString());

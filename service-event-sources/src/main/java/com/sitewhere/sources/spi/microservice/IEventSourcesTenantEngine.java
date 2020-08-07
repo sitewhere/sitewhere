@@ -7,16 +7,15 @@
  */
 package com.sitewhere.sources.spi.microservice;
 
+import com.sitewhere.sources.configuration.EventSourcesTenantConfiguration;
 import com.sitewhere.sources.spi.IEventSourcesManager;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 
 /**
  * Extends {@link IMicroserviceTenantEngine} with features specific to device
  * management.
- * 
- * @author Derek
  */
-public interface IEventSourcesTenantEngine extends IMicroserviceTenantEngine {
+public interface IEventSourcesTenantEngine extends IMicroserviceTenantEngine<EventSourcesTenantConfiguration> {
 
     /**
      * Get event sources manager.

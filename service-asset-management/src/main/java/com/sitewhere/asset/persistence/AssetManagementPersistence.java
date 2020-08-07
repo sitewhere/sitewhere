@@ -9,7 +9,9 @@ package com.sitewhere.asset.persistence;
 
 import java.util.Collections;
 
-import com.sitewhere.persistence.Persistence;
+import com.sitewhere.microservice.api.asset.IAssetManagement;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.persistence.Persistence;
 import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.rest.model.asset.AssetType;
 import com.sitewhere.rest.model.search.asset.AssetSearchCriteria;
@@ -17,12 +19,10 @@ import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAsset;
-import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.asset.request.IAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IAssetTypeCreateRequest;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
@@ -82,7 +82,7 @@ public class AssetManagementPersistence extends Persistence {
 	    throws SiteWhereException {
 	AssetSearchCriteria criteria = new AssetSearchCriteria(1, 1);
 	criteria.setAssetTypeToken(assetType.getToken());
-	ISearchResults<IAsset> assets = assetManagement.listAssets(criteria);
+	ISearchResults<? extends IAsset> assets = assetManagement.listAssets(criteria);
 	if (assets.getNumResults() > 0) {
 	    throw new SiteWhereSystemException(ErrorCode.AssetTypeNoDeleteHasAssets, ErrorLevel.ERROR);
 	}
@@ -141,7 +141,7 @@ public class AssetManagementPersistence extends Persistence {
 	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(1, 1);
 	criteria.setAssetTokens(Collections.singletonList(asset.getToken()));
 
-	ISearchResults<IDeviceAssignment> assignments = deviceManagement.listDeviceAssignments(criteria);
+	ISearchResults<? extends IDeviceAssignment> assignments = deviceManagement.listDeviceAssignments(criteria);
 	if (assignments.getNumResults() > 0) {
 	    throw new SiteWhereSystemException(ErrorCode.AssetNoDeleteHasAssignments, ErrorLevel.ERROR);
 	}

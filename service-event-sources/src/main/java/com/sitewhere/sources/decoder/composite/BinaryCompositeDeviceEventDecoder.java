@@ -10,16 +10,13 @@ package com.sitewhere.sources.decoder.composite;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.sources.spi.ICompositeDeviceEventDecoder;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Concrete implementation of {@link ICompositeDeviceEventDecoder} for binary
  * data.
- * 
- * @author Derek
  */
 public class BinaryCompositeDeviceEventDecoder extends CompositeDeviceEventDecoder<byte[]> {
 
@@ -40,7 +37,7 @@ public class BinaryCompositeDeviceEventDecoder extends CompositeDeviceEventDecod
     public IDeviceContext<byte[]> buildContext(IMessageMetadata<byte[]> metadata) throws SiteWhereException {
 	BinaryDeviceContext context = new BinaryDeviceContext();
 
-	IDeviceManagement devices = getDeviceManagement(getTenantEngine().getTenant());
+	IDeviceManagement devices = getDeviceManagement();
 	context.setDevice(devices.getDeviceByToken(metadata.getDeviceToken()));
 	if (context.getDevice() == null) {
 	    throw new SiteWhereException(
@@ -81,7 +78,7 @@ public class BinaryCompositeDeviceEventDecoder extends CompositeDeviceEventDecod
 	this.decoderChoices = decoderChoices;
     }
 
-    private IDeviceManagement getDeviceManagement(ITenant tenant) {
+    private IDeviceManagement getDeviceManagement() {
 	return null;
     }
 }

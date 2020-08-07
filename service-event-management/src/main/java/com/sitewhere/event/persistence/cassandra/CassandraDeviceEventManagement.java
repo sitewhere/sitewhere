@@ -24,6 +24,9 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.sitewhere.cassandra.CassandraClient;
 import com.sitewhere.event.persistence.DeviceEventManagementPersistence;
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.event.IDeviceEventManagement;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
@@ -32,11 +35,7 @@ import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.search.Pager;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.DeviceEventIndex;
 import com.sitewhere.spi.device.event.DeviceEventType;
@@ -46,7 +45,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
@@ -56,18 +55,14 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
-import com.sitewhere.spi.error.ErrorCode;
-import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IDeviceEventManagement} that stores events in Apache
  * Cassandra.
- * 
- * @author Derek
  */
 public class CassandraDeviceEventManagement extends TenantEngineLifecycleComponent implements IDeviceEventManagement {
 
@@ -121,15 +116,14 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceEventBatch(
-     * java.util.UUID, com.sitewhere.spi.device.event.IDeviceEventBatch)
+     * @see com.sitewhere.microservice.api.event.IDeviceEventManagement#
+     * addDeviceEventBatch(com.sitewhere.spi.device.event.IDeviceEventContext,
+     * com.sitewhere.spi.device.event.IDeviceEventBatch)
      */
     @Override
-    public IDeviceEventBatchResponse addDeviceEventBatch(UUID deviceAssignmentId, IDeviceEventBatch batch)
+    public IDeviceEventBatchResponse addDeviceEventBatch(IDeviceEventContext context, IDeviceEventBatch batch)
 	    throws SiteWhereException {
-	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
-	return DeviceEventManagementPersistence.deviceEventBatchLogic(assignment, batch, this);
+	return DeviceEventManagementPersistence.deviceEventBatchLogic(context, batch, this);
     }
 
     /*
@@ -152,19 +146,17 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceMeasurements(
-     * java.util.UUID,
+     * @see com.sitewhere.microservice.api.event.IDeviceEventManagement#
+     * addDeviceMeasurements(com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest[])
      */
     @Override
-    public List<IDeviceMeasurement> addDeviceMeasurements(UUID deviceAssignmentId,
+    public List<IDeviceMeasurement> addDeviceMeasurements(IDeviceEventContext context,
 	    IDeviceMeasurementCreateRequest... requests) throws SiteWhereException {
 	List<IDeviceMeasurement> result = new ArrayList<>();
-	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
 	for (IDeviceMeasurementCreateRequest request : requests) {
-	    DeviceMeasurement mx = DeviceEventManagementPersistence.deviceMeasurementCreateLogic(request, assignment);
-	    storeDeviceEvent(assignment, mx, CassandraDeviceMeasurement.INSTANCE);
+	    DeviceMeasurement mx = DeviceEventManagementPersistence.deviceMeasurementCreateLogic(context, request);
+	    storeDeviceEvent(context, mx, CassandraDeviceMeasurement.INSTANCE);
 	    result.add(mx);
 	}
 	return result;
@@ -183,19 +175,17 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceLocations(java
-     * .util.UUID,
+     * @see com.sitewhere.microservice.api.event.IDeviceEventManagement#
+     * addDeviceLocations(com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest[])
      */
     @Override
-    public List<IDeviceLocation> addDeviceLocations(UUID deviceAssignmentId, IDeviceLocationCreateRequest... requests)
-	    throws SiteWhereException {
+    public List<IDeviceLocation> addDeviceLocations(IDeviceEventContext context,
+	    IDeviceLocationCreateRequest... requests) throws SiteWhereException {
 	List<IDeviceLocation> result = new ArrayList<>();
-	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
 	for (IDeviceLocationCreateRequest request : requests) {
-	    DeviceLocation location = DeviceEventManagementPersistence.deviceLocationCreateLogic(assignment, request);
-	    storeDeviceEvent(assignment, location, CassandraDeviceLocation.INSTANCE);
+	    DeviceLocation location = DeviceEventManagementPersistence.deviceLocationCreateLogic(context, request);
+	    storeDeviceEvent(context, location, CassandraDeviceLocation.INSTANCE);
 	    result.add(location);
 	}
 	return result;
@@ -214,18 +204,17 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 
     /*
      * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceAlerts(java.
-     * util.UUID,
+     * com.sitewhere.microservice.api.event.IDeviceEventManagement#addDeviceAlerts(
+     * com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest[])
      */
     @Override
-    public List<IDeviceAlert> addDeviceAlerts(UUID deviceAssignmentId, IDeviceAlertCreateRequest... requests)
+    public List<IDeviceAlert> addDeviceAlerts(IDeviceEventContext context, IDeviceAlertCreateRequest... requests)
 	    throws SiteWhereException {
 	List<IDeviceAlert> result = new ArrayList<>();
-	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
 	for (IDeviceAlertCreateRequest request : requests) {
-	    DeviceAlert alert = DeviceEventManagementPersistence.deviceAlertCreateLogic(assignment, request);
-	    storeDeviceEvent(assignment, alert, CassandraDeviceAlert.INSTANCE);
+	    DeviceAlert alert = DeviceEventManagementPersistence.deviceAlertCreateLogic(context, request);
+	    storeDeviceEvent(context, alert, CassandraDeviceAlert.INSTANCE);
 	    result.add(alert);
 	}
 	return result;
@@ -243,22 +232,22 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     }
 
     /*
-     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * addDeviceCommandInvocations(java.util.UUID,
+     * @see com.sitewhere.microservice.api.event.IDeviceEventManagement#
+     * addDeviceCommandInvocations(com.sitewhere.spi.device.event.
+     * IDeviceEventContext,
      * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest[
      * ])
      */
     @Override
-    public List<IDeviceCommandInvocation> addDeviceCommandInvocations(UUID deviceAssignmentId,
+    public List<IDeviceCommandInvocation> addDeviceCommandInvocations(IDeviceEventContext context,
 	    IDeviceCommandInvocationCreateRequest... requests) throws SiteWhereException {
 	List<IDeviceCommandInvocation> result = new ArrayList<>();
-	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
 	for (IDeviceCommandInvocationCreateRequest request : requests) {
-	    IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(assignment.getDeviceTypeId(),
+	    IDeviceCommand command = getDeviceManagement().getDeviceCommandByToken(context.getDeviceTypeId(),
 		    request.getCommandToken());
 	    DeviceCommandInvocation invocation = DeviceEventManagementPersistence
-		    .deviceCommandInvocationCreateLogic(assignment, command, request);
-	    storeDeviceEvent(assignment, invocation, CassandraDeviceCommandInvocation.INSTANCE);
+		    .deviceCommandInvocationCreateLogic(context, command, request);
+	    storeDeviceEvent(context, invocation, CassandraDeviceCommandInvocation.INSTANCE);
 	    result.add(invocation);
 	}
 	return result;
@@ -287,19 +276,18 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     }
 
     /*
-     * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
-     * addDeviceCommandResponses(java.util.UUID,
+     * @see com.sitewhere.microservice.api.event.IDeviceEventManagement#
+     * addDeviceCommandResponses(com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest[])
      */
     @Override
-    public List<IDeviceCommandResponse> addDeviceCommandResponses(UUID deviceAssignmentId,
+    public List<IDeviceCommandResponse> addDeviceCommandResponses(IDeviceEventContext context,
 	    IDeviceCommandResponseCreateRequest... requests) throws SiteWhereException {
 	List<IDeviceCommandResponse> result = new ArrayList<>();
-	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
 	for (IDeviceCommandResponseCreateRequest request : requests) {
-	    DeviceCommandResponse response = DeviceEventManagementPersistence
-		    .deviceCommandResponseCreateLogic(assignment, request);
-	    storeDeviceEvent(assignment, response, CassandraDeviceCommandResponse.INSTANCE);
+	    DeviceCommandResponse response = DeviceEventManagementPersistence.deviceCommandResponseCreateLogic(context,
+		    request);
+	    storeDeviceEvent(context, response, CassandraDeviceCommandResponse.INSTANCE);
 	    result.add(response);
 	}
 	return result;
@@ -318,20 +306,17 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     }
 
     /*
-     * @see
-     * com.sitewhere.spi.device.event.IDeviceEventManagement#addDeviceStateChanges(
-     * java.util.UUID,
+     * @see com.sitewhere.microservice.api.event.IDeviceEventManagement#
+     * addDeviceStateChanges(com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest[])
      */
     @Override
-    public List<IDeviceStateChange> addDeviceStateChanges(UUID deviceAssignmentId,
+    public List<IDeviceStateChange> addDeviceStateChanges(IDeviceEventContext context,
 	    IDeviceStateChangeCreateRequest... requests) throws SiteWhereException {
 	List<IDeviceStateChange> result = new ArrayList<>();
-	IDeviceAssignment assignment = assertDeviceAssignmentById(deviceAssignmentId);
 	for (IDeviceStateChangeCreateRequest request : requests) {
-	    DeviceStateChange state = DeviceEventManagementPersistence.deviceStateChangeCreateLogic(assignment,
-		    request);
-	    storeDeviceEvent(assignment, state, CassandraDeviceStateChange.INSTANCE);
+	    DeviceStateChange state = DeviceEventManagementPersistence.deviceStateChangeCreateLogic(context, request);
+	    storeDeviceEvent(context, state, CassandraDeviceStateChange.INSTANCE);
 	    result.add(state);
 	}
 	return result;
@@ -352,12 +337,12 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
     /**
      * Store a device event using various indexing strategies.
      * 
-     * @param assignment
+     * @param context
      * @param event
      * @param binder
      * @throws SiteWhereException
      */
-    protected <I extends IDeviceEvent> void storeDeviceEvent(IDeviceAssignment assignment, I event,
+    protected <I extends IDeviceEvent> void storeDeviceEvent(IDeviceEventContext context, I event,
 	    ICassandraEventBinder<I> binder) throws SiteWhereException {
 	// Build insert for event by id.
 	BoundStatement eventById = getCassandraEventManagementClient().getInsertDeviceEventById().bind();
@@ -378,7 +363,7 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	process(eventByAssn, event);
 
 	// Build insert for event by customer.
-	if (assignment.getCustomerId() != null) {
+	if (context.getCustomerId() != null) {
 	    BoundStatement eventByCustomer = getCassandraEventManagementClient().getInsertDeviceEventByCustomer()
 		    .bind();
 	    binder.bind(getCassandraEventManagementClient(), eventByCustomer, event);
@@ -387,7 +372,7 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	}
 
 	// Build insert for event by area.
-	if (assignment.getAreaId() != null) {
+	if (context.getAreaId() != null) {
 	    BoundStatement eventByArea = getCassandraEventManagementClient().getInsertDeviceEventByArea().bind();
 	    binder.bind(getCassandraEventManagementClient(), eventByArea, event);
 	    eventByArea.setInt("bucket", getClient().getBucketValue(event.getEventDate().getTime()));
@@ -395,7 +380,7 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	}
 
 	// Build insert for event by asset.
-	if (assignment.getAssetId() != null) {
+	if (context.getAssetId() != null) {
 	    BoundStatement eventByAsset = getCassandraEventManagementClient().getInsertDeviceEventByAsset().bind();
 	    binder.bind(getCassandraEventManagementClient(), eventByAsset, event);
 	    eventByAsset.setInt("bucket", getClient().getBucketValue(event.getEventDate().getTime()));
@@ -558,23 +543,8 @@ public class CassandraDeviceEventManagement extends TenantEngineLifecycleCompone
 	getLogger().debug("Processed " + events.size() + " events for bucket " + bucket + ".");
     }
 
-    /**
-     * Assert that a device assignment exists and throw an exception if not.
-     * 
-     * @param token
-     * @return
-     * @throws SiteWhereException
-     */
-    protected IDeviceAssignment assertDeviceAssignmentById(UUID id) throws SiteWhereException {
-	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignment(id);
-	if (assignment == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentId, ErrorLevel.ERROR);
-	}
-	return assignment;
-    }
-
     protected IDeviceManagement getDeviceManagement() {
-	return ((IEventManagementMicroservice) getTenantEngine().getMicroservice()).getDeviceManagementApiChannel();
+	return ((IEventManagementMicroservice) getTenantEngine().getMicroservice()).getDeviceManagement();
     }
 
     public CassandraClient getClient() {

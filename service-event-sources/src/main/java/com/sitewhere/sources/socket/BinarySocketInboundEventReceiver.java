@@ -10,8 +10,6 @@ package com.sitewhere.sources.socket;
 /**
  * Implementation of {@link SocketInboundEventReceiver} that produces binary
  * data.
- * 
- * @author Derek
  */
 public class BinarySocketInboundEventReceiver extends SocketInboundEventReceiver<byte[]> {
 

@@ -19,8 +19,6 @@ import com.sitewhere.spi.device.event.DeviceEventType;
 
 /**
  * Class for saving device alert data to InfluxDB.
- * 
- * @author Derek
  */
 public class InfluxDbDeviceAlert {
 

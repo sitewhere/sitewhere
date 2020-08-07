@@ -20,29 +20,27 @@ import com.sitewhere.devicestate.spi.IDevicePresenceManager;
 import com.sitewhere.devicestate.spi.IPresenceNotificationStrategy;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateTenantEngine;
-import com.sitewhere.grpc.client.event.BlockingDeviceEventManagement;
-import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.api.event.DeviceEventRequestBuilder;
+import com.sitewhere.microservice.api.event.IDeviceEventManagement;
+import com.sitewhere.microservice.api.state.IDeviceStateManagement;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequest;
 import com.sitewhere.rest.model.device.state.request.DeviceStateCreateRequest;
 import com.sitewhere.rest.model.search.device.DeviceStateSearchCriteria;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.IDeviceEventManagement;
+import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.state.PresenceState;
 import com.sitewhere.spi.device.state.IDeviceState;
-import com.sitewhere.spi.device.state.IDeviceStateManagement;
-import com.sitewhere.spi.microservice.IMicroservice;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Monitors assignment state to detect device presence information.
- * 
- * @author Derek
  */
 public class DevicePresenceManager extends TenantEngineLifecycleComponent implements IDevicePresenceManager {
 
@@ -77,23 +75,20 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.lifecycle.LifecycleComponent#start(com.sitewhere.
+     * spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	this.executor = Executors.newSingleThreadExecutor();
-	executor.execute(new PresenceChecker(getMicroservice(), getTenantEngine().getTenant()));
+	executor.execute(new PresenceChecker());
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
-     * .spi.server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.microservice.lifecycle.LifecycleComponent#stop(com.sitewhere.
+     * spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -104,13 +99,11 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
 
     /**
      * Thread that checks for device presence.
-     * 
-     * @author Derek
      */
     private class PresenceChecker extends SystemUserRunnable {
 
-	public PresenceChecker(IMicroservice<?> microservice, ITenant tenant) {
-	    super(microservice, tenant);
+	public PresenceChecker() {
+	    super(DevicePresenceManager.this);
 	}
 
 	@Override
@@ -141,7 +134,8 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
 		    Date endDate = new Date(System.currentTimeMillis() - (missingIntervalSecs * 1000));
 		    DeviceStateSearchCriteria criteria = new DeviceStateSearchCriteria(1, 0);
 		    criteria.setLastInteractionDateBefore(endDate);
-		    ISearchResults<IDeviceState> missing = getDeviceStateManagement().searchDeviceStates(criteria);
+		    ISearchResults<? extends IDeviceState> missing = getDeviceStateManagement()
+			    .searchDeviceStates(criteria);
 
 		    if (missing.getNumResults() > 0) {
 			getLogger()
@@ -191,9 +185,11 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
 	    try {
 		// Only send an event if the strategy permits it.
 		if (getPresenceNotificationStrategy().shouldGenerateEvent(deviceState, create)) {
-		    IDeviceEventManagement eventManagement = new BlockingDeviceEventManagement(
-			    getDeviceEventManagementApiChannel());
-		    eventManagement.addDeviceStateChanges(deviceState.getDeviceAssignmentId(), create);
+		    IDeviceAssignment assignment = getDeviceManagement()
+			    .getDeviceAssignment(deviceState.getDeviceAssignmentId());
+		    IDeviceEventContext context = DeviceEventRequestBuilder
+			    .getContextForAssignment(getDeviceManagement(), assignment);
+		    getDeviceEventManagement().addDeviceStateChanges(context, create);
 		    return true;
 		}
 	    } catch (SiteWhereException e) {
@@ -237,7 +233,11 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
 	return ((IDeviceStateTenantEngine) getTenantEngine()).getDeviceStateManagement();
     }
 
-    private IDeviceEventManagementApiChannel<?> getDeviceEventManagementApiChannel() {
+    private IDeviceManagement getDeviceManagement() {
+	return ((IDeviceStateMicroservice) getMicroservice()).getDeviceManagement();
+    }
+
+    private IDeviceEventManagement getDeviceEventManagement() {
 	return ((IDeviceStateMicroservice) getMicroservice()).getDeviceEventManagementApiChannel();
     }
 }

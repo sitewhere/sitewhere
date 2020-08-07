@@ -11,14 +11,14 @@ import java.util.List;
 
 import com.sitewhere.commands.encoding.EncodedCommandExecution;
 import com.sitewhere.commands.spi.ICommandExecutionEncoder;
-import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.command.ISystemCommand;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link ICommandExecutionEncoder} that sends commands in
@@ -39,7 +39,7 @@ public class JsonCommandExecutionEncoder extends TenantEngineLifecycleComponent
      */
     @Override
     public byte[] encode(IDeviceCommandExecution command, IDeviceNestingContext nested,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	EncodedCommandExecution encoded = new EncodedCommandExecution(command, nested, assignments);
 	getLogger().debug("Custom command being encoded:\n\n" + MarshalUtils.marshalJsonAsPrettyString(encoded));
 	return MarshalUtils.marshalJson(encoded);
@@ -53,7 +53,7 @@ public class JsonCommandExecutionEncoder extends TenantEngineLifecycleComponent
      */
     @Override
     public byte[] encodeSystemCommand(ISystemCommand command, IDeviceNestingContext nested,
-	    List<IDeviceAssignment> assignments) throws SiteWhereException {
+	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	EncodedCommandExecution encoded = new EncodedCommandExecution(command, nested, assignments);
 	getLogger().debug("System command being encoded:\n\n" + MarshalUtils.marshalJsonAsPrettyString(encoded));
 	return MarshalUtils.marshalJson(encoded);

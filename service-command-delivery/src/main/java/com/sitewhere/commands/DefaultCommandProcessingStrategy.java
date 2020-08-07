@@ -17,9 +17,9 @@ import com.sitewhere.commands.spi.IOutboundCommandRouter;
 import com.sitewhere.commands.spi.kafka.IUndeliveredCommandInvocationsProducer;
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryMicroservice;
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine;
-import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
-import com.sitewhere.server.lifecycle.CompositeLifecycleStep;
-import com.sitewhere.server.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.api.device.IDeviceManagement;
+import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -29,9 +29,9 @@ import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
-import com.sitewhere.spi.server.lifecycle.ICompositeLifecycleStep;
-import com.sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
+import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
  * Default implementation of {@link ICommandProcessingStrategy}.
@@ -59,20 +59,20 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
     public void deliverCommand(IDeviceEventContext context, IDeviceCommandInvocation invocation)
 	    throws SiteWhereException {
 	getLogger().debug("Command processing strategy handling invocation.");
-	IDeviceCommand command = getDeviceManagementApiChannel().getDeviceCommand(invocation.getDeviceCommandId());
+	IDeviceCommand command = getDeviceManagement().getDeviceCommand(invocation.getDeviceCommandId());
 	if (command != null) {
 	    IDeviceCommandExecution execution = getCommandExecutionBuilder().createExecution(command, invocation);
 	    List<IDeviceAssignment> assignments = getCommandTargetResolver().resolveTargets(invocation);
 	    for (IDeviceAssignment assignment : assignments) {
-		IDevice device = getDeviceManagementApiChannel().getDevice(assignment.getDeviceId());
+		IDevice device = getDeviceManagement().getDevice(assignment.getDeviceId());
 		if (device == null) {
 		    throw new SiteWhereException("Targeted assignment references device that does not exist.");
 		}
 
-		List<IDeviceAssignment> active = getDeviceManagementApiChannel()
+		List<? extends IDeviceAssignment> active = getDeviceManagement()
 			.getActiveDeviceAssignments(device.getId());
 		IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device,
-			getTenantEngine().getTenant());
+			getTenantEngine().getTenantResource());
 		CommandRoutingLogic.routeCommand(getOutboundCommandRouter(), getUndeliveredCommandInvocationsProducer(),
 			context, execution, nesting, active);
 	    }
@@ -91,15 +91,15 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
     public void deliverSystemCommand(IDeviceEventContext context, String deviceToken, ISystemCommand command)
 	    throws SiteWhereException {
 	getLogger().debug("Command processing strategy handling system command invocation.");
-	IDevice device = getDeviceManagementApiChannel().getDeviceByToken(deviceToken);
+	IDevice device = getDeviceManagement().getDeviceByToken(deviceToken);
 	if (device == null) {
 	    throw new SiteWhereException("Targeted assignment references device that does not exist.");
 	}
 
-	List<IDeviceAssignment> assignments = getDeviceManagementApiChannel()
+	List<? extends IDeviceAssignment> assignments = getDeviceManagement()
 		.getActiveDeviceAssignments(device.getId());
 	IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device,
-		getTenantEngine().getTenant());
+		getTenantEngine().getTenantResource());
 	CommandRoutingLogic.routeSystemCommand(getOutboundCommandRouter(), command, nesting, assignments);
     }
 
@@ -124,10 +124,9 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
     }
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start(com.
-     * sitewhere.spi.server.lifecycle.ILifecycleProgressMonitor)
+     * @see
+     * com.sitewhere.microservice.lifecycle.LifecycleComponent#start(com.sitewhere.
+     * spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -145,11 +144,9 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
     }
 
     /*
-     * (non-Javadoc)
-     * 
      * @see
-     * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop(com.sitewhere
-     * .spi.server.lifecycle.ILifecycleProgressMonitor)
+     * com.sitewhere.microservice.lifecycle.LifecycleComponent#stop(com.sitewhere.
+     * spi.microservice.lifecycle.ILifecycleProgressMonitor)
      */
     @Override
     public void stop(ILifecycleProgressMonitor monitor) throws SiteWhereException {
@@ -182,8 +179,8 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
 	this.commandExecutionBuilder = commandExecutionBuilder;
     }
 
-    private IDeviceManagementApiChannel<?> getDeviceManagementApiChannel() {
-	return ((ICommandDeliveryMicroservice) getMicroservice()).getDeviceManagementApiChannel();
+    private IDeviceManagement getDeviceManagement() {
+	return ((ICommandDeliveryMicroservice) getMicroservice()).getDeviceManagement();
     }
 
     private IOutboundCommandRouter getOutboundCommandRouter() {
