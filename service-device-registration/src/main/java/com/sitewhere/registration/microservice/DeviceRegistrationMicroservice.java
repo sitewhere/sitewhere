@@ -9,9 +9,13 @@ package com.sitewhere.registration.microservice;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
+import com.sitewhere.grpc.client.asset.CachedAssetManagementApiChannel;
 import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
@@ -37,6 +41,9 @@ public class DeviceRegistrationMicroservice extends
 
     /** Device management API channel */
     private CachedDeviceManagementApiChannel deviceManagement;
+
+    /** Asset management API channel */
+    private CachedAssetManagementApiChannel assetManagement;
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
@@ -144,9 +151,13 @@ public class DeviceRegistrationMicroservice extends
      */
     private void createGrpcComponents() {
 	// Device management.
-	IDeviceManagementApiChannel<?> wrapped = new DeviceManagementApiChannel(getInstanceSettings());
-	this.deviceManagement = new CachedDeviceManagementApiChannel(wrapped,
+	IDeviceManagementApiChannel<?> wrappedDeviceManagement = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagement = new CachedDeviceManagementApiChannel(wrappedDeviceManagement,
 		new CachedDeviceManagementApiChannel.CacheSettings());
+	// Asset management.
+	IAssetManagementApiChannel<?> wrappedAssetManagement = new AssetManagementApiChannel(getInstanceSettings());
+	this.assetManagement = new CachedAssetManagementApiChannel(wrappedAssetManagement,
+		new CachedAssetManagementApiChannel.CacheSettings());
     }
 
     /*
@@ -157,5 +168,15 @@ public class DeviceRegistrationMicroservice extends
     @Override
     public IDeviceManagement getDeviceManagement() {
 	return deviceManagement;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice#
+     * getAssetManagement()
+     */
+    @Override
+    public IAssetManagement getAssetManagement() {
+	return assetManagement;
     }
 }

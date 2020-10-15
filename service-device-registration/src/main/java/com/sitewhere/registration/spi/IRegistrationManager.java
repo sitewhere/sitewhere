@@ -73,6 +73,21 @@ public interface IRegistrationManager extends ITenantEngineLifecycleComponent {
     public String getDefaultAreaToken();
 
     /**
+     * Indicates whether a default asset is used when creating a device assignment
+     * for an unassigned device.
+     * 
+     * @return
+     */
+    public boolean isUseDefaultAsset();
+
+    /**
+     * Get token of asset that will be used if no area is provided in request.
+     * 
+     * @return
+     */
+    public String getDefaultAssetToken();
+
+    /**
      * Handle registration of a new device.
      * 
      * @param request
