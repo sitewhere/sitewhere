@@ -7,6 +7,7 @@
  */
 package com.sitewhere.registration.spi.microservice;
 
+import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.registration.configuration.DeviceRegistrationConfiguration;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
@@ -24,4 +25,11 @@ public interface IDeviceRegistrationMicroservice extends
      * @return
      */
     public IDeviceManagement getDeviceManagement();
+
+    /**
+     * Get asset management API access via GRPC channel.
+     * 
+     * @return
+     */
+    public IAssetManagement getAssetManagement();
 }
