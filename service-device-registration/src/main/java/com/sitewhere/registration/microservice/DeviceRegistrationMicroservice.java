@@ -105,6 +105,9 @@ public class DeviceRegistrationMicroservice extends
 	// Initialize device management API channel.
 	init.addInitializeStep(this, getDeviceManagement(), true);
 
+	// Initialize asset management API channel.
+	init.addInitializeStep(this, getAssetManagement(), true);
+
 	// Execute initialization steps.
 	init.execute(monitor);
     }
@@ -121,8 +124,11 @@ public class DeviceRegistrationMicroservice extends
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
-	// Start device mangement API channel.
+	// Start device management API channel.
 	start.addStartStep(this, getDeviceManagement(), true);
+
+	// Start asset management API channel.
+	start.addStartStep(this, getAssetManagement(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -137,8 +143,11 @@ public class DeviceRegistrationMicroservice extends
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
-	// Stop device mangement API channel.
+	// Stop device management API channel.
 	stop.addStopStep(this, getDeviceManagement());
+
+	// Stop asset management API channel.
+	stop.addStopStep(this, getAssetManagement());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);

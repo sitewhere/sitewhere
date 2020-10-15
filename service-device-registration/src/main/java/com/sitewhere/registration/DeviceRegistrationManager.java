@@ -88,6 +88,10 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
 	    getLogger().info(String.format("Registration manager will use default area '%s' if none is specified.",
 		    getDefaultAreaToken()));
 	}
+	if (isUseDefaultAsset() && getDefaultAssetToken() != null) {
+	    getLogger().info(String.format("Registration manager will use default asset '%s' if none is specified.",
+		    getDefaultAssetToken()));
+	}
     }
 
     /*
