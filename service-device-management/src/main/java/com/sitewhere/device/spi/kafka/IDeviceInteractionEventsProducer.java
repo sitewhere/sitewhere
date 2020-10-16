@@ -7,10 +7,12 @@
  */
 package com.sitewhere.device.spi.kafka;
 
+import java.util.UUID;
+
 import com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer;
 
 /**
  * Kafka producer that sends events triggered by device management interactions.
  */
-public interface IDeviceInteractionEventsProducer extends IMicroserviceKafkaProducer<String, byte[]> {
+public interface IDeviceInteractionEventsProducer extends IMicroserviceKafkaProducer<UUID, byte[]> {
 }
