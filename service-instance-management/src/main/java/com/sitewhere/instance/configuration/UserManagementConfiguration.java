@@ -12,36 +12,47 @@ package com.sitewhere.instance.configuration;
  */
 public class UserManagementConfiguration {
 
-    /** Syncope hostname */
-    private String syncopeHost;
+    /** Keycloak service name */
+    private String serviceName = "sitewhere-keycloak-http";
 
-    /** Syncope port */
-    private int syncopePort;
+    /** Keycloak API port */
+    private int apiPort = 80;
 
-    /** Number of minutes before JWT expires */
-    private int jwtExpirationInMinutes;
+    /** Master realm username */
+    private String masterRealmUsername = "sitewhere";
 
-    public String getSyncopeHost() {
-	return syncopeHost;
+    /** Master realm username */
+    private String masterRealmPassword = "sitewhere";
+
+    public String getServiceName() {
+	return serviceName;
     }
 
-    public void setSyncopeHost(String syncopeHost) {
-	this.syncopeHost = syncopeHost;
+    public void setServiceName(String serviceName) {
+	this.serviceName = serviceName;
     }
 
-    public int getSyncopePort() {
-	return syncopePort;
+    public int getApiPort() {
+	return apiPort;
     }
 
-    public void setSyncopePort(int syncopePort) {
-	this.syncopePort = syncopePort;
+    public void setApiPort(int apiPort) {
+	this.apiPort = apiPort;
     }
 
-    public int getJwtExpirationInMinutes() {
-	return jwtExpirationInMinutes;
+    public String getMasterRealmUsername() {
+	return masterRealmUsername;
     }
 
-    public void setJwtExpirationInMinutes(int jwtExpirationInMinutes) {
-	this.jwtExpirationInMinutes = jwtExpirationInMinutes;
+    public void setMasterRealmUsername(String masterRealmUsername) {
+	this.masterRealmUsername = masterRealmUsername;
+    }
+
+    public String getMasterRealmPassword() {
+	return masterRealmPassword;
+    }
+
+    public void setMasterRealmPassword(String masterRealmPassword) {
+	this.masterRealmPassword = masterRealmPassword;
     }
 }
