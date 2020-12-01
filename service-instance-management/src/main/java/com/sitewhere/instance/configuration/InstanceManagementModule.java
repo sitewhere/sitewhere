@@ -7,7 +7,7 @@
  */
 package com.sitewhere.instance.configuration;
 
-import com.sitewhere.instance.user.persistence.SyncopeUserManagement;
+import com.sitewhere.instance.user.persistence.KeycloakUserManagement;
 import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.microservice.configuration.MicroserviceModule;
 
@@ -27,6 +27,6 @@ public class InstanceManagementModule extends MicroserviceModule<InstanceManagem
     @Override
     protected void configure() {
 	bind(InstanceManagementConfiguration.class).toInstance(getConfiguration());
-	bind(IUserManagement.class).to(SyncopeUserManagement.class);
+	bind(IUserManagement.class).to(KeycloakUserManagement.class);
     }
 }

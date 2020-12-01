@@ -26,9 +26,6 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
  */
 public class UserManagementPersistenceLogic extends Persistence {
 
-    // TODO: Replace with globally configurable method.
-    private static PasswordEncoder PASSWORD_ENCODER = new PasswordEncoder();
-
     /**
      * Common logic for creating a user based on an incoming request.
      *
@@ -42,13 +39,10 @@ public class UserManagementPersistenceLogic extends Persistence {
 	Persistence.entityCreateLogic(request, user);
 
 	require("Username", request.getUsername());
-	String password = (encodePassword) ? getPasswordEncoder().encrypt(request.getPassword())
-		: request.getPassword();
-
 	user.setUsername(request.getUsername());
-	user.setHashedPassword(password);
 	user.setFirstName(request.getFirstName());
 	user.setLastName(request.getLastName());
+	user.setEmail(request.getEmail());
 	user.setLastLogin(null);
 	user.setStatus(request.getStatus());
 	return user;
@@ -70,16 +64,14 @@ public class UserManagementPersistenceLogic extends Persistence {
 	if (request.getUsername() != null) {
 	    target.setUsername(request.getUsername());
 	}
-	if (request.getPassword() != null) {
-	    String password = (encodePassword) ? getPasswordEncoder().encrypt(request.getPassword())
-		    : request.getPassword();
-	    target.setHashedPassword(password);
-	}
 	if (request.getFirstName() != null) {
 	    target.setFirstName(request.getFirstName());
 	}
 	if (request.getLastName() != null) {
 	    target.setLastName(request.getLastName());
+	}
+	if (request.getEmail() != null) {
+	    target.setEmail(request.getEmail());
 	}
 	if (request.getStatus() != null) {
 	    target.setStatus(request.getStatus());
@@ -128,19 +120,5 @@ public class UserManagementPersistenceLogic extends Persistence {
 	auth.setParent(request.getParent());
 	auth.setGroup(request.isGroup());
 	return auth;
-    }
-
-    /**
-     * Common logic for encoding a plaintext password.
-     *
-     * @param plaintext
-     * @return
-     */
-    public static boolean passwordMatches(String plaintext, String encoded) {
-	return getPasswordEncoder().decrypt(encoded).equals(plaintext);
-    }
-
-    protected static PasswordEncoder getPasswordEncoder() {
-	return PASSWORD_ENCODER;
     }
 }

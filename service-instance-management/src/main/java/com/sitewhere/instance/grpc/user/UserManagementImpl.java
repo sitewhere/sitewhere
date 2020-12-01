@@ -7,12 +7,8 @@
  */
 package com.sitewhere.instance.grpc.user;
 
-import java.util.List;
-
 import com.sitewhere.grpc.client.GrpcUtils;
 import com.sitewhere.grpc.client.spi.server.IGrpcApiImplementation;
-import com.sitewhere.grpc.service.GAddGrantedAuthoritiesRequest;
-import com.sitewhere.grpc.service.GAddGrantedAuthoritiesResponse;
 import com.sitewhere.grpc.service.GAuthenticateRequest;
 import com.sitewhere.grpc.service.GAuthenticateResponse;
 import com.sitewhere.grpc.service.GCreateGrantedAuthorityRequest;
@@ -23,8 +19,6 @@ import com.sitewhere.grpc.service.GDeleteGrantedAuthorityRequest;
 import com.sitewhere.grpc.service.GDeleteGrantedAuthorityResponse;
 import com.sitewhere.grpc.service.GDeleteUserRequest;
 import com.sitewhere.grpc.service.GDeleteUserResponse;
-import com.sitewhere.grpc.service.GGetGrantedAuthoritiesRequest;
-import com.sitewhere.grpc.service.GGetGrantedAuthoritiesResponse;
 import com.sitewhere.grpc.service.GGetGrantedAuthorityByNameRequest;
 import com.sitewhere.grpc.service.GGetGrantedAuthorityByNameResponse;
 import com.sitewhere.grpc.service.GGetUserByUsernameRequest;
@@ -35,8 +29,6 @@ import com.sitewhere.grpc.service.GListGrantedAuthoritiesRequest;
 import com.sitewhere.grpc.service.GListGrantedAuthoritiesResponse;
 import com.sitewhere.grpc.service.GListUsersRequest;
 import com.sitewhere.grpc.service.GListUsersResponse;
-import com.sitewhere.grpc.service.GRemoveGrantedAuthoritiesRequest;
-import com.sitewhere.grpc.service.GRemoveGrantedAuthoritiesResponse;
 import com.sitewhere.grpc.service.GUpdateGrantedAuthorityRequest;
 import com.sitewhere.grpc.service.GUpdateGrantedAuthorityResponse;
 import com.sitewhere.grpc.service.GUpdateUserRequest;
@@ -367,89 +359,6 @@ public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBas
 		    responseObserver);
 	} finally {
 	    GrpcUtils.handleServerMethodExit(UserManagementGrpc.getDeleteGrantedAuthorityMethod());
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
-     * getGrantedAuthoritiesForUser(com.sitewhere.grpc.service.
-     * GGetGrantedAuthoritiesRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void getGrantedAuthoritiesForUser(GGetGrantedAuthoritiesRequest request,
-	    StreamObserver<GGetGrantedAuthoritiesResponse> responseObserver) {
-	try {
-	    GrpcUtils.handleServerMethodEntry(this, UserManagementGrpc.getGetGrantedAuthoritiesForUserMethod());
-	    List<IGrantedAuthority> apiResult = getUserMangagement().getGrantedAuthorities(request.getUsername());
-	    GGetGrantedAuthoritiesResponse.Builder response = GGetGrantedAuthoritiesResponse.newBuilder();
-	    for (IGrantedAuthority apiAuth : apiResult) {
-		response.addAuthorities(UserModelConverter.asGrpcGrantedAuthority(apiAuth));
-	    }
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(UserManagementGrpc.getGetGrantedAuthoritiesForUserMethod(), e,
-		    responseObserver);
-	} finally {
-	    GrpcUtils.handleServerMethodExit(UserManagementGrpc.getGetGrantedAuthoritiesForUserMethod());
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
-     * addGrantedAuthoritiesForUser(com.sitewhere.grpc.service.
-     * GAddGrantedAuthoritiesRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void addGrantedAuthoritiesForUser(GAddGrantedAuthoritiesRequest request,
-	    StreamObserver<GAddGrantedAuthoritiesResponse> responseObserver) {
-	try {
-	    GrpcUtils.handleServerMethodEntry(this, UserManagementGrpc.getAddGrantedAuthoritiesForUserMethod());
-	    List<IGrantedAuthority> apiResult = getUserMangagement().addGrantedAuthorities(request.getUsername(),
-		    request.getAuthoritiesList());
-	    GAddGrantedAuthoritiesResponse.Builder response = GAddGrantedAuthoritiesResponse.newBuilder();
-	    for (IGrantedAuthority apiAuth : apiResult) {
-		response.addAuthorities(UserModelConverter.asGrpcGrantedAuthority(apiAuth));
-	    }
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(UserManagementGrpc.getAddGrantedAuthoritiesForUserMethod(), e,
-		    responseObserver);
-	} finally {
-	    GrpcUtils.handleServerMethodExit(UserManagementGrpc.getAddGrantedAuthoritiesForUserMethod());
-	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sitewhere.grpc.service.UserManagementGrpc.UserManagementImplBase#
-     * removeGrantedAuthoritiesForUser(com.sitewhere.grpc.service.
-     * GRemoveGrantedAuthoritiesRequest, io.grpc.stub.StreamObserver)
-     */
-    @Override
-    public void removeGrantedAuthoritiesForUser(GRemoveGrantedAuthoritiesRequest request,
-	    StreamObserver<GRemoveGrantedAuthoritiesResponse> responseObserver) {
-	try {
-	    GrpcUtils.handleServerMethodEntry(this, UserManagementGrpc.getRemoveGrantedAuthoritiesForUserMethod());
-	    List<IGrantedAuthority> apiResult = getUserMangagement().removeGrantedAuthorities(request.getUsername(),
-		    request.getAuthoritiesList());
-	    GRemoveGrantedAuthoritiesResponse.Builder response = GRemoveGrantedAuthoritiesResponse.newBuilder();
-	    for (IGrantedAuthority apiAuth : apiResult) {
-		response.addAuthorities(UserModelConverter.asGrpcGrantedAuthority(apiAuth));
-	    }
-	    responseObserver.onNext(response.build());
-	    responseObserver.onCompleted();
-	} catch (Throwable e) {
-	    GrpcUtils.handleServerMethodException(UserManagementGrpc.getRemoveGrantedAuthoritiesForUserMethod(), e,
-		    responseObserver);
-	} finally {
-	    GrpcUtils.handleServerMethodExit(UserManagementGrpc.getRemoveGrantedAuthoritiesForUserMethod());
 	}
     }
 

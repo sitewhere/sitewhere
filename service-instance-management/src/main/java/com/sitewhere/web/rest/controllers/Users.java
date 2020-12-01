@@ -37,7 +37,6 @@ import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.user.UserSearchCriteria;
-import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.Role;
 import com.sitewhere.rest.model.user.request.UserCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
@@ -45,7 +44,6 @@ import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.user.AccountStatus;
-import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IRole;
 import com.sitewhere.spi.user.IUser;
 
@@ -142,27 +140,6 @@ public class Users {
 	    @Parameter(description = "Unique username", required = true) @PathParam("username") String username)
 	    throws SiteWhereException {
 	return Response.ok(getUserManagement().deleteUser(username)).build();
-    }
-
-    /**
-     * Get a list of detailed authority information for a given user.
-     *
-     * @param username
-     * @return
-     * @throws SiteWhereException
-     */
-    @GET
-    @Path("/{username}/authorities")
-    @Operation(summary = "Get authorities for user", description = "Get authorities for user")
-    public Response getAuthoritiesForUsername(
-	    @Parameter(description = "Unique username", required = true) @PathParam("username") String username)
-	    throws SiteWhereException {
-	List<IGrantedAuthority> matches = getUserManagement().getGrantedAuthorities(username);
-	List<GrantedAuthority> converted = new ArrayList<GrantedAuthority>();
-	for (IGrantedAuthority auth : matches) {
-	    converted.add(GrantedAuthority.copy(auth));
-	}
-	return Response.ok(new SearchResults<GrantedAuthority>(converted)).build();
     }
 
     /**

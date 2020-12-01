@@ -13,6 +13,9 @@ dependencies {
 	// Apache Syncope
 	compile group: 'org.apache.syncope.client', name: 'syncope-client-lib', version: '2.1.4'
 	
+	// Keycloak
+	compile group: 'org.keycloak', name: 'keycloak-admin-client', version: '11.0.3'
+	
 	// Password encryption.
 	compile group: 'org.jasypt', name: 'jasypt', version: '1.9.3'
 	

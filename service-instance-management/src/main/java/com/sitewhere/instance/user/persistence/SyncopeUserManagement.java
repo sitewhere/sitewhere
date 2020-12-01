@@ -17,7 +17,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.syncope.client.lib.SyncopeClient;
@@ -285,15 +284,7 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
      */
     @Override
     public IUser authenticate(String username, String password, boolean updateLastLogin) throws SiteWhereException {
-	if (password == null) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidPassword, ErrorLevel.ERROR);
-	}
-	IUser match = getUserByUsername(username);
-	if (!UserManagementPersistenceLogic.passwordMatches(password, match.getHashedPassword())) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidPassword, ErrorLevel.ERROR);
-	}
-
-	return match;
+	throw new RuntimeException("Not implemented.");
     }
 
     /*
@@ -382,53 +373,6 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	    return swuser;
 	}
 	throw new SiteWhereException("Syncope user did not contain JSON data.");
-    }
-
-    /*
-     * @see
-     * com.sitewhere.microservice.api.user.IUserManagement#getGrantedAuthorities(
-     * java.lang.String)
-     */
-    @Override
-    public List<IGrantedAuthority> getGrantedAuthorities(String username) throws SiteWhereException {
-	IUser user = getUserByUsername(username);
-	List<String> userAuths = new ArrayList<>();
-	for (IRole role : user.getRoles()) {
-	    List<String> authorities = role.getAuthorities().stream().map(auth -> auth.getAuthority())
-		    .collect(Collectors.toList());
-	    userAuths = authorities;
-	}
-
-	ISearchResults<IGrantedAuthority> all = listGrantedAuthorities(new GrantedAuthoritySearchCriteria(1, 0));
-	List<IGrantedAuthority> matched = new ArrayList<IGrantedAuthority>();
-	for (IGrantedAuthority auth : all.getResults()) {
-	    if (userAuths.contains(auth.getAuthority())) {
-		matched.add(auth);
-	    }
-	}
-	return matched;
-    }
-
-    /*
-     * @see
-     * com.sitewhere.microservice.api.user.IUserManagement#addGrantedAuthorities(
-     * java.lang.String, java.util.List)
-     */
-    @Override
-    public List<IGrantedAuthority> addGrantedAuthorities(String username, List<String> authorities)
-	    throws SiteWhereException {
-	throw new RuntimeException("Not implemented.");
-    }
-
-    /*
-     * @see
-     * com.sitewhere.microservice.api.user.IUserManagement#removeGrantedAuthorities(
-     * java.lang.String, java.util.List)
-     */
-    @Override
-    public List<IGrantedAuthority> removeGrantedAuthorities(String username, List<String> authorities)
-	    throws SiteWhereException {
-	throw new RuntimeException("Not implemented.");
     }
 
     /*

@@ -8,8 +8,8 @@
 package com.sitewhere.web.auth;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -33,6 +33,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
 import com.sitewhere.spi.user.IGrantedAuthority;
+import com.sitewhere.spi.user.IRole;
 import com.sitewhere.spi.user.IUser;
 
 /**
@@ -108,8 +109,15 @@ public class BasicAuthForJwt implements ContainerRequestFilter {
 	    String username = parts[0];
 	    String password = parts[1];
 	    IUser user = getUserManagement().authenticate(username, password, false);
-	    List<IGrantedAuthority> gauths = getUserManagement().getGrantedAuthorities(username);
-	    List<String> auths = gauths.stream().map(IGrantedAuthority::getAuthority).collect(Collectors.toList());
+	    List<String> auths = new ArrayList<>();
+	    for (IRole role : user.getRoles()) {
+		for (IGrantedAuthority authority : role.getAuthorities()) {
+		    if (!auths.contains(authority.getAuthority())) {
+			auths.add(authority.getAuthority());
+		    }
+		}
+	    }
+
 	    String jwt = getTokenManagement().generateToken(user, userConfig.getJwtExpirationInMinutes());
 	    return new SiteWhereAuthentication(username, auths, jwt);
 	}
