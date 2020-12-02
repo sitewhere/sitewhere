@@ -45,6 +45,7 @@ allprojects {
     }
 }
 
+
 subprojects {
 	apply plugin: "com.github.hierynomus.license"
 	license {
