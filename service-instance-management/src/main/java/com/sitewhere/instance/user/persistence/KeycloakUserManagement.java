@@ -19,10 +19,12 @@ import javax.ws.rs.core.Response;
 import org.apache.http.HttpStatus;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.GroupResource;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.ServerInfoResource;
 import org.keycloak.admin.client.resource.UserResource;
+import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.GroupRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -61,6 +63,9 @@ import io.sitewhere.k8s.api.ISiteWhereKubernetesClient;
  */
 public class KeycloakUserManagement extends AsyncStartLifecycleComponent implements IUserManagement {
 
+    /** Client id for OpenID Connect support */
+    private static final String CLIENT_ID_OPENID_CONNECT = "sitewhere-openid";
+
     /** Configuration settings */
     private InstanceManagementConfiguration configuration;
 
@@ -93,6 +98,9 @@ public class KeycloakUserManagement extends AsyncStartLifecycleComponent impleme
 
 	// Make sure that the expected realm exists.
 	assureRealmExists();
+
+	// Register an OpenID Connect client for the realm.
+	assureOpenIdClient();
     }
 
     /**
@@ -116,7 +124,46 @@ public class KeycloakUserManagement extends AsyncStartLifecycleComponent impleme
 		getKeycloak().realms().create(newRealm);
 		getLogger().info(String.format("Successfully created realm for instance (%s).", realmName));
 	    } catch (Exception e1) {
-		getLogger().error(String.format("Unable to create realm for instance (%s).", realmName), e1);
+		throw new SiteWhereException(String.format("Unable to create realm for instance (%s).", realmName), e1);
+	    }
+	}
+    }
+
+    /**
+     * Assure that openid-connect client exists.
+     * 
+     * @throws SiteWhereException
+     */
+    protected void assureOpenIdClient() throws SiteWhereException {
+	try {
+	    ClientResource clientResource = getRealmResource().clients().get(CLIENT_ID_OPENID_CONNECT);
+	    ClientRepresentation client = clientResource.toRepresentation();
+	    getLogger().info(String.format("OpenID Connect client was found (%s).", client.getId()));
+	} catch (NotFoundException e) {
+	    getLogger().info(
+		    String.format("OpenID Connect client was not found (%s). Creating...", CLIENT_ID_OPENID_CONNECT));
+	    try {
+		ClientRepresentation newClient = new ClientRepresentation();
+		newClient.setId(CLIENT_ID_OPENID_CONNECT);
+		newClient.setName("OpenId Connect");
+		newClient.setStandardFlowEnabled(true);
+		newClient.setDirectAccessGrantsEnabled(true);
+		newClient.setProtocol("openid-connect");
+		newClient.setPublicClient(false);
+		newClient.setRedirectUris(Collections.singletonList("http://*"));
+		newClient.setSecret(getMicroservice().getInstanceSettings().getKeycloakOidcSecret());
+		newClient.setEnabled(true);
+		Response result = getRealmResource().clients().create(newClient);
+		if (result.getStatus() == HttpStatus.SC_CONFLICT) {
+		    getLogger().info(String.format("Found existing OpenID Connect client (%s).", newClient.getId()));
+		} else if (result.getStatus() != HttpStatus.SC_CREATED) {
+		    throw new SiteWhereException(result.getStatusInfo().getReasonPhrase());
+		} else {
+		    getLogger().info(String.format("Created OpenID Connect client (%s).", newClient.getId()));
+		}
+	    } catch (Exception e1) {
+		throw new SiteWhereException(
+			String.format("Unable to create realm for instance (%s).", CLIENT_ID_OPENID_CONNECT), e1);
 	    }
 	}
     }
