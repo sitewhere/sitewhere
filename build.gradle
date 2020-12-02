@@ -47,7 +47,6 @@ allprojects {
 
 
 subprojects {
-	apply plugin: "com.github.hierynomus.license"
 	license {
 		header rootProject.file('HEADER')
     	include "**/*.java"
