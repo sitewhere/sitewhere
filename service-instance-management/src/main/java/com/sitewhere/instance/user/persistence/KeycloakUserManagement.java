@@ -12,10 +12,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
@@ -44,7 +40,7 @@ import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.Role;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.IGrantedAuthority;
@@ -57,10 +53,6 @@ import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
 import com.sitewhere.spi.user.request.IRoleCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
 
-import io.fabric8.kubernetes.api.model.LoadBalancerIngress;
-import io.fabric8.kubernetes.api.model.LoadBalancerStatus;
-import io.fabric8.kubernetes.api.model.Service;
-import io.fabric8.kubernetes.api.model.ServicePort;
 import io.sitewhere.k8s.api.ISiteWhereKubernetesClient;
 
 /**
@@ -69,23 +61,8 @@ import io.sitewhere.k8s.api.ISiteWhereKubernetesClient;
  */
 public class KeycloakUserManagement extends AsyncStartLifecycleComponent implements IUserManagement {
 
-    /** Number of seconds to wait between checks for Keycloak ingress */
-    private static final int KEYCLOAK_INGRESS_RETRY_SECONDS = 10;
-
     /** Configuration settings */
     private InstanceManagementConfiguration configuration;
-
-    /** Allows blocking until Syncope is available */
-    private CountDownLatch keycloakAvailable = new CountDownLatch(1);
-
-    /** Provides thread for service resolver */
-    private ExecutorService serviceResolverExecutor;
-
-    /** Keycloak API address */
-    private String keycloakApiAddress;
-
-    /** Keycloak API port */
-    private int keycloakApiPort;
 
     /** Keycloak client */
     private Keycloak keycloak;
@@ -97,34 +74,19 @@ public class KeycloakUserManagement extends AsyncStartLifecycleComponent impleme
     }
 
     /*
-     * @see com.sitewhere.microservice.lifecycle.LifecycleComponent#initialize(com.
-     * sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor)
-     */
-    @Override
-    public void initialize(ILifecycleProgressMonitor monitor) throws SiteWhereException {
-	// Resolve Keycloak service/API access in another thread.
-	this.serviceResolverExecutor = Executors.newSingleThreadExecutor(new ServiceResolverThreadFactory());
-	getServiceResolverExecutor().execute(new KeycloakServiceResolver());
-    }
-
-    /*
      * @see com.sitewhere.spi.microservice.lifecycle.IAsyncStartLifecycleComponent#
      * asyncStart()
      */
     @Override
     public void asyncStart() throws SiteWhereException {
-	// Block until Keycloak service is available.
-	try {
-	    getKeycloakAvailable().await();
-	} catch (InterruptedException e) {
-	    getLogger().info("Interrupted while waiting for Keycloak service to become available.");
-	    return;
-	}
+	IInstanceSettings settings = getMicroservice().getInstanceSettings();
+	String serviceName = settings.getKeycloakServiceName() + "." + ISiteWhereKubernetesClient.NS_SITEWHERE_SYSTEM;
 
 	// Create Keycloak API client and test it.
-	String url = String.format("http://%s:%s/auth", getKeycloakApiAddress(), String.valueOf(getKeycloakApiPort()));
-	this.keycloak = KeycloakBuilder.builder().serverUrl(url).realm("master").username("sitewhere")
-		.password("sitewhere").clientId("admin-cli").build();
+	String url = String.format("http://%s:%s/auth", serviceName, settings.getKeycloakApiPort());
+	this.keycloak = KeycloakBuilder.builder().serverUrl(url).realm(settings.getKeycloakMasterRealm())
+		.username(settings.getKeycloakMasterUsername()).password(settings.getKeycloakMasterPassword())
+		.clientId("admin-cli").build();
 	ServerInfoResource server = getKeycloak().serverInfo();
 	SystemInfoRepresentation system = server.getInfo().getSystemInfo();
 	getLogger().info(String.format("Keycloak API validated as version '%s'.", system.getVersion()));
@@ -150,6 +112,7 @@ public class KeycloakUserManagement extends AsyncStartLifecycleComponent impleme
 		newRealm.setId(realmName);
 		newRealm.setRealm(realmName);
 		newRealm.setDisplayName("SiteWhere");
+		newRealm.setEnabled(true);
 		getKeycloak().realms().create(newRealm);
 		getLogger().info(String.format("Successfully created realm for instance (%s).", realmName));
 	    } catch (Exception e1) {
@@ -603,83 +566,8 @@ public class KeycloakUserManagement extends AsyncStartLifecycleComponent impleme
 	getRealmResource().groups().group(role).remove();
     }
 
-    /**
-     * Resolves Keycloak service and creates an API client.
-     */
-    protected class KeycloakServiceResolver implements Runnable {
-
-	@Override
-	public void run() {
-	    while (true) {
-		String serviceName = getMicroservice().getInstanceSettings().getKeycloakServiceName();
-		Service service = getMicroservice().getKubernetesClient().services()
-			.inNamespace(ISiteWhereKubernetesClient.NS_SITEWHERE_SYSTEM).withName(serviceName).get();
-		if (service == null) {
-		    getLogger().info(String.format("Unable to find Keycloak service in system namespace under name: %s",
-			    serviceName));
-		} else {
-		    LoadBalancerStatus lbstatus = service.getStatus().getLoadBalancer();
-		    if (lbstatus != null && lbstatus.getIngress() != null && lbstatus.getIngress().size() > 0) {
-			LoadBalancerIngress ingress = lbstatus.getIngress().get(0);
-			KeycloakUserManagement.this.keycloakApiAddress = ingress.getIp();
-			List<ServicePort> ports = service.getSpec().getPorts();
-			if (ports.size() < 1) {
-			    getLogger().info("No ports declared for Keycloak ingress.");
-			} else {
-			    for (ServicePort servicePort : ports) {
-				Integer port = servicePort.getPort();
-				getLogger().info(String.format("Located ingress at %s:%s.",
-					KeycloakUserManagement.this.keycloakApiAddress, String.valueOf(port)));
-				if (port == 80) {
-				    getLogger().info("Found port for Keycloak ingress.");
-				    KeycloakUserManagement.this.keycloakApiPort = port;
-				    getKeycloakAvailable().countDown();
-				    return;
-				}
-			    }
-			}
-		    } else {
-			getLogger().info(String.format("No load balancer ingress found for Keycloak service: %s",
-				service.getMetadata().getName()));
-		    }
-		}
-
-		try {
-		    Thread.sleep(KEYCLOAK_INGRESS_RETRY_SECONDS * 1000);
-		} catch (InterruptedException e) {
-		    getLogger().warn("Interrupted waiting for Keycloak ingress address.");
-		    return;
-		}
-	    }
-	}
-    }
-
-    /** Used for naming service resolver thread */
-    protected class ServiceResolverThreadFactory implements ThreadFactory {
-
-	public Thread newThread(Runnable r) {
-	    return new Thread(r, "Keycloak Rslv");
-	}
-    }
-
     protected InstanceManagementConfiguration getConfiguration() {
 	return configuration;
-    }
-
-    protected CountDownLatch getKeycloakAvailable() {
-	return keycloakAvailable;
-    }
-
-    protected ExecutorService getServiceResolverExecutor() {
-	return serviceResolverExecutor;
-    }
-
-    protected String getKeycloakApiAddress() {
-	return keycloakApiAddress;
-    }
-
-    protected int getKeycloakApiPort() {
-	return keycloakApiPort;
     }
 
     protected Keycloak getKeycloak() {

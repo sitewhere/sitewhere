@@ -7,11 +7,9 @@
  */
 package com.sitewhere.instance.user.persistence;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,7 +18,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.syncope.client.lib.SyncopeClient;
-import org.apache.syncope.client.lib.SyncopeClientFactoryBean;
 import org.apache.syncope.common.lib.SyncopeClientException;
 import org.apache.syncope.common.lib.patch.AttrPatch;
 import org.apache.syncope.common.lib.patch.PasswordPatch;
@@ -43,11 +40,6 @@ import org.apache.syncope.common.rest.api.service.RoleService;
 import org.apache.syncope.common.rest.api.service.SchemaService;
 import org.apache.syncope.common.rest.api.service.UserService;
 
-import com.evanlennick.retry4j.CallExecutorBuilder;
-import com.evanlennick.retry4j.Status;
-import com.evanlennick.retry4j.config.RetryConfig;
-import com.evanlennick.retry4j.config.RetryConfigBuilder;
-import com.evanlennick.retry4j.listener.RetryListener;
 import com.google.inject.Inject;
 import com.sitewhere.instance.configuration.InstanceManagementConfiguration;
 import com.sitewhere.microservice.api.user.IUserManagement;
@@ -81,14 +73,14 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
  */
 public class SyncopeUserManagement extends AsyncStartLifecycleComponent implements IUserManagement {
 
-    /** Number of seconds between fallback attempts for connecting to Syncope */
-    private static final int CONNECT_SECS_BETWEEN_RETRIES = 10;
-
-    /** Default Syncope username */
-    private static final String SYNCOPE_USERNAME = "synadmin";
-
-    /** Default Syncope password */
-    private static final String SYNCOPE_PASSWORD = "password";
+//    /** Number of seconds between fallback attempts for connecting to Syncope */
+//    private static final int CONNECT_SECS_BETWEEN_RETRIES = 10;
+//
+//    /** Default Syncope username */
+//    private static final String SYNCOPE_USERNAME = "synadmin";
+//
+//    /** Default Syncope password */
+//    private static final String SYNCOPE_PASSWORD = "password";
 
     /** SiteWhere Syncope application key */
     private static final String SITEWHERE_APPLICATION_KEY = "sitewhere";
@@ -163,10 +155,10 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	    throw new SiteWhereException("Connection to Syncope could not be established.");
 	}
 
-	String domain = getClient().getDomain();
-	getLogger().info(String.format("Syncope client connected to %s:%d using domain %s.",
-		getConfiguration().getUserManagement().getSyncopeHost(),
-		getConfiguration().getUserManagement().getSyncopePort(), domain));
+//	String domain = getClient().getDomain();
+//	getLogger().info(String.format("Syncope client connected to %s:%d using domain %s.",
+//		getConfiguration().getUserManagement().getSyncopeHost(),
+//		getConfiguration().getUserManagement().getSyncopePort(), domain));
 
 	// Verify that SiteWhere application exists.
 	getOrCreateSiteWhereApplication();
@@ -669,35 +661,35 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
     protected class SyncopeConnectionWaiter implements Runnable {
 
 	@Override
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+//	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void run() {
-	    String syncopeUrl = String.format("http://%s:%d/syncope/rest",
-		    getConfiguration().getUserManagement().getSyncopeHost(),
-		    getConfiguration().getUserManagement().getSyncopePort());
-	    SyncopeClientFactoryBean clientFactory = new SyncopeClientFactoryBean().setAddress(syncopeUrl);
-
-	    getLogger().info(String.format("Attempting to connect to Syncope at '%s:%d' as '%s'...",
-		    getConfiguration().getUserManagement().getSyncopeHost(),
-		    getConfiguration().getUserManagement().getSyncopePort(), SYNCOPE_USERNAME));
-	    Callable<Boolean> connectCheck = () -> {
-		SyncopeUserManagement.this.client = clientFactory.create(SYNCOPE_USERNAME, SYNCOPE_PASSWORD);
-		getSyncopeAvailable().countDown();
-		return true;
-	    };
-	    RetryConfig config = new RetryConfigBuilder().retryOnAnyException().retryIndefinitely()
-		    .withDelayBetweenTries(Duration.ofSeconds(CONNECT_SECS_BETWEEN_RETRIES)).withFixedBackoff().build();
-	    RetryListener listener = new RetryListener<Boolean>() {
-
-		@Override
-		public void onEvent(Status<Boolean> status) {
-		    getLogger().info(String.format(
-			    "Unable to connect to Syncope[%s] on attempt %d [%s] (total wait so far %dms). Retrying after fallback...",
-			    syncopeUrl, status.getTotalTries(), status.getLastExceptionThatCausedRetry().getMessage(),
-			    status.getTotalElapsedDuration().toMillis()));
-		    getLogger().error("Unable to connect.", status.getLastExceptionThatCausedRetry());
-		}
-	    };
-	    new CallExecutorBuilder().config(config).afterFailedTryListener(listener).build().execute(connectCheck);
+//	    String syncopeUrl = String.format("http://%s:%d/syncope/rest",
+//		    getConfiguration().getUserManagement().getSyncopeHost(),
+//		    getConfiguration().getUserManagement().getSyncopePort());
+//	    SyncopeClientFactoryBean clientFactory = new SyncopeClientFactoryBean().setAddress(syncopeUrl);
+//
+//	    getLogger().info(String.format("Attempting to connect to Syncope at '%s:%d' as '%s'...",
+//		    getConfiguration().getUserManagement().getSyncopeHost(),
+//		    getConfiguration().getUserManagement().getSyncopePort(), SYNCOPE_USERNAME));
+//	    Callable<Boolean> connectCheck = () -> {
+//		SyncopeUserManagement.this.client = clientFactory.create(SYNCOPE_USERNAME, SYNCOPE_PASSWORD);
+//		getSyncopeAvailable().countDown();
+//		return true;
+//	    };
+//	    RetryConfig config = new RetryConfigBuilder().retryOnAnyException().retryIndefinitely()
+//		    .withDelayBetweenTries(Duration.ofSeconds(CONNECT_SECS_BETWEEN_RETRIES)).withFixedBackoff().build();
+//	    RetryListener listener = new RetryListener<Boolean>() {
+//
+//		@Override
+//		public void onEvent(Status<Boolean> status) {
+//		    getLogger().info(String.format(
+//			    "Unable to connect to Syncope[%s] on attempt %d [%s] (total wait so far %dms). Retrying after fallback...",
+//			    syncopeUrl, status.getTotalTries(), status.getLastExceptionThatCausedRetry().getMessage(),
+//			    status.getTotalElapsedDuration().toMillis()));
+//		    getLogger().error("Unable to connect.", status.getLastExceptionThatCausedRetry());
+//		}
+//	    };
+//	    new CallExecutorBuilder().config(config).afterFailedTryListener(listener).build().execute(connectCheck);
 	}
     }
 

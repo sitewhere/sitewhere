@@ -23,8 +23,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sitewhere.instance.configuration.InstanceManagementConfiguration;
-import com.sitewhere.instance.configuration.UserManagementConfiguration;
 import com.sitewhere.instance.microservice.InstanceManagementMicroservice;
 import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.microservice.security.SiteWhereAuthentication;
@@ -100,9 +98,6 @@ public class BasicAuthForJwt implements ContainerRequestFilter {
      * @throws SiteWhereException
      */
     protected SiteWhereAuthentication authenticate(String encoded) throws SiteWhereException {
-	InstanceManagementConfiguration configuration = getMicroservice().getInjector()
-		.getInstance(InstanceManagementConfiguration.class);
-	UserManagementConfiguration userConfig = configuration.getUserManagement();
 	String decoded = new String(Base64.decodeBase64(encoded));
 	String[] parts = decoded.split(":");
 	if (parts.length > 1) {
@@ -118,7 +113,7 @@ public class BasicAuthForJwt implements ContainerRequestFilter {
 		}
 	    }
 
-	    String jwt = getTokenManagement().generateToken(user, userConfig.getJwtExpirationInMinutes());
+	    String jwt = getTokenManagement().generateToken(user, 60);
 	    return new SiteWhereAuthentication(username, auths, jwt);
 	}
 	throw new SiteWhereException(String.format("Invalid basic auth content: %s", decoded));
