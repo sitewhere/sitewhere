@@ -35,7 +35,6 @@ import com.sitewhere.instance.spi.tenant.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.instance.spi.user.grpc.IUserManagementGrpcServer;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
-import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.microservice.configuration.ConfigurableMicroservice;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.spi.SiteWhereException;
@@ -59,9 +58,6 @@ public class InstanceManagementMicroservice
 
     /** Instance dataset bootstrapper */
     private IInstanceBootstrapper instanceBootstrapper;
-
-    /** User management implementation */
-    private IUserManagement userManagement;
 
     /** Responds to user management GRPC requests */
     private IUserManagementGrpcServer userManagementGrpcServer;
@@ -137,9 +133,6 @@ public class InstanceManagementMicroservice
 	// Create dataset bootstrapper.
 	this.instanceBootstrapper = new InstanceBootstrapper();
 
-	// Create management implementations.
-	createManagementImplementations();
-
 	// Create GRPC components.
 	createGrpcComponents();
 
@@ -148,9 +141,6 @@ public class InstanceManagementMicroservice
 
 	// Initialize tenant management GRPC server.
 	init.addInitializeStep(this, getTenantManagementGrpcServer(), true);
-
-	// Initialize user management implementation.
-	init.addInitializeStep(this, getUserManagement(), true);
 
 	// Initialize dataset bootstrapper.
 	init.addInitializeStep(this, getInstanceBootstrapper(), true);
@@ -181,13 +171,6 @@ public class InstanceManagementMicroservice
 
 	// Execute initialization steps.
 	init.execute(monitor);
-    }
-
-    /**
-     * Create management implementations.
-     */
-    protected void createManagementImplementations() {
-	this.userManagement = getInjector().getInstance(IUserManagement.class);
     }
 
     /**
@@ -239,9 +222,6 @@ public class InstanceManagementMicroservice
 
 	// Start tenant management GRPC server.
 	start.addStartStep(this, getTenantManagementGrpcServer(), true);
-
-	// Start user management implementation.
-	start.addStartStep(this, getUserManagement(), true);
 
 	// Start dataset bootstrapper.
 	start.addStartStep(this, getInstanceBootstrapper(), true);
@@ -310,9 +290,6 @@ public class InstanceManagementMicroservice
 
 	// Stop tenant management GRPC manager.
 	stop.addStopStep(this, getTenantManagementGrpcServer());
-
-	// Stop user management implementation.
-	stop.addStopStep(this, getUserManagement());
 
 	// Stop dataset bootstrapper.
 	stop.addStopStep(this, getInstanceBootstrapper());
@@ -395,15 +372,6 @@ public class InstanceManagementMicroservice
     @Override
     public IUserManagementGrpcServer getUserManagementGrpcServer() {
 	return userManagementGrpcServer;
-    }
-
-    /*
-     * @see com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice#
-     * getUserManagement()
-     */
-    @Override
-    public IUserManagement getUserManagement() {
-	return userManagement;
     }
 
     /*

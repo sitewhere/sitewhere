@@ -9,9 +9,9 @@ package com.sitewhere.instance.grpc.user;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.instance.spi.user.grpc.IUserManagementGrpcServer;
-import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.microservice.grpc.GrpcServer;
 import com.sitewhere.spi.microservice.grpc.IGrpcSettings;
+import com.sitewhere.spi.microservice.user.IUserManagement;
 
 /**
  * Hosts a GRPC server that handles user management requests.
