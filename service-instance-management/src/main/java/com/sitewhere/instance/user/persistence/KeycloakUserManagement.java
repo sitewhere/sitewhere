@@ -24,9 +24,12 @@ import org.keycloak.admin.client.resource.GroupResource;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.ServerInfoResource;
 import org.keycloak.admin.client.resource.UserResource;
+import org.keycloak.admin.client.token.TokenManager;
+import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.GroupRepresentation;
+import org.keycloak.representations.idm.KeysMetadataRepresentation.KeyMetadataRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -36,6 +39,7 @@ import com.google.inject.Inject;
 import com.sitewhere.instance.configuration.InstanceManagementConfiguration;
 import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.microservice.lifecycle.AsyncStartLifecycleComponent;
+import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.rest.model.search.Pager;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.user.GrantedAuthority;
@@ -72,10 +76,24 @@ public class KeycloakUserManagement extends AsyncStartLifecycleComponent impleme
     /** Keycloak client */
     private Keycloak keycloak;
 
+    /** OpenID Connect client secret */
+    private String clientSecret;
+
     @Inject
     public KeycloakUserManagement(InstanceManagementConfiguration configuration) {
 	super(LifecycleComponentType.DataStore);
 	this.configuration = configuration;
+    }
+
+    /**
+     * Get server URL for processing requests.
+     * 
+     * @return
+     */
+    protected String getServerUrl() {
+	IInstanceSettings settings = getMicroservice().getInstanceSettings();
+	String serviceName = settings.getKeycloakServiceName() + "." + ISiteWhereKubernetesClient.NS_SITEWHERE_SYSTEM;
+	return String.format("http://%s:%s/auth", serviceName, settings.getKeycloakApiPort());
     }
 
     /*
@@ -85,10 +103,9 @@ public class KeycloakUserManagement extends AsyncStartLifecycleComponent impleme
     @Override
     public void asyncStart() throws SiteWhereException {
 	IInstanceSettings settings = getMicroservice().getInstanceSettings();
-	String serviceName = settings.getKeycloakServiceName() + "." + ISiteWhereKubernetesClient.NS_SITEWHERE_SYSTEM;
 
 	// Create Keycloak API client and test it.
-	String url = String.format("http://%s:%s/auth", serviceName, settings.getKeycloakApiPort());
+	String url = getServerUrl();
 	this.keycloak = KeycloakBuilder.builder().serverUrl(url).realm(settings.getKeycloakMasterRealm())
 		.username(settings.getKeycloakMasterUsername()).password(settings.getKeycloakMasterPassword())
 		.clientId("admin-cli").build();
@@ -165,6 +182,8 @@ public class KeycloakUserManagement extends AsyncStartLifecycleComponent impleme
 		throw new SiteWhereException(
 			String.format("Unable to create realm for instance (%s).", CLIENT_ID_OPENID_CONNECT), e1);
 	    }
+	} finally {
+	    this.clientSecret = getRealmResource().clients().get(CLIENT_ID_OPENID_CONNECT).getSecret().getValue();
 	}
     }
 
@@ -270,10 +289,10 @@ public class KeycloakUserManagement extends AsyncStartLifecycleComponent impleme
     /*
      * @see
      * com.sitewhere.microservice.api.user.IUserManagement#createUser(com.sitewhere.
-     * spi.user.request.IUserCreateRequest, java.lang.Boolean)
+     * spi.user.request.IUserCreateRequest)
      */
     @Override
-    public IUser createUser(IUserCreateRequest request, Boolean encodePassword) throws SiteWhereException {
+    public IUser createUser(IUserCreateRequest request) throws SiteWhereException {
 	UserRepresentation user = createUserFromRequest(request);
 	Response result = getRealmResource().users().create(user);
 	if (result.getStatus() != HttpStatus.SC_CREATED) {
@@ -284,33 +303,33 @@ public class KeycloakUserManagement extends AsyncStartLifecycleComponent impleme
 
     /*
      * @see
-     * com.sitewhere.microservice.api.user.IUserManagement#importUser(com.sitewhere.
-     * spi.user.IUser, boolean)
+     * com.sitewhere.microservice.api.user.IUserManagement#getAccessToken(java.lang.
+     * String, java.lang.String)
      */
     @Override
-    public IUser importUser(IUser user, boolean overwrite) throws SiteWhereException {
-	throw new SiteWhereException("Not implemented.");
+    public String getAccessToken(String username, String password) throws SiteWhereException {
+	IInstanceSettings settings = getMicroservice().getInstanceSettings();
+	Keycloak instance = Keycloak.getInstance(getServerUrl(), settings.getKeycloakRealm(), username, password,
+		CLIENT_ID_OPENID_CONNECT, getClientSecret());
+	TokenManager tokenManager = instance.tokenManager();
+	AccessTokenResponse accessToken = tokenManager.getAccessToken();
+	String json = new String(MarshalUtils.marshalJson(accessToken));
+	getLogger().info(String.format("Access token:\n%s\n\n", accessToken));
+	return json;
     }
 
     /*
-     * @see
-     * com.sitewhere.microservice.api.user.IUserManagement#authenticate(java.lang.
-     * String, java.lang.String, boolean)
+     * @see com.sitewhere.microservice.api.user.IUserManagement#getPublicKey()
      */
     @Override
-    public IUser authenticate(String username, String password, boolean updateLastLogin) throws SiteWhereException {
-	UserResource userResource = getRealmResource().users().get(username);
-	if (userResource != null) {
-	    List<CredentialRepresentation> credentials = userResource.credentials();
-	    for (CredentialRepresentation credential : credentials) {
-		if (credential.getType() == CredentialRepresentation.PASSWORD) {
-		    if (password != null && password.equals(credential.getValue())) {
-			return getUserByUsername(username);
-		    }
-		}
+    public String getPublicKey() throws SiteWhereException {
+	List<KeyMetadataRepresentation> keys = getRealmResource().keys().getKeyMetadata().getKeys();
+	for (KeyMetadataRepresentation key : keys) {
+	    if (key.getType().equals("RSA")) {
+		return key.getPublicKey();
 	    }
 	}
-	throw new SiteWhereException("User credentials do not match.");
+	throw new SiteWhereException("No RSA public key found.");
     }
 
     /*
@@ -619,5 +638,9 @@ public class KeycloakUserManagement extends AsyncStartLifecycleComponent impleme
 
     protected Keycloak getKeycloak() {
 	return keycloak;
+    }
+
+    protected String getClientSecret() {
+	return clientSecret;
     }
 }

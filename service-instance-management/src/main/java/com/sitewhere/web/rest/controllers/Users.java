@@ -86,7 +86,7 @@ public class Users {
 	if (input.getStatus() == null) {
 	    input.setStatus(AccountStatus.Active);
 	}
-	return Response.ok(getUserManagement().createUser(input, true)).build();
+	return Response.ok(getUserManagement().createUser(input)).build();
     }
 
     /**

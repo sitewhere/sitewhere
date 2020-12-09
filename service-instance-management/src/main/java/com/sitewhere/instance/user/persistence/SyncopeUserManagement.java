@@ -73,14 +73,14 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
  */
 public class SyncopeUserManagement extends AsyncStartLifecycleComponent implements IUserManagement {
 
-//    /** Number of seconds between fallback attempts for connecting to Syncope */
-//    private static final int CONNECT_SECS_BETWEEN_RETRIES = 10;
-//
-//    /** Default Syncope username */
-//    private static final String SYNCOPE_USERNAME = "synadmin";
-//
-//    /** Default Syncope password */
-//    private static final String SYNCOPE_PASSWORD = "password";
+    // /** Number of seconds between fallback attempts for connecting to Syncope */
+    // private static final int CONNECT_SECS_BETWEEN_RETRIES = 10;
+    //
+    // /** Default Syncope username */
+    // private static final String SYNCOPE_USERNAME = "synadmin";
+    //
+    // /** Default Syncope password */
+    // private static final String SYNCOPE_PASSWORD = "password";
 
     /** SiteWhere Syncope application key */
     private static final String SITEWHERE_APPLICATION_KEY = "sitewhere";
@@ -155,10 +155,11 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 	    throw new SiteWhereException("Connection to Syncope could not be established.");
 	}
 
-//	String domain = getClient().getDomain();
-//	getLogger().info(String.format("Syncope client connected to %s:%d using domain %s.",
-//		getConfiguration().getUserManagement().getSyncopeHost(),
-//		getConfiguration().getUserManagement().getSyncopePort(), domain));
+	// String domain = getClient().getDomain();
+	// getLogger().info(String.format("Syncope client connected to %s:%d using
+	// domain %s.",
+	// getConfiguration().getUserManagement().getSyncopeHost(),
+	// getConfiguration().getUserManagement().getSyncopePort(), domain));
 
 	// Verify that SiteWhere application exists.
 	getOrCreateSiteWhereApplication();
@@ -228,11 +229,11 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
     /*
      * @see
      * com.sitewhere.microservice.api.user.IUserManagement#createUser(com.sitewhere.
-     * spi.user.request.IUserCreateRequest, java.lang.Boolean)
+     * spi.user.request.IUserCreateRequest)
      */
     @Override
-    public IUser createUser(IUserCreateRequest request, Boolean encodePassword) throws SiteWhereException {
-	User swuser = UserManagementPersistenceLogic.userCreateLogic(request, encodePassword);
+    public IUser createUser(IUserCreateRequest request) throws SiteWhereException {
+	User swuser = UserManagementPersistenceLogic.userCreateLogic(request);
 
 	UserTO user = new UserTO();
 	user.setRealm("/");
@@ -261,21 +262,19 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
 
     /*
      * @see
-     * com.sitewhere.microservice.api.user.IUserManagement#importUser(com.sitewhere.
-     * spi.user.IUser, boolean)
+     * com.sitewhere.microservice.api.user.IUserManagement#getAccessToken(java.lang.
+     * String, java.lang.String)
      */
     @Override
-    public IUser importUser(IUser user, boolean overwrite) throws SiteWhereException {
+    public String getAccessToken(String username, String password) throws SiteWhereException {
 	throw new RuntimeException("Not implemented.");
     }
 
     /*
-     * @see
-     * com.sitewhere.microservice.api.user.IUserManagement#authenticate(java.lang.
-     * String, java.lang.String, boolean)
+     * @see com.sitewhere.microservice.api.user.IUserManagement#getPublicKey()
      */
     @Override
-    public IUser authenticate(String username, String password, boolean updateLastLogin) throws SiteWhereException {
+    public String getPublicKey() throws SiteWhereException {
 	throw new RuntimeException("Not implemented.");
     }
 
@@ -661,35 +660,43 @@ public class SyncopeUserManagement extends AsyncStartLifecycleComponent implemen
     protected class SyncopeConnectionWaiter implements Runnable {
 
 	@Override
-//	@SuppressWarnings({ "unchecked", "rawtypes" })
+	// @SuppressWarnings({ "unchecked", "rawtypes" })
 	public void run() {
-//	    String syncopeUrl = String.format("http://%s:%d/syncope/rest",
-//		    getConfiguration().getUserManagement().getSyncopeHost(),
-//		    getConfiguration().getUserManagement().getSyncopePort());
-//	    SyncopeClientFactoryBean clientFactory = new SyncopeClientFactoryBean().setAddress(syncopeUrl);
-//
-//	    getLogger().info(String.format("Attempting to connect to Syncope at '%s:%d' as '%s'...",
-//		    getConfiguration().getUserManagement().getSyncopeHost(),
-//		    getConfiguration().getUserManagement().getSyncopePort(), SYNCOPE_USERNAME));
-//	    Callable<Boolean> connectCheck = () -> {
-//		SyncopeUserManagement.this.client = clientFactory.create(SYNCOPE_USERNAME, SYNCOPE_PASSWORD);
-//		getSyncopeAvailable().countDown();
-//		return true;
-//	    };
-//	    RetryConfig config = new RetryConfigBuilder().retryOnAnyException().retryIndefinitely()
-//		    .withDelayBetweenTries(Duration.ofSeconds(CONNECT_SECS_BETWEEN_RETRIES)).withFixedBackoff().build();
-//	    RetryListener listener = new RetryListener<Boolean>() {
-//
-//		@Override
-//		public void onEvent(Status<Boolean> status) {
-//		    getLogger().info(String.format(
-//			    "Unable to connect to Syncope[%s] on attempt %d [%s] (total wait so far %dms). Retrying after fallback...",
-//			    syncopeUrl, status.getTotalTries(), status.getLastExceptionThatCausedRetry().getMessage(),
-//			    status.getTotalElapsedDuration().toMillis()));
-//		    getLogger().error("Unable to connect.", status.getLastExceptionThatCausedRetry());
-//		}
-//	    };
-//	    new CallExecutorBuilder().config(config).afterFailedTryListener(listener).build().execute(connectCheck);
+	    // String syncopeUrl = String.format("http://%s:%d/syncope/rest",
+	    // getConfiguration().getUserManagement().getSyncopeHost(),
+	    // getConfiguration().getUserManagement().getSyncopePort());
+	    // SyncopeClientFactoryBean clientFactory = new
+	    // SyncopeClientFactoryBean().setAddress(syncopeUrl);
+	    //
+	    // getLogger().info(String.format("Attempting to connect to Syncope at '%s:%d'
+	    // as '%s'...",
+	    // getConfiguration().getUserManagement().getSyncopeHost(),
+	    // getConfiguration().getUserManagement().getSyncopePort(), SYNCOPE_USERNAME));
+	    // Callable<Boolean> connectCheck = () -> {
+	    // SyncopeUserManagement.this.client = clientFactory.create(SYNCOPE_USERNAME,
+	    // SYNCOPE_PASSWORD);
+	    // getSyncopeAvailable().countDown();
+	    // return true;
+	    // };
+	    // RetryConfig config = new
+	    // RetryConfigBuilder().retryOnAnyException().retryIndefinitely()
+	    // .withDelayBetweenTries(Duration.ofSeconds(CONNECT_SECS_BETWEEN_RETRIES)).withFixedBackoff().build();
+	    // RetryListener listener = new RetryListener<Boolean>() {
+	    //
+	    // @Override
+	    // public void onEvent(Status<Boolean> status) {
+	    // getLogger().info(String.format(
+	    // "Unable to connect to Syncope[%s] on attempt %d [%s] (total wait so far
+	    // %dms). Retrying after fallback...",
+	    // syncopeUrl, status.getTotalTries(),
+	    // status.getLastExceptionThatCausedRetry().getMessage(),
+	    // status.getTotalElapsedDuration().toMillis()));
+	    // getLogger().error("Unable to connect.",
+	    // status.getLastExceptionThatCausedRetry());
+	    // }
+	    // };
+	    // new
+	    // CallExecutorBuilder().config(config).afterFailedTryListener(listener).build().execute(connectCheck);
 	}
     }
 
