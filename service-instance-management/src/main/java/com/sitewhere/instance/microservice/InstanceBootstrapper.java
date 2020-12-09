@@ -8,7 +8,6 @@
 package com.sitewhere.instance.microservice;
 
 import com.sitewhere.instance.spi.microservice.IInstanceBootstrapper;
-import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.microservice.api.user.UserManagementRequestBuilder;
 import com.sitewhere.microservice.instance.InstanceStatusUpdateOperation;
 import com.sitewhere.microservice.lifecycle.AsyncStartLifecycleComponent;
@@ -27,6 +26,7 @@ import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.microservice.scripting.IScriptVariables;
 import com.sitewhere.spi.microservice.tenant.ITenantManagement;
+import com.sitewhere.spi.microservice.user.IUserManagement;
 
 import io.sitewhere.k8s.crd.common.BootstrapState;
 import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
