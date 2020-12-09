@@ -30,9 +30,6 @@ import com.sitewhere.microservice.security.UserContext;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
-import com.sitewhere.spi.user.IGrantedAuthority;
-import com.sitewhere.spi.user.IRole;
-import com.sitewhere.spi.user.IUser;
 
 /**
  * Handles basic authentication for JWT authentication requests.
@@ -103,18 +100,9 @@ public class BasicAuthForJwt implements ContainerRequestFilter {
 	if (parts.length > 1) {
 	    String username = parts[0];
 	    String password = parts[1];
-	    IUser user = getUserManagement().authenticate(username, password, false);
+	    String token = getUserManagement().getAccessToken(username, password);
 	    List<String> auths = new ArrayList<>();
-	    for (IRole role : user.getRoles()) {
-		for (IGrantedAuthority authority : role.getAuthorities()) {
-		    if (!auths.contains(authority.getAuthority())) {
-			auths.add(authority.getAuthority());
-		    }
-		}
-	    }
-
-	    String jwt = getTokenManagement().generateToken(user, 60);
-	    return new SiteWhereAuthentication(username, auths, jwt);
+	    return new SiteWhereAuthentication(username, auths, token);
 	}
 	throw new SiteWhereException(String.format("Invalid basic auth content: %s", decoded));
     }

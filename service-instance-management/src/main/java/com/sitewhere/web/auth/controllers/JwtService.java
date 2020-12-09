@@ -20,11 +20,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.keycloak.representations.AccessTokenResponse;
 
+import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.security.SiteWhereAuthentication;
 import com.sitewhere.microservice.security.UserContext;
+import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.security.ITokenManagement;
+import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.web.ISiteWhereWebConstants;
 
 import io.swagger.annotations.ApiOperation;
@@ -32,7 +35,7 @@ import io.swagger.annotations.ApiOperation;
 /**
  * Controller for security operations.
  */
-@Path("/authapi/jwt")
+@Path("/authapi")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "JWT Authentication", description = "Supports authentication via JSON Web Token.")
@@ -42,35 +45,68 @@ public class JwtService {
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(JwtService.class);
 
-    /** Injected reference to token management */
     @Inject
-    ITokenManagement tokenManagement;
+    private IInstanceManagementMicroservice<?> microservice;
 
     /**
-     * Use basic authentication information to generate a JWT and return it as a
-     * header in the servlet response. This is the only method that allows basic
-     * authentication. All others expect the JWT in the Authorization header.
+     * Use basic authentication information to generate a JWT access token and
+     * return it as a header in the servlet response. This is the only method that
+     * allows basic authentication. All others expect the JWT in the Authorization
+     * header.
      * 
      * @return
      * @throws SiteWhereException
      */
     @GET
-    @ApiOperation(value = "Authenticate and receive a JWT")
-    public Response jwt() throws SiteWhereException {
+    @Path("/jwt")
+    @ApiOperation(value = "Authenticate and receive an access token")
+    public Response jwtWithUserDetail() throws SiteWhereException {
 	SiteWhereAuthentication auth = UserContext.getCurrentUser();
 	if (auth != null) {
-	    return Response.ok().header(ISiteWhereWebConstants.HEADER_JWT, auth.getJwt()).build();
+	    AccessTokenResponse accessToken = MarshalUtils.unmarshalJson(auth.getJwt().getBytes(),
+		    AccessTokenResponse.class);
+	    IUser user = getMicroservice().getUserManagement().getUserByUsername(auth.getUsername());
+	    return Response.ok(user).header(ISiteWhereWebConstants.HEADER_JWT, accessToken.getToken()).build();
 	}
 	LOGGER.warn("No user context found for current thread.");
 	return Response.status(Status.UNAUTHORIZED).build();
     }
 
     /**
-     * Get {@link ITokenManagement} implementation.
+     * Get access token for the authenticated user.
      * 
      * @return
+     * @throws SiteWhereException
      */
-    protected ITokenManagement getTokenManagement() {
-	return tokenManagement;
+    @GET
+    @Path("/token")
+    @ApiOperation(value = "Get access token for authenticated user.")
+    public Response accessToken() throws SiteWhereException {
+	SiteWhereAuthentication auth = UserContext.getCurrentUser();
+	if (auth != null) {
+	    return Response.ok(auth.getJwt()).build();
+	}
+	return Response.status(Status.UNAUTHORIZED).build();
+    }
+
+    /**
+     * Get public key used to decode JWT.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    @GET
+    @Path("/key")
+    @ApiOperation(value = "Get public key for decoding access token")
+    public Response publicKey() throws SiteWhereException {
+	SiteWhereAuthentication auth = UserContext.getCurrentUser();
+	if (auth != null) {
+	    return Response.ok(getMicroservice().getUserManagement().getPublicKey()).build();
+	}
+	return Response.status(Status.UNAUTHORIZED).build();
+    }
+
+    protected IInstanceManagementMicroservice<?> getMicroservice() {
+	return microservice;
     }
 }

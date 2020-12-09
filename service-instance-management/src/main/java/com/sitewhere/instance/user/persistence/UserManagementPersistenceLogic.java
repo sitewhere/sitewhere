@@ -30,11 +30,10 @@ public class UserManagementPersistenceLogic extends Persistence {
      * Common logic for creating a user based on an incoming request.
      *
      * @param source
-     * @param encodePassword
      * @return
      * @throws SiteWhereException
      */
-    public static User userCreateLogic(IUserCreateRequest request, boolean encodePassword) throws SiteWhereException {
+    public static User userCreateLogic(IUserCreateRequest request) throws SiteWhereException {
 	User user = new User();
 	Persistence.entityCreateLogic(request, user);
 
