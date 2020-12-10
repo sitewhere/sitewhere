@@ -19,7 +19,9 @@ import com.sitewhere.microservice.scripting.ScriptingUtils;
 import com.sitewhere.microservice.security.SiteWhereAuthentication;
 import com.sitewhere.microservice.security.UserContext;
 import com.sitewhere.microservice.tenant.TenantManagementRequestBuilder;
+import com.sitewhere.rest.model.user.request.UserCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.lifecycle.IAsyncStartLifecycleComponent;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
@@ -27,6 +29,9 @@ import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.microservice.scripting.IScriptVariables;
 import com.sitewhere.spi.microservice.tenant.ITenantManagement;
 import com.sitewhere.spi.microservice.user.IUserManagement;
+import com.sitewhere.spi.user.IUser;
+import com.sitewhere.spi.user.SiteWhereRoles;
+import com.sitewhere.spi.user.request.IUserCreateRequest;
 
 import io.sitewhere.k8s.crd.common.BootstrapState;
 import io.sitewhere.k8s.crd.instance.SiteWhereInstance;
@@ -83,16 +88,6 @@ public class InstanceBootstrapper extends AsyncStartLifecycleComponent implement
 	// Load template and bootstrap datasets.
 	InstanceDatasetTemplate template = getMicroservice().loadInstanceDatasetTemplate(instance);
 
-	// Bootstrap tenants if not already bootstrapped.
-	if (instance.getStatus().getTenantManagementBootstrapState() == null) {
-	    setTenantBootstrapState(BootstrapState.NotBootstrapped);
-	}
-	if (instance.getStatus().getTenantManagementBootstrapState() != BootstrapState.Bootstrapped) {
-	    bootstrapTenants(instance, template);
-	} else {
-	    getLogger().info("Instance tenants already bootstrapped.");
-	}
-
 	// Bootstrap users if not already bootstrapped.
 	if (instance.getStatus().getUserManagementBootstrapState() == null) {
 	    setUserBootstrapState(BootstrapState.NotBootstrapped);
@@ -101,6 +96,16 @@ public class InstanceBootstrapper extends AsyncStartLifecycleComponent implement
 	    bootstrapUsers(instance, template);
 	} else {
 	    getLogger().info("Instance users already bootstrapped.");
+	}
+
+	// Bootstrap tenants if not already bootstrapped.
+	if (instance.getStatus().getTenantManagementBootstrapState() == null) {
+	    setTenantBootstrapState(BootstrapState.NotBootstrapped);
+	}
+	if (instance.getStatus().getTenantManagementBootstrapState() != BootstrapState.Bootstrapped) {
+	    bootstrapTenants(instance, template);
+	} else {
+	    getLogger().info("Instance tenants already bootstrapped.");
 	}
     }
 
@@ -205,14 +210,31 @@ public class InstanceBootstrapper extends AsyncStartLifecycleComponent implement
     }
 
     /**
+     * Bootstrap system user used for authentication between microservices for
+     * internal tasks.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    protected IUser bootstrapSystemUser() throws SiteWhereException {
+	IInstanceSettings settings = getMicroservice().getInstanceSettings();
+	IUser system = getUserManagement().getUserByUsername(settings.getKeycloakSystemUsername());
+	if (system == null) {
+	    IUserCreateRequest request = new UserCreateRequest.Builder(settings.getKeycloakSystemUsername(),
+		    settings.getKeycloakSystemPassword(), "System", "User").withRole(SiteWhereRoles.SystemAdministrator)
+			    .build();
+	    system = getUserManagement().createUser(request);
+	}
+	return system;
+    }
+
+    /**
      * Bootstrap user management using script.
      * 
      * @param template
      * @throws SiteWhereException
      */
     protected void runUserManagementInitializer(InstanceDatasetTemplate template) throws SiteWhereException {
-	SiteWhereAuthentication previous = UserContext.getCurrentUser();
-	UserContext.setContext(getMicroservice().getSystemUser().getAuthentication());
 	try {
 	    setUserBootstrapState(BootstrapState.Bootstrapping);
 	    IUserManagement users = getUserManagement();
@@ -234,12 +256,15 @@ public class InstanceBootstrapper extends AsyncStartLifecycleComponent implement
 		getLogger().info(String.format("Completed execution of user management template '%s'.",
 			template.getMetadata().getName()));
 	    }
+
+	    // Bootstrap system user.
+	    bootstrapSystemUser();
+
+	    // Indicate user management is bootstrapped.
 	    setUserBootstrapState(BootstrapState.Bootstrapped);
 	} catch (Throwable t) {
 	    setUserBootstrapState(BootstrapState.BootstrapFailed);
 	    throw t;
-	} finally {
-	    UserContext.setContext(previous);
 	}
     }
 
