@@ -46,7 +46,9 @@ import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.scripting.Binding;
 import com.sitewhere.rdb.RdbPersistenceOptions;
 import com.sitewhere.rdb.RdbTenantEngine;
+import com.sitewhere.rest.model.search.device.DeviceTypeSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceType;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
@@ -54,6 +56,7 @@ import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
 import com.sitewhere.spi.microservice.scripting.IScriptVariables;
+import com.sitewhere.spi.search.ISearchResults;
 
 import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
@@ -137,6 +140,17 @@ public class DeviceManagementTenantEngine extends RdbTenantEngine<DeviceManageme
 	RdbPersistenceOptions options = new RdbPersistenceOptions();
 	// options.setHbmToDdlAuto("update");
 	return options;
+    }
+
+    /*
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * hasExistingDataset()
+     */
+    @Override
+    public boolean hasExistingDataset() throws SiteWhereException {
+	DeviceTypeSearchCriteria criteria = new DeviceTypeSearchCriteria(1, 1);
+	ISearchResults<? extends IDeviceType> results = getDeviceManagement().listDeviceTypes(criteria);
+	return results.getNumResults() > 0 ? true : false;
     }
 
     /*
