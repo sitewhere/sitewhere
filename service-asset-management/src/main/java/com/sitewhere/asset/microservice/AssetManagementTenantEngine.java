@@ -21,12 +21,15 @@ import com.sitewhere.microservice.datastore.DatastoreDefinition;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.scripting.Binding;
 import com.sitewhere.rdb.RdbTenantEngine;
+import com.sitewhere.rest.model.search.asset.AssetTypeSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.asset.IAssetType;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
 import com.sitewhere.spi.microservice.scripting.IScriptVariables;
+import com.sitewhere.spi.search.ISearchResults;
 
 import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
@@ -90,6 +93,17 @@ public class AssetManagementTenantEngine extends RdbTenantEngine<AssetManagement
 	this.assetManagement = getInjector().getInstance(IAssetManagement.class);
 	this.assetManagementImpl = new AssetManagementImpl((IAssetManagementMicroservice) getMicroservice(),
 		getAssetManagement());
+    }
+
+    /*
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * hasExistingDataset()
+     */
+    @Override
+    public boolean hasExistingDataset() throws SiteWhereException {
+	AssetTypeSearchCriteria criteria = new AssetTypeSearchCriteria(1, 1);
+	ISearchResults<? extends IAssetType> results = getAssetManagement().listAssetTypes(criteria);
+	return results.getNumResults() > 0 ? true : false;
     }
 
     /*
