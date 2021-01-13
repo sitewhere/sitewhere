@@ -43,7 +43,6 @@ import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.user.IUserManagement;
-import com.sitewhere.spi.user.AccountStatus;
 import com.sitewhere.spi.user.IRole;
 import com.sitewhere.spi.user.IUser;
 
@@ -79,13 +78,6 @@ public class Users {
     @POST
     @Operation(summary = "Create new user", description = "Create new user")
     public Response createUser(@RequestBody UserCreateRequest input) throws SiteWhereException {
-	if ((input.getUsername() == null) || (input.getPassword() == null) || (input.getFirstName() == null)
-		|| (input.getLastName() == null)) {
-	    throw new SiteWhereSystemException(ErrorCode.InvalidUserInformation, ErrorLevel.ERROR);
-	}
-	if (input.getStatus() == null) {
-	    input.setStatus(AccountStatus.Active);
-	}
 	return Response.ok(getUserManagement().createUser(input)).build();
     }
 
