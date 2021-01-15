@@ -21,6 +21,9 @@ public class AssignmentDefaults {
     /** Token of area that will be used by default in assignment */
     private String defaultAreaToken = null;
 
+    /** Token of asset that will be used by default in assignment */
+    private String defaultAssetToken = null;
+
     public String getDefaultDeviceTypeToken() {
 	return defaultDeviceTypeToken;
     }
@@ -43,5 +46,13 @@ public class AssignmentDefaults {
 
     public void setDefaultAreaToken(String defaultAreaToken) {
 	this.defaultAreaToken = defaultAreaToken;
+    }
+
+    public String getDefaultAssetToken() {
+	return defaultAssetToken;
+    }
+
+    public void setDefaultAssetToken(String defaultAssetToken) {
+	this.defaultAssetToken = defaultAssetToken;
     }
 }

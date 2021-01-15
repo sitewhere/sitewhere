@@ -22,17 +22,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sitewhere.instance.microservice.InstanceManagementMicroservice;
-import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.microservice.security.SiteWhereAuthentication;
 import com.sitewhere.microservice.security.UserContext;
+import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.instance.IInstanceSettings;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
-import com.sitewhere.spi.user.IUser;
+import com.sitewhere.spi.microservice.user.IUserManagement;
 import com.sitewhere.spi.web.ISiteWhereWebConstants;
-
-import io.jsonwebtoken.Claims;
-import io.sitewhere.k8s.crd.tenant.SiteWhereTenant;
 
 /**
  * Handles JWT authentication for API requests.
@@ -72,47 +69,26 @@ public class JwtAuthForApi implements ContainerRequestFilter {
 
 	String jwt = context.getHeaderString(AUTHORIZATION_HEADER);
 	if (jwt == null) {
-	    LOGGER.info("API request attempted without JWT passed.");
+	    LOGGER.debug("API request attempted without JWT passed.");
 	    context.abortWith(Response.status(Status.UNAUTHORIZED).build());
 	    return;
 	}
 	jwt = jwt.substring(7);
 
 	String tenantId = context.getHeaderString(ISiteWhereWebConstants.HEADER_TENANT_ID);
-	SiteWhereTenant tenant = null;
-	if (tenantId != null) {
-	    tenant = getMicroservice().getSiteWhereKubernetesClient().getTenants()
-		    .inNamespace(getInstanceSettings().getKubernetesNamespace()).withName(tenantId).get();
-	}
-
 	try {
-	    SiteWhereAuthentication authenticated = authenticate(jwt, tenant);
+	    SiteWhereAuthentication authenticated = getTokenManagement().getAuthenticationFromToken(jwt);
 	    authenticated.setTenantToken(tenantId);
+	    if (LOGGER.isDebugEnabled()) {
+		LOGGER.debug(String.format("Authentication:\n%s\n\n",
+			MarshalUtils.marshalJsonAsPrettyString(authenticated)));
+	    }
 	    UserContext.setContext(authenticated);
 	} catch (SiteWhereException e) {
-	    LOGGER.warn("Error locating user for JWT token request.", e);
+	    LOGGER.debug(String.format("Unable to process JWT: %s", e.getMessage()), e);
 	    context.abortWith(Response.status(Status.FORBIDDEN).build());
 	    return;
 	}
-    }
-
-    /**
-     * Attempt to establish authentication based on JWT information.
-     * 
-     * @param jwt
-     * @param tenant
-     * @return
-     * @throws SiteWhereException
-     */
-    protected SiteWhereAuthentication authenticate(String jwt, SiteWhereTenant tenant) throws SiteWhereException {
-	Claims claims = getTokenManagement().getClaimsForToken(jwt);
-	String username = getTokenManagement().getUsernameFromClaims(claims);
-	IUser user = getUserManagement().getUserByUsername(username);
-	if (user != null) {
-	    List<String> auths = getTokenManagement().getGrantedAuthoritiesFromClaims(claims);
-	    return new SiteWhereAuthentication(username, auths, jwt);
-	}
-	throw new SiteWhereException("User associated with JWT not found.");
     }
 
     protected InstanceManagementMicroservice getMicroservice() {

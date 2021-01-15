@@ -26,11 +26,11 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
-import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
 import com.sitewhere.rest.model.user.request.GrantedAuthorityCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.microservice.user.IUserManagement;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.web.rest.model.GrantedAuthorityHierarchyBuilder;

@@ -17,7 +17,6 @@ import com.sitewhere.instance.spi.tenant.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.instance.spi.user.grpc.IUserManagementGrpcServer;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
-import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
 
@@ -33,13 +32,6 @@ public interface IInstanceManagementMicroservice<F extends IFunctionIdentifier>
      * @return
      */
     public IInstanceBootstrapper getInstanceBootstrapper();
-
-    /**
-     * Get user management implementation.
-     * 
-     * @return
-     */
-    public IUserManagement getUserManagement();
 
     /**
      * Get user management gRPC server.

@@ -7,6 +7,7 @@
  */
 package com.sitewhere.instance.configuration;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.spi.microservice.IMicroserviceConfiguration;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -18,13 +19,13 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 public class InstanceManagementConfiguration implements IMicroserviceConfiguration {
 
     /** User management configuration */
-    private UserManagementConfiguration userManagement;
+    private JsonNode userManagement;
 
-    public UserManagementConfiguration getUserManagement() {
+    public JsonNode getUserManagement() {
 	return userManagement;
     }
 
-    public void setUserManagement(UserManagementConfiguration userManagement) {
+    public void setUserManagement(JsonNode userManagement) {
 	this.userManagement = userManagement;
     }
 }

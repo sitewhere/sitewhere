@@ -15,6 +15,7 @@ import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.scripting.Binding;
 import com.sitewhere.rdb.RdbPersistenceOptions;
 import com.sitewhere.rdb.RdbTenantEngine;
+import com.sitewhere.rest.model.search.scheduling.ScheduleSearchCriteria;
 import com.sitewhere.schedule.configuration.ScheduleManagementTenantConfiguration;
 import com.sitewhere.schedule.configuration.ScheduleManagementTenantEngineModule;
 import com.sitewhere.schedule.grpc.ScheduleManagementImpl;
@@ -28,6 +29,8 @@ import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.multitenant.IMicroserviceTenantEngine;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineModule;
 import com.sitewhere.spi.microservice.scripting.IScriptVariables;
+import com.sitewhere.spi.scheduling.ISchedule;
+import com.sitewhere.spi.search.ISearchResults;
 
 import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
@@ -90,6 +93,17 @@ public class ScheduleManagementTenantEngine extends RdbTenantEngine<ScheduleMana
 	RdbPersistenceOptions options = new RdbPersistenceOptions();
 	// options.setHbmToDdlAuto("update");
 	return options;
+    }
+
+    /*
+     * @see com.sitewhere.microservice.multitenant.MicroserviceTenantEngine#
+     * hasExistingDataset()
+     */
+    @Override
+    public boolean hasExistingDataset() throws SiteWhereException {
+	ScheduleSearchCriteria criteria = new ScheduleSearchCriteria(1, 1);
+	ISearchResults<? extends ISchedule> results = getScheduleManagement().listSchedules(criteria);
+	return results.getNumResults() > 0 ? true : false;
     }
 
     /*

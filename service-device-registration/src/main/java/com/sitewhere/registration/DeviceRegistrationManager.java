@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.google.inject.Inject;
+import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.microservice.security.SystemUserRunnable;
@@ -25,6 +26,7 @@ import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.area.IArea;
+import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.customer.ICustomer;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -86,6 +88,10 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
 	    getLogger().info(String.format("Registration manager will use default area '%s' if none is specified.",
 		    getDefaultAreaToken()));
 	}
+	if (isUseDefaultAsset() && getDefaultAssetToken() != null) {
+	    getLogger().info(String.format("Registration manager will use default asset '%s' if none is specified.",
+		    getDefaultAssetToken()));
+	}
     }
 
     /*
@@ -143,6 +149,7 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
 	    // Find assignment metadata that should be associated.
 	    ICustomer customer = getCustomerFor(registration);
 	    IArea area = getAreaFor(registration);
+	    IAsset asset = getAssetFor(registration);
 
 	    // Make sure device is assigned.
 	    List<? extends IDeviceAssignment> assignments = getDeviceManagement()
@@ -156,6 +163,9 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
 		}
 		if (area != null) {
 		    assnCreate.setAreaToken(area.getToken());
+		}
+		if (asset != null) {
+		    assnCreate.setAssetToken(asset.getToken());
 		}
 		getDeviceManagement().createDeviceAssignment(assnCreate);
 	    }
@@ -242,6 +252,21 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
 		areaToken = getDefaultAreaToken();
 	    }
 	    return areaToken != null ? getDeviceManagement().getAreaByToken(areaToken) : null;
+	}
+
+	/**
+	 * Get asset that should be used for the given request.
+	 * 
+	 * @param registration
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected IAsset getAssetFor(IDeviceRegistrationPayload registration) throws SiteWhereException {
+	    String assetToken = registration.getDeviceRegistrationRequest().getAssetToken();
+	    if (assetToken == null && isUseDefaultAsset()) {
+		assetToken = getDefaultAssetToken();
+	    }
+	    return assetToken != null ? getAssetManagement().getAssetByToken(assetToken) : null;
 	}
 
 	/**
@@ -341,6 +366,23 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
     }
 
     /*
+     * @see com.sitewhere.registration.spi.IRegistrationManager#isUseDefaultAsset()
+     */
+    @Override
+    public boolean isUseDefaultAsset() {
+	return getConfiguration().getAssignmentDefaults().getDefaultAssetToken() != null;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.registration.spi.IRegistrationManager#getDefaultAssetToken()
+     */
+    @Override
+    public String getDefaultAssetToken() {
+	return getConfiguration().getAssignmentDefaults().getDefaultAssetToken();
+    }
+
+    /*
      * @see
      * com.sitewhere.registration.spi.IRegistrationManager#getDefaultAreaToken()
      */
@@ -359,5 +401,9 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
 
     private IDeviceManagement getDeviceManagement() {
 	return ((IDeviceRegistrationMicroservice) getTenantEngine().getMicroservice()).getDeviceManagement();
+    }
+
+    private IAssetManagement getAssetManagement() {
+	return ((IDeviceRegistrationMicroservice) getTenantEngine().getMicroservice()).getAssetManagement();
     }
 }

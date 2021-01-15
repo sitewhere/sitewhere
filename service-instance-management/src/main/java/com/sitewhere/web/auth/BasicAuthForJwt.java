@@ -8,8 +8,8 @@
 package com.sitewhere.web.auth;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -23,17 +23,13 @@ import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sitewhere.instance.configuration.InstanceManagementConfiguration;
-import com.sitewhere.instance.configuration.UserManagementConfiguration;
 import com.sitewhere.instance.microservice.InstanceManagementMicroservice;
-import com.sitewhere.microservice.api.user.IUserManagement;
 import com.sitewhere.microservice.security.SiteWhereAuthentication;
 import com.sitewhere.microservice.security.UserContext;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.microservice.security.ITokenManagement;
-import com.sitewhere.spi.user.IGrantedAuthority;
-import com.sitewhere.spi.user.IUser;
+import com.sitewhere.spi.microservice.user.IUserManagement;
 
 /**
  * Handles basic authentication for JWT authentication requests.
@@ -99,19 +95,14 @@ public class BasicAuthForJwt implements ContainerRequestFilter {
      * @throws SiteWhereException
      */
     protected SiteWhereAuthentication authenticate(String encoded) throws SiteWhereException {
-	InstanceManagementConfiguration configuration = getMicroservice().getInjector()
-		.getInstance(InstanceManagementConfiguration.class);
-	UserManagementConfiguration userConfig = configuration.getUserManagement();
 	String decoded = new String(Base64.decodeBase64(encoded));
 	String[] parts = decoded.split(":");
 	if (parts.length > 1) {
 	    String username = parts[0];
 	    String password = parts[1];
-	    IUser user = getUserManagement().authenticate(username, password, false);
-	    List<IGrantedAuthority> gauths = getUserManagement().getGrantedAuthorities(username);
-	    List<String> auths = gauths.stream().map(IGrantedAuthority::getAuthority).collect(Collectors.toList());
-	    String jwt = getTokenManagement().generateToken(user, userConfig.getJwtExpirationInMinutes());
-	    return new SiteWhereAuthentication(username, auths, jwt);
+	    String token = getUserManagement().getAccessToken(username, password);
+	    List<String> auths = new ArrayList<>();
+	    return new SiteWhereAuthentication(username, auths, token);
 	}
 	throw new SiteWhereException(String.format("Invalid basic auth content: %s", decoded));
     }

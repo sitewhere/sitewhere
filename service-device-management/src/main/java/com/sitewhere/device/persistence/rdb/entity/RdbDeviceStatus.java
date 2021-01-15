@@ -20,6 +20,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -28,6 +29,7 @@ import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sitewhere.rdb.entities.RdbBrandedEntity;
 import com.sitewhere.rdb.entities.RdbPersistentEntity;
 import com.sitewhere.spi.device.IDeviceStatus;
@@ -49,9 +51,13 @@ public class RdbDeviceStatus extends RdbPersistentEntity implements IDeviceStatu
     @Column(name = "code")
     private String code;
 
-    /** Unique id for parent device type */
-    @Column(name = "device_type_id")
+    @Column(name = "device_type_id", nullable = false)
     private UUID deviceTypeId;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "device_type_id", insertable = false, updatable = false)
+    private RdbDeviceType deviceType;
 
     /** Display name */
     @Column(name = "name")

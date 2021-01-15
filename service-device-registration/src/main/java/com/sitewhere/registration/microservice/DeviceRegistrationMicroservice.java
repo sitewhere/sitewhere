@@ -9,9 +9,12 @@ package com.sitewhere.registration.microservice;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
 import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
+import com.sitewhere.grpc.client.spi.client.IAssetManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
@@ -37,6 +40,11 @@ public class DeviceRegistrationMicroservice extends
 
     /** Device management API channel */
     private CachedDeviceManagementApiChannel deviceManagement;
+
+    /** Asset management API channel */
+    // private CachedAssetManagementApiChannel assetManagement;
+    /** Asset management API channel */
+    private IAssetManagementApiChannel<?> assetManagementApiChannel;
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()
@@ -98,6 +106,9 @@ public class DeviceRegistrationMicroservice extends
 	// Initialize device management API channel.
 	init.addInitializeStep(this, getDeviceManagement(), true);
 
+	// Initialize asset management API channel.
+	init.addInitializeStep(this, getAssetManagement(), true);
+
 	// Execute initialization steps.
 	init.execute(monitor);
     }
@@ -114,8 +125,11 @@ public class DeviceRegistrationMicroservice extends
 	// Composite step for starting microservice.
 	ICompositeLifecycleStep start = new CompositeLifecycleStep("Start " + getName());
 
-	// Start device mangement API channel.
+	// Start device management API channel.
 	start.addStartStep(this, getDeviceManagement(), true);
+
+	// Start asset management API channel.
+	start.addStartStep(this, getAssetManagement(), true);
 
 	// Execute startup steps.
 	start.execute(monitor);
@@ -130,8 +144,11 @@ public class DeviceRegistrationMicroservice extends
 	// Composite step for stopping microservice.
 	ICompositeLifecycleStep stop = new CompositeLifecycleStep("Stop " + getName());
 
-	// Stop device mangement API channel.
+	// Stop device management API channel.
 	stop.addStopStep(this, getDeviceManagement());
+
+	// Stop asset management API channel.
+	stop.addStopStep(this, getAssetManagement());
 
 	// Execute shutdown steps.
 	stop.execute(monitor);
@@ -144,9 +161,11 @@ public class DeviceRegistrationMicroservice extends
      */
     private void createGrpcComponents() {
 	// Device management.
-	IDeviceManagementApiChannel<?> wrapped = new DeviceManagementApiChannel(getInstanceSettings());
-	this.deviceManagement = new CachedDeviceManagementApiChannel(wrapped,
+	IDeviceManagementApiChannel<?> wrappedDeviceManagement = new DeviceManagementApiChannel(getInstanceSettings());
+	this.deviceManagement = new CachedDeviceManagementApiChannel(wrappedDeviceManagement,
 		new CachedDeviceManagementApiChannel.CacheSettings());
+	// Asset management microservice connectivity.
+	this.assetManagementApiChannel = new AssetManagementApiChannel(getInstanceSettings());
     }
 
     /*
@@ -157,5 +176,15 @@ public class DeviceRegistrationMicroservice extends
     @Override
     public IDeviceManagement getDeviceManagement() {
 	return deviceManagement;
+    }
+
+    /*
+     * @see
+     * com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice#
+     * getAssetManagement()
+     */
+    @Override
+    public IAssetManagement getAssetManagement() {
+	return assetManagementApiChannel;
     }
 }

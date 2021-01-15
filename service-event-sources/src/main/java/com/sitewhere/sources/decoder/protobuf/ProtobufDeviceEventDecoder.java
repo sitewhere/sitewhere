@@ -73,6 +73,9 @@ public class ProtobufDeviceEventDecoder extends TenantEngineLifecycleComponent i
 		if (registration.hasAreaToken()) {
 		    request.setAreaToken(registration.getAreaToken().getValue());
 		}
+		if (registration.hasAssetToken()) {
+		    request.setAssetToken(registration.getAssetToken().getValue());
+		}
 		if (registration.hasCustomerToken()) {
 		    request.setCustomerToken(registration.getCustomerToken().getValue());
 		}

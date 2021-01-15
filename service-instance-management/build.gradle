@@ -9,9 +9,6 @@ dependencies {
 	// Quarkus RESTEasy extension.
     compile 'io.quarkus:quarkus-resteasy-jackson'
     compile 'io.quarkus:quarkus-smallrye-openapi'
-
-	// Apache Syncope
-	compile group: 'org.apache.syncope.client', name: 'syncope-client-lib', version: '2.1.4'
 	
 	// Password encryption.
 	compile group: 'org.jasypt', name: 'jasypt', version: '1.9.3'
