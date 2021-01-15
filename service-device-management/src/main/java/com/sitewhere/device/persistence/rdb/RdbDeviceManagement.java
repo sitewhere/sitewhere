@@ -69,6 +69,7 @@ import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.search.area.AreaSearchCriteria;
 import com.sitewhere.rest.model.search.customer.CustomerSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceCommandSearchCriteria;
+import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceStatusSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -133,6 +134,11 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
      */
     @Override
     public RdbDeviceType createDeviceType(IDeviceTypeCreateRequest request) throws SiteWhereException {
+	RdbDeviceType existing = getDeviceTypeByToken(request.getToken());
+	if (existing != null) {
+	    throw new SiteWhereException(
+		    String.format("Another device type is already using token '%s'.", request.getToken()));
+	}
 	DeviceType deviceType = DeviceManagementPersistence.deviceTypeCreateLogic(request);
 	RdbDeviceType created = new RdbDeviceType();
 	RdbDeviceType.copy(deviceType, created);
@@ -212,6 +218,23 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	}, RdbDeviceType.class);
     }
 
+    /**
+     * Validate that device type does not have existing devices before deleting it.
+     * 
+     * @param existing
+     * @throws SiteWhereException
+     */
+    protected void validateNoExistingDevices(RdbDeviceType existing) throws SiteWhereException {
+	DeviceSearchCriteria criteria = new DeviceSearchCriteria(1, 0, null, null);
+	criteria.setDeviceTypeToken(existing.getToken());
+	ISearchResults<RdbDevice> devices = listDevices(criteria);
+	if (devices.getNumResults() > 0) {
+	    throw new SiteWhereException(
+		    String.format("Device type is used by %s devices. Devices must be deleted before deleting type.",
+			    String.valueOf(devices.getNumResults())));
+	}
+    }
+
     /*
      * @see
      * com.sitewhere.microservice.api.device.IDeviceManagement#deleteDeviceType(java
@@ -219,6 +242,11 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
      */
     @Override
     public RdbDeviceType deleteDeviceType(UUID id) throws SiteWhereException {
+	RdbDeviceType existing = getDeviceType(id);
+	if (existing == null) {
+	    throw new SiteWhereException("Invalid device type id.");
+	}
+	validateNoExistingDevices(existing);
 	return getEntityManagerProvider().remove(id, RdbDeviceType.class);
     }
 
