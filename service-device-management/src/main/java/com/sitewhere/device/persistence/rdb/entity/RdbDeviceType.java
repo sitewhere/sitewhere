@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -79,8 +80,12 @@ public class RdbDeviceType extends RdbBrandedEntity implements IDeviceType {
     private Map<String, String> metadata = new HashMap<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "deviceType", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "deviceType", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<RdbDeviceCommand> commands;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "deviceType", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<RdbDeviceStatus> statuses;
 
     /*
      * @see com.sitewhere.spi.common.IPersistentEntity#getId()
@@ -165,6 +170,14 @@ public class RdbDeviceType extends RdbBrandedEntity implements IDeviceType {
 
     public void setCommands(List<RdbDeviceCommand> commands) {
 	this.commands = commands;
+    }
+
+    public List<RdbDeviceStatus> getStatuses() {
+	return statuses;
+    }
+
+    public void setStatuses(List<RdbDeviceStatus> statuses) {
+	this.statuses = statuses;
     }
 
     public static void copy(IDeviceType source, RdbDeviceType target) {
