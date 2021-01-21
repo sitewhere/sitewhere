@@ -13,7 +13,6 @@ import java.util.List;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
-import org.apache.kafka.streams.kstream.Printed;
 
 import com.sitewhere.event.spi.kafka.IEventPersistencePipeline;
 import com.sitewhere.event.spi.microservice.IEventManagementTenantEngine;
@@ -62,7 +61,7 @@ public class EventPersistencePipeline extends KafkaStreamPipeline implements IEv
 	// Pipeline handles both event source decoded events and reprocess events.
 	builder.stream(getSourceTopicNames(),
 		Consumed.with(Serdes.UUID(), SiteWhereSerdes.forPreprocessedEventPayload()))
-		.map(getEventPersistenceMapper()).print(Printed.toSysOut());
+		.map(getEventPersistenceMapper());
     }
 
     /*
