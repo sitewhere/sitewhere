@@ -27,7 +27,7 @@ public class MqttOutboundConnectorConfiguration extends OutboundConnectorConfigu
     public static final int DEFAULT_PORT = 1883;
 
     /** Default outbound topic */
-    private static final String DEFAULT_OUTBOUND_TOPIC = "SiteWhere/%s/outbound/%s";
+    public static final String DEFAULT_OUTBOUND_TOPIC = "SiteWhere/${tenant.token}/output/${connector.id}";
 
     /** Communication protocol */
     private String protocol;

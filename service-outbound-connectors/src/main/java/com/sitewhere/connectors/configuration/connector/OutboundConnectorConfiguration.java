@@ -7,6 +7,8 @@
  */
 package com.sitewhere.connectors.configuration.connector;
 
+import org.apache.commons.text.StringSubstitutor;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.connectors.configuration.OutboundConnectorGenericConfiguration;
 import com.sitewhere.microservice.configuration.json.JsonConfiguration;
@@ -28,6 +30,16 @@ public abstract class OutboundConnectorConfiguration extends JsonConfiguration {
     public void apply(OutboundConnectorGenericConfiguration configuration) throws SiteWhereException {
 	this.id = configuration.getId();
 	loadFrom(configuration.getConfiguration());
+    }
+
+    /*
+     * @see com.sitewhere.microservice.configuration.json.JsonConfiguration#
+     * createStringSubstitutor(com.sitewhere.spi.microservice.lifecycle.
+     * ITenantEngineLifecycleComponent)
+     */
+    @Override
+    public StringSubstitutor createStringSubstitutor(ITenantEngineLifecycleComponent component) {
+	return new StringSubstitutor(new OutboundConnectorStringLookup(component, this));
     }
 
     /**

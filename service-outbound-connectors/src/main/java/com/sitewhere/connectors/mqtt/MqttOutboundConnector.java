@@ -40,9 +40,6 @@ import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
  */
 public class MqttOutboundConnector extends SerialOutboundConnector implements IMulticastingOutboundConnector<String> {
 
-    /** Default outbound topic */
-    private static final String DEFAULT_OUTBOUND_TOPIC = "SiteWhere/%s/outbound/%s";
-
     /** Configuration */
     private MqttOutboundConnectorConfiguration configuration;
 
@@ -74,11 +71,7 @@ public class MqttOutboundConnector extends SerialOutboundConnector implements IM
     public void start(ILifecycleProgressMonitor monitor) throws SiteWhereException {
 	if ((getConfiguration().getOutboundTopic() == null) && (getMulticaster() == null)
 		&& (getRouteBuilder() == null)) {
-	    this.topic = String.format(DEFAULT_OUTBOUND_TOPIC,
-		    getTenantEngine().getTenantResource().getMetadata().getName(), getConnectorId());
-	    getLogger().warn(String.format(
-		    "No topic specified and no multicaster or route builder configured. Defaulting to topic '%s'",
-		    getTopic()));
+	    throw new SiteWhereException("No topic specified and no multicaster or route builder configured.");
 	}
 
 	// Required for filters.
@@ -103,6 +96,8 @@ public class MqttOutboundConnector extends SerialOutboundConnector implements IM
 	try {
 	    Future<Void> future = connection.connect();
 	    future.await(MqttLifecycleComponent.DEFAULT_CONNECT_TIMEOUT_SECS, TimeUnit.SECONDS);
+	    getLogger().info(String.format("Connected. Events will be forwarded to topic '%s'.",
+		    getConfiguration().getOutboundTopic()));
 	} catch (Exception e) {
 	    throw new SiteWhereException("Unable to connect to MQTT broker.", e);
 	}
