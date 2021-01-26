@@ -32,7 +32,7 @@ ext['jackson.version'] = '2.9.10'
 
 allprojects {
     group = 'com.sitewhere'
-	version = '3.0.1'
+	version = '3.0.2'
 
     repositories {
 		mavenLocal()
