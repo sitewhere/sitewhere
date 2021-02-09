@@ -32,7 +32,7 @@ ext['jackson.version'] = '2.9.10'
 
 allprojects {
     group = 'com.sitewhere'
-	version = '3.0.3'
+	version = '3.0.4'
 
     repositories {
 		mavenLocal()
@@ -47,6 +47,7 @@ allprojects {
 
 
 subprojects {
+	apply plugin: "com.github.hierynomus.license"
 	license {
 		header rootProject.file('HEADER')
     	include "**/*.java"
