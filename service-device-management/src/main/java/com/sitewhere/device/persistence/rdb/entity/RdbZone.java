@@ -66,7 +66,7 @@ public class RdbZone extends RdbPersistentEntity implements IZone {
     private String name;
 
     /** Zone bounds */
-    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "zone")
+    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "zone", orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     private List<RdbZoneBoundary> bounds = new ArrayList<>();
 

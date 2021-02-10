@@ -1825,6 +1825,12 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
      */
     @Override
     public RdbZone createZone(IZoneCreateRequest request) throws SiteWhereException {
+	IZone existing = getZoneByToken(request.getToken());
+	if (existing != null) {
+	    throw new SiteWhereException(
+		    String.format("Another zone with token '%s' already exists", request.getToken()));
+	}
+
 	if (request.getAreaToken() == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
 	}
@@ -1844,14 +1850,12 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	created = getEntityManagerProvider().persist(created);
 
 	// Parse bounds into entities.
-	List<RdbZoneBoundary> bounds = new ArrayList<>();
 	for (ILocation location : request.getBounds()) {
 	    RdbZoneBoundary boundary = new RdbZoneBoundary();
 	    RdbLocation.copy(location, boundary);
 	    boundary.setZoneId(created.getId());
-	    bounds.add(boundary);
+	    created.getBounds().add(boundary);
 	}
-	created.setBounds(bounds);
 	return getEntityManagerProvider().merge(created);
     }
 
@@ -1900,18 +1904,16 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	    RdbZone.copy(updates, existing);
 
 	    // Parse bounds into entities.
-	    List<RdbZoneBoundary> bounds = null;
 	    if (request.getBounds() != null) {
-		bounds = new ArrayList<>();
+		existing.getBounds().clear();
+		existing = getEntityManagerProvider().merge(existing);
+
 		for (ILocation location : request.getBounds()) {
 		    RdbZoneBoundary boundary = new RdbZoneBoundary();
 		    RdbLocation.copy(location, boundary);
 		    boundary.setZoneId(existing.getId());
-		    bounds.add(boundary);
+		    existing.getBounds().add(boundary);
 		}
-	    }
-	    if (bounds != null) {
-		existing.setBounds(bounds);
 	    }
 
 	    return getEntityManagerProvider().merge(existing);
@@ -1925,6 +1927,11 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
      */
     @Override
     public ISearchResults<RdbZone> listZones(IZoneSearchCriteria criteria) throws SiteWhereException {
+	RdbArea area = getAreaByToken(criteria.getAreaToken());
+	if (area == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
+	}
+
 	return getEntityManagerProvider().findWithCriteria(criteria, new IRdbQueryProvider<RdbZone>() {
 
 	    /*
@@ -1935,8 +1942,9 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	    public void addPredicates(CriteriaBuilder cb, List<Predicate> predicates, Root<RdbZone> root)
 		    throws SiteWhereException {
 		if (criteria.getAreaToken() != null) {
+
 		    Path<UUID> path = root.get("areaId");
-		    predicates.add(cb.equal(path, criteria.getAreaToken()));
+		    predicates.add(cb.equal(path, area.getId()));
 		}
 	    }
 
