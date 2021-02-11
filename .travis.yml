@@ -3,27 +3,34 @@ sudo: false
 dist: trusty
 language: java
 jdk:
-- openjdk8
+  - openjdk8
 services:
-- docker
+  - docker
 before_install:
-- echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin
-- docker pull openjdk:8-jre-alpine
+  - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin
+  - docker pull openjdk:8-jre-alpine
 script:
-- |
-  echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin
-  if [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_BRANCH" == "master" ]]; then
-    echo "On Branch $TRAVIS_BRANCH, building Latest images"
-    ./gradlew dockerPushLatest
-  else
-    echo "On Branch $TRAVIS_BRANCH, checking build"
-    ./gradlew check
-  fi
+  - |
+    echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin
+    if [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_BRANCH" == "master" ]]; then
+      echo "On Branch $TRAVIS_BRANCH, building Latest images"
+      ./gradlew dockerImage
+    else
+      echo "On Branch $TRAVIS_BRANCH, checking build"
+      ./gradlew check
+    fi
 after_success:
-- wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
-- chmod +x send.sh
-- "./send.sh success $WEBHOOK_URL"
+  - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
+  - chmod +x send.sh
+  - "./send.sh success $WEBHOOK_URL"
 after_failure:
-- wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
-- chmod +x send.sh
-- "./send.sh failure $WEBHOOK_URL"
+  - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
+  - chmod +x send.sh
+  - "./send.sh failure $WEBHOOK_URL"
+
+deploy:
+  skip_cleanup: true
+  provider: script
+  script: bash scripts/deploy_docker_images.sh $TRAVIS_TAG
+  on:
+    tags: true
