@@ -60,6 +60,7 @@ import com.sitewhere.microservice.api.device.asset.DeviceMeasurementsWithAsset;
 import com.sitewhere.microservice.api.device.asset.DeviceStateChangeWithAsset;
 import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.microservice.api.label.ILabelGeneration;
+import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.rest.model.area.request.AreaCreateRequest;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceAssignmentSummary;
@@ -98,7 +99,6 @@ import com.sitewhere.spi.search.ISearchResults;
 public class Areas {
 
     /** Static logger instance */
-    @SuppressWarnings("unused")
     private static Log LOGGER = LogFactory.getLog(Areas.class);
 
     @Inject
@@ -173,7 +173,7 @@ public class Areas {
     @Operation(summary = "Get label for area", description = "Get label for area")
     public Response getAreaLabel(
 	    @Parameter(description = "Token that identifies area", required = true) @PathParam("areaToken") String areaToken,
-	    @Parameter(description = "Generator id", required = true) @PathParam("areaToken") String generatorId)
+	    @Parameter(description = "Generator id", required = true) @PathParam("generatorId") String generatorId)
 	    throws SiteWhereException {
 	IArea existing = assertArea(areaToken);
 	ILabel label = getLabelGeneration().getAreaLabel(generatorId, existing.getId());
@@ -274,6 +274,8 @@ public class Areas {
 	    @Parameter(description = "Token that identifies area", required = true) @PathParam("areaToken") String areaToken)
 	    throws SiteWhereException {
 	IArea existing = assertArea(areaToken);
+	LOGGER.info(String.format("REST call to delete area %s:\n%s\n\n", existing.getId().toString(),
+		MarshalUtils.marshalJsonAsPrettyString(existing)));
 	return Response.ok(getDeviceManagement().deleteArea(existing.getId())).build();
     }
 

@@ -92,7 +92,8 @@ public class RdbArea extends RdbBrandedEntity implements IArea {
     @Column(name = "prop_value")
     private Map<String, String> metadata = new HashMap<>();
 
-    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "area")
+    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "area", orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<RdbAreaBoundary> bounds = new ArrayList<>();
 
     /*

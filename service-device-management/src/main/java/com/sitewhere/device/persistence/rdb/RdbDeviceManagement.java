@@ -37,6 +37,7 @@ import com.sitewhere.device.persistence.DeviceManagementPersistence;
 import com.sitewhere.device.persistence.TreeBuilder;
 import com.sitewhere.device.persistence.rdb.entity.Queries;
 import com.sitewhere.device.persistence.rdb.entity.RdbArea;
+import com.sitewhere.device.persistence.rdb.entity.RdbAreaBoundary;
 import com.sitewhere.device.persistence.rdb.entity.RdbAreaType;
 import com.sitewhere.device.persistence.rdb.entity.RdbCommandParameter;
 import com.sitewhere.device.persistence.rdb.entity.RdbCustomer;
@@ -1673,7 +1674,16 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
 	Area area = DeviceManagementPersistence.areaCreateLogic(request, areaType, parentArea);
 	RdbArea created = new RdbArea();
 	RdbArea.copy(area, created);
-	return getEntityManagerProvider().persist(created);
+	created = getEntityManagerProvider().persist(created);
+
+	// Parse bounds into entities.
+	for (ILocation location : request.getBounds()) {
+	    RdbAreaBoundary boundary = new RdbAreaBoundary();
+	    RdbLocation.copy(location, boundary);
+	    boundary.setAreaId(created.getId());
+	    created.getBounds().add(boundary);
+	}
+	return getEntityManagerProvider().merge(created);
     }
 
     /*
@@ -1721,33 +1731,57 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
      */
     @Override
     public RdbArea updateArea(UUID id, IAreaCreateRequest request) throws SiteWhereException {
-	RdbArea existing = getEntityManagerProvider().findById(id, RdbArea.class);
-	if (existing != null) {
-	    // Look up area type if updated.
-	    RdbAreaType areaType = null;
-	    if (request.getAreaTypeToken() != null) {
-		areaType = getAreaTypeByToken(request.getAreaTypeToken());
-		if (areaType == null) {
-		    throw new SiteWhereSystemException(ErrorCode.InvalidAreaTypeToken, ErrorLevel.ERROR);
-		}
-	    }
+	return getEntityManagerProvider().runInTransaction(new ITransactionCallback<RdbArea>() {
 
-	    // Look up parent area if provided.
-	    RdbArea parentArea = null;
-	    if (request.getParentToken() != null) {
-		parentArea = getAreaByToken(request.getParentToken());
-		if (parentArea == null) {
-		    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
-		}
-	    }
+	    /*
+	     * @see com.sitewhere.rdb.spi.ITransactionCallback#process()
+	     */
+	    @Override
+	    public RdbArea process() throws SiteWhereException {
+		RdbArea existing = getEntityManagerProvider().findById(id, RdbArea.class);
+		if (existing != null) {
+		    // Look up area type if updated.
+		    RdbAreaType areaType = null;
+		    if (request.getAreaTypeToken() != null) {
+			areaType = getAreaTypeByToken(request.getAreaTypeToken());
+			if (areaType == null) {
+			    throw new SiteWhereSystemException(ErrorCode.InvalidAreaTypeToken, ErrorLevel.ERROR);
+			}
+		    }
 
-	    // Use common update logic.
-	    Area updates = new Area();
-	    DeviceManagementPersistence.areaUpdateLogic(request, areaType, parentArea, updates);
-	    RdbArea.copy(updates, existing);
-	    return getEntityManagerProvider().merge(existing);
-	}
-	throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
+		    // Look up parent area if provided.
+		    RdbArea parentArea = null;
+		    if (request.getParentToken() != null) {
+			parentArea = getAreaByToken(request.getParentToken());
+			if (parentArea == null) {
+			    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
+			}
+		    }
+
+		    // Use common update logic.
+		    Area updates = new Area();
+		    DeviceManagementPersistence.areaUpdateLogic(request, areaType, parentArea, updates);
+		    RdbArea.copy(updates, existing);
+
+		    // Parse bounds into entities.
+		    if (request.getBounds() != null) {
+			for (RdbAreaBoundary bound : existing.getBounds()) {
+			    getEntityManagerProvider().remove(bound.getId(), RdbAreaBoundary.class);
+			}
+			existing.getBounds().clear();
+
+			for (ILocation location : request.getBounds()) {
+			    RdbAreaBoundary boundary = new RdbAreaBoundary();
+			    RdbLocation.copy(location, boundary);
+			    boundary.setAreaId(existing.getId());
+			    existing.getBounds().add(boundary);
+			}
+		    }
+		    return getEntityManagerProvider().merge(existing);
+		}
+		throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
+	    }
+	});
     }
 
     /*
@@ -1888,37 +1922,39 @@ public class RdbDeviceManagement extends RdbTenantComponent implements IDeviceMa
      */
     @Override
     public RdbZone updateZone(UUID id, IZoneCreateRequest request) throws SiteWhereException {
-	RdbZone existing = getEntityManagerProvider().findById(id, RdbZone.class);
-	if (existing != null) {
-	    IArea area = null;
-	    if (request.getAreaToken() != null) {
-		area = getAreaByToken(request.getAreaToken());
-		if (area == null) {
-		    throw new SiteWhereSystemException(ErrorCode.InvalidAreaToken, ErrorLevel.ERROR);
+	return getEntityManagerProvider().runInTransaction(new ITransactionCallback<RdbZone>() {
+
+	    /*
+	     * @see com.sitewhere.rdb.spi.ITransactionCallback#process()
+	     */
+	    @Override
+	    public RdbZone process() throws SiteWhereException {
+		RdbZone existing = getEntityManagerProvider().findById(id, RdbZone.class);
+		if (existing != null) {
+		    // Use common update logic.
+		    Zone updates = new Zone();
+		    DeviceManagementPersistence.zoneUpdateLogic(request, updates);
+		    RdbZone.copy(updates, existing);
+
+		    // Parse bounds into entities.
+		    if (request.getBounds() != null) {
+			for (RdbZoneBoundary bound : existing.getBounds()) {
+			    getEntityManagerProvider().remove(bound.getId(), RdbZoneBoundary.class);
+			}
+			existing.getBounds().clear();
+
+			for (ILocation location : request.getBounds()) {
+			    RdbZoneBoundary boundary = new RdbZoneBoundary();
+			    RdbLocation.copy(location, boundary);
+			    boundary.setZoneId(existing.getId());
+			    existing.getBounds().add(boundary);
+			}
+		    }
+		    return getEntityManagerProvider().merge(existing);
 		}
+		throw new SiteWhereSystemException(ErrorCode.InvalidZoneToken, ErrorLevel.ERROR);
 	    }
-
-	    // Use common update logic.
-	    Zone updates = new Zone();
-	    DeviceManagementPersistence.zoneUpdateLogic(request, updates);
-	    RdbZone.copy(updates, existing);
-
-	    // Parse bounds into entities.
-	    if (request.getBounds() != null) {
-		existing.getBounds().clear();
-		existing = getEntityManagerProvider().merge(existing);
-
-		for (ILocation location : request.getBounds()) {
-		    RdbZoneBoundary boundary = new RdbZoneBoundary();
-		    RdbLocation.copy(location, boundary);
-		    boundary.setZoneId(existing.getId());
-		    existing.getBounds().add(boundary);
-		}
-	    }
-
-	    return getEntityManagerProvider().merge(existing);
-	}
-	throw new SiteWhereSystemException(ErrorCode.InvalidZoneToken, ErrorLevel.ERROR);
+	});
     }
 
     /*

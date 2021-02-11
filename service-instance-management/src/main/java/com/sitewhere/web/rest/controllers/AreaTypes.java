@@ -143,7 +143,7 @@ public class AreaTypes {
     @Operation(summary = "Get area type label", description = "Get label for an area type")
     public Response getAreaTypeLabel(
 	    @Parameter(description = "Token that identifies area type", required = true) @PathParam("areaTypeToken") String areaTypeToken,
-	    @Parameter(description = "Generator id", required = true) @PathParam("areaToken") String generatorId)
+	    @Parameter(description = "Generator id", required = true) @PathParam("generatorId") String generatorId)
 	    throws SiteWhereException {
 	IAreaType existing = assertAreaType(areaTypeToken);
 	ILabel label = getLabelGeneration().getAreaTypeLabel(generatorId, existing.getId());

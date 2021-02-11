@@ -15,8 +15,11 @@
  */
 package com.sitewhere.labels.configuration.manager;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 /**
  * Configuration for label generation manager.
  */
+@JsonSerialize
 public class LabelGenerationManagerConfiguration {
 }

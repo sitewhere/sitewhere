@@ -148,13 +148,13 @@ public class Assignments {
     public Response getDeviceAssignment(
 	    @Parameter(description = "Assignment token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
-	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(token);
+	IDeviceAssignment existing = assertDeviceAssignment(token);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
 	helper.setIncludeArea(true);
 	helper.setIncludeDeviceType(true);
-	return Response.ok(helper.convert(assignment, getAssetManagement())).build();
+	return Response.ok(helper.convert(existing, getAssetManagement())).build();
     }
 
     /**
@@ -943,6 +943,7 @@ public class Assignments {
      */
     @POST
     @Path("/{token}/end")
+    @Consumes(MediaType.WILDCARD)
     @Operation(summary = "Release an active device assignment", description = "Release an active device assignment")
     public Response endDeviceAssignment(
 	    @Parameter(description = "Assignment token", required = true) @PathParam("token") String token)
@@ -966,6 +967,7 @@ public class Assignments {
      */
     @POST
     @Path("/{token}/missing")
+    @Consumes(MediaType.WILDCARD)
     @Operation(summary = "Mark device assignment as missing", description = "Mark device assignment as missing")
     public Response missingDeviceAssignment(
 	    @Parameter(description = "Assignment token", required = true) @PathParam("token") String token)

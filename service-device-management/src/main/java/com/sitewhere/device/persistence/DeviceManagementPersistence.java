@@ -271,9 +271,6 @@ public class DeviceManagementPersistence extends Persistence {
 	if (request.getDescription() != null) {
 	    target.setDescription(request.getDescription());
 	}
-	if (request.getBounds() != null) {
-	    target.setBounds(Location.copy(request.getBounds()));
-	}
     }
 
     /**
@@ -968,9 +965,6 @@ public class DeviceManagementPersistence extends Persistence {
 	}
 	if (request.getFillOpacity() != null) {
 	    target.setFillOpacity(request.getFillOpacity());
-	}
-	if (request.getBounds() != null) {
-	    target.setBounds(Location.copy(request.getBounds()));
 	}
     }
 

@@ -131,12 +131,12 @@ public class AssetTypes {
      * @throws SiteWhereException
      */
     @GET
-    @Path("/{areaTypeToken}/label/{generatorId}")
+    @Path("/{assetTypeToken}/label/{generatorId}")
     @Produces("image/png")
     @Operation(summary = "Get label for asset type", description = "Get label for asset type")
-    public Response getAssignmentLabel(
+    public Response getAssetTypeLabel(
 	    @Parameter(description = "Asset type token", required = true) @PathParam("assetTypeToken") String assetTypeToken,
-	    @Parameter(description = "Generator id", required = true) @PathParam("v") String generatorId)
+	    @Parameter(description = "Generator id", required = true) @PathParam("generatorId") String generatorId)
 	    throws SiteWhereException {
 	IAssetType existing = assureAssetType(assetTypeToken);
 	ILabel label = getLabelGeneration().getAssetTypeLabel(generatorId, existing.getId());
