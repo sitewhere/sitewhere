@@ -27,7 +27,7 @@ import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 public class MqttConfiguration extends EventSourceConfiguration implements IMqttConfiguration {
 
     /** Default MQTT topic for receiving events */
-    public static final String DEFAULT_TOPIC = "SiteWhere/${tenant.token}/input/json";
+    public static final String DEFAULT_TOPIC = "SiteWhere/${instance.id}/${tenant.token}/input/json";
 
     /** Default number of concurrent processing threads */
     public static final int DEFAULT_NUM_THREADS = 3;
