@@ -1,9 +1,17 @@
-/*
- * Copyright (c) SiteWhere, LLC. All rights reserved. http://www.sitewhere.com
+/**
+ * Copyright © 2014-2021 The SiteWhere Authors
  *
- * The software in this package is published under the terms of the CPAL v1.0
- * license, a copy of which has been included with this distribution in the
- * LICENSE.txt file.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.sitewhere.web.rest.controllers;
 
@@ -52,6 +60,7 @@ import com.sitewhere.microservice.api.device.asset.DeviceMeasurementsWithAsset;
 import com.sitewhere.microservice.api.device.asset.DeviceStateChangeWithAsset;
 import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.microservice.api.label.ILabelGeneration;
+import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.rest.model.area.request.AreaCreateRequest;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceAssignmentSummary;
@@ -90,7 +99,6 @@ import com.sitewhere.spi.search.ISearchResults;
 public class Areas {
 
     /** Static logger instance */
-    @SuppressWarnings("unused")
     private static Log LOGGER = LogFactory.getLog(Areas.class);
 
     @Inject
@@ -165,7 +173,7 @@ public class Areas {
     @Operation(summary = "Get label for area", description = "Get label for area")
     public Response getAreaLabel(
 	    @Parameter(description = "Token that identifies area", required = true) @PathParam("areaToken") String areaToken,
-	    @Parameter(description = "Generator id", required = true) @PathParam("areaToken") String generatorId)
+	    @Parameter(description = "Generator id", required = true) @PathParam("generatorId") String generatorId)
 	    throws SiteWhereException {
 	IArea existing = assertArea(areaToken);
 	ILabel label = getLabelGeneration().getAreaLabel(generatorId, existing.getId());
@@ -266,6 +274,8 @@ public class Areas {
 	    @Parameter(description = "Token that identifies area", required = true) @PathParam("areaToken") String areaToken)
 	    throws SiteWhereException {
 	IArea existing = assertArea(areaToken);
+	LOGGER.info(String.format("REST call to delete area %s:\n%s\n\n", existing.getId().toString(),
+		MarshalUtils.marshalJsonAsPrettyString(existing)));
 	return Response.ok(getDeviceManagement().deleteArea(existing.getId())).build();
     }
 

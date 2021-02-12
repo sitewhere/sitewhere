@@ -1,9 +1,17 @@
-/*
- * Copyright (c) SiteWhere, LLC. All rights reserved. http://www.sitewhere.com
+/**
+ * Copyright © 2014-2021 The SiteWhere Authors
  *
- * The software in this package is published under the terms of the CPAL v1.0
- * license, a copy of which has been included with this distribution in the
- * LICENSE.txt file.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.sitewhere.web.rest.controllers;
 
@@ -140,13 +148,13 @@ public class Assignments {
     public Response getDeviceAssignment(
 	    @Parameter(description = "Assignment token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
-	IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(token);
+	IDeviceAssignment existing = assertDeviceAssignment(token);
 	DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper(getDeviceManagement());
 	helper.setIncludeAsset(true);
 	helper.setIncludeDevice(true);
 	helper.setIncludeArea(true);
 	helper.setIncludeDeviceType(true);
-	return Response.ok(helper.convert(assignment, getAssetManagement())).build();
+	return Response.ok(helper.convert(existing, getAssetManagement())).build();
     }
 
     /**
@@ -935,6 +943,7 @@ public class Assignments {
      */
     @POST
     @Path("/{token}/end")
+    @Consumes(MediaType.WILDCARD)
     @Operation(summary = "Release an active device assignment", description = "Release an active device assignment")
     public Response endDeviceAssignment(
 	    @Parameter(description = "Assignment token", required = true) @PathParam("token") String token)
@@ -958,6 +967,7 @@ public class Assignments {
      */
     @POST
     @Path("/{token}/missing")
+    @Consumes(MediaType.WILDCARD)
     @Operation(summary = "Mark device assignment as missing", description = "Mark device assignment as missing")
     public Response missingDeviceAssignment(
 	    @Parameter(description = "Assignment token", required = true) @PathParam("token") String token)
