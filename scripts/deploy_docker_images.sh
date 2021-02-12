@@ -2,6 +2,7 @@
 
 set -ex
 
+FEATURE_TAG=3.0
 TAG=3.0
 
 if [ "$#" -eq 1 ]; then
@@ -27,15 +28,19 @@ allMicroservices=(
 
 function tagAndPublishDocker() {
   docker tag sitewhere/${1}:${2} sitewhere/${1}:latest
+  docker tag sitewhere/${1}:${2} sitewhere/${1}:${FEATURE_TAG}
   docker push sitewhere/${1}:${2}
   docker push sitewhere/${1}:latest
+  docker push sitewhere/${1}:${FEATURE_TAG}
 }
 
 function tagAndPublishQuay() {
   docker tag docker.io/sitewhere/${1}:${2} quay.io/sitewhere/${1}:${2}
   docker tag docker.io/sitewhere/${1}:${2} quay.io/sitewhere/${1}:latest
+  docker tag docker.io/sitewhere/${1}:${2} quay.io/sitewhere/${1}:${FEATURE_TAG}
   docker push quay.io/sitewhere/${1}:${2}
   docker push quay.io/sitewhere/${1}:latest
+  docker push quay.io/sitewhere/${1}:${FEATURE_TAG}
 }
 
 echo "Publishing SiteWhere Images to Docker.io with tag $TAG and latest"
