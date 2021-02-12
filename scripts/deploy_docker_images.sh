@@ -47,7 +47,7 @@ done
 
 echo "Publishing SiteWhere Images to quay.io with tag $TAG and latest"
 
-echo "$QUAY_REGISTRY_PASSWORD" | docker login -u "$QUAY_REGISTRY_USERNAME" --password-stdin
+echo "$QUAY_REGISTRY_PASSWORD" | docker login quay.io -u "$QUAY_REGISTRY_USERNAME" --password-stdin
 for ms in ${allMicroservices[@]}; do
   tagAndPublishQuay $ms $TAG
 done
