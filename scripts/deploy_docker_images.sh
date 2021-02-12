@@ -5,7 +5,8 @@ set -ex
 TAG=3.0
 
 if [ "$#" -eq 1 ]; then
-  TAG=$1 
+  TEMP=$1
+  TAG=${TEMP:1}
 fi
 
 allMicroservices=(
@@ -25,28 +26,28 @@ allMicroservices=(
 )
 
 function tagAndPublishDocker() {
-  docker tag sitewhere/${1}:${TAG} sitewhere/${1}:latest
-  docker push sitewhere/${1}:${TAG}
+  docker tag sitewhere/${1}:${2} sitewhere/${1}:latest
+  docker push sitewhere/${1}:${2}
   docker push sitewhere/${1}:latest
 }
 
 function tagAndPublishQuay() {
-  docker tag docker.io/sitewhere/${1}:${TAG} quay.io/sitewhere/${1}:${TAG}
-  docker tag docker.io/sitewhere/${1}:${TAG} quay.io/sitewhere/${1}:latest
-  docker push quay.io/sitewhere/${1}:${TAG}
+  docker tag docker.io/sitewhere/${1}:${2} quay.io/sitewhere/${1}:${2}
+  docker tag docker.io/sitewhere/${1}:${2} quay.io/sitewhere/${1}:latest
+  docker push quay.io/sitewhere/${1}:${2}
   docker push quay.io/sitewhere/${1}:latest
 }
 
-echo "Publishing SiteWhere Images to Docker.io with tag $1 and latest"
+echo "Publishing SiteWhere Images to Docker.io with tag $TAG and latest"
 
 echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin
 for ms in ${allMicroservices[@]}; do
-  tagAndPublishDocker $ms
+  tagAndPublishDocker $ms $TAG
 done
 
-echo "Publishing SiteWhere Images to quay.io with tag $1 and latest"
+echo "Publishing SiteWhere Images to quay.io with tag $TAG and latest"
 
 echo "$QUAY_REGISTRY_PASSWORD" | docker login -u "$QUAY_REGISTRY_USERNAME" --password-stdin
 for ms in ${allMicroservices[@]}; do
-  tagAndPublishQuay $ms
+  tagAndPublishQuay $ms $TAG
 done
