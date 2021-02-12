@@ -15,7 +15,10 @@ script:
     if [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_BRANCH" == "master" ]]; then
       echo "On Branch $TRAVIS_BRANCH, building Latest images"
       ./gradlew dockerImage
-    else
+    else if [ -n "$TRAVIS_TAG" ]; then
+      echo "On Tag $TRAVIS_TAG, building Latest images"
+      ./gradlew dockerImage
+    else 
       echo "On Branch $TRAVIS_BRANCH, checking build"
       ./gradlew check
     fi
@@ -31,6 +34,6 @@ after_failure:
 deploy:
   skip_cleanup: true
   provider: script
-  script: bash scripts/deploy_docker_images.sh $TRAVIS_TAG
+  script: ./gradlew dockerImage && bash scripts/deploy_docker_images.sh $TRAVIS_TAG
   on:
     tags: true
