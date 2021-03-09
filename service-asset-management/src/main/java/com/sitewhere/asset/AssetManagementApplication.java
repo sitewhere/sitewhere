@@ -27,17 +27,17 @@ import com.sitewhere.microservice.MicroserviceApplication;
 @ApplicationScoped
 public class AssetManagementApplication extends MicroserviceApplication<IAssetManagementMicroservice> {
 
-	@Inject
-	private IAssetManagementMicroservice microservice;
+    @Inject
+    private IAssetManagementMicroservice microservice;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.microservice.spi.IMicroserviceApplication#getMicroservice()
-	 */
-	@Override
-	public IAssetManagementMicroservice getMicroservice() {
-		return microservice;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sitewhere.microservice.spi.IMicroserviceApplication#getMicroservice()
+     */
+    @Override
+    public IAssetManagementMicroservice getMicroservice() {
+	return microservice;
+    }
 }
