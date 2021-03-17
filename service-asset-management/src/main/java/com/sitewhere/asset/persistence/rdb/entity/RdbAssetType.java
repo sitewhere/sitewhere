@@ -140,10 +140,21 @@ public class RdbAssetType extends RdbBrandedEntity implements IAssetType {
     }
 
     public static void copy(IAssetType source, RdbAssetType target) {
-	target.setId(source.getId());
-	target.setAssetCategory(source.getAssetCategory());
-	target.setName(source.getName());
-	target.setDescription(source.getDescription());
+    if (source.getId() != null){
+        target.setId(source.getId());
+    }
+    if (source.getAssetCategory() != null) {
+        target.setAssetCategory(source.getAssetCategory());
+    }
+    if (source.getName() != null) {
+        target.setName(source.getName());
+    }
+    if (source.getDescription() != null) {
+        target.setDescription(source.getDescription());
+    }
+    if (source.getMetadata() != null){
+        target.setMetadata(source.getMetadata());
+    }
 	RdbBrandedEntity.copy(source, target);
     }
 }
