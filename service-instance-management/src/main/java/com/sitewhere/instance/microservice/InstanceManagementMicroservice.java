@@ -39,30 +39,28 @@ import com.sitewhere.instance.grpc.tenant.TenantManagementGrpcServer;
 import com.sitewhere.instance.grpc.user.UserManagementGrpcServer;
 import com.sitewhere.instance.spi.microservice.IInstanceBootstrapper;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
+import com.sitewhere.instance.spi.microservice.IInstanceManagementTenantEngine;
 import com.sitewhere.instance.spi.tenant.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.instance.spi.user.grpc.IUserManagementGrpcServer;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
-import com.sitewhere.microservice.configuration.ConfigurableMicroservice;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
+import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
 import com.sitewhere.spi.microservice.configuration.IMicroserviceModule;
-import com.sitewhere.spi.microservice.configuration.IScriptSpecUpdates;
-import com.sitewhere.spi.microservice.configuration.IScriptVersionSpecUpdates;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 
-import io.sitewhere.k8s.crd.tenant.scripting.SiteWhereScript;
-import io.sitewhere.k8s.crd.tenant.scripting.version.SiteWhereScriptVersion;
+import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 
 /**
  * Microservice that provides instance management functionality.
  */
 @ApplicationScoped
-public class InstanceManagementMicroservice
-	extends ConfigurableMicroservice<MicroserviceIdentifier, InstanceManagementConfiguration>
-	implements IInstanceManagementMicroservice<MicroserviceIdentifier> {
+public class InstanceManagementMicroservice extends
+	MultitenantMicroservice<MicroserviceIdentifier, InstanceManagementConfiguration, IInstanceManagementTenantEngine>
+	implements IInstanceManagementMicroservice {
 
     /** Instance dataset bootstrapper */
     private IInstanceBootstrapper instanceBootstrapper;
@@ -127,6 +125,15 @@ public class InstanceManagementMicroservice
     @Override
     public IMicroserviceModule<InstanceManagementConfiguration> createConfigurationModule() {
 	return new InstanceManagementModule(getMicroserviceConfiguration());
+    }
+
+    /*
+     * @see com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice#
+     * createTenantEngine(io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine)
+     */
+    @Override
+    public IInstanceManagementTenantEngine createTenantEngine(SiteWhereTenantEngine engine) throws SiteWhereException {
+	return new InstanceManagementTenantEngine(engine);
     }
 
     /*
@@ -306,62 +313,6 @@ public class InstanceManagementMicroservice
 	stop.execute(monitor);
 
 	super.stop(monitor);
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.microservice.configuration.IScriptConfigurationListener#
-     * onScriptAdded(io.sitewhere.k8s.crd.tenant.scripting.SiteWhereScript)
-     */
-    @Override
-    public void onScriptAdded(SiteWhereScript script) {
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.microservice.configuration.IScriptConfigurationListener#
-     * onScriptUpdated(io.sitewhere.k8s.crd.tenant.scripting.SiteWhereScript,
-     * com.sitewhere.spi.microservice.configuration.IScriptSpecUpdates)
-     */
-    @Override
-    public void onScriptUpdated(SiteWhereScript script, IScriptSpecUpdates updates) {
-    }
-
-    /*
-     * @see
-     * com.sitewhere.spi.microservice.configuration.IScriptConfigurationListener#
-     * onScriptDeleted(io.sitewhere.k8s.crd.tenant.scripting.SiteWhereScript)
-     */
-    @Override
-    public void onScriptDeleted(SiteWhereScript script) {
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.
-     * IScriptVersionConfigurationListener#onScriptVersionAdded(io.sitewhere.k8s.crd
-     * .tenant.scripting.version.SiteWhereScriptVersion)
-     */
-    @Override
-    public void onScriptVersionAdded(SiteWhereScriptVersion version) {
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.
-     * IScriptVersionConfigurationListener#onScriptVersionUpdated(io.sitewhere.k8s.
-     * crd.tenant.scripting.version.SiteWhereScriptVersion,
-     * com.sitewhere.spi.microservice.configuration.IScriptVersionSpecUpdates)
-     */
-    @Override
-    public void onScriptVersionUpdated(SiteWhereScriptVersion version, IScriptVersionSpecUpdates updates) {
-    }
-
-    /*
-     * @see com.sitewhere.spi.microservice.configuration.
-     * IScriptVersionConfigurationListener#onScriptVersionDeleted(io.sitewhere.k8s.
-     * crd.tenant.scripting.version.SiteWhereScriptVersion)
-     */
-    @Override
-    public void onScriptVersionDeleted(SiteWhereScriptVersion version) {
     }
 
     /*

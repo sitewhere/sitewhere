@@ -68,7 +68,7 @@ public class Zones {
     private static Log LOGGER = LogFactory.getLog(Zones.class);
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /**
      * Create a new zone.
@@ -174,7 +174,7 @@ public class Zones {
 	return getMicroservice().getDeviceManagement();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

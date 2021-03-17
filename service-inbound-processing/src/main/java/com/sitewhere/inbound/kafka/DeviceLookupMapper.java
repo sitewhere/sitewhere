@@ -28,6 +28,7 @@ import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.microservice.security.SystemUserCallable;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.microservice.instance.EventPipelineLogLevel;
 import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 import io.prometheus.client.Histogram;
@@ -62,7 +63,8 @@ public class DeviceLookupMapper
 	    KeyValue<UUID, InboundEventContext> keyValue = new KeyValue<>(uuid, context);
 	    return keyValue;
 	} catch (Exception e) {
-	    getLogger().error("Unable to process device lookup.", e);
+	    logPipelineException(payload.getSourceId(), payload.getDeviceToken(), getMicroservice().getIdentifier(),
+		    "Unable to process device lookup.", e, EventPipelineLogLevel.Error);
 	    InboundEventContext context = new InboundEventContext(payload);
 	    context.setException(e);
 	    KeyValue<UUID, InboundEventContext> keyValue = new KeyValue<>(new UUID(0, 0), context);
@@ -94,6 +96,16 @@ public class DeviceLookupMapper
 		InboundEventContext context = new InboundEventContext(payload);
 		IDevice existing = getDeviceManagement().getDeviceByToken(payload.getDeviceToken());
 		context.setDevice(existing);
+
+		if (existing != null) {
+		    logPipelineEvent(payload.getSourceId(), payload.getDeviceToken(), getMicroservice().getIdentifier(),
+			    "Located device for device token: Id=" + existing.getId().toString(), null,
+			    EventPipelineLogLevel.Debug);
+		} else {
+		    logPipelineEvent(payload.getSourceId(), payload.getDeviceToken(), getMicroservice().getIdentifier(),
+			    "Unable to locate device for token.", null, EventPipelineLogLevel.Warning);
+		}
+
 		return context;
 	    } finally {
 		deviceLookupTime.close();

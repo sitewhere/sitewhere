@@ -61,7 +61,7 @@ import io.swagger.annotations.Api;
 public class DeviceCommands {
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /**
      * List commands that match the given criteria.
@@ -137,7 +137,7 @@ public class DeviceCommands {
 	return getMicroservice().getDeviceManagement();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

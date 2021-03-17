@@ -77,7 +77,7 @@ public class Tenants {
     private static Log LOGGER = LogFactory.getLog(Tenants.class);
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /**
      * Create a new tenant.
@@ -233,7 +233,7 @@ public class Tenants {
 	return getMicroservice().getTenantManagement();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

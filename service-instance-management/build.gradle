@@ -6,6 +6,9 @@ dependencies {
 	// SiteWhere microservice library including gRPC support.	
     compile group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
 
+    // SiteWhere RDB integration.   
+    compile group: 'com.sitewhere', name: 'sitewhere-rdb', version: "${rootProject.ext['sitewhere.integration.api.version']}"
+
 	// Quarkus RESTEasy extension.
     compile 'io.quarkus:quarkus-resteasy-jackson'
     compile 'io.quarkus:quarkus-smallrye-openapi'

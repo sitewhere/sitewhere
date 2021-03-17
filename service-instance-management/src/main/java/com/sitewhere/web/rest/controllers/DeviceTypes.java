@@ -81,7 +81,7 @@ public class DeviceTypes {
     private static Log LOGGER = LogFactory.getLog(DeviceTypes.class);
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /**
      * Create a device type.
@@ -383,7 +383,7 @@ public class DeviceTypes {
 	return getMicroservice().getLabelGenerationApiChannel();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

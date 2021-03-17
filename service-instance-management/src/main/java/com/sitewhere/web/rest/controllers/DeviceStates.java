@@ -63,7 +63,7 @@ import io.swagger.annotations.Api;
 public class DeviceStates {
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /**
      * Search device states.
@@ -127,7 +127,7 @@ public class DeviceStates {
 	return getMicroservice().getDeviceStateApiChannel();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

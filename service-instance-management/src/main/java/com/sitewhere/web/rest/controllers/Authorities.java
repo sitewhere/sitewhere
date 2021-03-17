@@ -59,7 +59,7 @@ import io.swagger.annotations.Api;
 public class Authorities {
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /**
      * Create a new authority.
@@ -134,7 +134,7 @@ public class Authorities {
 	return getMicroservice().getUserManagement();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

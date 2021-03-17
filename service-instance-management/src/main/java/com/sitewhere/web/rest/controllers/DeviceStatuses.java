@@ -52,7 +52,7 @@ import io.swagger.annotations.Api;
 public class DeviceStatuses {
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /**
      * List statuses that match the given criteria.
@@ -87,7 +87,7 @@ public class DeviceStatuses {
 	return getMicroservice().getDeviceManagement();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

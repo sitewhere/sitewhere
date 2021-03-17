@@ -71,7 +71,7 @@ import io.swagger.annotations.ApiOperation;
 public class AreaTypes {
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /**
      * Create an area type.
@@ -223,7 +223,7 @@ public class AreaTypes {
 	return getMicroservice().getLabelGenerationApiChannel();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

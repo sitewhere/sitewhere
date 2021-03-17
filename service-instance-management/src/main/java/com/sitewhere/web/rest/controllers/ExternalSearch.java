@@ -58,7 +58,7 @@ public class ExternalSearch {
     private static Log LOGGER = LogFactory.getLog(ExternalSearch.class);
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /**
      * Get list of all search providers.
@@ -140,7 +140,7 @@ public class ExternalSearch {
 	return Response.ok().build();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

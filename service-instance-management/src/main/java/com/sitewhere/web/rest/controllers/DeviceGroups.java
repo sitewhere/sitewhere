@@ -84,7 +84,7 @@ public class DeviceGroups {
     private static Log LOGGER = LogFactory.getLog(DeviceGroups.class);
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /**
      * Create a device group.
@@ -366,7 +366,7 @@ public class DeviceGroups {
 	return getMicroservice().getLabelGenerationApiChannel();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

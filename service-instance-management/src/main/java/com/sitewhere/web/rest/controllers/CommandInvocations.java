@@ -62,7 +62,7 @@ import io.swagger.annotations.Api;
 public class CommandInvocations {
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -138,7 +138,7 @@ public class CommandInvocations {
 	return getMicroservice().getDeviceEventManagementApiChannel();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

@@ -72,7 +72,7 @@ import io.swagger.annotations.Api;
 public class CustomerTypes {
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /**
      * Create a customer type.
@@ -228,7 +228,7 @@ public class CustomerTypes {
 	return getMicroservice().getLabelGenerationApiChannel();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }
