@@ -54,8 +54,8 @@ public class InfluxDbClientProvider implements Provider<InfluxDbClient> {
 	try {
 	    InfluxDbConfiguration influx = new InfluxDbConfiguration(getTenantEngine());
 	    influx.loadFrom(getDatastore().getConfiguration());
-        String tenantToken = getTenantEngine().getTenantResource().getMetadata().getName();
-        influx.setDatabase(String.format("tenant_%s", tenantToken));
+	    String tenantToken = getTenantEngine().getTenantResource().getMetadata().getName();
+	    influx.setDatabase(String.format("tenant_%s", tenantToken));
         return new InfluxDbClient(influx);
 	} catch (SiteWhereException e) {
 	    throw new RuntimeException("Unable to load Warp 10 configuration.o", e);

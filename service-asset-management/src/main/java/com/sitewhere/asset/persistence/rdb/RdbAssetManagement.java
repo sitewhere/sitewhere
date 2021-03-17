@@ -168,11 +168,11 @@ public class RdbAssetManagement extends RdbTenantComponent implements IAssetMana
      */
     @Override
     public IAssetType createAssetType(IAssetTypeCreateRequest request) throws SiteWhereException {
-	IAssetType existing = getAssetTypeByToken(request.getToken());
-	if (existing != null) {
-		throw new SiteWhereException(
-				String.format("Another asset type is already using token '%s'.", request.getToken()));
-	}
+    IAssetType existing = getAssetTypeByToken(request.getToken());
+    if (existing != null) {
+    	throw new SiteWhereException(
+    			String.format("Another asset type is already using token '%s'.", request.getToken()));
+    }
 	// Use common logic so all backend implementations work the same.
 	AssetType assetType = AssetManagementPersistence.assetTypeCreateLogic(request);
 	RdbAssetType created = new RdbAssetType();
