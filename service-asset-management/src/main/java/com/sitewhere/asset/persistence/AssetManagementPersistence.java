@@ -54,8 +54,8 @@ public class AssetManagementPersistence extends Persistence {
 
 	require("Name", request.getName());
 	type.setName(request.getName());
-
 	type.setDescription(request.getDescription());
+	type.setAssetCategory(request.getAssetCategory());
 
 	return type;
     }
@@ -76,6 +76,9 @@ public class AssetManagementPersistence extends Persistence {
 	}
 	if (request.getDescription() != null) {
 	    target.setDescription(request.getDescription());
+	}
+	if (request.getAssetCategory() != null) {
+	    target.setAssetCategory(request.getAssetCategory());
 	}
     }
 
@@ -110,7 +113,6 @@ public class AssetManagementPersistence extends Persistence {
 
 	require("Name", request.getName());
 	asset.setName(request.getName());
-
 	asset.setAssetTypeId(assetType.getId());
 
 	return asset;
@@ -128,11 +130,11 @@ public class AssetManagementPersistence extends Persistence {
 	    throws SiteWhereException {
 	Persistence.brandedEntityUpdateLogic(request, target);
 
-	if (request.getAssetTypeToken() != null) {
-	    target.setAssetTypeId(assetType.getId());
-	}
 	if (request.getName() != null) {
 	    target.setName(request.getName());
+	}
+	if (request.getAssetTypeToken() != null) {
+	    target.setAssetTypeId(assetType.getId());
 	}
     }
 
