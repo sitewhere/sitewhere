@@ -22,8 +22,6 @@ import com.sitewhere.batch.grpc.BatchManagementImpl;
 import com.sitewhere.batch.kafka.FailedBatchElementsProducer;
 import com.sitewhere.batch.kafka.UnprocessedBatchElementsProducer;
 import com.sitewhere.batch.kafka.UnprocessedBatchOperationsProducer;
-import com.sitewhere.batch.persistence.rdb.entity.RdbBatchElement;
-import com.sitewhere.batch.persistence.rdb.entity.RdbBatchOperation;
 import com.sitewhere.batch.spi.IBatchOperationManager;
 import com.sitewhere.batch.spi.kafka.IFailedBatchElementsProducer;
 import com.sitewhere.batch.spi.kafka.IUnprocessedBatchElementsProducer;
@@ -100,11 +98,11 @@ public class BatchOperationsTenantEngine extends RdbTenantEngine<BatchOperations
     }
 
     /*
-     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getEntityClasses()
+     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getEntitiesBasePackage()
      */
     @Override
-    public Class<?>[] getEntityClasses() {
-	return new Class<?>[] { RdbBatchOperation.class, RdbBatchElement.class };
+    public String getEntitiesBasePackage() {
+	return "com.sitewhere.batch.persistence.rdb.entity";
     }
 
     /*

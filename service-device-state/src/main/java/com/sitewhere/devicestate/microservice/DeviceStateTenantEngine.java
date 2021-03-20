@@ -19,10 +19,6 @@ import com.sitewhere.devicestate.configuration.DeviceStateTenantConfiguration;
 import com.sitewhere.devicestate.configuration.DeviceStateTenantEngineModule;
 import com.sitewhere.devicestate.grpc.DeviceStateImpl;
 import com.sitewhere.devicestate.kafka.DeviceStatePipeline;
-import com.sitewhere.devicestate.persistence.rdb.entity.RdbDeviceState;
-import com.sitewhere.devicestate.persistence.rdb.entity.RdbRecentAlertEvent;
-import com.sitewhere.devicestate.persistence.rdb.entity.RdbRecentLocationEvent;
-import com.sitewhere.devicestate.persistence.rdb.entity.RdbRecentMeasurementEvent;
 import com.sitewhere.devicestate.spi.IDevicePresenceManager;
 import com.sitewhere.devicestate.spi.IDeviceStateMergeStrategy;
 import com.sitewhere.devicestate.spi.microservice.IDeviceStateMicroservice;
@@ -95,12 +91,11 @@ public class DeviceStateTenantEngine extends RdbTenantEngine<DeviceStateTenantCo
     }
 
     /*
-     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getEntityClasses()
+     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getEntitiesBasePackage()
      */
     @Override
-    public Class<?>[] getEntityClasses() {
-	return new Class<?>[] { RdbDeviceState.class, RdbRecentLocationEvent.class, RdbRecentMeasurementEvent.class,
-		RdbRecentAlertEvent.class };
+    public String getEntitiesBasePackage() {
+	return "com.sitewhere.devicestate.persistence.rdb.entity";
     }
 
     /*

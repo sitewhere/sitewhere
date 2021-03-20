@@ -18,8 +18,6 @@ package com.sitewhere.asset.microservice;
 import com.sitewhere.asset.configuration.AssetManagementTenantConfiguration;
 import com.sitewhere.asset.configuration.AssetManagementTenantEngineModule;
 import com.sitewhere.asset.grpc.AssetManagementImpl;
-import com.sitewhere.asset.persistence.rdb.entity.RdbAsset;
-import com.sitewhere.asset.persistence.rdb.entity.RdbAssetType;
 import com.sitewhere.asset.spi.microservice.IAssetManagementMicroservice;
 import com.sitewhere.asset.spi.microservice.IAssetManagementTenantEngine;
 import com.sitewhere.grpc.service.AssetManagementGrpc;
@@ -85,11 +83,11 @@ public class AssetManagementTenantEngine extends RdbTenantEngine<AssetManagement
     }
 
     /*
-     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getEntityClasses()
+     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getEntitiesBasePackage()
      */
     @Override
-    public Class<?>[] getEntityClasses() {
-	return new Class<?>[] { RdbAsset.class, RdbAssetType.class };
+    public String getEntitiesBasePackage() {
+	return "com.sitewhere.asset.persistence.rdb.entity";
     }
 
     /*

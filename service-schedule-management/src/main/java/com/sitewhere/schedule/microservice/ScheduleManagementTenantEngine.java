@@ -27,8 +27,6 @@ import com.sitewhere.rest.model.search.scheduling.ScheduleSearchCriteria;
 import com.sitewhere.schedule.configuration.ScheduleManagementTenantConfiguration;
 import com.sitewhere.schedule.configuration.ScheduleManagementTenantEngineModule;
 import com.sitewhere.schedule.grpc.ScheduleManagementImpl;
-import com.sitewhere.schedule.persistence.rdb.entity.RdbSchedule;
-import com.sitewhere.schedule.persistence.rdb.entity.RdbScheduledJob;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementTenantEngine;
 import com.sitewhere.spi.SiteWhereException;
@@ -86,11 +84,11 @@ public class ScheduleManagementTenantEngine extends RdbTenantEngine<ScheduleMana
     }
 
     /*
-     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getEntityClasses()
+     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getEntitiesBasePackage()
      */
     @Override
-    public Class<?>[] getEntityClasses() {
-	return new Class<?>[] { RdbSchedule.class, RdbScheduledJob.class };
+    public String getEntitiesBasePackage() {
+	return "com.sitewhere.schedule.persistence.rdb.entity";
     }
 
     /*
