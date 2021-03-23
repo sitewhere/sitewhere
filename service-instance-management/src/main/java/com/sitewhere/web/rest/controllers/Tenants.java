@@ -42,8 +42,12 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
+import com.sitewhere.microservice.security.SiteWhereAuthentication;
+import com.sitewhere.microservice.security.UserContext;
 import com.sitewhere.microservice.tenant.MarshaledTenantConfigurationTemplate;
 import com.sitewhere.microservice.tenant.MarshaledTenantDatasetTemplate;
+import com.sitewhere.rest.model.search.Pager;
+import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
@@ -51,6 +55,7 @@ import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.tenant.ITenantManagement;
+import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.tenant.ITenant;
 
 import io.sitewhere.k8s.crd.tenant.configuration.TenantConfigurationTemplate;
@@ -106,6 +111,11 @@ public class Tenants {
     public Response updateTenant(
 	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
 	    @RequestBody TenantCreateRequest request) throws SiteWhereException {
+	ITenant tenant = assureTenant(tenantToken);
+	SiteWhereAuthentication user = UserContext.getCurrentUser();
+	if (!tenant.getAuthorizedUserIds().contains(user.getUsername())) {
+	    throw new SiteWhereSystemException(ErrorCode.NotAuthorizedForTenant, ErrorLevel.ERROR);
+	}
 	return Response.ok(getTenantManagement().updateTenant(tenantToken, request)).build();
     }
 
@@ -123,6 +133,10 @@ public class Tenants {
 	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken)
 	    throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantToken);
+	SiteWhereAuthentication user = UserContext.getCurrentUser();
+	if (!tenant.getAuthorizedUserIds().contains(user.getUsername())) {
+	    throw new SiteWhereSystemException(ErrorCode.NotAuthorizedForTenant, ErrorLevel.ERROR);
+	}
 	return Response.ok(tenant).build();
     }
 
@@ -147,7 +161,17 @@ public class Tenants {
 	criteria.setTextSearch(textSearch);
 	criteria.setUserId(authUserId);
 	criteria.setIncludeRuntimeInfo(includeRuntimeInfo);
-	return Response.ok(getTenantManagement().listTenants(criteria)).build();
+	ISearchResults<ITenant> tenants = getTenantManagement().listTenants(new TenantSearchCriteria(1, 0));
+
+	SiteWhereAuthentication user = UserContext.getCurrentUser();
+	Pager<ITenant> authorized = new Pager<ITenant>(criteria);
+	for (ITenant tenant : tenants.getResults()) {
+	    if (tenant.getAuthorizedUserIds().contains(user.getUsername())) {
+		authorized.process(tenant);
+	    }
+	}
+	SearchResults<ITenant> matches = new SearchResults<>(authorized.getResults(), authorized.getTotal());
+	return Response.ok(matches).build();
     }
 
     /**
@@ -163,6 +187,11 @@ public class Tenants {
     public Response deleteTenant(
 	    @Parameter(description = "Tenant token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
+	ITenant tenant = assureTenant(token);
+	SiteWhereAuthentication user = UserContext.getCurrentUser();
+	if (!tenant.getAuthorizedUserIds().contains(user.getUsername())) {
+	    throw new SiteWhereSystemException(ErrorCode.NotAuthorizedForTenant, ErrorLevel.ERROR);
+	}
 	return Response.ok(getTenantManagement().deleteTenant(token)).build();
     }
 
