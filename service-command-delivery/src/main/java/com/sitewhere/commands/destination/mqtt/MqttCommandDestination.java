@@ -33,6 +33,7 @@ public class MqttCommandDestination extends CommandDestination<byte[], MqttParam
     public MqttCommandDestination(MqttConfiguration configuration) {
 	this.configuration = configuration;
 
+	setDestinationId(getConfiguration().getId());
 	setCommandExecutionEncoder(new JsonCommandExecutionEncoder());
 	setCommandDeliveryParameterExtractor(
 		new DefaultMqttParameterExtractor(new DefaultMqttParameterExtractorConfiguration(this)));

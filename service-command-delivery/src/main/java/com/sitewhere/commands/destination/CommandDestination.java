@@ -66,7 +66,7 @@ public class CommandDestination<T, P> extends TenantEngineLifecycleComponent imp
 	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	T encoded = getCommandExecutionEncoder().encode(execution, nesting, assignments);
 	if (encoded != null) {
-	    P params = getCommandDeliveryParameterExtractor().extractDeliveryParameters(nesting, assignments,
+	    P params = getCommandDeliveryParameterExtractor().extractDeliveryParameters(this, nesting, assignments,
 		    execution);
 	    getCommandDeliveryProvider().deliver(nesting, assignments, execution, encoded, params);
 	} else {
@@ -84,7 +84,8 @@ public class CommandDestination<T, P> extends TenantEngineLifecycleComponent imp
 	    List<? extends IDeviceAssignment> assignments) throws SiteWhereException {
 	T encoded = getCommandExecutionEncoder().encodeSystemCommand(command, nesting, assignments);
 	if (encoded != null) {
-	    P params = getCommandDeliveryParameterExtractor().extractDeliveryParameters(nesting, assignments, null);
+	    P params = getCommandDeliveryParameterExtractor().extractDeliveryParameters(this, nesting, assignments,
+		    null);
 	    getCommandDeliveryProvider().deliverSystemCommand(nesting, assignments, encoded, params);
 	} else {
 	    getLogger().info("Skipping system command delivery. Encoder returned null.");

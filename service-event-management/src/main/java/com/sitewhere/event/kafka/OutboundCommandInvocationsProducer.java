@@ -17,6 +17,8 @@ package com.sitewhere.event.kafka;
 
 import java.util.UUID;
 
+import org.apache.kafka.common.serialization.UUIDSerializer;
+
 import com.sitewhere.event.spi.kafka.IOutboundCommandInvocationsProducer;
 import com.sitewhere.microservice.kafka.MicroserviceKafkaProducer;
 import com.sitewhere.spi.SiteWhereException;
@@ -27,6 +29,15 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public class OutboundCommandInvocationsProducer extends MicroserviceKafkaProducer<UUID, byte[]>
 	implements IOutboundCommandInvocationsProducer {
+
+    /*
+     * @see
+     * com.sitewhere.microservice.kafka.MicroserviceKafkaProducer#getKeySerializer()
+     */
+    @Override
+    public Class<?> getKeySerializer() {
+	return UUIDSerializer.class;
+    }
 
     /*
      * @see com.sitewhere.spi.microservice.kafka.IMicroserviceKafkaProducer#

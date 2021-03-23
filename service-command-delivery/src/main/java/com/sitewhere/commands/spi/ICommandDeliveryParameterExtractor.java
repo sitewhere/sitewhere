@@ -33,12 +33,13 @@ public interface ICommandDeliveryParameterExtractor<T> extends ITenantEngineLife
     /**
      * Extract required delivery parameters from the given sources.
      * 
+     * @param destination
      * @param nesting
      * @param assignments
      * @param execution
      * @return
      * @throws SiteWhereException
      */
-    public T extractDeliveryParameters(IDeviceNestingContext nesting, List<? extends IDeviceAssignment> assignments,
-	    IDeviceCommandExecution execution) throws SiteWhereException;
+    public T extractDeliveryParameters(ICommandDestination<?, ?> destination, IDeviceNestingContext nesting,
+	    List<? extends IDeviceAssignment> assignments, IDeviceCommandExecution execution) throws SiteWhereException;
 }

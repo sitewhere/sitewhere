@@ -18,6 +18,7 @@ package com.sitewhere.commands.scripting;
 import java.util.List;
 
 import com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor;
+import com.sitewhere.commands.spi.ICommandDestination;
 import com.sitewhere.microservice.scripting.Binding;
 import com.sitewhere.microservice.scripting.ScriptingComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -41,12 +42,14 @@ public class ScriptedParameterExtractor<T> extends ScriptingComponent<T>
 
     /*
      * @see com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor#
-     * extractDeliveryParameters(com.sitewhere.spi.device.IDeviceNestingContext,
-     * java.util.List, com.sitewhere.spi.device.command.IDeviceCommandExecution)
+     * extractDeliveryParameters(com.sitewhere.commands.spi.ICommandDestination,
+     * com.sitewhere.spi.device.IDeviceNestingContext, java.util.List,
+     * com.sitewhere.spi.device.command.IDeviceCommandExecution)
      */
     @Override
-    public T extractDeliveryParameters(IDeviceNestingContext nesting, List<? extends IDeviceAssignment> assignments,
-	    IDeviceCommandExecution execution) throws SiteWhereException {
+    public T extractDeliveryParameters(ICommandDestination<?, ?> destination, IDeviceNestingContext nesting,
+	    List<? extends IDeviceAssignment> assignments, IDeviceCommandExecution execution)
+	    throws SiteWhereException {
 	try {
 	    Binding binding = createBindingFor(this);
 	    binding.setVariable(IScriptVariables.VAR_NESTING_CONTEXT, nesting);

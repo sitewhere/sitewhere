@@ -28,6 +28,7 @@ import com.sitewhere.commands.spi.microservice.ICommandDeliveryTenantEngine;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
+import com.sitewhere.microservice.security.SystemUserRunnable;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -39,6 +40,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
+import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
 
 /**
@@ -67,48 +69,95 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
     public void deliverCommand(IDeviceEventContext context, IDeviceCommandInvocation invocation)
 	    throws SiteWhereException {
 	getLogger().debug("Command processing strategy handling invocation.");
-	IDeviceCommand command = getDeviceManagement().getDeviceCommand(invocation.getDeviceCommandId());
-	if (command != null) {
-	    IDeviceCommandExecution execution = getCommandExecutionBuilder().createExecution(command, invocation);
-	    List<IDeviceAssignment> assignments = getCommandTargetResolver().resolveTargets(invocation);
-	    for (IDeviceAssignment assignment : assignments) {
-		IDevice device = getDeviceManagement().getDevice(assignment.getDeviceId());
-		if (device == null) {
-		    throw new SiteWhereException("Targeted assignment references device that does not exist.");
-		}
+	new CommandDeliverer(this, context, invocation).run();
+    }
 
-		List<? extends IDeviceAssignment> active = getDeviceManagement()
-			.getActiveDeviceAssignments(device.getId());
-		IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device,
-			getTenantEngine().getTenantResource());
-		CommandRoutingLogic.routeCommand(getOutboundCommandRouter(), getUndeliveredCommandInvocationsProducer(),
-			context, execution, nesting, active);
+    /**
+     * Runs command delivery logic in the context of a system user.
+     */
+    private class CommandDeliverer extends SystemUserRunnable {
+
+	private IDeviceEventContext context;
+	private IDeviceCommandInvocation invocation;
+
+	public CommandDeliverer(ITenantEngineLifecycleComponent component, IDeviceEventContext context,
+		IDeviceCommandInvocation invocation) {
+	    super(component);
+	    this.context = context;
+	    this.invocation = invocation;
+	}
+
+	/*
+	 * @see com.sitewhere.microservice.security.SystemUserRunnable#runAsSystemUser()
+	 */
+	@Override
+	public void runAsSystemUser() throws SiteWhereException {
+	    IDeviceCommand command = getDeviceManagement().getDeviceCommand(invocation.getDeviceCommandId());
+	    if (command != null) {
+		IDeviceCommandExecution execution = getCommandExecutionBuilder().createExecution(command, invocation);
+		List<IDeviceAssignment> assignments = getCommandTargetResolver().resolveTargets(invocation);
+		for (IDeviceAssignment assignment : assignments) {
+		    IDevice device = getDeviceManagement().getDevice(assignment.getDeviceId());
+		    if (device == null) {
+			throw new SiteWhereException("Targeted assignment references device that does not exist.");
+		    }
+
+		    List<? extends IDeviceAssignment> active = getDeviceManagement()
+			    .getActiveDeviceAssignments(device.getId());
+		    IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device,
+			    getTenantEngine().getTenantResource());
+		    CommandRoutingLogic.routeCommand(getOutboundCommandRouter(),
+			    getUndeliveredCommandInvocationsProducer(), context, execution, nesting, active);
+		}
+	    } else {
+		throw new SiteWhereException("Invalid command referenced from invocation.");
 	    }
-	} else {
-	    throw new SiteWhereException("Invalid command referenced from invocation.");
 	}
     }
 
     /*
      * @see
      * com.sitewhere.commands.spi.ICommandProcessingStrategy#deliverSystemCommand(
-     * com.sitewhere.spi.device.event.IDeviceEventContext, java.lang.String,
+     * com.sitewhere.spi.device.event.IDeviceEventContext,
      * com.sitewhere.spi.device.command.ISystemCommand)
      */
     @Override
-    public void deliverSystemCommand(IDeviceEventContext context, String deviceToken, ISystemCommand command)
-	    throws SiteWhereException {
+    public void deliverSystemCommand(IDeviceEventContext context, ISystemCommand command) throws SiteWhereException {
 	getLogger().debug("Command processing strategy handling system command invocation.");
-	IDevice device = getDeviceManagement().getDeviceByToken(deviceToken);
-	if (device == null) {
-	    throw new SiteWhereException("Targeted assignment references device that does not exist.");
+	new SystemCommandDeliverer(this, context, command).run();
+    }
+
+    /**
+     * Runs command delivery logic in the context of a system user.
+     */
+    private class SystemCommandDeliverer extends SystemUserRunnable {
+
+	private IDeviceEventContext context;
+	private ISystemCommand command;
+
+	public SystemCommandDeliverer(ITenantEngineLifecycleComponent component, IDeviceEventContext context,
+		ISystemCommand command) {
+	    super(component);
+	    this.context = context;
+	    this.command = command;
 	}
 
-	List<? extends IDeviceAssignment> assignments = getDeviceManagement()
-		.getActiveDeviceAssignments(device.getId());
-	IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device,
-		getTenantEngine().getTenantResource());
-	CommandRoutingLogic.routeSystemCommand(getOutboundCommandRouter(), command, nesting, assignments);
+	/*
+	 * @see com.sitewhere.microservice.security.SystemUserRunnable#runAsSystemUser()
+	 */
+	@Override
+	public void runAsSystemUser() throws SiteWhereException {
+	    IDevice device = getDeviceManagement().getDeviceByToken(context.getDeviceToken());
+	    if (device == null) {
+		throw new SiteWhereException("Targeted assignment references device that does not exist.");
+	    }
+
+	    List<? extends IDeviceAssignment> assignments = getDeviceManagement()
+		    .getActiveDeviceAssignments(device.getId());
+	    IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device,
+		    getTenantEngine().getTenantResource());
+	    CommandRoutingLogic.routeSystemCommand(getOutboundCommandRouter(), command, nesting, assignments);
+	}
     }
 
     /*

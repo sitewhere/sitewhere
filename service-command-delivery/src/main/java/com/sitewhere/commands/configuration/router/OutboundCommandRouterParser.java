@@ -35,7 +35,7 @@ public class OutboundCommandRouterParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(OutboundCommandRouterParser.class);
 
     /** Type for device type mapping router */
-    public static final String TYPE_DEVICE_TYPE_MAPPING = "deviceTypeMapping";
+    public static final String TYPE_DEVICE_TYPE_MAPPING = "device-type-mapping";
 
     public static IOutboundCommandRouter parse(ITenantEngineLifecycleComponent component,
 	    CommandDeliveryTenantConfiguration configuration) throws SiteWhereException {
@@ -45,8 +45,7 @@ public class OutboundCommandRouterParser {
 	    return createDeviceTypeMappingRouter(component, routerConfig);
 	}
 	default: {
-	    throw new SiteWhereException(
-		    String.format("Unknown command destination type '%s'.", routerConfig.getType()));
+	    throw new SiteWhereException(String.format("Unknown command router type '%s'.", routerConfig.getType()));
 	}
 	}
     }

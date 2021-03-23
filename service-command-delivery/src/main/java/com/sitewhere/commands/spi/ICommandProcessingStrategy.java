@@ -47,10 +47,9 @@ public interface ICommandProcessingStrategy extends ITenantEngineLifecycleCompon
      * Deliver a system command.
      * 
      * @param eventContext
-     * @param deviceToken
      * @param command
      * @throws SiteWhereException
      */
-    public void deliverSystemCommand(IDeviceEventContext eventContext, String deviceToken, ISystemCommand command)
+    public void deliverSystemCommand(IDeviceEventContext eventContext, ISystemCommand command)
 	    throws SiteWhereException;
 }

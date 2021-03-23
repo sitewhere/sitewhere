@@ -17,8 +17,12 @@ package com.sitewhere.commands.destination.mqtt;
 
 import java.util.List;
 
+import org.apache.commons.text.StringSubstitutor;
+
 import com.sitewhere.commands.configuration.extractors.mqtt.DefaultMqttParameterExtractorConfiguration;
+import com.sitewhere.commands.destination.CommandDestinationStringLookup;
 import com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor;
+import com.sitewhere.commands.spi.ICommandDestination;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -45,16 +49,19 @@ public class DefaultMqttParameterExtractor extends TenantEngineLifecycleComponen
 
     /*
      * @see com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor#
-     * extractDeliveryParameters(com.sitewhere.spi.device.IDeviceNestingContext,
-     * java.util.List, com.sitewhere.spi.device.command.IDeviceCommandExecution)
+     * extractDeliveryParameters(com.sitewhere.commands.spi.ICommandDestination,
+     * com.sitewhere.spi.device.IDeviceNestingContext, java.util.List,
+     * com.sitewhere.spi.device.command.IDeviceCommandExecution)
      */
     @Override
-    public MqttParameters extractDeliveryParameters(IDeviceNestingContext nesting,
-	    List<? extends IDeviceAssignment> assignments, IDeviceCommandExecution execution)
-	    throws SiteWhereException {
+    public MqttParameters extractDeliveryParameters(ICommandDestination<?, ?> destination,
+	    IDeviceNestingContext nesting, List<? extends IDeviceAssignment> assignments,
+	    IDeviceCommandExecution execution) throws SiteWhereException {
+	StringSubstitutor substitutor = new StringSubstitutor(
+		new CommandDestinationStringLookup(this, destination, nesting));
 	MqttParameters params = new MqttParameters();
-	params.setCommandTopic(getConfiguration().getCommandTopicExpression());
-	params.setSystemTopic(getConfiguration().getSystemTopicExpression());
+	params.setCommandTopic(substitutor.replace(getConfiguration().getCommandTopicExpression()));
+	params.setSystemTopic(substitutor.replace(getConfiguration().getSystemTopicExpression()));
 	return params;
     }
 
