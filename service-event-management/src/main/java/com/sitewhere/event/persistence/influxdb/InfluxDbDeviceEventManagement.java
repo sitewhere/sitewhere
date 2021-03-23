@@ -217,7 +217,7 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
 	    Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	    InfluxDbDeviceMeasurement.saveToBuilder(mxs, builder);
 	    addUserDefinedTags(context, builder);
-	    getClient().getInflux().write(getClient().getDatabase().getValue(),
+	    getClient().getInflux().write(getClient().getConfiguration().getDatabase(),
 		    getAssignmentSpecificRetentionPolicy(context), builder.build());
 	    result.add(mxs);
 	}
@@ -251,7 +251,7 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
 	    Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	    InfluxDbDeviceLocation.saveToBuilder(location, builder);
 	    addUserDefinedTags(context, builder);
-	    getClient().getInflux().write(getClient().getDatabase().getValue(),
+	    getClient().getInflux().write(getClient().getConfiguration().getDatabase(),
 		    getAssignmentSpecificRetentionPolicy(context), builder.build());
 	    result.add(location);
 	}
@@ -285,7 +285,7 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
 	    Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	    InfluxDbDeviceAlert.saveToBuilder(alert, builder);
 	    addUserDefinedTags(context, builder);
-	    getClient().getInflux().write(getClient().getDatabase().getValue(),
+	    getClient().getInflux().write(getClient().getConfiguration().getDatabase(),
 		    getAssignmentSpecificRetentionPolicy(context), builder.build());
 	    result.add(alert);
 	}
@@ -323,7 +323,7 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
 	    Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	    InfluxDbDeviceCommandInvocation.saveToBuilder(ci, builder);
 	    addUserDefinedTags(context, builder);
-	    getClient().getInflux().write(getClient().getDatabase().getValue(),
+	    getClient().getInflux().write(getClient().getConfiguration().getDatabase(),
 		    getAssignmentSpecificRetentionPolicy(context), builder.build());
 	    result.add(ci);
 	}
@@ -351,7 +351,7 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
     public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(UUID invocationId)
 	    throws SiteWhereException {
 	return InfluxDbDeviceCommandResponse.getResponsesForInvocation(invocationId, getClient().getInflux(),
-		getClient().getDatabase().getValue());
+		getClient().getConfiguration().getDatabase());
     }
 
     /*
@@ -369,7 +369,7 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
 	    Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	    InfluxDbDeviceCommandResponse.saveToBuilder(cr, builder);
 	    addUserDefinedTags(context, builder);
-	    getClient().getInflux().write(getClient().getDatabase().getValue(),
+	    getClient().getInflux().write(getClient().getConfiguration().getDatabase(),
 		    getAssignmentSpecificRetentionPolicy(context), builder.build());
 	    result.add(cr);
 	}
@@ -403,7 +403,7 @@ public class InfluxDbDeviceEventManagement extends TenantEngineLifecycleComponen
 	    Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
 	    InfluxDbDeviceStateChange.saveToBuilder(sc, builder);
 	    addUserDefinedTags(context, builder);
-	    getClient().getInflux().write(getClient().getDatabase().getValue(),
+	    getClient().getInflux().write(getClient().getConfiguration().getDatabase(),
 		    getAssignmentSpecificRetentionPolicy(context), builder.build());
 	    result.add(sc);
 	}

@@ -74,7 +74,7 @@ public class Users {
     private static Log LOGGER = LogFactory.getLog(Users.class);
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /**
      * Create a new user.
@@ -219,7 +219,7 @@ public class Users {
 	return getMicroservice().getUserManagement();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

@@ -20,29 +20,6 @@ import com.sitewhere.device.configuration.DeviceManagementTenantConfiguration;
 import com.sitewhere.device.configuration.DeviceManagementTenantEngineModule;
 import com.sitewhere.device.grpc.DeviceManagementImpl;
 import com.sitewhere.device.kafka.DeviceInteractionEventsProducer;
-import com.sitewhere.device.persistence.rdb.entity.RdbArea;
-import com.sitewhere.device.persistence.rdb.entity.RdbAreaBoundary;
-import com.sitewhere.device.persistence.rdb.entity.RdbAreaType;
-import com.sitewhere.device.persistence.rdb.entity.RdbCommandParameter;
-import com.sitewhere.device.persistence.rdb.entity.RdbCustomer;
-import com.sitewhere.device.persistence.rdb.entity.RdbCustomerType;
-import com.sitewhere.device.persistence.rdb.entity.RdbDevice;
-import com.sitewhere.device.persistence.rdb.entity.RdbDeviceAlarm;
-import com.sitewhere.device.persistence.rdb.entity.RdbDeviceAssignment;
-import com.sitewhere.device.persistence.rdb.entity.RdbDeviceAssignmentSummary;
-import com.sitewhere.device.persistence.rdb.entity.RdbDeviceCommand;
-import com.sitewhere.device.persistence.rdb.entity.RdbDeviceElementMapping;
-import com.sitewhere.device.persistence.rdb.entity.RdbDeviceElementSchema;
-import com.sitewhere.device.persistence.rdb.entity.RdbDeviceGroup;
-import com.sitewhere.device.persistence.rdb.entity.RdbDeviceGroupElement;
-import com.sitewhere.device.persistence.rdb.entity.RdbDeviceSlot;
-import com.sitewhere.device.persistence.rdb.entity.RdbDeviceStatus;
-import com.sitewhere.device.persistence.rdb.entity.RdbDeviceSummary;
-import com.sitewhere.device.persistence.rdb.entity.RdbDeviceType;
-import com.sitewhere.device.persistence.rdb.entity.RdbDeviceUnit;
-import com.sitewhere.device.persistence.rdb.entity.RdbLocation;
-import com.sitewhere.device.persistence.rdb.entity.RdbZone;
-import com.sitewhere.device.persistence.rdb.entity.RdbZoneBoundary;
 import com.sitewhere.device.spi.kafka.IDeviceInteractionEventsProducer;
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.device.spi.microservice.IDeviceManagementTenantEngine;
@@ -115,16 +92,11 @@ public class DeviceManagementTenantEngine extends RdbTenantEngine<DeviceManageme
     }
 
     /*
-     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getEntityClasses()
+     * @see com.sitewhere.rdb.spi.IRdbTenantEngine#getEntitiesBasePackage()
      */
     @Override
-    public Class<?>[] getEntityClasses() {
-	return new Class<?>[] { RdbArea.class, RdbAreaBoundary.class, RdbAreaType.class, RdbCommandParameter.class,
-		RdbCustomer.class, RdbCustomerType.class, RdbDevice.class, RdbDeviceSummary.class, RdbDeviceAlarm.class,
-		RdbDeviceAssignment.class, RdbDeviceAssignmentSummary.class, RdbDeviceCommand.class,
-		RdbDeviceElementMapping.class, RdbDeviceElementSchema.class, RdbDeviceGroup.class,
-		RdbDeviceGroupElement.class, RdbDeviceSlot.class, RdbDeviceStatus.class, RdbDeviceType.class,
-		RdbDeviceUnit.class, RdbLocation.class, RdbZone.class, RdbZoneBoundary.class };
+    public String getEntitiesBasePackage() {
+	return "com.sitewhere.device.persistence.rdb.entity";
     }
 
     /*

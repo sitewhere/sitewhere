@@ -53,7 +53,7 @@ public class System {
     private static Log LOGGER = LogFactory.getLog(System.class);
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /**
      * Get version information about the server.
@@ -68,7 +68,7 @@ public class System {
 	return getMicroservice().getVersion();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

@@ -25,14 +25,14 @@ import com.sitewhere.instance.spi.tenant.grpc.ITenantManagementGrpcServer;
 import com.sitewhere.instance.spi.user.grpc.IUserManagementGrpcServer;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
-import com.sitewhere.spi.microservice.IFunctionIdentifier;
-import com.sitewhere.spi.microservice.configuration.IConfigurableMicroservice;
+import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.multitenant.IMultitenantMicroservice;
 
 /**
  * Microservice that provides web/REST functionality.
  */
-public interface IInstanceManagementMicroservice<F extends IFunctionIdentifier>
-	extends IConfigurableMicroservice<F, InstanceManagementConfiguration> {
+public interface IInstanceManagementMicroservice extends
+	IMultitenantMicroservice<MicroserviceIdentifier, InstanceManagementConfiguration, IInstanceManagementTenantEngine> {
 
     /**
      * Get component which bootstraps instance with data.

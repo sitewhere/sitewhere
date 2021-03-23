@@ -108,7 +108,7 @@ public class InfluxDbDeviceEvent {
     public static IDeviceEvent getEventById(UUID eventId, InfluxDbClient client) throws SiteWhereException {
 	Query query = new Query(
 		"SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where " + EVENT_ID + "='" + eventId + "'",
-		client.getDatabase().getValue());
+		client.getConfiguration().getDatabase());
 	QueryResult response = client.getInflux().query(query, TimeUnit.MILLISECONDS);
 	List<IDeviceEvent> results = InfluxDbDeviceEvent.eventsOfType(response, IDeviceEvent.class);
 	if (results.size() > 0) {
@@ -128,7 +128,7 @@ public class InfluxDbDeviceEvent {
     public static IDeviceEvent getEventByAlternateId(String alternateId, InfluxDbClient client)
 	    throws SiteWhereException {
 	Query query = new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where " + ALTERNATE_ID
-		+ "='" + alternateId + "'", client.getDatabase().getValue());
+		+ "='" + alternateId + "'", client.getConfiguration().getDatabase());
 	QueryResult response = client.getInflux().query(query, TimeUnit.MILLISECONDS);
 	List<IDeviceEvent> results = InfluxDbDeviceEvent.eventsOfType(response, IDeviceEvent.class);
 	if (results.size() > 0) {
@@ -153,13 +153,13 @@ public class InfluxDbDeviceEvent {
     public static <T> SearchResults<T> searchByIndex(DeviceEventIndex index, List<UUID> entityIds, DeviceEventType type,
 	    ISearchCriteria criteria, InfluxDbClient client, Class<T> clazz) throws SiteWhereException {
 	Query query = InfluxDbDeviceEvent.queryEventsOfTypeForIndex(index, type, entityIds, criteria,
-		client.getDatabase().getValue());
+		client.getConfiguration().getDatabase());
 	LOGGER.debug("Query: " + query.getCommand());
 	QueryResult response = client.getInflux().query(query, TimeUnit.MILLISECONDS);
 	List<T> results = InfluxDbDeviceEvent.eventsOfType(response, clazz);
 
 	Query countQuery = InfluxDbDeviceEvent.queryEventsOfTypeForIndexCount(index, type, entityIds, criteria,
-		client.getDatabase().getValue());
+		client.getConfiguration().getDatabase());
 	LOGGER.debug("Count: " + countQuery.getCommand());
 	QueryResult countResponse = client.getInflux().query(countQuery);
 	long count = parseCount(countResponse);

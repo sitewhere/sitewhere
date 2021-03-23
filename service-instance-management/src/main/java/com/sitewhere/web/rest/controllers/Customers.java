@@ -101,7 +101,7 @@ import io.swagger.annotations.Api;
 public class Customers {
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -682,7 +682,7 @@ public class Customers {
 	return getMicroservice().getLabelGenerationApiChannel();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

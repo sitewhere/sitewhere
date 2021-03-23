@@ -59,12 +59,12 @@ import io.grpc.stub.StreamObserver;
 public class UserManagementImpl extends UserManagementGrpc.UserManagementImplBase implements IGrpcApiImplementation {
 
     /** Parent microservice */
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /** User management persistence */
     private IUserManagement userMangagement;
 
-    public UserManagementImpl(IInstanceManagementMicroservice<?> microservice, IUserManagement userMangagement) {
+    public UserManagementImpl(IInstanceManagementMicroservice microservice, IUserManagement userMangagement) {
 	this.microservice = microservice;
 	this.userMangagement = userMangagement;
     }

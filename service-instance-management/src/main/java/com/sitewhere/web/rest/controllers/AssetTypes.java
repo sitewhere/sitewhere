@@ -71,7 +71,7 @@ import io.swagger.annotations.Api;
 public class AssetTypes {
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /**
      * Create a new asset type.
@@ -214,7 +214,7 @@ public class AssetTypes {
 	return getMicroservice().getLabelGenerationApiChannel();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

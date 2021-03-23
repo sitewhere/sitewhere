@@ -104,7 +104,7 @@ public class Devices {
     private static Log LOGGER = LogFactory.getLog(Devices.class);
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /**
      * Create a device.
@@ -621,7 +621,7 @@ public class Devices {
 	return getMicroservice().getLabelGenerationApiChannel();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

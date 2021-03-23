@@ -29,6 +29,7 @@ import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.microservice.security.SystemUserCallable;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.microservice.instance.EventPipelineLogLevel;
 import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 import io.prometheus.client.Histogram;
@@ -99,6 +100,11 @@ public class DeviceAssignmentsLookupMapper
 		InboundEventContext updated = new InboundEventContext(context.getDecodedEventPayload());
 		updated.setDevice(context.getDevice());
 		updated.setDeviceAssignments(assignments);
+
+		logPipelineEvent(context.getDecodedEventPayload().getSourceId(),
+			context.getDecodedEventPayload().getDeviceToken(), getMicroservice().getIdentifier(),
+			"Found " + assignments.size() + " assignments for device.", null, EventPipelineLogLevel.Debug);
+
 		return updated;
 	    } finally {
 		assignmentLookupTime.close();

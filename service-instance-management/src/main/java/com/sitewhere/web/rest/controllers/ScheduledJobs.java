@@ -76,7 +76,7 @@ public class ScheduledJobs {
     private static Log LOGGER = LogFactory.getLog(ScheduledJobs.class);
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /**
      * Create a new scheduled job.
@@ -192,7 +192,7 @@ public class ScheduledJobs {
 	return getMicroservice().getAssetManagement();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

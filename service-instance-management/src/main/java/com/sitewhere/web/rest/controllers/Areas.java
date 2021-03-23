@@ -102,7 +102,7 @@ public class Areas {
     private static Log LOGGER = LogFactory.getLog(Areas.class);
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /**
      * Create a new area.
@@ -691,7 +691,7 @@ public class Areas {
 	return getMicroservice().getLabelGenerationApiChannel();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

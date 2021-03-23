@@ -58,7 +58,7 @@ public class DeviceEvents {
     private static Log LOGGER = LogFactory.getLog(DeviceEvents.class);
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /**
      * Find a device event by unique id.
@@ -96,7 +96,7 @@ public class DeviceEvents {
 	return getMicroservice().getDeviceEventManagementApiChannel();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

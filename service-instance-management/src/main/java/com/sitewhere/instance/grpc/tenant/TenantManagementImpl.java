@@ -45,12 +45,12 @@ public class TenantManagementImpl extends TenantManagementGrpc.TenantManagementI
 	implements IGrpcApiImplementation {
 
     /** Parent microservice */
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /** Tenant management persistence */
     private ITenantManagement tenantMangagement;
 
-    public TenantManagementImpl(IInstanceManagementMicroservice<?> microservice, ITenantManagement tenantManagement) {
+    public TenantManagementImpl(IInstanceManagementMicroservice microservice, ITenantManagement tenantManagement) {
 	this.microservice = microservice;
 	this.tenantMangagement = tenantManagement;
     }

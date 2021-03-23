@@ -26,12 +26,14 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -47,6 +49,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
+import com.sitewhere.instance.spi.microservice.IInstanceManagementTenantEngine;
 import com.sitewhere.microservice.configuration.model.instance.InstanceConfiguration;
 import com.sitewhere.microservice.kubernetes.K8sModelConverter;
 import com.sitewhere.microservice.scripting.ScriptActivationRequest;
@@ -54,12 +57,16 @@ import com.sitewhere.microservice.scripting.ScriptCloneRequest;
 import com.sitewhere.microservice.scripting.ScriptCreateRequest;
 import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.rest.model.microservice.MicroserviceSummary;
+import com.sitewhere.rest.model.search.Pager;
+import com.sitewhere.rest.model.search.SearchCriteria;
+import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.IFunctionIdentifier;
 import com.sitewhere.spi.microservice.MicroserviceIdentifier;
+import com.sitewhere.spi.microservice.instance.IEventPipelineLog;
 import com.sitewhere.spi.microservice.scripting.IScriptManagement;
 import com.sitewhere.spi.microservice.scripting.IScriptMetadata;
 import com.sitewhere.spi.microservice.tenant.ITenantManagement;
@@ -99,7 +106,7 @@ public class Instance {
     private static Log LOGGER = LogFactory.getLog(Instance.class);
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     @GET
     @Path("/configuration")
@@ -572,6 +579,41 @@ public class Instance {
 	return Response.ok(getScriptManagement().deleteScript(msid, tenantToken, scriptId)).build();
     }
 
+    @GET
+    @Path("/eventpipeline/tenants/{tenantToken}/recent")
+    @Operation(summary = "Get recent tenant event pipeline log entries", description = "Get recent tenant event pipeline log entries that match criteria")
+    public Response getInstancePipelineLogEntries(
+	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
+	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
+	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
+	    throws SiteWhereException {
+	SearchCriteria criteria = new SearchCriteria(page, pageSize);
+	Pager<IEventPipelineLog> pager = new Pager<>(criteria);
+	IInstanceManagementTenantEngine engine = getMicroservice().getTenantEngineManager()
+		.getTenantEngineByToken(tenantToken);
+	if (engine == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantToken, ErrorLevel.ERROR);
+	}
+	engine.getPipelineLogMonitor().getPipelineLogQueue().forEach(log -> pager.process(log));
+	SearchResults<IEventPipelineLog> results = new SearchResults<>(pager.getResults(), pager.getTotal());
+	return Response.ok(results).build();
+    }
+
+    @DELETE
+    @Path("/eventpipeline/tenants/{tenantToken}/recent")
+    @Operation(summary = "Delete recent tenant event pipeline log entries", description = "Delete recent tenant event pipeline log entries")
+    public Response deleteInstancePipelineLogEntries(
+	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken)
+	    throws SiteWhereException {
+	IInstanceManagementTenantEngine engine = getMicroservice().getTenantEngineManager()
+		.getTenantEngineByToken(tenantToken);
+	if (engine == null) {
+	    throw new SiteWhereSystemException(ErrorCode.InvalidTenantToken, ErrorLevel.ERROR);
+	}
+	engine.getPipelineLogMonitor().clearPipelineLog();
+	return Response.ok().build();
+    }
+
     /**
      * Attempt to locate microservice definition based on function identifier.
      * 
@@ -614,7 +656,7 @@ public class Instance {
 	return getMicroservice().getScriptManagement();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

@@ -98,70 +98,70 @@ public class CassandraEventManagementClient extends TenantEngineLifecycleCompone
      */
     protected void initializeTenant() throws SiteWhereException {
 	// Create keyspace.
-	getClient().execute("CREATE KEYSPACE IF NOT EXISTS " + getClient().getKeyspace().getValue()
+	getClient().execute("CREATE KEYSPACE IF NOT EXISTS " + getClient().getConfiguration().getKeyspace()
 		+ " WITH replication =  {'class':'SimpleStrategy','replication_factor':'1'}");
 
 	// Use keyspace.
-	getClient().execute("USE " + getClient().getKeyspace().getValue() + ";");
+	getClient().execute("USE " + getClient().getConfiguration().getKeyspace() + ";");
 
 	// Create location type.
-	getClient().execute("CREATE TYPE IF NOT EXISTS " + getClient().getKeyspace().getValue()
+	getClient().execute("CREATE TYPE IF NOT EXISTS " + getClient().getConfiguration().getKeyspace()
 		+ ".sw_location (latitude double, longitude double, elevation double);");
 	this.locationType = getClient().getSession().getCluster().getMetadata()
-		.getKeyspace(getClient().getKeyspace().getValue()).getUserType("sw_location");
+		.getKeyspace(getClient().getConfiguration().getKeyspace()).getUserType("sw_location");
 
 	// Create measurements type.
-	getClient().execute("CREATE TYPE IF NOT EXISTS " + getClient().getKeyspace().getValue()
+	getClient().execute("CREATE TYPE IF NOT EXISTS " + getClient().getConfiguration().getKeyspace()
 		+ ".sw_measurement (mxname text, mxvalue double);");
 	this.measurementType = getClient().getSession().getCluster().getMetadata()
-		.getKeyspace(getClient().getKeyspace().getValue()).getUserType("sw_measurement");
+		.getKeyspace(getClient().getConfiguration().getKeyspace()).getUserType("sw_measurement");
 
 	// Create alerts type.
-	getClient().execute("CREATE TYPE IF NOT EXISTS " + getClient().getKeyspace().getValue()
+	getClient().execute("CREATE TYPE IF NOT EXISTS " + getClient().getConfiguration().getKeyspace()
 		+ ".sw_alert (source tinyint, level tinyint, type text, message text);");
 	this.alertType = getClient().getSession().getCluster().getMetadata()
-		.getKeyspace(getClient().getKeyspace().getValue()).getUserType("sw_alert");
+		.getKeyspace(getClient().getConfiguration().getKeyspace()).getUserType("sw_alert");
 
 	// Create command invocation type.
-	getClient().execute("CREATE TYPE IF NOT EXISTS " + getClient().getKeyspace().getValue()
+	getClient().execute("CREATE TYPE IF NOT EXISTS " + getClient().getConfiguration().getKeyspace()
 		+ ".sw_invocation (initiator tinyint, initiator_id text, target tinyint, target_id text, command_token text, command_params map<text, text>);");
 	this.invocationType = getClient().getSession().getCluster().getMetadata()
-		.getKeyspace(getClient().getKeyspace().getValue()).getUserType("sw_invocation");
+		.getKeyspace(getClient().getConfiguration().getKeyspace()).getUserType("sw_invocation");
 
 	// Create command response type.
-	getClient().execute("CREATE TYPE IF NOT EXISTS " + getClient().getKeyspace().getValue()
+	getClient().execute("CREATE TYPE IF NOT EXISTS " + getClient().getConfiguration().getKeyspace()
 		+ ".sw_response (orig_event_id uuid, resp_event_id uuid, response text);");
 	this.responseType = getClient().getSession().getCluster().getMetadata()
-		.getKeyspace(getClient().getKeyspace().getValue()).getUserType("sw_response");
+		.getKeyspace(getClient().getConfiguration().getKeyspace()).getUserType("sw_response");
 
 	// Create state change type.
-	getClient().execute("CREATE TYPE IF NOT EXISTS " + getClient().getKeyspace().getValue()
+	getClient().execute("CREATE TYPE IF NOT EXISTS " + getClient().getConfiguration().getKeyspace()
 		+ ".sw_state_change (attribute text, type text, previous_state text, new_state text);");
 	this.stateChangeType = getClient().getSession().getCluster().getMetadata()
-		.getKeyspace(getClient().getKeyspace().getValue()).getUserType("sw_state_change");
+		.getKeyspace(getClient().getConfiguration().getKeyspace()).getUserType("sw_state_change");
 
 	// Create events_by_id table.
-	getClient().execute("CREATE TABLE IF NOT EXISTS " + getClient().getKeyspace().getValue()
+	getClient().execute("CREATE TABLE IF NOT EXISTS " + getClient().getConfiguration().getKeyspace()
 		+ ".events_by_id (device_id uuid, event_id uuid, alt_id text, event_type tinyint, assignment_id uuid, customer_id uuid, area_id uuid, asset_id uuid, event_date timestamp, received_date timestamp, location frozen<sw_location>, measurement frozen<sw_measurement>, alert frozen<sw_alert>, invocation frozen<sw_invocation>, response frozen<sw_response>, state_change frozen<sw_state_change>, PRIMARY KEY (event_id));");
 
 	// Create events_by_alt_id table.
-	getClient().execute("CREATE TABLE IF NOT EXISTS " + getClient().getKeyspace().getValue()
+	getClient().execute("CREATE TABLE IF NOT EXISTS " + getClient().getConfiguration().getKeyspace()
 		+ ".events_by_alt_id (device_id uuid, event_id uuid, alt_id text, event_type tinyint, assignment_id uuid, customer_id uuid, area_id uuid, asset_id uuid, event_date timestamp, received_date timestamp, location frozen<sw_location>, measurement frozen<sw_measurement>, alert frozen<sw_alert>, invocation frozen<sw_invocation>, response frozen<sw_response>, state_change frozen<sw_state_change>, PRIMARY KEY (alt_id));");
 
 	// Create events_by_assignment table.
-	getClient().execute("CREATE TABLE IF NOT EXISTS " + getClient().getKeyspace().getValue()
+	getClient().execute("CREATE TABLE IF NOT EXISTS " + getClient().getConfiguration().getKeyspace()
 		+ ".events_by_assignment (device_id uuid, bucket int, event_id uuid, alt_id text, event_type tinyint, assignment_id uuid, customer_id uuid, area_id uuid, asset_id uuid, event_date timestamp, received_date timestamp, location frozen<sw_location>, measurement frozen<sw_measurement>, alert frozen<sw_alert>, invocation frozen<sw_invocation>, response frozen<sw_response>, state_change frozen<sw_state_change>, PRIMARY KEY ((assignment_id, event_type, bucket), event_date, event_id)) WITH CLUSTERING ORDER BY (event_date desc, event_id asc);");
 
 	// Create events_by_customer table.
-	getClient().execute("CREATE TABLE IF NOT EXISTS " + getClient().getKeyspace().getValue()
+	getClient().execute("CREATE TABLE IF NOT EXISTS " + getClient().getConfiguration().getKeyspace()
 		+ ".events_by_customer (device_id uuid, bucket int, event_id uuid, alt_id text, event_type tinyint, assignment_id uuid, customer_id uuid, area_id uuid, asset_id uuid, event_date timestamp, received_date timestamp, location frozen<sw_location>, measurement frozen<sw_measurement>, alert frozen<sw_alert>, invocation frozen<sw_invocation>, response frozen<sw_response>, state_change frozen<sw_state_change>, PRIMARY KEY ((customer_id, event_type, bucket), event_date, event_id)) WITH CLUSTERING ORDER BY (event_date desc, event_id asc);");
 
 	// Create events_by_area table.
-	getClient().execute("CREATE TABLE IF NOT EXISTS " + getClient().getKeyspace().getValue()
+	getClient().execute("CREATE TABLE IF NOT EXISTS " + getClient().getConfiguration().getKeyspace()
 		+ ".events_by_area (device_id uuid, bucket int, event_id uuid, alt_id text, event_type tinyint, assignment_id uuid, customer_id uuid, area_id uuid, asset_id uuid, event_date timestamp, received_date timestamp, location frozen<sw_location>, measurement frozen<sw_measurement>, alert frozen<sw_alert>, invocation frozen<sw_invocation>, response frozen<sw_response>, state_change frozen<sw_state_change>, PRIMARY KEY ((area_id, event_type, bucket), event_date, event_id)) WITH CLUSTERING ORDER BY (event_date desc, event_id asc);");
 
 	// Create events_by_asset table.
-	getClient().execute("CREATE TABLE IF NOT EXISTS " + getClient().getKeyspace().getValue()
+	getClient().execute("CREATE TABLE IF NOT EXISTS " + getClient().getConfiguration().getKeyspace()
 		+ ".events_by_asset (device_id uuid, bucket int, event_id uuid, alt_id text, event_type tinyint, assignment_id uuid, customer_id uuid, area_id uuid, asset_id uuid, event_date timestamp, received_date timestamp, location frozen<sw_location>, measurement frozen<sw_measurement>, alert frozen<sw_alert>, invocation frozen<sw_invocation>, response frozen<sw_response>, state_change frozen<sw_state_change>, PRIMARY KEY ((asset_id, event_type, bucket), event_date, event_id)) WITH CLUSTERING ORDER BY (event_date desc, event_id asc);");
     }
 
@@ -172,34 +172,34 @@ public class CassandraEventManagementClient extends TenantEngineLifecycleCompone
      */
     protected void initializePreparedStatements() throws SiteWhereException {
 	this.insertDeviceEventById = getClient().getSession().prepare("insert into "
-		+ getClient().getKeyspace().getValue()
+		+ getClient().getConfiguration().getKeyspace()
 		+ ".events_by_id (device_id, event_id, alt_id, event_type, assignment_id, customer_id, area_id, asset_id, event_date, received_date, location, measurement, alert, invocation, response, state_change) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	this.insertDeviceEventByAltId = getClient().getSession().prepare("insert into "
-		+ getClient().getKeyspace().getValue()
+		+ getClient().getConfiguration().getKeyspace()
 		+ ".events_by_alt_id (device_id, event_id, alt_id, event_type, assignment_id, customer_id, area_id, asset_id, event_date, received_date, location, measurement, alert, invocation, response, state_change) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	this.insertDeviceEventByAssignment = getClient().getSession().prepare("insert into "
-		+ getClient().getKeyspace().getValue()
+		+ getClient().getConfiguration().getKeyspace()
 		+ ".events_by_assignment (device_id, bucket, event_id, alt_id, event_type, assignment_id, customer_id, area_id, asset_id, event_date, received_date, location, measurement, alert, invocation, response, state_change) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	this.insertDeviceEventByCustomer = getClient().getSession().prepare("insert into "
-		+ getClient().getKeyspace().getValue()
+		+ getClient().getConfiguration().getKeyspace()
 		+ ".events_by_customer (device_id, bucket, event_id, alt_id, event_type, assignment_id, customer_id, area_id, asset_id, event_date, received_date, location, measurement, alert, invocation, response, state_change) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	this.insertDeviceEventByArea = getClient().getSession().prepare("insert into "
-		+ getClient().getKeyspace().getValue()
+		+ getClient().getConfiguration().getKeyspace()
 		+ ".events_by_area (device_id, bucket, event_id, alt_id, event_type, assignment_id, customer_id, area_id, asset_id, event_date, received_date, location, measurement, alert, invocation, response, state_change) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	this.insertDeviceEventByAsset = getClient().getSession().prepare("insert into "
-		+ getClient().getKeyspace().getValue()
+		+ getClient().getConfiguration().getKeyspace()
 		+ ".events_by_asset (device_id, bucket, event_id, alt_id, event_type, assignment_id, customer_id, area_id, asset_id, event_date, received_date, location, measurement, alert, invocation, response, state_change) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	this.selectEventsByAssignmentForType = getClient().getSession().prepare("select * from "
-		+ getClient().getKeyspace().getValue()
+		+ getClient().getConfiguration().getKeyspace()
 		+ ".events_by_assignment where assignment_id=? and event_type=? and bucket=? and event_date >= ? and event_date <= ?");
 	this.selectEventsByCustomerForType = getClient().getSession().prepare("select * from "
-		+ getClient().getKeyspace().getValue()
+		+ getClient().getConfiguration().getKeyspace()
 		+ ".events_by_customer where customer_id=? and event_type=? and bucket=? and event_date >= ? and event_date <= ?");
 	this.selectEventsByAreaForType = getClient().getSession().prepare("select * from "
-		+ getClient().getKeyspace().getValue()
+		+ getClient().getConfiguration().getKeyspace()
 		+ ".events_by_area where area_id=? and event_type=? and bucket=? and event_date >= ? and event_date <= ?");
 	this.selectEventsByAssetForType = getClient().getSession().prepare("select * from "
-		+ getClient().getKeyspace().getValue()
+		+ getClient().getConfiguration().getKeyspace()
 		+ ".events_by_asset where asset_id=? and event_type=? and bucket=? and event_date >= ? and event_date <= ?");
     }
 

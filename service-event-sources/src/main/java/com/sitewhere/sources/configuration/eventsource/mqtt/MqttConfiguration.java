@@ -94,7 +94,7 @@ public class MqttConfiguration extends EventSourceConfiguration implements IMqtt
 	this.topic = configurableString("topic", json, DEFAULT_TOPIC);
 	this.numThreads = configurableInt("numThreads", json, DEFAULT_NUM_THREADS);
 	this.qos = configurableInt("qos", json, DEFAULT_QOS);
-	this.trustStorePath = configurableString("qos", json, null);
+	this.trustStorePath = configurableString("trustStorePath", json, null);
 	this.trustStorePassword = configurableString("trustStorePassword", json, null);
 	this.keyStorePath = configurableString("keyStorePath", json, null);
 	this.keyStorePassword = configurableString("keyStorePassword", json, null);

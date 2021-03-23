@@ -17,6 +17,7 @@ package com.sitewhere.sources.manager;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import com.google.inject.Inject;
 import com.sitewhere.grpc.device.DeviceModelMarshaler;
@@ -36,6 +37,7 @@ import com.sitewhere.sources.spi.IInboundEventSource;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.microservice.instance.EventPipelineLogLevel;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleStatus;
@@ -177,38 +179,52 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 	if (getLogger().isDebugEnabled()) {
 	    getLogger().debug("Processing decoded event...");
 	}
+	String sourceUnique = sourceId + ":" + UUID.randomUUID().toString();
 	if (decoded.getRequest() instanceof IDeviceEventCreateRequest) {
 	    if (getLogger().isDebugEnabled()) {
 		getLogger().debug("Forwarding decoded event create request to Kafka outbound topic.");
 	    }
+	    DecodedEventPayload payload = new DecodedEventPayload();
+	    payload.setSourceId(sourceUnique);
+	    payload.setDeviceToken(decoded.getDeviceToken());
+	    payload.setOriginator(decoded.getOriginator());
+	    payload.setEventCreateRequest((IDeviceEventCreateRequest) decoded.getRequest());
 	    if (getDecodedEventsProducer().getLifecycleStatus() == LifecycleStatus.Started) {
 		// Build and forward inbound event payload message.
-		DecodedEventPayload payload = new DecodedEventPayload();
-		payload.setSourceId(sourceId);
-		payload.setDeviceToken(decoded.getDeviceToken());
-		payload.setOriginator(decoded.getOriginator());
-		payload.setEventCreateRequest((IDeviceEventCreateRequest) decoded.getRequest());
 		getDecodedEventsProducer().send(decoded.getDeviceToken(),
 			EventModelMarshaler.buildDecodedEventPayloadMessage(payload));
+		logPipelineEvent(sourceUnique, payload.getDeviceToken(), getMicroservice().getIdentifier(),
+			"Decoded event create request and forwarded to Kafka decoded events topic.", null,
+			EventPipelineLogLevel.Debug);
 	    } else {
 		getLogger().warn("Producer not started. Unable to add decoded event to topic.");
+		logPipelineEvent(sourceUnique, payload.getDeviceToken(), getMicroservice().getIdentifier(),
+			"Kafka producer was not started. Unable to forward event.", null, EventPipelineLogLevel.Debug);
 	    }
 	} else if (decoded.getRequest() instanceof IDeviceRegistrationRequest) {
 	    if (getLogger().isDebugEnabled()) {
-		getLogger().debug("Forwarding decoded regsitration request to Kafka outbound topic.");
+		getLogger().debug("Forwarding decoded registration request to Kafka outbound topic.");
 	    }
+	    DeviceRegistrationPayload payload = new DeviceRegistrationPayload();
+	    payload.setSourceId(sourceUnique);
+	    payload.setDeviceToken(decoded.getDeviceToken());
+	    payload.setOriginator(decoded.getOriginator());
+	    payload.setDeviceRegistrationRequest((IDeviceRegistrationRequest) decoded.getRequest());
 	    if (getDeviceRegistrationEventsProducer().getLifecycleStatus() == LifecycleStatus.Started) {
 		// Build and forward device registration payload message.
-		DeviceRegistrationPayload payload = new DeviceRegistrationPayload();
-		payload.setSourceId(sourceId);
-		payload.setDeviceToken(decoded.getDeviceToken());
-		payload.setOriginator(decoded.getOriginator());
-		payload.setDeviceRegistrationRequest((IDeviceRegistrationRequest) decoded.getRequest());
 		getDeviceRegistrationEventsProducer().send(decoded.getDeviceToken(),
 			DeviceModelMarshaler.buildDeviceRegistrationPayloadMessage(payload));
+		logPipelineEvent(sourceUnique, payload.getDeviceToken(), getMicroservice().getIdentifier(),
+			"Decoded registration event and forwarded to Kafka registration events topic.", null,
+			EventPipelineLogLevel.Debug);
 	    } else {
 		getLogger().warn("Producer not started. Unable to add device registration event to topic.");
+		logPipelineEvent(sourceUnique, payload.getDeviceToken(), getMicroservice().getIdentifier(),
+			"Kafka producer was not started. Unable to forward event.", null, EventPipelineLogLevel.Debug);
 	    }
+	} else {
+	    getLogger().warn(String.format("Request parsed from payload was not handled: %s",
+		    decoded.getRequest().getClass().getName()));
 	}
     }
 

@@ -68,7 +68,7 @@ public class Schedules {
     private static Log LOGGER = LogFactory.getLog(Schedules.class);
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /**
      * Create a schedule.
@@ -160,7 +160,7 @@ public class Schedules {
 	return getMicroservice().getScheduleManagementApiChannel();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

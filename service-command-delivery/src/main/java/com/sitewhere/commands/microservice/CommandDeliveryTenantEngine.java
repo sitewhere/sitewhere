@@ -95,6 +95,9 @@ public class CommandDeliveryTenantEngine extends MicroserviceTenantEngine<Comman
 
 	// Load configured command router.
 	this.outboundCommandRouter = getInjector().getInstance(IOutboundCommandRouter.class);
+	if (getOutboundCommandRouter() == null) {
+	    throw new SiteWhereException("Outbound command router not properly initialized.");
+	}
     }
 
     /*

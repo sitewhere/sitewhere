@@ -54,7 +54,7 @@ public class JwtService {
     private static Log LOGGER = LogFactory.getLog(JwtService.class);
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /**
      * Use basic authentication information to generate a JWT access token and
@@ -114,7 +114,7 @@ public class JwtService {
 	return Response.status(Status.UNAUTHORIZED).build();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

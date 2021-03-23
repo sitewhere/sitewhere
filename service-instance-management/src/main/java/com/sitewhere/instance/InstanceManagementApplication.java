@@ -23,10 +23,10 @@ import com.sitewhere.microservice.MicroserviceApplication;
 /**
  * Spring Boot application for web/REST microservice.
  */
-public class InstanceManagementApplication extends MicroserviceApplication<IInstanceManagementMicroservice<?>> {
+public class InstanceManagementApplication extends MicroserviceApplication<IInstanceManagementMicroservice> {
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /*
      * (non-Javadoc)
@@ -35,7 +35,7 @@ public class InstanceManagementApplication extends MicroserviceApplication<IInst
      * com.sitewhere.microservice.spi.IMicroserviceApplication#getMicroservice()
      */
     @Override
-    public IInstanceManagementMicroservice<?> getMicroservice() {
+    public IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

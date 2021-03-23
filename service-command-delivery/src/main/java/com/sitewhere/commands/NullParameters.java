@@ -19,6 +19,7 @@ import java.util.List;
 
 import com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor;
 import com.sitewhere.commands.spi.ICommandDeliveryProvider;
+import com.sitewhere.commands.spi.ICommandDestination;
 import com.sitewhere.microservice.lifecycle.TenantEngineLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -48,13 +49,14 @@ public class NullParameters {
 
 	/*
 	 * @see com.sitewhere.commands.spi.ICommandDeliveryParameterExtractor#
-	 * extractDeliveryParameters(com.sitewhere.spi.device.IDeviceNestingContext,
-	 * java.util.List, com.sitewhere.spi.device.command.IDeviceCommandExecution)
+	 * extractDeliveryParameters(com.sitewhere.commands.spi.ICommandDestination,
+	 * com.sitewhere.spi.device.IDeviceNestingContext, java.util.List,
+	 * com.sitewhere.spi.device.command.IDeviceCommandExecution)
 	 */
 	@Override
-	public NullParameters extractDeliveryParameters(IDeviceNestingContext nesting,
-		List<? extends IDeviceAssignment> assignments, IDeviceCommandExecution execution)
-		throws SiteWhereException {
+	public NullParameters extractDeliveryParameters(ICommandDestination<?, ?> destination,
+		IDeviceNestingContext nesting, List<? extends IDeviceAssignment> assignments,
+		IDeviceCommandExecution execution) throws SiteWhereException {
 	    return parameters;
 	}
     }

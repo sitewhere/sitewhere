@@ -30,6 +30,7 @@ import com.sitewhere.rest.model.device.event.DeviceEventContext;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.microservice.instance.EventPipelineLogLevel;
 
 /**
  * Uses list of device assignments to build a list of preprocessed event
@@ -59,6 +60,7 @@ public class PreprocessedEventMapper
 	GPreprocessedEventPayload.Builder preproc = GPreprocessedEventPayload.newBuilder();
 
 	DeviceEventContext context = new DeviceEventContext();
+	context.setSourceId(payload.getSourceId());
 	context.setDeviceToken(device.getToken());
 	context.setDeviceId(device.getId());
 	context.setDeviceTypeId(device.getDeviceTypeId());
@@ -91,6 +93,12 @@ public class PreprocessedEventMapper
 		payloads.add(preproc);
 	    }
 	    KeyValue<UUID, List<GPreprocessedEventPayload>> keyValue = new KeyValue<>(deviceId, payloads);
+
+	    logPipelineEvent(context.getDecodedEventPayload().getSourceId(),
+		    context.getDecodedEventPayload().getDeviceToken(), getMicroservice().getIdentifier(),
+		    "Forwarding " + payloads.size() + " preprocessed events to inbound events Kafka topic.", null,
+		    EventPipelineLogLevel.Debug);
+
 	    return keyValue;
 	} catch (SiteWhereException e) {
 	    KeyValue<UUID, List<GPreprocessedEventPayload>> keyValue = new KeyValue<>(deviceId, new ArrayList<>());

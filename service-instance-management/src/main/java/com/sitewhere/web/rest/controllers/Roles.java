@@ -66,7 +66,7 @@ public class Roles {
     private static Log LOGGER = LogFactory.getLog(Roles.class);
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /**
      * Get role by name.
@@ -79,8 +79,8 @@ public class Roles {
     @Path("/{roleName}")
     @Operation(summary = "Get role by name", description = "Get role by name")
     public Response getRoleByName(
-		    @Parameter(description = "Unique roleName", required = true) @PathParam("roleName") String roleName)
-		    throws SiteWhereException {
+	    @Parameter(description = "Unique roleName", required = true) @PathParam("roleName") String roleName)
+	    throws SiteWhereException {
 	IRole match = getUserManagement().getRoleByName(roleName);
 	return Response.ok(match).build();
     }
@@ -103,9 +103,9 @@ public class Roles {
     @Path("/{roleName}")
     @Operation(summary = "Delete role by roleName", description = "Delete role by roleName")
     public Response deleteRoleByRoleName(
-		    @Parameter(description = "Unique rolName", required = true) @PathParam("roleName") String roleName)
-		    throws SiteWhereException {
-        getUserManagement().deleteRole(roleName);
+	    @Parameter(description = "Unique rolName", required = true) @PathParam("roleName") String roleName)
+	    throws SiteWhereException {
+	getUserManagement().deleteRole(roleName);
 	return Response.ok().build();
     }
 
@@ -137,9 +137,8 @@ public class Roles {
     @Path("/{roleName}")
     @Operation(summary = "Update existing user", description = "Update existing user")
     public Response updateUser(
-		    @Parameter(description = "Unique roleName", required = true) @PathParam("roleName") String roleName,
-		    @RequestBody RoleCreateRequest input) throws SiteWhereException {
-
+	    @Parameter(description = "Unique roleName", required = true) @PathParam("roleName") String roleName,
+	    @RequestBody RoleCreateRequest input) throws SiteWhereException {
 
 	return Response.ok(getUserManagement().updateRole(roleName, input)).build();
     }
@@ -148,7 +147,7 @@ public class Roles {
 	return getMicroservice().getUserManagement();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

@@ -15,6 +15,9 @@
  */
 package com.sitewhere.commands.configuration.router;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.sitewhere.commands.configuration.CommandDeliveryTenantConfiguration;
@@ -26,6 +29,9 @@ import com.sitewhere.spi.SiteWhereException;
  * Provides a outbound command router based on tenant configuration.
  */
 public class OutboundCommandRouterProvider implements Provider<IOutboundCommandRouter> {
+
+    /** Static logger instance */
+    private static Log LOGGER = LogFactory.getLog(OutboundCommandRouterProvider.class);
 
     /** Injected configuration */
     private CommandDeliveryTenantConfiguration configuration;
@@ -47,6 +53,7 @@ public class OutboundCommandRouterProvider implements Provider<IOutboundCommandR
 	try {
 	    return OutboundCommandRouterParser.parse(getManager(), getConfiguration());
 	} catch (SiteWhereException e) {
+	    LOGGER.error("Unable to initialize command router.", e);
 	    return null;
 	}
     }

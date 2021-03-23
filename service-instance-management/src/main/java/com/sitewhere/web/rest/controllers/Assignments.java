@@ -114,7 +114,7 @@ public class Assignments {
     private static Log LOGGER = LogFactory.getLog(Assignments.class);
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /**
      * Create a device assignment.
@@ -1090,7 +1090,7 @@ public class Assignments {
 	return getMicroservice().getLabelGenerationApiChannel();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }

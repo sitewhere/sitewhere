@@ -81,7 +81,7 @@ import io.swagger.annotations.Api;
 public class BatchOperations {
 
     @Inject
-    private IInstanceManagementMicroservice<?> microservice;
+    private IInstanceManagementMicroservice microservice;
 
     /** Static logger instance */
     @SuppressWarnings("unused")
@@ -302,7 +302,7 @@ public class BatchOperations {
 	return getMicroservice().getScheduleManagementApiChannel();
     }
 
-    protected IInstanceManagementMicroservice<?> getMicroservice() {
+    protected IInstanceManagementMicroservice getMicroservice() {
 	return microservice;
     }
 }
