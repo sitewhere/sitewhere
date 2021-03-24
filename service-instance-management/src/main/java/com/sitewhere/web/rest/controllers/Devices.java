@@ -551,13 +551,23 @@ public class Devices {
 		}
 	    }
 
-	    IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(getDeviceManagement(),
-		    assignment);
+	    IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(createEventBatchSourceId(),
+		    getDeviceManagement(), assignment);
 	    response = getDeviceEventManagement().addDeviceEventBatch(context, batch);
 	}
 
 	// TODO: Only returns the last response. Should this be refactored?
 	return Response.ok(response).build();
+    }
+
+    /**
+     * Source id passed in events generated as side-effect of event batch
+     * operations.
+     * 
+     * @return
+     */
+    protected String createEventBatchSourceId() {
+	return "EVENTBATCH:" + UUID.randomUUID().toString();
     }
 
     /**

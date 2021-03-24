@@ -28,6 +28,7 @@ import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
+import com.sitewhere.spi.microservice.instance.EventPipelineLogLevel;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleStatus;
 
 public class CommandRoutingLogic {
@@ -51,9 +52,18 @@ public class CommandRoutingLogic {
 	for (ICommandDestination<?, ?> destination : destinations) {
 	    if (destination.getLifecycleStatus() == LifecycleStatus.Started) {
 		try {
+		    router.logPipelineEvent(eventContext.getSourceId(), eventContext.getDeviceToken(),
+			    router.getMicroservice().getIdentifier(),
+			    "Routed command '" + execution.getCommand().getName() + "' to command destination '"
+				    + destination.getDestinationId() + "'.",
+			    null, EventPipelineLogLevel.Info);
 		    deliverCommand(destination, execution, nesting, assignments);
 		} catch (SiteWhereException e) {
-		    router.getLogger().error("Unable to deliver command to destination.", e);
+		    String message = "Unable to route command '" + execution.getCommand().getName()
+			    + "' to command destination '" + destination.getDestinationId() + "'.";
+		    router.getLogger().error(message, e);
+		    router.logPipelineException(eventContext.getSourceId(), eventContext.getDeviceToken(),
+			    router.getMicroservice().getIdentifier(), message, e, EventPipelineLogLevel.Error);
 		    deliveredToAll = false;
 		}
 	    } else {
@@ -67,7 +77,11 @@ public class CommandRoutingLogic {
 	    payload.setEvent(execution.getInvocation());
 	    byte[] message = EventModelMarshaler.buildProcessedEventPayloadMessage(payload);
 	    undelivered.send(eventContext.getDeviceId().toString(), message);
-	    router.getLogger().warn("Due to delivery failure, pushed command to undeliverable topic.");
+
+	    String warning = "Due to delivery failure, pushed command to undeliverable topic.";
+	    router.getLogger().warn(warning);
+	    router.logPipelineEvent(eventContext.getSourceId(), eventContext.getDeviceToken(),
+		    router.getMicroservice().getIdentifier(), warning, null, EventPipelineLogLevel.Warning);
 	}
     }
 

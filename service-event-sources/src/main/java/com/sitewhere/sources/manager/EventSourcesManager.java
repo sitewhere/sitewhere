@@ -168,6 +168,16 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 	stop.execute(monitor);
     }
 
+    /**
+     * Generate unique source id from base source id and UUID.
+     * 
+     * @param sourceId
+     * @return
+     */
+    protected String generateUniqueSourceId(String sourceId) {
+	return sourceId + ":" + UUID.randomUUID().toString();
+    }
+
     /*
      * @see com.sitewhere.sources.spi.IEventSourcesManager#handleDecodedEvent(java.
      * lang.String, byte[], java.util.Map,
@@ -179,7 +189,7 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 	if (getLogger().isDebugEnabled()) {
 	    getLogger().debug("Processing decoded event...");
 	}
-	String sourceUnique = sourceId + ":" + UUID.randomUUID().toString();
+	String sourceUnique = generateUniqueSourceId(sourceId);
 	if (decoded.getRequest() instanceof IDeviceEventCreateRequest) {
 	    if (getLogger().isDebugEnabled()) {
 		getLogger().debug("Forwarding decoded event create request to Kafka outbound topic.");
@@ -223,8 +233,11 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
 			"Kafka producer was not started. Unable to forward event.", null, EventPipelineLogLevel.Debug);
 	    }
 	} else {
-	    getLogger().warn(String.format("Request parsed from payload was not handled: %s",
-		    decoded.getRequest().getClass().getName()));
+	    String message = String.format("Request parsed from payload was not handled: %s",
+		    decoded.getRequest().getClass().getName());
+	    getLogger().warn(message);
+	    logPipelineEvent(sourceUnique, "Unknown", getMicroservice().getIdentifier(), message, null,
+		    EventPipelineLogLevel.Warning);
 	}
     }
 
@@ -235,7 +248,12 @@ public class EventSourcesManager extends TenantEngineLifecycleComponent implemen
     @Override
     public void handleFailedDecode(String sourceId, byte[] encoded, Map<String, Object> metadata, Throwable t)
 	    throws SiteWhereException {
-	getLogger().warn("Event could not be decoded. Adding to failed decode topic.", t);
+	String message = "Event could not be decoded. Adding to failed decode topic.";
+	getLogger().warn(message, t);
+
+	String sourceUnique = generateUniqueSourceId(sourceId);
+	logPipelineException(sourceUnique, "Unknown", getMicroservice().getIdentifier(), message, t,
+		EventPipelineLogLevel.Warning);
 	if (getFailedDecodeEventsProducer().getLifecycleStatus() == LifecycleStatus.Started) {
 	    getFailedDecodeEventsProducer().send(sourceId, encoded);
 	} else if (getLogger().isWarnEnabled()) {

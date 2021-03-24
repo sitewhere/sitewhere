@@ -515,8 +515,8 @@ public class Assignments {
 	    @Parameter(description = "Assignment token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(getDeviceManagement(),
-		assignment);
+	IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(createRestSourceId(),
+		getDeviceManagement(), assignment);
 	return Response.ok(getDeviceEventManagement().addDeviceMeasurements(context, input).get(0)).build();
     }
 
@@ -589,8 +589,8 @@ public class Assignments {
 	    @Parameter(description = "Assignment token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(getDeviceManagement(),
-		assignment);
+	IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(createRestSourceId(),
+		getDeviceManagement(), assignment);
 	return Response.ok(getDeviceEventManagement().addDeviceLocations(context, input).get(0)).build();
     }
 
@@ -663,8 +663,8 @@ public class Assignments {
 	    @Parameter(description = "Assignment token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(getDeviceManagement(),
-		assignment);
+	IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(createRestSourceId(),
+		getDeviceManagement(), assignment);
 	return Response.ok(getDeviceEventManagement().addDeviceAlerts(context, input).get(0)).build();
     }
 
@@ -683,8 +683,8 @@ public class Assignments {
 	    @Parameter(description = "Assignment token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(getDeviceManagement(),
-		assignment);
+	IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(createRestSourceId(),
+		getDeviceManagement(), assignment);
 	IDeviceCommandInvocation result = getDeviceEventManagement().addDeviceCommandInvocations(context, request)
 		.get(0);
 	DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper(getDeviceManagement());
@@ -801,8 +801,8 @@ public class Assignments {
 	    @Parameter(description = "Assignment token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(getDeviceManagement(),
-		assignment);
+	IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(createRestSourceId(),
+		getDeviceManagement(), assignment);
 	return Response.ok(getDeviceEventManagement().addDeviceStateChanges(context, input).get(0)).build();
     }
 
@@ -875,8 +875,8 @@ public class Assignments {
 	    @Parameter(description = "Assignment token", required = true) @PathParam("token") String token)
 	    throws SiteWhereException {
 	IDeviceAssignment assignment = assertDeviceAssignment(token);
-	IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(getDeviceManagement(),
-		assignment);
+	IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(createRestSourceId(),
+		getDeviceManagement(), assignment);
 	IDeviceCommandResponse result = getDeviceEventManagement().addDeviceCommandResponses(context, input).get(0);
 	return Response.ok(DeviceCommandResponse.copy(result)).build();
     }
@@ -1068,6 +1068,15 @@ public class Assignments {
 	} catch (DateTimeParseException e) {
 	    throw new SiteWhereException(e);
 	}
+    }
+
+    /**
+     * Source id passed in events generated as side-effect of REST calls.
+     * 
+     * @return
+     */
+    protected String createRestSourceId() {
+	return "REST:" + UUID.randomUUID().toString();
     }
 
     protected IDeviceManagement getDeviceManagement() {

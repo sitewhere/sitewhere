@@ -36,6 +36,7 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
+import com.sitewhere.spi.microservice.instance.EventPipelineLogLevel;
 
 /**
  * Adds triggers to event persistence methods to push the new events into a
@@ -72,8 +73,11 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
      */
     @Override
     public List<? extends IDeviceMeasurement> addDeviceMeasurements(IDeviceEventContext context,
-	    IDeviceMeasurementCreateRequest... measurements) throws SiteWhereException {
-	return forwardEvents(context, super.addDeviceMeasurements(context, measurements));
+	    IDeviceMeasurementCreateRequest... request) throws SiteWhereException {
+	List<? extends IDeviceMeasurement> result = super.addDeviceMeasurements(context, request);
+	logPipelineEvent(context.getSourceId(), context.getDeviceToken(), getMicroservice().getIdentifier(),
+		"Persisted " + result.size() + " measurement events for device.", null, EventPipelineLogLevel.Debug);
+	return forwardEvents(context, result);
     }
 
     /*
@@ -85,7 +89,10 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
     @Override
     public List<? extends IDeviceLocation> addDeviceLocations(IDeviceEventContext context,
 	    IDeviceLocationCreateRequest... request) throws SiteWhereException {
-	return forwardEvents(context, super.addDeviceLocations(context, request));
+	List<? extends IDeviceLocation> result = super.addDeviceLocations(context, request);
+	logPipelineEvent(context.getSourceId(), context.getDeviceToken(), getMicroservice().getIdentifier(),
+		"Persisted " + result.size() + " location events for device.", null, EventPipelineLogLevel.Debug);
+	return forwardEvents(context, result);
     }
 
     /*
@@ -96,7 +103,10 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
     @Override
     public List<? extends IDeviceAlert> addDeviceAlerts(IDeviceEventContext context,
 	    IDeviceAlertCreateRequest... request) throws SiteWhereException {
-	return forwardEvents(context, super.addDeviceAlerts(context, request));
+	List<? extends IDeviceAlert> result = super.addDeviceAlerts(context, request);
+	logPipelineEvent(context.getSourceId(), context.getDeviceToken(), getMicroservice().getIdentifier(),
+		"Persisted " + result.size() + " alert events for device.", null, EventPipelineLogLevel.Debug);
+	return forwardEvents(context, result);
     }
 
     /*
@@ -109,7 +119,11 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
     @Override
     public List<? extends IDeviceCommandInvocation> addDeviceCommandInvocations(IDeviceEventContext context,
 	    IDeviceCommandInvocationCreateRequest... request) throws SiteWhereException {
-	return forwardEvents(context, super.addDeviceCommandInvocations(context, request));
+	List<? extends IDeviceCommandInvocation> result = super.addDeviceCommandInvocations(context, request);
+	logPipelineEvent(context.getSourceId(), context.getDeviceToken(), getMicroservice().getIdentifier(),
+		"Persisted " + result.size() + " command invocation events for device.", null,
+		EventPipelineLogLevel.Debug);
+	return forwardEvents(context, result);
     }
 
     /*
@@ -121,7 +135,11 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
     @Override
     public List<? extends IDeviceCommandResponse> addDeviceCommandResponses(IDeviceEventContext context,
 	    IDeviceCommandResponseCreateRequest... request) throws SiteWhereException {
-	return forwardEvents(context, super.addDeviceCommandResponses(context, request));
+	List<? extends IDeviceCommandResponse> result = super.addDeviceCommandResponses(context, request);
+	logPipelineEvent(context.getSourceId(), context.getDeviceToken(), getMicroservice().getIdentifier(),
+		"Persisted " + result.size() + " command response events for device.", null,
+		EventPipelineLogLevel.Debug);
+	return forwardEvents(context, result);
     }
 
     /*
@@ -133,7 +151,10 @@ public class KafkaEventPersistenceTriggers extends DeviceEventManagementDecorato
     @Override
     public List<? extends IDeviceStateChange> addDeviceStateChanges(IDeviceEventContext context,
 	    IDeviceStateChangeCreateRequest... request) throws SiteWhereException {
-	return forwardEvents(context, super.addDeviceStateChanges(context, request));
+	List<? extends IDeviceStateChange> result = super.addDeviceStateChanges(context, request);
+	logPipelineEvent(context.getSourceId(), context.getDeviceToken(), getMicroservice().getIdentifier(),
+		"Persisted " + result.size() + " state change events for device.", null, EventPipelineLogLevel.Debug);
+	return forwardEvents(context, result);
     }
 
     protected IEventManagementTenantEngine getEventManagementTenantEngine() {

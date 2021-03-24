@@ -38,6 +38,7 @@ import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
+import com.sitewhere.spi.microservice.instance.EventPipelineLogLevel;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
@@ -106,6 +107,11 @@ public class DefaultCommandProcessingStrategy extends TenantEngineLifecycleCompo
 			    .getActiveDeviceAssignments(device.getId());
 		    IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device,
 			    getTenantEngine().getTenantResource());
+
+		    logPipelineEvent(context.getSourceId(), context.getDeviceToken(), getMicroservice().getIdentifier(),
+			    "About to route command '" + execution.getCommand().getName()
+				    + "' to command destinations.",
+			    null, EventPipelineLogLevel.Debug);
 		    CommandRoutingLogic.routeCommand(getOutboundCommandRouter(),
 			    getUndeliveredCommandInvocationsProducer(), context, execution, nesting, active);
 		}

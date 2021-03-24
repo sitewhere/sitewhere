@@ -27,6 +27,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventContext;
+import com.sitewhere.spi.microservice.instance.EventPipelineLogLevel;
 
 /**
  * Logic for taking a persisted event payload, enriching it with extra
@@ -56,12 +57,20 @@ public class OutboundPayloadEnrichmentLogic {
 	    GProcessedEventPayload grpc = EventModelConverter.asGrpcProcessedEventPayload(enriched);
 	    byte[] message = EventModelMarshaler.buildProcessedEventPayloadMessage(grpc);
 	    engine.getOutboundEventsProducer().send(context.getDeviceId(), message);
-	    LOGGER.debug("Delivered payload to outbound events producer.");
+
+	    String edelivered = "Delivered " + event.getEventType().name() + " payload to outbound events producer.";
+	    LOGGER.debug(edelivered);
+	    engine.logPipelineEvent(context.getSourceId(), context.getDeviceToken(),
+		    engine.getMicroservice().getIdentifier(), edelivered, null, EventPipelineLogLevel.Debug);
 
 	    // Send enriched command invocations to topic.
 	    if (event.getEventType() == DeviceEventType.CommandInvocation) {
 		engine.getOutboundCommandInvocationsProducer().send(context.getDeviceId(), message);
-		LOGGER.debug("Delivered payload to outbound command invocations producer.");
+		String cdelivered = "Delivered " + event.getEventType().name()
+			+ " payload to command invocations producer.";
+		LOGGER.debug(cdelivered);
+		engine.logPipelineEvent(context.getSourceId(), context.getDeviceToken(),
+			engine.getMicroservice().getIdentifier(), cdelivered, null, EventPipelineLogLevel.Debug);
 	    }
 	} catch (SiteWhereException e) {
 	    throw e;

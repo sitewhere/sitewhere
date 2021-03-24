@@ -16,6 +16,7 @@
 package com.sitewhere.devicestate.presence;
 
 import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -178,6 +179,15 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
 	}
 
 	/**
+	 * Source id passed in events generated as side-effect of presence operations.
+	 * 
+	 * @return
+	 */
+	protected String createPresenceSourceId() {
+	    return "PRESENCE:" + UUID.randomUUID().toString();
+	}
+
+	/**
 	 * Create state change event to indicate device not present.
 	 * 
 	 * @param deviceState
@@ -196,7 +206,7 @@ public class DevicePresenceManager extends TenantEngineLifecycleComponent implem
 		    IDeviceAssignment assignment = getDeviceManagement()
 			    .getDeviceAssignment(deviceState.getDeviceAssignmentId());
 		    IDeviceEventContext context = DeviceEventRequestBuilder
-			    .getContextForAssignment(getDeviceManagement(), assignment);
+			    .getContextForAssignment(createPresenceSourceId(), getDeviceManagement(), assignment);
 		    getDeviceEventManagement().addDeviceStateChanges(context, create);
 		    return true;
 		}

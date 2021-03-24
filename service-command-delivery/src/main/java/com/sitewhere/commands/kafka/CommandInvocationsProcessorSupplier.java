@@ -28,6 +28,7 @@ import com.sitewhere.microservice.kafka.ProcessorSupplierComponent;
 import com.sitewhere.rest.model.device.event.kafka.ProcessedEventPayload;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.microservice.instance.EventPipelineLogLevel;
 
 /**
  * Takes command invocation events from the pipeline and applies the command
@@ -64,6 +65,10 @@ public class CommandInvocationsProcessorSupplier extends ProcessorSupplierCompon
 		try {
 		    // Convert payload to API object.
 		    ProcessedEventPayload payload = EventModelConverter.asApiProcessedEventPayload(event);
+		    logPipelineEvent(payload.getEventContext().getSourceId(),
+			    payload.getEventContext().getDeviceToken(), getMicroservice().getIdentifier(),
+			    "Received processed event payload for device command invocation.", null,
+			    EventPipelineLogLevel.Debug);
 
 		    // Pass decoded payload to processing strategy implementation.
 		    ICommandProcessingStrategy strategy = ((ICommandDeliveryTenantEngine) getTenantEngine())

@@ -70,13 +70,6 @@ public class EventPersistenceMapper
     public KeyValue<UUID, GPreprocessedEventPayload> apply(UUID key, GPreprocessedEventPayload payload) {
 	try {
 	    new PersistenceProcessor(EventPersistenceMapper.this, payload).call();
-
-	    // Log to pipeline event log.
-	    logPipelineEvent(payload.getContext().getSourceId().getValue(), payload.getContext().getDeviceToken(),
-		    getMicroservice().getIdentifier(),
-		    "Persisted " + payload.getEvent().getEventCase().name() + " event for device.", null,
-		    EventPipelineLogLevel.Debug);
-
 	    KeyValue<UUID, GPreprocessedEventPayload> keyValue = KeyValue.pair(key, payload);
 	    return keyValue;
 	} catch (Exception e) {

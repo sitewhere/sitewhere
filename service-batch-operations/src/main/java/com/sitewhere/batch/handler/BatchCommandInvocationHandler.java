@@ -18,6 +18,7 @@ package com.sitewhere.batch.handler;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import com.sitewhere.batch.BatchOperationTypes;
 import com.sitewhere.batch.spi.IBatchOperationHandler;
@@ -110,7 +111,8 @@ public class BatchCommandInvocationHandler extends TenantEngineLifecycleComponen
 	request.setMetadata(metadata);
 
 	// Invoke the command.
-	IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(getDeviceManagement(), target);
+	IDeviceEventContext context = DeviceEventRequestBuilder.getContextForAssignment(createBatchSourceId(),
+		getDeviceManagement(), target);
 	IDeviceCommandInvocation invocation = getDeviceEventManagement().addDeviceCommandInvocations(context, request)
 		.get(0);
 	updated.getMetadata().put(IBatchCommandInvocationRequest.META_INVOCATION_EVENT_ID,
@@ -119,11 +121,20 @@ public class BatchCommandInvocationHandler extends TenantEngineLifecycleComponen
 	return ElementProcessingStatus.Succeeded;
     }
 
-    public IDeviceManagement getDeviceManagement() {
+    /**
+     * Source id passed in events generated as side-effect of batch operations.
+     * 
+     * @return
+     */
+    protected String createBatchSourceId() {
+	return "BATCH:" + UUID.randomUUID().toString();
+    }
+
+    protected IDeviceManagement getDeviceManagement() {
 	return ((IBatchOperationsMicroservice) getMicroservice()).getDeviceManagement();
     }
 
-    public IDeviceEventManagement getDeviceEventManagement() {
+    protected IDeviceEventManagement getDeviceEventManagement() {
 	return ((IBatchOperationsMicroservice) getMicroservice()).getDeviceEventManagementApiChannel();
     }
 }

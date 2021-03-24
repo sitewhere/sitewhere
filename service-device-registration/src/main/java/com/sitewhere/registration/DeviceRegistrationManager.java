@@ -44,6 +44,7 @@ import com.sitewhere.spi.device.command.RegistrationSuccessReason;
 import com.sitewhere.spi.device.event.kafka.IDecodedEventPayload;
 import com.sitewhere.spi.device.event.kafka.IDeviceRegistrationPayload;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
+import com.sitewhere.spi.microservice.instance.EventPipelineLogLevel;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;
 import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 import com.sitewhere.spi.microservice.lifecycle.LifecycleComponentType;
@@ -163,7 +164,11 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
 	    List<? extends IDeviceAssignment> assignments = getDeviceManagement()
 		    .getActiveDeviceAssignments(device.getId());
 	    if (assignments.size() == 0) {
-		getLogger().debug("Handling unassigned device for registration.");
+		String message = "Creating new assignment for unassigned device during registration.";
+		getLogger().debug(message);
+		logPipelineEvent(registration.getSourceId(), registration.getDeviceToken(),
+			getMicroservice().getIdentifier(), message, null, EventPipelineLogLevel.Info);
+
 		DeviceAssignmentCreateRequest assnCreate = new DeviceAssignmentCreateRequest();
 		assnCreate.setDeviceToken(device.getToken());
 		if (customer != null) {
@@ -193,10 +198,17 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
 	    IDeviceCreateRequest request = registration.getDeviceRegistrationRequest();
 	    if (device == null) {
 		if (!isAllowNewDevices()) {
-		    throw new SiteWhereException("Ignoring device registration request. New devices are not allowed.");
+		    String message = "Ignoring device registration request. New devices are not allowed.";
+		    logPipelineEvent(registration.getSourceId(), registration.getDeviceToken(),
+			    getMicroservice().getIdentifier(), message, null, EventPipelineLogLevel.Warning);
+		    throw new SiteWhereException(message);
 		}
 		// Create device if it does not already exist.
-		getLogger().info("Creating new device as part of registration.");
+		String message = "Creating new device as part of registration.";
+		getLogger().info(message);
+		logPipelineEvent(registration.getSourceId(), registration.getDeviceToken(),
+			getMicroservice().getIdentifier(), message, null, EventPipelineLogLevel.Info);
+
 		DeviceCreateRequest deviceCreate = new DeviceCreateRequest();
 		deviceCreate.setToken(request.getToken() != null ? request.getToken() : registration.getDeviceToken());
 		deviceCreate.setDeviceTypeToken(request.getDeviceTypeToken());
@@ -208,7 +220,10 @@ public class DeviceRegistrationManager extends TenantEngineLifecycleComponent im
 		deviceCreate.setMetadata(request.getMetadata());
 		return getDeviceManagement().createDevice(deviceCreate);
 	    } else {
-		getLogger().info("Found existing device registration. Updating device information.");
+		String message = "Found existing device registration. Updating device information.";
+		getLogger().info(message);
+		logPipelineEvent(registration.getSourceId(), registration.getDeviceToken(),
+			getMicroservice().getIdentifier(), message, null, EventPipelineLogLevel.Info);
 		return getDeviceManagement().updateDevice(device.getId(), request);
 	    }
 	}
