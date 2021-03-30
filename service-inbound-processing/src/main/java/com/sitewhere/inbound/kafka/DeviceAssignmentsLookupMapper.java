@@ -63,11 +63,11 @@ public class DeviceAssignmentsLookupMapper
 		    context).call();
 	    KeyValue<UUID, InboundEventContext> keyValue = new KeyValue<>(deviceId, updated);
 	    return keyValue;
-	} catch (Exception e) {
-	    getLogger().error("Unable to process device assignment lookup.", e);
+	} catch (Throwable t) {
+	    getLogger().error("Unable to process device assignment lookup.", t);
 	    InboundEventContext errored = new InboundEventContext(context.getDecodedEventPayload());
 	    errored.setDevice(context.getDevice());
-	    errored.setException(e);
+	    errored.setException(new Exception("Unable to process device assignment lookup.", t));
 	    errored.setDeviceAssignments(new ArrayList<>());
 	    KeyValue<UUID, InboundEventContext> keyValue = new KeyValue<>(deviceId, context);
 	    return keyValue;

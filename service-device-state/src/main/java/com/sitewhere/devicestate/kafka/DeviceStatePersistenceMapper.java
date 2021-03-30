@@ -82,8 +82,8 @@ public class DeviceStatePersistenceMapper
     public KeyValue<UUID, AggregatedDeviceState> apply(Windowed<UUID> window, AggregatedDeviceState state) {
 	try {
 	    new PersistenceOperation(state).call();
-	} catch (Exception e) {
-	    LOGGER.error("Unable to execute device state persistence operation.", e);
+	} catch (Throwable t) {
+	    LOGGER.error("Unable to execute device state persistence operation.", t);
 	}
 
 	KeyValue<UUID, AggregatedDeviceState> keyValue = new KeyValue<>(window.key(), state);

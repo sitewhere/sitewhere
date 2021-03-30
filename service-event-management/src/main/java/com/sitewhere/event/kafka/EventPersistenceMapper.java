@@ -40,7 +40,6 @@ import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
-import com.sitewhere.spi.microservice.instance.EventPipelineLogLevel;
 import com.sitewhere.spi.microservice.lifecycle.ITenantEngineLifecycleComponent;
 
 import io.prometheus.client.Counter;
@@ -72,8 +71,8 @@ public class EventPersistenceMapper
 	    new PersistenceProcessor(EventPersistenceMapper.this, payload).call();
 	    KeyValue<UUID, GPreprocessedEventPayload> keyValue = KeyValue.pair(key, payload);
 	    return keyValue;
-	} catch (Exception e) {
-	    getLogger().error("Unable to persist device event.", e);
+	} catch (Throwable t) {
+	    getLogger().error("Unable to persist device event.", t);
 	    return null;
 	}
     }

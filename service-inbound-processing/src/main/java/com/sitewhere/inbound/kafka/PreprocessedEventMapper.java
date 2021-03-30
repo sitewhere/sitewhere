@@ -86,21 +86,32 @@ public class PreprocessedEventMapper
     @Override
     public KeyValue<UUID, List<GPreprocessedEventPayload>> apply(UUID deviceId, InboundEventContext context) {
 	try {
-	    List<GPreprocessedEventPayload> payloads = new ArrayList<>();
-	    for (IDeviceAssignment assignment : context.getDeviceAssignments()) {
-		GPreprocessedEventPayload preproc = buildPreProcessedEventPayload(context.getDevice(), assignment,
-			context.getDecodedEventPayload());
-		payloads.add(preproc);
+	    if (context != null) {
+		List<GPreprocessedEventPayload> payloads = new ArrayList<>();
+		for (IDeviceAssignment assignment : context.getDeviceAssignments()) {
+		    GPreprocessedEventPayload preproc = buildPreProcessedEventPayload(context.getDevice(), assignment,
+			    context.getDecodedEventPayload());
+		    payloads.add(preproc);
+		}
+		KeyValue<UUID, List<GPreprocessedEventPayload>> keyValue = new KeyValue<>(deviceId, payloads);
+
+		logPipelineEvent(context.getDecodedEventPayload().getSourceId(),
+			context.getDecodedEventPayload().getDeviceToken(), getMicroservice().getIdentifier(),
+			"Forwarding " + payloads.size() + " preprocessed events to inbound events Kafka topic.", null,
+			EventPipelineLogLevel.Debug);
+
+		return keyValue;
+	    } else {
+		getLogger().warn("Event context was null when attempting to build preprocessed event.");
+		KeyValue<UUID, List<GPreprocessedEventPayload>> keyValue = new KeyValue<>(deviceId, new ArrayList<>());
+		return keyValue;
 	    }
-	    KeyValue<UUID, List<GPreprocessedEventPayload>> keyValue = new KeyValue<>(deviceId, payloads);
-
-	    logPipelineEvent(context.getDecodedEventPayload().getSourceId(),
-		    context.getDecodedEventPayload().getDeviceToken(), getMicroservice().getIdentifier(),
-		    "Forwarding " + payloads.size() + " preprocessed events to inbound events Kafka topic.", null,
-		    EventPipelineLogLevel.Debug);
-
-	    return keyValue;
 	} catch (SiteWhereException e) {
+	    getLogger().error("Exception while building preprocessed event payload.", e);
+	    KeyValue<UUID, List<GPreprocessedEventPayload>> keyValue = new KeyValue<>(deviceId, new ArrayList<>());
+	    return keyValue;
+	} catch (Throwable e) {
+	    getLogger().error("Unhandled exception while building preprocessed event payload.", e);
 	    KeyValue<UUID, List<GPreprocessedEventPayload>> keyValue = new KeyValue<>(deviceId, new ArrayList<>());
 	    return keyValue;
 	}
