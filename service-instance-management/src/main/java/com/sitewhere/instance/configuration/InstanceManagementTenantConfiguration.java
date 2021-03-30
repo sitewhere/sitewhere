@@ -17,12 +17,9 @@ package com.sitewhere.instance.configuration;
 
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineConfiguration;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
-
 /**
  * Maps instance management YAML configuration to objects.
  */
-@RegisterForReflection
 public class InstanceManagementTenantConfiguration implements ITenantEngineConfiguration {
 
     /** Number of pipeline history entries to keep in memory */

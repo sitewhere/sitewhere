@@ -18,22 +18,21 @@ package com.sitewhere.web;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
-import org.eclipse.microprofile.openapi.annotations.Components;
-import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
-import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeIn;
-import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
-import org.eclipse.microprofile.openapi.annotations.info.Info;
-import org.eclipse.microprofile.openapi.annotations.info.License;
-import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.info.License;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 
 /**
  * Declares base path for REST application.
  */
-@OpenAPIDefinition(info = @Info(title = "SiteWhere REST API", version = "3.0.0", description = "REST APIs for interacting with the SiteWhere data model.", license = @License(name = "CPAL 1.0", url = "https://opensource.org/licenses/CPAL-1.0")), components = @Components(securitySchemes = {
-	@SecurityScheme(securitySchemeName = "basicAuth", type = SecuritySchemeType.HTTP, scheme = "basic", description = "Only used for getting JWT."),
-	@SecurityScheme(securitySchemeName = "jwtAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT", description = "Used for all REST calls."),
-	@SecurityScheme(securitySchemeName = "tenantIdHeader", type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.HEADER, apiKeyName = "X-SiteWhere-Tenant-Id", description = "Id of tenant to access."),
-	@SecurityScheme(securitySchemeName = "tenantAuthHeader", type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.HEADER, apiKeyName = "X-SiteWhere-Tenant-Auth", description = "Auth token of tenant to access.") }))
+@OpenAPIDefinition(info = @Info(title = "SiteWhere REST API", version = "3.0.0", description = "REST APIs for interacting with the SiteWhere data model.", license = @License(name = "Apache 2.0", url = "https://www.apache.org/licenses/LICENSE-2.0")))
+@SecurityScheme(name = "basicAuth", type = SecuritySchemeType.HTTP, scheme = "basic", description = "Only used for getting JWT.")
+@SecurityScheme(name = "jwtAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT", description = "Used for all REST calls.")
+@SecurityScheme(name = "tenantIdHeader", type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.HEADER, paramName = "X-SiteWhere-Tenant-Id", description = "Id of tenant to access.")
+@SecurityScheme(name = "tenantAuthHeader", type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.HEADER, paramName = "X-SiteWhere-Tenant-Auth", description = "Auth token of tenant to access.")
 @ApplicationPath("/sitewhere")
 public class SiteWhereApplication extends Application {
 }

@@ -15,7 +15,7 @@
  */
 package com.sitewhere.search.microservice;
 
-import javax.enterprise.context.ApplicationScoped;
+import org.springframework.stereotype.Component;
 
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
 import com.sitewhere.search.configuration.EventSearchConfiguration;
@@ -31,7 +31,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides event search functionality.
  */
-@ApplicationScoped
+@Component
 public class EventSearchMicroservice
 	extends MultitenantMicroservice<MicroserviceIdentifier, EventSearchConfiguration, IEventSearchTenantEngine>
 	implements IEventSearchMicroservice {

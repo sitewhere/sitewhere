@@ -15,7 +15,7 @@
  */
 package com.sitewhere.sources.microservice;
 
-import javax.enterprise.context.ApplicationScoped;
+import org.springframework.stereotype.Component;
 
 import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
@@ -40,7 +40,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides event sources functionality.
  */
-@ApplicationScoped
+@Component
 public class EventSourcesMicroservice
 	extends MultitenantMicroservice<MicroserviceIdentifier, EventSourcesConfiguration, IEventSourcesTenantEngine>
 	implements IEventSourcesMicroservice {

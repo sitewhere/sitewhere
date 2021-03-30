@@ -15,7 +15,7 @@
  */
 package com.sitewhere.devicestate.microservice;
 
-import javax.enterprise.context.ApplicationScoped;
+import org.springframework.stereotype.Component;
 
 import com.sitewhere.devicestate.configuration.DeviceStateConfiguration;
 import com.sitewhere.devicestate.configuration.DeviceStateModule;
@@ -46,7 +46,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides device state mangagement functionality.
  */
-@ApplicationScoped
+@Component
 public class DeviceStateMicroservice
 	extends MultitenantMicroservice<MicroserviceIdentifier, DeviceStateConfiguration, IDeviceStateTenantEngine>
 	implements IDeviceStateMicroservice {

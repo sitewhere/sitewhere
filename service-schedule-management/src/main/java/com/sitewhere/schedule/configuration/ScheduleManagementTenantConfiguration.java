@@ -18,12 +18,9 @@ package com.sitewhere.schedule.configuration;
 import com.sitewhere.microservice.datastore.DatastoreDefinition;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineConfiguration;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
-
 /**
  * Maps schedule management tenant engine YAML configuration to objects.
  */
-@RegisterForReflection
 public class ScheduleManagementTenantConfiguration implements ITenantEngineConfiguration {
 
     /** Datastore definition */

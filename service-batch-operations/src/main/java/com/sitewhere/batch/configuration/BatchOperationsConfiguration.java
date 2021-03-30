@@ -17,11 +17,8 @@ package com.sitewhere.batch.configuration;
 
 import com.sitewhere.spi.microservice.IMicroserviceConfiguration;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
-
 /**
  * Maps batch operation microservice YAML configuration to objects.
  */
-@RegisterForReflection
 public class BatchOperationsConfiguration implements IMicroserviceConfiguration {
 }

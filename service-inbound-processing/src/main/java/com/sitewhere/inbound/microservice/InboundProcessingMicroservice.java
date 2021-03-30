@@ -15,7 +15,7 @@
  */
 package com.sitewhere.inbound.microservice;
 
-import javax.enterprise.context.ApplicationScoped;
+import org.springframework.stereotype.Component;
 
 import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
@@ -40,7 +40,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides inbound event processing functionality.
  */
-@ApplicationScoped
+@Component
 public class InboundProcessingMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, InboundProcessingConfiguration, IInboundProcessingTenantEngine>
 	implements IInboundProcessingMicroservice {

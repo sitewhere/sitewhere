@@ -18,12 +18,9 @@ package com.sitewhere.asset.configuration;
 import com.sitewhere.microservice.datastore.DatastoreDefinition;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineConfiguration;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
-
 /**
  * Maps asset management YAML configuration to objects.
  */
-@RegisterForReflection
 public class AssetManagementTenantConfiguration implements ITenantEngineConfiguration {
 
     /** Datastore definition */

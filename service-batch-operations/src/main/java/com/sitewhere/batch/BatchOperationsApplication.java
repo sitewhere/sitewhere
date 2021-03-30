@@ -15,8 +15,8 @@
  */
 package com.sitewhere.batch;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
@@ -24,10 +24,10 @@ import com.sitewhere.microservice.MicroserviceApplication;
 /**
  * Main application which runs the batch operations microservice.
  */
-@ApplicationScoped
+@SpringBootApplication
 public class BatchOperationsApplication extends MicroserviceApplication<IBatchOperationsMicroservice> {
 
-    @Inject
+    @Autowired
     private IBatchOperationsMicroservice microservice;
 
     /*

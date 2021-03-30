@@ -1,5 +1,9 @@
 description = 'SiteWhere Batch Operations Microservice'
 
+springBoot  {
+    mainClass = 'com.sitewhere.batch.BatchOperationsApplication'
+}
+
 dependencies {
 	// SiteWhere microservice library including gRPC support.	
     compile group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"

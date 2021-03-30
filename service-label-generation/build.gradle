@@ -1,5 +1,9 @@
 description = 'SiteWhere Label Generation Microservice'
 
+springBoot  {
+    mainClass = 'com.sitewhere.labels.LabelGenerationApplication'
+}
+
 dependencies {
 	// SiteWhere microservice library including gRPC support.	
     compile group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"

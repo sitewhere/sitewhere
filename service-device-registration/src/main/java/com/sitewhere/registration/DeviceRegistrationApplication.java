@@ -15,8 +15,8 @@
  */
 package com.sitewhere.registration;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.sitewhere.microservice.MicroserviceApplication;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice;
@@ -24,10 +24,10 @@ import com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservi
 /**
  * Main application which runs the device registration microservice.
  */
-@ApplicationScoped
+@SpringBootApplication
 public class DeviceRegistrationApplication extends MicroserviceApplication<IDeviceRegistrationMicroservice> {
 
-    @Inject
+    @Autowired
     private IDeviceRegistrationMicroservice microservice;
 
     /*

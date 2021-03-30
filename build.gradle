@@ -1,12 +1,12 @@
 plugins {
-    id 'java'
-    id 'checkstyle'
-    id 'distribution'
-    id 'io.quarkus' version '1.7.2.Final' apply false
+    id 'org.springframework.boot' version '2.4.4' apply false
     id 'com.bmuschko.docker-remote-api' version '5.3.0'
     id 'org.ajoberstar.grgit' version '2.2.1'
     id 'com.github.hierynomus.license' version '0.15.0'
     id 'com.moowork.node' version '1.3.1'
+    id 'java'
+    id 'checkstyle'
+    id 'distribution'
 }
 
 ext {
@@ -19,23 +19,19 @@ ext['git.revision.abbrev'] = ext.git.head().abbreviatedId
 ext['docker.base.image'] = 'openjdk:8-jre-alpine'
 ext['docker.maintainer'] = 'admin@sitewhere.com'
 
-ext['sitewhere.microservice.api.version'] = '3.0.13'
-ext['sitewhere.integration.api.version'] = '3.0.2'
+ext['sitewhere.microservice.api.version'] = '3.1.0'
+ext['sitewhere.integration.api.version'] = '3.1.0'
 ext['kafka.version'] = '2.0.0'
 ext['protobuf.version'] = '3.5.1'
 ext['grpc.version'] = '1.25.0'
-ext['guava.version'] = '27.1-jre'
-ext['groovy.version'] = '2.4.12'
-ext['siddhi.version'] = '3.1.2'
-ext['jackson.version'] = '2.9.10'
 
 allprojects {
     group = 'com.sitewhere'
-	version = '3.0.5'
+	version = '3.1.0'
 
     repositories {
 		mavenLocal()
-        maven { url "https://repo.maven.apache.org/maven2" }
+        mavenCentral()
         maven { url 'http://maven.restlet.org' }
         maven { url "https://jitpack.io" }
         maven { url "http://oss.jfrog.org/artifactory/oss-release-local/" }
@@ -44,8 +40,9 @@ allprojects {
     }
 }
 
-
 subprojects {
+    apply plugin: 'org.springframework.boot'
+    
 	license {
 		header rootProject.file('HEADER')
     	include "**/*.java"
@@ -68,9 +65,6 @@ subprojects {
 	    }
 	}
 
-	// Apply Quarkus.
-	apply plugin: 'io.quarkus'
-
  	// Choose Java settings.
     apply plugin: 'java'
     sourceCompatibility = 1.8
@@ -90,11 +84,10 @@ subprojects {
 	}
 	
 	// Create Dockerfile for microservices.
-	task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: quarkusBuild) {
+	task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: bootJar ) {
     	destFile = project.file('build/docker/Dockerfile')
     	from "ghcr.io/graalvm/graalvm-ce:ol8-java8-20.3.1"
-		copyFile("${project.name}-${project.version}-runner.jar", "/")
-		copyFile("lib", "/lib")
+		copyFile("${project.name}-${project.version}.jar", "/")
 			
 		if(!project.hasProperty("debug")) {
 			defaultCommand('java', 
@@ -102,7 +95,7 @@ subprojects {
 				'-Xmx512M', 
 				'-Xss384K', 
 				'-jar', 
-				"${project.name}-${project.version}-runner.jar")
+				"${project.name}-${project.version}.jar")
 		} else {
 	    	exposePort 1100
 	    	exposePort 8000
@@ -120,24 +113,18 @@ subprojects {
 		    	'-Xmx512M',
 		    	'-Xss384K',
 		    	'-jar',
-		    	"${project.name}-${project.version}-runner.jar")	
+		    	"${project.name}-${project.version}.jar")	
 		}
 	}
-
-	// Copy libraries Docker input folder.
-	task copyLibsToDocker(type: Copy, dependsOn: dockerFile) {
-		into('build/docker/lib')
-	    from "${buildDir}/lib"
-	}
 	
-	// Copy runner jar Docker input folder.
-	task copyQuarkusToDocker(type: Copy, dependsOn: copyLibsToDocker) {
+	// Copy Spring Boot lib to docker folder.
+	task copyBootLibToDocker(type: Copy, dependsOn: dockerFile) {
 		into('build/docker')
-	    from "${buildDir}/${project.name}-${project.version}-runner.jar"
+	    from "${buildDir}/libs/${project.name}-${project.version}.jar"
 	}
 	
 	// Build an image from the Dockerfile.
-	task dockerImage(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildImage, dependsOn: copyQuarkusToDocker) {
+	task dockerImage(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildImage, dependsOn: copyBootLibToDocker) {
 	    inputDir = project.file('build/docker')
 		if(!project.hasProperty("debug")) {
 		    tags = ["${dockerRepository}/sitewhere/${project.name}:${version}"]
@@ -148,8 +135,8 @@ subprojects {
 
     // Common dependencies used for all projects.
     dependencies {
-		// Confirm to Quarkus BOM.
-  		compile platform('io.quarkus:quarkus-bom:1.7.2.Final')
+        // Sping dependency managment.
+        implementation platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
 
     	// Testing dependencies.
 		testCompile group: 'junit', name: 'junit', version: '4.12'

@@ -15,7 +15,7 @@
  */
 package com.sitewhere.event.microservice;
 
-import javax.enterprise.context.ApplicationScoped;
+import org.springframework.stereotype.Component;
 
 import com.sitewhere.event.configuration.EventManagementConfiguration;
 import com.sitewhere.event.configuration.EventManagementModule;
@@ -40,7 +40,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides device event management functionality.
  */
-@ApplicationScoped
+@Component
 public class EventManagementMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, EventManagementConfiguration, IEventManagementTenantEngine>
 	implements IEventManagementMicroservice {

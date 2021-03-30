@@ -25,18 +25,17 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.eclipse.microprofile.openapi.annotations.Operation;
-import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
-import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
-import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
-import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.rest.model.search.device.DeviceStatusSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 
 import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * Controller for device status operations.

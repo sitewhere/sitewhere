@@ -15,7 +15,7 @@
  */
 package com.sitewhere.media.microservice;
 
-import javax.enterprise.context.ApplicationScoped;
+import org.springframework.stereotype.Component;
 
 import com.sitewhere.media.configuration.StreamingMediaConfiguration;
 import com.sitewhere.media.configuration.StreamingMediaModule;
@@ -31,7 +31,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides streaming media functionality.
  */
-@ApplicationScoped
+@Component
 public class StreamingMediaMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, StreamingMediaConfiguration, IStreamingMediaTenantEngine>
 	implements IStreamingMediaMicroservice {

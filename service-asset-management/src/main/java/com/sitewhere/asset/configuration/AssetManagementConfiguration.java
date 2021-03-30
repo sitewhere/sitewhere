@@ -17,11 +17,8 @@ package com.sitewhere.asset.configuration;
 
 import com.sitewhere.spi.microservice.IMicroserviceConfiguration;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
-
 /**
  * Maps asset management microservice YAML configuration to objects.
  */
-@RegisterForReflection
 public class AssetManagementConfiguration implements IMicroserviceConfiguration {
 }

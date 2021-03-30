@@ -40,12 +40,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.microprofile.openapi.annotations.Operation;
-import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
-import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
-import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
-import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirements;
-import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
@@ -87,6 +81,12 @@ import io.sitewhere.k8s.crd.tenant.scripting.template.SiteWhereScriptTemplate;
 import io.sitewhere.k8s.crd.tenant.scripting.template.SiteWhereScriptTemplateList;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * Controller for instance management.
@@ -134,7 +134,7 @@ public class Instance {
     @Path("/microservices")
     @Operation(summary = "Get list of instance microservices", description = "Get detailed list of instance microservices")
     public Response getInstanceMicroservices() {
-	String namespace = getMicroservice().getInstanceSettings().getKubernetesNamespace();
+	String namespace = getMicroservice().getInstanceSettings().getK8sNamespace();
 	SiteWhereMicroserviceList list = getMicroservice().getSiteWhereKubernetesClient()
 		.getAllMicroservices(namespace);
 	List<SiteWhereMicroservice> multitenant = new ArrayList<>();
@@ -623,7 +623,7 @@ public class Instance {
      */
     protected SiteWhereMicroservice getMicroserviceForIdentifier(IFunctionIdentifier identifier)
 	    throws SiteWhereException {
-	String namespace = getMicroservice().getInstanceSettings().getKubernetesNamespace();
+	String namespace = getMicroservice().getInstanceSettings().getK8sNamespace();
 	SiteWhereMicroservice match = getMicroservice().getSiteWhereKubernetesClient()
 		.getMicroserviceForIdentifier(namespace, identifier.getPath());
 	if (match != null) {
@@ -640,7 +640,7 @@ public class Instance {
      * @throws SiteWhereException
      */
     protected SiteWhereTenant getTenantForToken(String token) throws SiteWhereException {
-	String namespace = getMicroservice().getInstanceSettings().getKubernetesNamespace();
+	String namespace = getMicroservice().getInstanceSettings().getK8sNamespace();
 	SiteWhereTenant match = getMicroservice().getSiteWhereKubernetesClient().getTenantForToken(namespace, token);
 	if (match != null) {
 	    return match;

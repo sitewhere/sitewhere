@@ -1,5 +1,9 @@
 description = 'SiteWhere Event Sources Microservice'
 
+springBoot  {
+    mainClass = 'com.sitewhere.sources.EventSourcesApplication'
+}
+
 dependencies {
 	// SiteWhere microservice library including gRPC support.	
     compile group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"

@@ -15,7 +15,7 @@
  */
 package com.sitewhere.instance.microservice;
 
-import javax.enterprise.context.ApplicationScoped;
+import org.springframework.stereotype.Component;
 
 import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
 import com.sitewhere.grpc.client.asset.CachedAssetManagementApiChannel;
@@ -57,7 +57,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides instance management functionality.
  */
-@ApplicationScoped
+@Component
 public class InstanceManagementMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, InstanceManagementConfiguration, IInstanceManagementTenantEngine>
 	implements IInstanceManagementMicroservice {

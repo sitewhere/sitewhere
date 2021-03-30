@@ -1,5 +1,9 @@
 description = 'SiteWhere Device State Microservice'
 
+springBoot  {
+    mainClass = 'com.sitewhere.devicestate.DeviceStateApplication'
+}
+
 dependencies {
 	// SiteWhere microservice library including gRPC support.	
     compile group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"

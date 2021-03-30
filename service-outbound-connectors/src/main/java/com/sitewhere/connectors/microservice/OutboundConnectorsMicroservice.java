@@ -15,7 +15,7 @@
  */
 package com.sitewhere.connectors.microservice;
 
-import javax.enterprise.context.ApplicationScoped;
+import org.springframework.stereotype.Component;
 
 import com.sitewhere.connectors.configuration.OutboundConnectorsConfiguration;
 import com.sitewhere.connectors.configuration.OutboundConnectorsModule;
@@ -40,7 +40,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides outbound connector management.
  */
-@ApplicationScoped
+@Component
 public class OutboundConnectorsMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, OutboundConnectorsConfiguration, IOutboundConnectorsTenantEngine>
 	implements IOutboundConnectorsMicroservice {

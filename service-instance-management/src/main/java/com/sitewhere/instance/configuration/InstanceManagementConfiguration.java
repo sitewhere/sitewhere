@@ -18,12 +18,9 @@ package com.sitewhere.instance.configuration;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.spi.microservice.IMicroserviceConfiguration;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
-
 /**
  * Maps instance management microservice YAML configuration to objects.
  */
-@RegisterForReflection
 public class InstanceManagementConfiguration implements IMicroserviceConfiguration {
 
     /** User management configuration */

@@ -15,7 +15,7 @@
  */
 package com.sitewhere.asset.microservice;
 
-import javax.enterprise.context.ApplicationScoped;
+import org.springframework.stereotype.Component;
 
 import com.sitewhere.asset.configuration.AssetManagementConfiguration;
 import com.sitewhere.asset.configuration.AssetManagementModule;
@@ -38,7 +38,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides asset management functionality.
  */
-@ApplicationScoped
+@Component
 public class AssetManagementMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, AssetManagementConfiguration, IAssetManagementTenantEngine>
 	implements IAssetManagementMicroservice {

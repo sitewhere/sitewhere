@@ -19,12 +19,9 @@ import com.sitewhere.batch.configuration.manager.BatchOperationManagerConfigurat
 import com.sitewhere.microservice.datastore.DatastoreDefinition;
 import com.sitewhere.spi.microservice.multitenant.ITenantEngineConfiguration;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
-
 /**
  * Maps batch operation tenant engine YAML configuration to objects.
  */
-@RegisterForReflection
 public class BatchOperationsTenantConfiguration implements ITenantEngineConfiguration {
 
     /** Datastore definition */

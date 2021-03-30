@@ -15,7 +15,7 @@
  */
 package com.sitewhere.schedule.microservice;
 
-import javax.enterprise.context.ApplicationScoped;
+import org.springframework.stereotype.Component;
 
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
@@ -36,7 +36,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides schedule management functionality.
  */
-@ApplicationScoped
+@Component
 public class ScheduleManagementMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, ScheduleManagementConfiguration, IScheduleManagementTenantEngine>
 	implements IScheduleManagementMicroservice {

@@ -15,7 +15,7 @@
  */
 package com.sitewhere.batch.microservice;
 
-import javax.enterprise.context.ApplicationScoped;
+import org.springframework.stereotype.Component;
 
 import com.sitewhere.batch.configuration.BatchOperationsConfiguration;
 import com.sitewhere.batch.configuration.BatchOperationsModule;
@@ -42,7 +42,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides batch operations functionality.
  */
-@ApplicationScoped
+@Component
 public class BatchOperationsMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, BatchOperationsConfiguration, IBatchOperationsTenantEngine>
 	implements IBatchOperationsMicroservice {

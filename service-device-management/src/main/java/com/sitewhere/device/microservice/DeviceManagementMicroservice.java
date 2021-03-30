@@ -15,7 +15,7 @@
  */
 package com.sitewhere.device.microservice;
 
-import javax.enterprise.context.ApplicationScoped;
+import org.springframework.stereotype.Component;
 
 import com.sitewhere.device.configuration.DeviceManagementConfiguration;
 import com.sitewhere.device.configuration.DeviceManagementModule;
@@ -38,7 +38,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides device management functionality.
  */
-@ApplicationScoped
+@Component
 public class DeviceManagementMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, DeviceManagementConfiguration, IDeviceManagementTenantEngine>
 	implements IDeviceManagementMicroservice {

@@ -15,7 +15,7 @@
  */
 package com.sitewhere.labels.microservice;
 
-import javax.enterprise.context.ApplicationScoped;
+import org.springframework.stereotype.Component;
 
 import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
 import com.sitewhere.grpc.client.asset.CachedAssetManagementApiChannel;
@@ -44,7 +44,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides label generation functionality.
  */
-@ApplicationScoped
+@Component
 public class LabelGenerationMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, LabelGenerationConfiguration, ILabelGenerationTenantEngine>
 	implements ILabelGenerationMicroservice {

@@ -26,8 +26,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
-import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.keycloak.representations.AccessTokenResponse;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
@@ -39,6 +37,8 @@ import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.web.ISiteWhereWebConstants;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * Controller for security operations.

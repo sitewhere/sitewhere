@@ -2,19 +2,20 @@ import org.ajoberstar.grgit.*
 
 description = 'SiteWhere Instance Management Microservice'
 
+springBoot  {
+    mainClass = 'com.sitewhere.instance.InstanceManagementApplication'
+}
+
 dependencies {
+    // JAX-RS support.   
+    compile group: 'org.apache.cxf', name: 'cxf-spring-boot-starter-jaxrs', version: '3.4.3'
+    compile group: 'org.apache.cxf', name: 'cxf-rt-rs-service-description-openapi-v3', version: '3.4.3'
+
 	// SiteWhere microservice library including gRPC support.	
     compile group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
 
     // SiteWhere RDB integration.   
     compile group: 'com.sitewhere', name: 'sitewhere-rdb', version: "${rootProject.ext['sitewhere.integration.api.version']}"
-
-	// Quarkus RESTEasy extension.
-    compile 'io.quarkus:quarkus-resteasy-jackson'
-    compile 'io.quarkus:quarkus-smallrye-openapi'
-	
-	// Password encryption.
-	compile group: 'org.jasypt', name: 'jasypt', version: '1.9.3'
 	
 	// Swagger
 	compile group: 'io.swagger', name: 'swagger-annotations', version: '1.5.21'

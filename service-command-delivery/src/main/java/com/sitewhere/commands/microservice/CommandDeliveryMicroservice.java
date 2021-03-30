@@ -15,7 +15,7 @@
  */
 package com.sitewhere.commands.microservice;
 
-import javax.enterprise.context.ApplicationScoped;
+import org.springframework.stereotype.Component;
 
 import com.sitewhere.commands.configuration.CommandDeliveryConfiguration;
 import com.sitewhere.commands.configuration.CommandDeliveryModule;
@@ -38,7 +38,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides command delivery functionality.
  */
-@ApplicationScoped
+@Component
 public class CommandDeliveryMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, CommandDeliveryConfiguration, ICommandDeliveryTenantEngine>
 	implements ICommandDeliveryMicroservice {

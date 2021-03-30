@@ -15,7 +15,7 @@
  */
 package com.sitewhere.registration.microservice;
 
-import javax.enterprise.context.ApplicationScoped;
+import org.springframework.stereotype.Component;
 
 import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
 import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
@@ -41,7 +41,7 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 /**
  * Microservice that provides device registration functionality.
  */
-@ApplicationScoped
+@Component
 public class DeviceRegistrationMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, DeviceRegistrationConfiguration, IDeviceRegistrationTenantEngine>
 	implements IDeviceRegistrationMicroservice {

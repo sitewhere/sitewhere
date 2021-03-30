@@ -15,8 +15,8 @@
  */
 package com.sitewhere.sources;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.sitewhere.microservice.MicroserviceApplication;
 import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
@@ -24,10 +24,10 @@ import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
 /**
  * Main application which runs the event sources microservice.
  */
-@ApplicationScoped
+@SpringBootApplication
 public class EventSourcesApplication extends MicroserviceApplication<IEventSourcesMicroservice> {
 
-    @Inject
+    @Autowired
     private IEventSourcesMicroservice microservice;
 
     /*
