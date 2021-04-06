@@ -15,42 +15,27 @@
  */
 package com.sitewhere.web.rest.controllers;
 
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.rest.model.search.device.DeviceStatusSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
-
-import io.swagger.annotations.Api;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.sitewhere.spi.device.IDeviceStatus;
+import com.sitewhere.spi.search.ISearchResults;
 
 /**
  * Controller for device status operations.
  */
-@Path("/api/statuses")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "statuses")
-@Tag(name = "Device Statuses", description = "Services for querying device statuses independently of device type.")
-@SecurityRequirements({ @SecurityRequirement(name = "jwtAuth", scopes = {}),
-	@SecurityRequirement(name = "tenantIdHeader", scopes = {}),
-	@SecurityRequirement(name = "tenantAuthHeader", scopes = {}) })
+@RestController
+@RequestMapping("/api/statuses")
 public class DeviceStatuses {
 
-    @Inject
+    @Autowired
     private IInstanceManagementMicroservice microservice;
 
     /**
@@ -63,14 +48,11 @@ public class DeviceStatuses {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Operation(summary = "List device statuses that match criteria.", description = "List device statuses that match criteria.")
-    public Response listDeviceStatuses(
-	    @Parameter(description = "Device type token", required = false) @QueryParam("deviceTypeToken") String deviceTypeToken,
-	    @Parameter(description = "Status code", required = false) @QueryParam("code") String code,
-	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
-	    throws SiteWhereException {
+    @GetMapping
+    public ISearchResults<? extends IDeviceStatus> listDeviceStatuses(
+	    @RequestParam(required = false) String deviceTypeToken, @RequestParam(required = false) String code,
+	    @RequestParam(defaultValue = "1", required = false) int page,
+	    @RequestParam(defaultValue = "100", required = false) int pageSize) throws SiteWhereException {
 	DeviceStatusSearchCriteria criteria = new DeviceStatusSearchCriteria(page, pageSize);
 	criteria.setDeviceTypeToken(deviceTypeToken);
 
@@ -79,7 +61,7 @@ public class DeviceStatuses {
 	    criteria.setCode(code);
 	}
 
-	return Response.ok(getDeviceManagement().listDeviceStatuses(criteria)).build();
+	return getDeviceManagement().listDeviceStatuses(criteria);
     }
 
     protected IDeviceManagement getDeviceManagement() {

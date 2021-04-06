@@ -16,7 +16,7 @@
 package com.sitewhere.device;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.SpringApplication;
 
 import com.sitewhere.device.spi.microservice.IDeviceManagementMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
@@ -24,11 +24,14 @@ import com.sitewhere.microservice.MicroserviceApplication;
 /**
  * Main application which runs the device management microservice.
  */
-@SpringBootApplication
 public class DeviceManagementApplication extends MicroserviceApplication<IDeviceManagementMicroservice> {
 
     @Autowired
     private IDeviceManagementMicroservice microservice;
+
+    public static void main(String[] args) {
+	SpringApplication.run(DeviceManagementApplication.class, args);
+    }
 
     /*
      * (non-Javadoc)

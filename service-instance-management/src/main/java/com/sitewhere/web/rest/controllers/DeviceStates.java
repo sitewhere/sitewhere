@@ -18,15 +18,12 @@ package com.sitewhere.web.rest.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
@@ -40,28 +37,14 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.state.IDeviceState;
 import com.sitewhere.spi.search.ISearchResults;
 
-import io.swagger.annotations.Api;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
-import io.swagger.v3.oas.annotations.tags.Tag;
-
 /*
  * Controller for device state operations.
  */
-@Path("/api/devicestates")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "devicestates")
-@Tag(name = "Device States", description = "Services used to query the current state of one or more devices.")
-@SecurityRequirements({ @SecurityRequirement(name = "jwtAuth", scopes = {}),
-	@SecurityRequirement(name = "tenantIdHeader", scopes = {}),
-	@SecurityRequirement(name = "tenantAuthHeader", scopes = {}) })
+@RestController
+@RequestMapping("/api/devicestates")
 public class DeviceStates {
 
-    @Inject
+    @Autowired
     private IInstanceManagementMicroservice microservice;
 
     /**
@@ -73,22 +56,20 @@ public class DeviceStates {
      * @param includeCustomer
      * @param includeArea
      * @param includeAsset
-     * @param includeEventDetails
+     * @param includeRecentEvents
      * @param criteria
      * @return
      * @throws SiteWhereException
      */
-    @POST
-    @Path("/search")
-    @Operation(summary = "List device states matching criteria", description = "List device states matching criteria")
-    public Response searchDeviceStates(
-	    @Parameter(description = "Include device information", required = false) @QueryParam("includeDevice") @DefaultValue("false") boolean includeDevice,
-	    @Parameter(description = "Include device type information", required = false) @QueryParam("includeDeviceType") @DefaultValue("false") boolean includeDeviceType,
-	    @Parameter(description = "Include device assignment information", required = false) @QueryParam("includeDeviceAssignment") @DefaultValue("false") boolean includeDeviceAssignment,
-	    @Parameter(description = "Include customer information", required = false) @QueryParam("includeCustomer") @DefaultValue("false") boolean includeCustomer,
-	    @Parameter(description = "Include area information", required = false) @QueryParam("includeArea") @DefaultValue("false") boolean includeArea,
-	    @Parameter(description = "Include asset information", required = false) @QueryParam("includeAsset") @DefaultValue("false") boolean includeAsset,
-	    @Parameter(description = "Include recent events", required = false) @QueryParam("includeRecentEvents") @DefaultValue("false") boolean includeRecentEvents,
+    @PostMapping("/search")
+    public SearchResults<IDeviceState> searchDeviceStates(
+	    @RequestParam(defaultValue = "false", required = false) boolean includeDevice,
+	    @RequestParam(defaultValue = "false", required = false) boolean includeDeviceType,
+	    @RequestParam(defaultValue = "false", required = false) boolean includeDeviceAssignment,
+	    @RequestParam(defaultValue = "false", required = false) boolean includeCustomer,
+	    @RequestParam(defaultValue = "false", required = false) boolean includeArea,
+	    @RequestParam(defaultValue = "false", required = false) boolean includeAsset,
+	    @RequestParam(defaultValue = "false", required = false) boolean includeRecentEvents,
 	    @RequestBody DeviceStateSearchCriteria criteria) throws SiteWhereException {
 
 	// Perform search.
@@ -107,7 +88,7 @@ public class DeviceStates {
 	for (IDeviceState assn : matches.getResults()) {
 	    results.add(helper.convert(assn));
 	}
-	return Response.ok(new SearchResults<IDeviceState>(results, matches.getNumResults())).build();
+	return new SearchResults<IDeviceState>(results, matches.getNumResults());
     }
 
     protected IDeviceManagement getDeviceManagement() {

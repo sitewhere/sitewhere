@@ -18,22 +18,19 @@ package com.sitewhere.web.rest.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
@@ -50,46 +47,30 @@ import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.web.rest.marshaling.ScheduledJobMarshalHelper;
 
-import io.swagger.annotations.Api;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
-import io.swagger.v3.oas.annotations.tags.Tag;
-
 /**
  * Controller for scheduled jobs.
  */
-@Path("/api/jobs")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "jobs")
-@Tag(name = "Scheduled Jobs", description = "Scheduled jobs allow operations to be scheduled.")
-@SecurityRequirements({ @SecurityRequirement(name = "jwtAuth", scopes = {}),
-	@SecurityRequirement(name = "tenantIdHeader", scopes = {}),
-	@SecurityRequirement(name = "tenantAuthHeader", scopes = {}) })
+@RestController
+@RequestMapping("/api/jobs")
 public class ScheduledJobs {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
     private static Log LOGGER = LogFactory.getLog(ScheduledJobs.class);
 
-    @Inject
+    @Autowired
     private IInstanceManagementMicroservice microservice;
 
     /**
      * Create a new scheduled job.
      * 
      * @param request
-     * @param servletRequest
      * @return
      * @throws SiteWhereException
      */
-    @POST
-    @Operation(summary = "Create new scheduled job", description = "Create new scheduled job")
-    public Response createScheduledJob(@RequestBody ScheduledJobCreateRequest request) throws SiteWhereException {
-	return Response.ok(getScheduleManagement().createScheduledJob(request)).build();
+    @PostMapping
+    public IScheduledJob createScheduledJob(@RequestBody ScheduledJobCreateRequest request) throws SiteWhereException {
+	return getScheduleManagement().createScheduledJob(request);
     }
 
     /**
@@ -99,13 +80,9 @@ public class ScheduledJobs {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/{token}")
-    @Operation(summary = "Get scheduled job by token", description = "Get scheduled job by token")
-    public Response getScheduledJobByToken(
-	    @Parameter(description = "Token", required = true) @PathParam("token") String token)
-	    throws SiteWhereException {
-	return Response.ok(getScheduleManagement().getScheduledJobByToken(token)).build();
+    @GetMapping("/{token}")
+    public IScheduledJob getScheduledJobByToken(@PathVariable String token) throws SiteWhereException {
+	return getScheduleManagement().getScheduledJobByToken(token);
     }
 
     /**
@@ -116,17 +93,14 @@ public class ScheduledJobs {
      * @return
      * @throws SiteWhereException
      */
-    @PUT
-    @Path("/{token}")
-    @Operation(summary = "Update existing scheduled job", description = "Update existing scheduled job")
-    public Response updateScheduledJob(@RequestBody ScheduledJobCreateRequest request,
-	    @Parameter(description = "Token", required = true) @PathParam("token") String token)
+    @PutMapping("/{token}")
+    public IScheduledJob updateScheduledJob(@RequestBody ScheduledJobCreateRequest request, @PathVariable String token)
 	    throws SiteWhereException {
 	IScheduledJob job = getScheduleManagement().getScheduledJobByToken(token);
 	if (job == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidScheduledJobToken, ErrorLevel.ERROR);
 	}
-	return Response.ok(getScheduleManagement().updateScheduledJob(job.getId(), request)).build();
+	return getScheduleManagement().updateScheduledJob(job.getId(), request);
     }
 
     /**
@@ -138,17 +112,15 @@ public class ScheduledJobs {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Operation(summary = "List scheduled jobs matching criteria", description = "List scheduled jobs matching criteria")
-    public Response listScheduledJobs(
-	    @Parameter(description = "Include context information", required = false) @QueryParam("includeContext") @DefaultValue("false") boolean includeContext,
-	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
-	    throws SiteWhereException {
+    @GetMapping
+    public ResponseEntity<?> listScheduledJobs(
+	    @RequestParam(defaultValue = "false", required = false) boolean includeContext,
+	    @RequestParam(defaultValue = "1", required = false) int page,
+	    @RequestParam(defaultValue = "100", required = false) int pageSize) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<? extends IScheduledJob> results = getScheduleManagement().listScheduledJobs(criteria);
 	if (!includeContext) {
-	    return Response.ok(results).build();
+	    return ResponseEntity.ok(results);
 	} else {
 	    List<IScheduledJob> converted = new ArrayList<IScheduledJob>();
 	    ScheduledJobMarshalHelper helper = new ScheduledJobMarshalHelper(getScheduleManagement(),
@@ -156,7 +128,7 @@ public class ScheduledJobs {
 	    for (IScheduledJob job : results.getResults()) {
 		converted.add(helper.convert(job));
 	    }
-	    return Response.ok(new SearchResults<IScheduledJob>(converted, results.getNumResults())).build();
+	    return ResponseEntity.ok(new SearchResults<IScheduledJob>(converted, results.getNumResults()));
 	}
     }
 
@@ -167,17 +139,13 @@ public class ScheduledJobs {
      * @return
      * @throws SiteWhereException
      */
-    @DELETE
-    @Path("/{token}")
-    @Operation(summary = "Delete scheduled job", description = "Delete scheduled job")
-    public Response deleteScheduledJob(
-	    @Parameter(description = "Token", required = true) @PathParam("token") String token)
-	    throws SiteWhereException {
+    @DeleteMapping("/{token}")
+    public IScheduledJob deleteScheduledJob(@PathVariable String token) throws SiteWhereException {
 	IScheduledJob job = getScheduleManagement().getScheduledJobByToken(token);
 	if (job == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidScheduledJobToken, ErrorLevel.ERROR);
 	}
-	return Response.ok(getScheduleManagement().deleteScheduledJob(job.getId())).build();
+	return getScheduleManagement().deleteScheduledJob(job.getId());
     }
 
     protected IScheduleManagement getScheduleManagement() {

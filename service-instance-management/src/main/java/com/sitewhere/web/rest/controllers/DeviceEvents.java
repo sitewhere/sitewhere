@@ -17,47 +17,31 @@ package com.sitewhere.web.rest.controllers;
 
 import java.util.UUID;
 
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.spi.SiteWhereException;
-
-import io.swagger.annotations.Api;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.sitewhere.spi.device.event.IDeviceEvent;
 
 /**
  * Controller for event operations.
  */
-@Path("/api/events")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "events")
-@Tag(name = "Device Events", description = "Services used to interact with device events outside the context of a device assignment.")
-@SecurityRequirements({ @SecurityRequirement(name = "jwtAuth", scopes = {}),
-	@SecurityRequirement(name = "tenantIdHeader", scopes = {}),
-	@SecurityRequirement(name = "tenantAuthHeader", scopes = {}) })
+@RestController
+@RequestMapping("/api/events")
 public class DeviceEvents {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
     private static Log LOGGER = LogFactory.getLog(DeviceEvents.class);
 
-    @Inject
+    @Autowired
     private IInstanceManagementMicroservice microservice;
 
     /**
@@ -67,13 +51,9 @@ public class DeviceEvents {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/id/{eventId}")
-    @Operation(summary = "Get event by unique id", description = "Get event by unique id")
-    public Response getEventById(
-	    @Parameter(description = "Event id", required = true) @PathParam("eventId") String eventId)
-	    throws SiteWhereException {
-	return Response.ok(getDeviceEventManagement().getDeviceEventById(UUID.fromString(eventId))).build();
+    @GetMapping("/id/{eventId}")
+    public IDeviceEvent getEventById(@PathVariable String eventId) throws SiteWhereException {
+	return getDeviceEventManagement().getDeviceEventById(UUID.fromString(eventId));
     }
 
     /**
@@ -83,13 +63,9 @@ public class DeviceEvents {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/alternate/{alternateId}")
-    @Operation(summary = "Get event by alternate (external) id", description = "Get event by alternate (external) id")
-    public Response getEventByAlternateId(
-	    @Parameter(description = "Alternate id", required = true) @PathParam("alternateId") String alternateId)
-	    throws SiteWhereException {
-	return Response.ok(getDeviceEventManagement().getDeviceEventByAlternateId(alternateId)).build();
+    @GetMapping("/alternate/{alternateId}")
+    public IDeviceEvent getEventByAlternateId(@PathVariable String alternateId) throws SiteWhereException {
+	return getDeviceEventManagement().getDeviceEventByAlternateId(alternateId);
     }
 
     protected IDeviceEventManagement getDeviceEventManagement() {

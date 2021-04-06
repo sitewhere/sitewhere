@@ -16,7 +16,7 @@
 package com.sitewhere.sources;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.SpringApplication;
 
 import com.sitewhere.microservice.MicroserviceApplication;
 import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
@@ -24,11 +24,14 @@ import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
 /**
  * Main application which runs the event sources microservice.
  */
-@SpringBootApplication
 public class EventSourcesApplication extends MicroserviceApplication<IEventSourcesMicroservice> {
 
     @Autowired
     private IEventSourcesMicroservice microservice;
+
+    public static void main(String[] args) {
+	SpringApplication.run(EventSourcesApplication.class, args);
+    }
 
     /*
      * (non-Javadoc)

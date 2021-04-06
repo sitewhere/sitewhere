@@ -15,18 +15,16 @@
  */
 package com.sitewhere.web.auth.controllers;
 
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.keycloak.representations.AccessTokenResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.security.SiteWhereAuthentication;
@@ -36,24 +34,17 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.web.ISiteWhereWebConstants;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
-
 /**
  * Controller for security operations.
  */
-@Path("/authapi")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Tag(name = "JWT Authentication", description = "Supports authentication via JSON Web Token.")
-@SecurityRequirement(name = "basicAuth", scopes = {})
+@RestController
+@RequestMapping("/authapi")
 public class JwtService {
 
     /** Static logger instance */
     private static Log LOGGER = LogFactory.getLog(JwtService.class);
 
-    @Inject
+    @Autowired
     private IInstanceManagementMicroservice microservice;
 
     /**
@@ -65,19 +56,19 @@ public class JwtService {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/jwt")
-    @ApiOperation(value = "Authenticate and receive an access token")
-    public Response jwtWithUserDetail() throws SiteWhereException {
+    @GetMapping("/jwt")
+    public ResponseEntity<?> jwtWithUserDetail() throws SiteWhereException {
 	SiteWhereAuthentication auth = UserContext.getCurrentUser();
 	if (auth != null) {
 	    AccessTokenResponse accessToken = MarshalUtils.unmarshalJson(auth.getJwt().getBytes(),
 		    AccessTokenResponse.class);
 	    IUser user = getMicroservice().getUserManagement().getUserByUsername(auth.getUsername());
-	    return Response.ok(user).header(ISiteWhereWebConstants.HEADER_JWT, accessToken.getToken()).build();
+	    HttpHeaders headers = new HttpHeaders();
+	    headers.add(ISiteWhereWebConstants.HEADER_JWT, accessToken.getToken());
+	    return ResponseEntity.ok().headers(headers).body(user);
 	}
 	LOGGER.warn("No user context found for current thread.");
-	return Response.status(Status.UNAUTHORIZED).build();
+	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     /**
@@ -86,15 +77,13 @@ public class JwtService {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/token")
-    @ApiOperation(value = "Get access token for authenticated user.")
-    public Response accessToken() throws SiteWhereException {
+    @GetMapping("/token")
+    public ResponseEntity<?> accessToken() throws SiteWhereException {
 	SiteWhereAuthentication auth = UserContext.getCurrentUser();
 	if (auth != null) {
-	    return Response.ok(auth.getJwt()).build();
+	    return ResponseEntity.ok(auth.getJwt());
 	}
-	return Response.status(Status.UNAUTHORIZED).build();
+	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     /**
@@ -103,15 +92,13 @@ public class JwtService {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/key")
-    @ApiOperation(value = "Get public key for decoding access token")
-    public Response publicKey() throws SiteWhereException {
+    @GetMapping("/key")
+    public ResponseEntity<?> publicKey() throws SiteWhereException {
 	SiteWhereAuthentication auth = UserContext.getCurrentUser();
 	if (auth != null) {
-	    return Response.ok(getMicroservice().getUserManagement().getPublicKey()).build();
+	    return ResponseEntity.ok(getMicroservice().getUserManagement().getPublicKey());
 	}
-	return Response.status(Status.UNAUTHORIZED).build();
+	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     protected IInstanceManagementMicroservice getMicroservice() {

@@ -16,7 +16,7 @@
 package com.sitewhere.inbound;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.SpringApplication;
 
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
@@ -24,11 +24,14 @@ import com.sitewhere.microservice.MicroserviceApplication;
 /**
  * Main application which runs the inbound processing microservice.
  */
-@SpringBootApplication
 public class InboundProcessingApplication extends MicroserviceApplication<IInboundProcessingMicroservice> {
 
     @Autowired
     private IInboundProcessingMicroservice microservice;
+
+    public static void main(String[] args) {
+	SpringApplication.run(InboundProcessingApplication.class, args);
+    }
 
     /*
      * (non-Javadoc)

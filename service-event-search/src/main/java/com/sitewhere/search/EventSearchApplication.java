@@ -15,6 +15,8 @@
  */
 package com.sitewhere.search;
 
+import org.springframework.boot.SpringApplication;
+
 import com.sitewhere.microservice.MicroserviceApplication;
 import com.sitewhere.search.spi.microservice.IEventSearchMicroservice;
 
@@ -24,6 +26,10 @@ import com.sitewhere.search.spi.microservice.IEventSearchMicroservice;
 public class EventSearchApplication extends MicroserviceApplication<IEventSearchMicroservice> {
 
     private IEventSearchMicroservice microservice;
+
+    public static void main(String[] args) {
+	SpringApplication.run(EventSearchApplication.class, args);
+    }
 
     /*
      * (non-Javadoc)

@@ -18,20 +18,17 @@ package com.sitewhere.web.rest.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.api.device.AreaTypeMarshalHelper;
@@ -49,27 +46,14 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.label.ILabel;
 import com.sitewhere.spi.search.ISearchResults;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
-import io.swagger.v3.oas.annotations.tags.Tag;
-
 /**
  * Controller for area type operations.
  */
-@Path("/api/areatypes")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Tag(name = "Area Types", description = "Area types define common characteristics for related areas.")
-@SecurityRequirements({ @SecurityRequirement(name = "jwtAuth", scopes = {}),
-	@SecurityRequirement(name = "tenantIdHeader", scopes = {}),
-	@SecurityRequirement(name = "tenantAuthHeader", scopes = {}) })
+@RestController
+@RequestMapping("/api/areatypes")
 public class AreaTypes {
 
-    @Inject
+    @Autowired
     private IInstanceManagementMicroservice microservice;
 
     /**
@@ -79,13 +63,11 @@ public class AreaTypes {
      * @return
      * @throws SiteWhereException
      */
-    @POST
-    @Operation(summary = "Create area type", description = "Create new area type")
-    public Response createAreaType(@RequestBody AreaTypeCreateRequest input) throws SiteWhereException {
+    @PostMapping
+    public MarshaledAreaType createAreaType(@RequestBody AreaTypeCreateRequest input) throws SiteWhereException {
 	AreaTypeMarshalHelper helper = new AreaTypeMarshalHelper(getDeviceManagement());
 	helper.setIncludeContainedAreaTypes(true);
-	MarshaledAreaType marshaled = helper.convert(getDeviceManagement().createAreaType(input));
-	return Response.ok(marshaled).build();
+	return helper.convert(getDeviceManagement().createAreaType(input));
     }
 
     /**
@@ -95,16 +77,11 @@ public class AreaTypes {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/{areaTypeToken}")
-    @Operation(summary = "Get area type by token", description = "Get area type by its unqiue token")
-    public Response getAreaTypeByToken(
-	    @Parameter(description = "Token that identifies area type", required = true) @PathParam("areaTypeToken") String areaTypeToken)
-	    throws SiteWhereException {
+    @GetMapping("/{areaTypeToken}")
+    public MarshaledAreaType getAreaTypeByToken(@PathVariable String areaTypeToken) throws SiteWhereException {
 	AreaTypeMarshalHelper helper = new AreaTypeMarshalHelper(getDeviceManagement());
 	helper.setIncludeContainedAreaTypes(true);
-	MarshaledAreaType marshaled = helper.convert(assertAreaType(areaTypeToken));
-	return Response.ok(marshaled).build();
+	return helper.convert(assertAreaType(areaTypeToken));
     }
 
     /**
@@ -115,17 +92,13 @@ public class AreaTypes {
      * @return
      * @throws SiteWhereException
      */
-    @PUT
-    @Path("/{areaTypeToken}")
-    @Operation(summary = "Update area type", description = "Update an existing area type")
-    public Response updateAreaType(
-	    @Parameter(description = "Token that identifies area type", required = true) @PathParam("areaTypeToken") String areaTypeToken,
+    @PutMapping("/{areaTypeToken}")
+    public MarshaledAreaType updateAreaType(@PathVariable String areaTypeToken,
 	    @RequestBody AreaTypeCreateRequest request) throws SiteWhereException {
 	IAreaType existing = assertAreaType(areaTypeToken);
 	AreaTypeMarshalHelper helper = new AreaTypeMarshalHelper(getDeviceManagement());
 	helper.setIncludeContainedAreaTypes(true);
-	MarshaledAreaType marshaled = helper.convert(getDeviceManagement().updateAreaType(existing.getId(), request));
-	return Response.ok(marshaled).build();
+	return helper.convert(getDeviceManagement().updateAreaType(existing.getId(), request));
     }
 
     /**
@@ -136,20 +109,15 @@ public class AreaTypes {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/{areaTypeToken}/label/{generatorId}")
-    @Produces("image/png")
-    @Operation(summary = "Get area type label", description = "Get label for an area type")
-    public Response getAreaTypeLabel(
-	    @Parameter(description = "Token that identifies area type", required = true) @PathParam("areaTypeToken") String areaTypeToken,
-	    @Parameter(description = "Generator id", required = true) @PathParam("generatorId") String generatorId)
+    @GetMapping("/{areaTypeToken}/label/{generatorId}")
+    public ResponseEntity<?> getAreaTypeLabel(@PathVariable String areaTypeToken, @PathVariable String generatorId)
 	    throws SiteWhereException {
 	IAreaType existing = assertAreaType(areaTypeToken);
 	ILabel label = getLabelGeneration().getAreaTypeLabel(generatorId, existing.getId());
 	if (label == null) {
-	    return Response.status(Status.NOT_FOUND).build();
+	    return ResponseEntity.notFound().build();
 	}
-	return Response.ok(label.getContent()).build();
+	return ResponseEntity.ok(label.getContent());
     }
 
     /**
@@ -161,13 +129,11 @@ public class AreaTypes {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Operation(summary = "List area types", description = "List area types matching criteria")
-    public Response listAreaTypes(
-	    @Parameter(description = "Include contained area types", required = false) @QueryParam("includeContainedAreaTypes") @DefaultValue("false") boolean includeContainedAreaTypes,
-	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
-	    throws SiteWhereException {
+    @GetMapping
+    public SearchResults<IAreaType> listAreaTypes(
+	    @RequestParam(defaultValue = "false", required = false) boolean includeContainedAreaTypes,
+	    @RequestParam(defaultValue = "1", required = false) int page,
+	    @RequestParam(defaultValue = "100", required = false) int pageSize) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<? extends IAreaType> matches = getDeviceManagement().listAreaTypes(criteria);
 
@@ -178,7 +144,7 @@ public class AreaTypes {
 	for (IAreaType area : matches.getResults()) {
 	    results.add(helper.convert(area));
 	}
-	return Response.ok(new SearchResults<IAreaType>(results, matches.getNumResults())).build();
+	return new SearchResults<IAreaType>(results, matches.getNumResults());
     }
 
     /**
@@ -188,15 +154,10 @@ public class AreaTypes {
      * @return
      * @throws SiteWhereException
      */
-    @DELETE
-    @Path("/{areaTypeToken}")
-    @Operation(summary = "Delete area type by token", description = "Delete area type by token")
-    @ApiOperation(value = "")
-    public Response deleteAreaType(
-	    @Parameter(description = "Token that identifies area type", required = true) @PathParam("areaTypeToken") String areaTypeToken)
-	    throws SiteWhereException {
+    @DeleteMapping("/{areaTypeToken}")
+    public IAreaType deleteAreaType(@PathVariable String areaTypeToken) throws SiteWhereException {
 	IAreaType existing = assertAreaType(areaTypeToken);
-	return Response.ok(getDeviceManagement().deleteAreaType(existing.getId())).build();
+	return getDeviceManagement().deleteAreaType(existing.getId());
     }
 
     /**

@@ -226,11 +226,11 @@ public class InstanceBootstrapper extends AsyncStartLifecycleComponent implement
      */
     protected IUser bootstrapSystemUser() throws SiteWhereException {
 	IInstanceSettings settings = getMicroservice().getInstanceSettings();
-	IUser system = getUserManagement().getUserByUsername(settings.getKeycloakSystemUsername());
+	IUser system = getUserManagement().getUserByUsername(settings.getKeycloak().getSystem().getUsername());
 	if (system == null) {
-	    IUserCreateRequest request = new UserCreateRequest.Builder(settings.getKeycloakSystemUsername(),
-		    settings.getKeycloakSystemPassword(), "System", "User").withRole(SiteWhereRoles.SystemAdministrator)
-			    .build();
+	    IUserCreateRequest request = new UserCreateRequest.Builder(settings.getKeycloak().getSystem().getUsername(),
+		    settings.getKeycloak().getSystem().getPassword(), "System", "User")
+			    .withRole(SiteWhereRoles.SystemAdministrator).build();
 	    system = getUserManagement().createUser(request);
 	}
 	return system;

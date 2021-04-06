@@ -22,23 +22,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
@@ -54,10 +50,10 @@ import com.sitewhere.microservice.api.device.asset.DeviceMeasurementsWithAsset;
 import com.sitewhere.microservice.api.device.asset.DeviceStateChangeWithAsset;
 import com.sitewhere.microservice.api.event.IDeviceEventManagement;
 import com.sitewhere.microservice.api.label.ILabelGeneration;
-import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.rest.model.area.request.AreaCreateRequest;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceAssignmentSummary;
+import com.sitewhere.rest.model.device.marshaling.MarshaledArea;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.area.AreaSearchCriteria;
 import com.sitewhere.rest.model.search.device.DeviceAssignmentSearchCriteria;
@@ -79,30 +75,20 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.label.ILabel;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.sitewhere.spi.search.ITreeNode;
 
 /**
  * Controller for area operations.
  */
-@Path("/api/areas")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Tag(name = "Areas", description = "Areas are used to provide location context for device assignments.")
-@SecurityRequirements({ @SecurityRequirement(name = "jwtAuth", scopes = {}),
-	@SecurityRequirement(name = "tenantIdHeader", scopes = {}),
-	@SecurityRequirement(name = "tenantAuthHeader", scopes = {}) })
+@RestController
+@RequestMapping("/api/areas")
 public class Areas {
 
     /** Static logger instance */
+    @SuppressWarnings("unused")
     private static Log LOGGER = LogFactory.getLog(Areas.class);
 
-    @Inject
+    @Autowired
     private IInstanceManagementMicroservice microservice;
 
     /**
@@ -112,10 +98,9 @@ public class Areas {
      * @return
      * @throws SiteWhereException
      */
-    @POST
-    @Operation(summary = "Create new area", description = "Create new area")
-    public Response createArea(@RequestBody AreaCreateRequest input) throws SiteWhereException {
-	return Response.ok(getDeviceManagement().createArea(input)).build();
+    @PostMapping
+    public IArea createArea(@RequestBody AreaCreateRequest input) throws SiteWhereException {
+	return getDeviceManagement().createArea(input);
     }
 
     /**
@@ -127,19 +112,16 @@ public class Areas {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/{areaToken}")
-    @Operation(summary = "Get area by token", description = "Get area by unique token")
-    public Response getAreaByToken(
-	    @Parameter(description = "Token that identifies area", required = true) @PathParam("areaToken") String areaToken,
-	    @Parameter(description = "Include area type", required = false) @QueryParam("includeAreaType") @DefaultValue("false") boolean includeAreaType,
-	    @Parameter(description = "Include parent area information", required = false) @QueryParam("includeParentArea") @DefaultValue("true") boolean includeParentArea)
+    @GetMapping("/{areaToken}")
+    public MarshaledArea getAreaByToken(@PathVariable String areaToken,
+	    @RequestParam(defaultValue = "false", required = false) boolean includeAreaType,
+	    @RequestParam(defaultValue = "true", required = false) boolean includeParentArea)
 	    throws SiteWhereException {
 	IArea existing = assertArea(areaToken);
 	AreaMarshalHelper helper = new AreaMarshalHelper(getDeviceManagement(), getAssetManagement());
 	helper.setIncludeAreaType(includeAreaType);
 	helper.setIncludeParentArea(includeParentArea);
-	return Response.ok(helper.convert(existing)).build();
+	return helper.convert(existing);
     }
 
     /**
@@ -150,14 +132,11 @@ public class Areas {
      * @return
      * @throws SiteWhereException
      */
-    @PUT
-    @Path("/{areaToken}")
-    @Operation(summary = "Update existing area", description = "Update details for an existing area")
-    public Response updateArea(
-	    @Parameter(description = "Token that identifies area", required = true) @PathParam("areaToken") String areaToken,
-	    @RequestBody AreaCreateRequest request) throws SiteWhereException {
+    @PutMapping("/{areaToken}")
+    public IArea updateArea(@PathVariable String areaToken, @RequestBody AreaCreateRequest request)
+	    throws SiteWhereException {
 	IArea existing = assertArea(areaToken);
-	return Response.ok(getDeviceManagement().updateArea(existing.getId(), request)).build();
+	return getDeviceManagement().updateArea(existing.getId(), request);
     }
 
     /**
@@ -168,20 +147,15 @@ public class Areas {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/{areaToken}/label/{generatorId}")
-    @Produces("image/png")
-    @Operation(summary = "Get label for area", description = "Get label for area")
-    public Response getAreaLabel(
-	    @Parameter(description = "Token that identifies area", required = true) @PathParam("areaToken") String areaToken,
-	    @Parameter(description = "Generator id", required = true) @PathParam("generatorId") String generatorId)
+    @GetMapping("/{areaToken}/label/{generatorId}")
+    public ResponseEntity<?> getAreaLabel(@PathVariable String areaToken, @PathVariable String generatorId)
 	    throws SiteWhereException {
 	IArea existing = assertArea(areaToken);
 	ILabel label = getLabelGeneration().getAreaLabel(generatorId, existing.getId());
 	if (label == null) {
-	    return Response.status(Status.NOT_FOUND).build();
+	    return ResponseEntity.notFound().build();
 	}
-	return Response.ok(label.getContent()).build();
+	return ResponseEntity.ok(label);
     }
 
     /**
@@ -198,18 +172,15 @@ public class Areas {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Operation(summary = "List areas matching criteria", description = "List areas matching criteria")
-    public Response listAreas(
-	    @Parameter(description = "Limit to root elements", required = false) @QueryParam("rootOnly") @DefaultValue("true") Boolean rootOnly,
-	    @Parameter(description = "Limit by parent area token", required = false) @QueryParam("parentAreaToken") String parentAreaToken,
-	    @Parameter(description = "Limit by area type token", required = false) @QueryParam("areaTypeToken") String areaTypeToken,
-	    @Parameter(description = "Include area type", required = false) @QueryParam("includeAreaType") @DefaultValue("false") boolean includeAreaType,
-	    @Parameter(description = "Include assignments", required = false) @QueryParam("includeAssignments") @DefaultValue("false") boolean includeAssignments,
-	    @Parameter(description = "Include zones", required = false) @QueryParam("includeZones") @DefaultValue("false") boolean includeZones,
-	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
-	    throws SiteWhereException {
+    @GetMapping
+    public SearchResults<IArea> listAreas(@RequestParam(defaultValue = "true", required = false) Boolean rootOnly,
+	    @RequestParam(required = false) String parentAreaToken,
+	    @RequestParam(required = false) String areaTypeToken,
+	    @RequestParam(defaultValue = "false", required = false) boolean includeAreaType,
+	    @RequestParam(defaultValue = "false", required = false) boolean includeAssignments,
+	    @RequestParam(defaultValue = "false", required = false) boolean includeZones,
+	    @RequestParam(defaultValue = "1") int page,
+	    @RequestParam(defaultValue = "100", required = false) int pageSize) throws SiteWhereException {
 	// Build criteria.
 	AreaSearchCriteria criteria = buildAreaSearchCriteria(page, pageSize, rootOnly, parentAreaToken, areaTypeToken);
 
@@ -224,7 +195,7 @@ public class Areas {
 	for (IArea area : matches.getResults()) {
 	    results.add(helper.convert(area));
 	}
-	return Response.ok(new SearchResults<IArea>(results, matches.getNumResults())).build();
+	return new SearchResults<IArea>(results, matches.getNumResults());
     }
 
     /**
@@ -233,11 +204,9 @@ public class Areas {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/tree")
-    @Operation(summary = "List all areas in tree format", description = "List all areas in tree format")
-    public Response getAreasTree() throws SiteWhereException {
-	return Response.ok(getDeviceManagement().getAreasTree()).build();
+    @GetMapping("/tree")
+    public List<? extends ITreeNode> getAreasTree() throws SiteWhereException {
+	return getDeviceManagement().getAreasTree();
     }
 
     /**
@@ -268,16 +237,10 @@ public class Areas {
      * @return
      * @throws SiteWhereException
      */
-    @DELETE
-    @Path("/{areaToken}")
-    @Operation(summary = "Delete area by token", description = "Delete area by token")
-    public Response deleteArea(
-	    @Parameter(description = "Token that identifies area", required = true) @PathParam("areaToken") String areaToken)
-	    throws SiteWhereException {
+    @DeleteMapping("/{areaToken}")
+    public IArea deleteArea(@PathVariable String areaToken) throws SiteWhereException {
 	IArea existing = assertArea(areaToken);
-	LOGGER.info(String.format("REST call to delete area %s:\n%s\n\n", existing.getId().toString(),
-		MarshalUtils.marshalJsonAsPrettyString(existing)));
-	return Response.ok(getDeviceManagement().deleteArea(existing.getId())).build();
+	return getDeviceManagement().deleteArea(existing.getId());
     }
 
     /**
@@ -288,19 +251,14 @@ public class Areas {
      * @param pageSize
      * @param startDate
      * @param endDate
-     * @param response
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/{areaToken}/measurements")
-    @Operation(summary = "List measurements for an area", description = "List measurements for an area")
-    public Response listDeviceMeasurementsForArea(
-	    @Parameter(description = "Token that identifies area", required = true) @PathParam("areaToken") String areaToken,
-	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
-	    @Parameter(description = "Start date", required = false) @QueryParam("startDate") String startDate,
-	    @Parameter(description = "End date", required = false) @QueryParam("endDate") String endDate)
+    @GetMapping("/{areaToken}/measurements")
+    public SearchResults<IDeviceMeasurement> listDeviceMeasurementsForArea(@PathVariable String areaToken,
+	    @RequestParam(defaultValue = "1", required = false) int page,
+	    @RequestParam(defaultValue = "100", required = false) int pageSize,
+	    @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate)
 	    throws SiteWhereException {
 	List<UUID> areas = resolveAreaIdsRecursive(areaToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
@@ -313,7 +271,7 @@ public class Areas {
 	for (IDeviceMeasurement result : results.getResults()) {
 	    wrapped.add(new DeviceMeasurementsWithAsset(result, getAssetManagement()));
 	}
-	return Response.ok(new SearchResults<IDeviceMeasurement>(wrapped, results.getNumResults())).build();
+	return new SearchResults<IDeviceMeasurement>(wrapped, results.getNumResults());
     }
 
     /**
@@ -327,15 +285,11 @@ public class Areas {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/{areaToken}/locations")
-    @Operation(summary = "List locations for an area", description = "List locations for an area")
-    public Response listDeviceLocationsForArea(
-	    @Parameter(description = "Token that identifies area", required = true) @PathParam("areaToken") String areaToken,
-	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
-	    @Parameter(description = "Start date", required = false) @QueryParam("startDate") String startDate,
-	    @Parameter(description = "End date", required = false) @QueryParam("endDate") String endDate)
+    @GetMapping("/{areaToken}/locations")
+    public SearchResults<IDeviceLocation> listDeviceLocationsForArea(@PathVariable String areaToken,
+	    @RequestParam(defaultValue = "1", required = false) int page,
+	    @RequestParam(defaultValue = "100", required = false) int pageSize,
+	    @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate)
 	    throws SiteWhereException {
 	List<UUID> areas = resolveAreaIdsRecursive(areaToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
@@ -348,7 +302,7 @@ public class Areas {
 	for (IDeviceLocation result : results.getResults()) {
 	    wrapped.add(new DeviceLocationWithAsset(result, getAssetManagement()));
 	}
-	return Response.ok(new SearchResults<IDeviceLocation>(wrapped, results.getNumResults())).build();
+	return new SearchResults<IDeviceLocation>(wrapped, results.getNumResults());
     }
 
     /**
@@ -359,19 +313,14 @@ public class Areas {
      * @param pageSize
      * @param startDate
      * @param endDate
-     * @param response
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/{areaToken}/alerts")
-    @Operation(summary = "List alerts for an area", description = "List alerts for an area")
-    public Response listDeviceAlertsForArea(
-	    @Parameter(description = "Token that identifies area", required = true) @PathParam("areaToken") String areaToken,
-	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
-	    @Parameter(description = "Start date", required = false) @QueryParam("startDate") String startDate,
-	    @Parameter(description = "End date", required = false) @QueryParam("endDate") String endDate)
+    @GetMapping("/{areaToken}/alerts")
+    public SearchResults<IDeviceAlert> listDeviceAlertsForArea(@PathVariable String areaToken,
+	    @RequestParam(defaultValue = "1", required = false) int page,
+	    @RequestParam(defaultValue = "100", required = false) int pageSize,
+	    @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate)
 	    throws SiteWhereException {
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
 		endDate);
@@ -384,7 +333,7 @@ public class Areas {
 	for (IDeviceAlert result : results.getResults()) {
 	    wrapped.add(new DeviceAlertWithAsset(result, getAssetManagement()));
 	}
-	return Response.ok(new SearchResults<IDeviceAlert>(wrapped, results.getNumResults())).build();
+	return new SearchResults<IDeviceAlert>(wrapped, results.getNumResults());
     }
 
     /**
@@ -398,15 +347,11 @@ public class Areas {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/{areaToken}/invocations")
-    @Operation(summary = "List command invocations for an area", description = "List command invocations for an area")
-    public Response listDeviceCommandInvocationsForArea(
-	    @Parameter(description = "Token that identifies area", required = true) @PathParam("areaToken") String areaToken,
-	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
-	    @Parameter(description = "Start date", required = false) @QueryParam("startDate") String startDate,
-	    @Parameter(description = "End date", required = false) @QueryParam("endDate") String endDate)
+    @GetMapping("/{areaToken}/invocations")
+    public SearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForArea(@PathVariable String areaToken,
+	    @RequestParam(defaultValue = "1", required = false) int page,
+	    @RequestParam(defaultValue = "100", required = false) int pageSize,
+	    @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate)
 	    throws SiteWhereException {
 	List<UUID> areas = resolveAreaIdsRecursive(areaToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
@@ -419,7 +364,7 @@ public class Areas {
 	for (IDeviceCommandInvocation result : results.getResults()) {
 	    wrapped.add(new DeviceCommandInvocationWithAsset(result, getAssetManagement()));
 	}
-	return Response.ok(new SearchResults<IDeviceCommandInvocation>(wrapped, results.getNumResults())).build();
+	return new SearchResults<IDeviceCommandInvocation>(wrapped, results.getNumResults());
     }
 
     /**
@@ -430,19 +375,14 @@ public class Areas {
      * @param pageSize
      * @param startDate
      * @param endDate
-     * @param response
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/{areaToken}/responses")
-    @Operation(summary = "List command responses for an area", description = "List command responses for an area")
-    public Response listDeviceCommandResponsesForArea(
-	    @Parameter(description = "Token that identifies area", required = true) @PathParam("areaToken") String areaToken,
-	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
-	    @Parameter(description = "Start date", required = false) @QueryParam("startDate") String startDate,
-	    @Parameter(description = "End date", required = false) @QueryParam("endDate") String endDate)
+    @GetMapping("/{areaToken}/responses")
+    public SearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForArea(@PathVariable String areaToken,
+	    @RequestParam(defaultValue = "1", required = false) int page,
+	    @RequestParam(defaultValue = "100", required = false) int pageSize,
+	    @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate)
 	    throws SiteWhereException {
 	List<UUID> areas = resolveAreaIdsRecursive(areaToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
@@ -455,7 +395,7 @@ public class Areas {
 	for (IDeviceCommandResponse result : results.getResults()) {
 	    wrapped.add(new DeviceCommandResponseWithAsset(result, getAssetManagement()));
 	}
-	return Response.ok(new SearchResults<IDeviceCommandResponse>(wrapped, results.getNumResults())).build();
+	return new SearchResults<IDeviceCommandResponse>(wrapped, results.getNumResults());
     }
 
     /**
@@ -469,15 +409,11 @@ public class Areas {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/{areaToken}/statechanges")
-    @Operation(summary = "List state changes associated with an area", description = "List state changes associated with an area")
-    public Response listDeviceStateChangesForArea(
-	    @Parameter(description = "Token that identifies area", required = true) @PathParam("areaToken") String areaToken,
-	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize,
-	    @Parameter(description = "Start date", required = false) @QueryParam("startDate") String startDate,
-	    @Parameter(description = "End date", required = false) @QueryParam("endDate") String endDate)
+    @GetMapping("/{areaToken}/statechanges")
+    public SearchResults<IDeviceStateChange> listDeviceStateChangesForArea(@PathVariable String areaToken,
+	    @RequestParam(defaultValue = "1", required = false) int page,
+	    @RequestParam(defaultValue = "100", required = false) int pageSize,
+	    @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate)
 	    throws SiteWhereException {
 	List<UUID> areas = resolveAreaIdsRecursive(areaToken, true, getDeviceManagement());
 	IDateRangeSearchCriteria criteria = Assignments.createDateRangeSearchCriteria(page, pageSize, startDate,
@@ -490,7 +426,7 @@ public class Areas {
 	for (IDeviceStateChange result : results.getResults()) {
 	    wrapped.add(new DeviceStateChangeWithAsset(result, getAssetManagement()));
 	}
-	return Response.ok(new SearchResults<IDeviceStateChange>(wrapped, results.getNumResults())).build();
+	return new SearchResults<IDeviceStateChange>(wrapped, results.getNumResults());
     }
 
     /**
@@ -507,19 +443,15 @@ public class Areas {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/{areaToken}/assignments")
-    @Operation(summary = "List device assignments for an area", description = "List device assignments for an area")
-    public Response listAssignmentsForArea(
-	    @Parameter(description = "Token that identifies area", required = true) @PathParam("areaToken") String areaToken,
-	    @Parameter(description = "Limit results to the given status", required = false) @QueryParam("status") String status,
-	    @Parameter(description = "Include device information", required = false) @QueryParam("includeDevice") @DefaultValue("false") boolean includeDevice,
-	    @Parameter(description = "Include customer information", required = false) @QueryParam("includeCustomer") @DefaultValue("false") boolean includeCustomer,
-	    @Parameter(description = "Include area information", required = false) @QueryParam("includeArea") @DefaultValue("false") boolean includeArea,
-	    @Parameter(description = "Include asset information", required = false) @QueryParam("includeAsset") @DefaultValue("false") boolean includeAsset,
-	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
-	    throws SiteWhereException {
+    @GetMapping("/{areaToken}/assignments")
+    public SearchResults<DeviceAssignment> listAssignmentsForArea(@PathVariable String areaToken,
+	    @RequestParam(required = false) String status,
+	    @RequestParam(defaultValue = "false", required = false) boolean includeDevice,
+	    @RequestParam(defaultValue = "false", required = false) boolean includeCustomer,
+	    @RequestParam(defaultValue = "false", required = false) boolean includeArea,
+	    @RequestParam(defaultValue = "false", required = false) boolean includeAsset,
+	    @RequestParam(defaultValue = "1", required = false) int page,
+	    @RequestParam(defaultValue = "100", required = false) int pageSize) throws SiteWhereException {
 	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(page, pageSize);
 	DeviceAssignmentStatus decodedStatus = (status != null) ? DeviceAssignmentStatus.valueOf(status) : null;
 	if (decodedStatus != null) {
@@ -539,7 +471,7 @@ public class Areas {
 	for (IDeviceAssignment assignment : matches.getResults()) {
 	    converted.add(helper.convert(assignment, getAssetManagement()));
 	}
-	return Response.ok(new SearchResults<DeviceAssignment>(converted, matches.getNumResults())).build();
+	return new SearchResults<DeviceAssignment>(converted, matches.getNumResults());
     }
 
     /**
@@ -553,16 +485,12 @@ public class Areas {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/{areaToken}/assignments/summaries")
-    @Operation(summary = "List device assignment summaries for an area", description = "List device assignments for an area")
-    public Response listAssignmentSummariesForArea(
-	    @Parameter(description = "Token that identifies area", required = true) @PathParam("areaToken") String areaToken,
-	    @Parameter(description = "Limit results to the given status", required = false) @QueryParam("status") String status,
-	    @Parameter(description = "Include asset information", required = false) @QueryParam("includeAsset") @DefaultValue("false") boolean includeAsset,
-	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
-	    throws SiteWhereException {
+    @GetMapping("/{areaToken}/assignments/summaries")
+    public SearchResults<DeviceAssignmentSummary> listAssignmentSummariesForArea(@PathVariable String areaToken,
+	    @RequestParam(required = false) String status,
+	    @RequestParam(defaultValue = "false", required = false) boolean includeAsset,
+	    @RequestParam(defaultValue = "1", required = false) int page,
+	    @RequestParam(defaultValue = "100", required = false) int pageSize) throws SiteWhereException {
 	DeviceAssignmentSearchCriteria criteria = new DeviceAssignmentSearchCriteria(page, pageSize);
 	DeviceAssignmentStatus decodedStatus = (status != null) ? DeviceAssignmentStatus.valueOf(status) : null;
 	if (decodedStatus != null) {
@@ -580,7 +508,7 @@ public class Areas {
 	for (IDeviceAssignmentSummary assignment : matches.getResults()) {
 	    converted.add(helper.convert(assignment, getAssetManagement()));
 	}
-	return Response.ok(new SearchResults<DeviceAssignmentSummary>(converted, matches.getNumResults())).build();
+	return new SearchResults<DeviceAssignmentSummary>(converted, matches.getNumResults());
     }
 
     /**

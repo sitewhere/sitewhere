@@ -18,20 +18,17 @@ package com.sitewhere.web.rest.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.api.device.CustomerTypeMarshalHelper;
@@ -49,28 +46,14 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.label.ILabel;
 import com.sitewhere.spi.search.ISearchResults;
 
-import io.swagger.annotations.Api;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
-import io.swagger.v3.oas.annotations.tags.Tag;
-
 /**
  * Controller for customer type operations.
  */
-@Path("/api/customertypes")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "customertypes")
-@Tag(name = "Customer Types", description = "Customer types define common characteristics for related customers.")
-@SecurityRequirements({ @SecurityRequirement(name = "jwtAuth", scopes = {}),
-	@SecurityRequirement(name = "tenantIdHeader", scopes = {}),
-	@SecurityRequirement(name = "tenantAuthHeader", scopes = {}) })
+@RestController
+@RequestMapping("/api/customertypes")
 public class CustomerTypes {
 
-    @Inject
+    @Autowired
     private IInstanceManagementMicroservice microservice;
 
     /**
@@ -80,13 +63,12 @@ public class CustomerTypes {
      * @return
      * @throws SiteWhereException
      */
-    @POST
-    @Operation(summary = "Create new customer type", description = "Create new customer type")
-    public Response createCustomerType(@RequestBody CustomerTypeCreateRequest input) throws SiteWhereException {
+    @PostMapping
+    public MarshaledCustomerType createCustomerType(@RequestBody CustomerTypeCreateRequest input)
+	    throws SiteWhereException {
 	CustomerTypeMarshalHelper helper = new CustomerTypeMarshalHelper(getDeviceManagement());
 	helper.setIncludeContainedCustomerTypes(true);
-	MarshaledCustomerType marshaled = helper.convert(getDeviceManagement().createCustomerType(input));
-	return Response.ok(marshaled).build();
+	return helper.convert(getDeviceManagement().createCustomerType(input));
     }
 
     /**
@@ -96,16 +78,12 @@ public class CustomerTypes {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/{customerTypeToken}")
-    @Operation(summary = "Get customer type by token", description = "Get customer type by token")
-    public Response getCustomerTypeByToken(
-	    @Parameter(description = "Token that identifies customer type", required = true) @PathParam("customerTypeToken") String customerTypeToken)
+    @GetMapping("/{customerTypeToken}")
+    public MarshaledCustomerType getCustomerTypeByToken(@PathVariable String customerTypeToken)
 	    throws SiteWhereException {
 	CustomerTypeMarshalHelper helper = new CustomerTypeMarshalHelper(getDeviceManagement());
 	helper.setIncludeContainedCustomerTypes(true);
-	MarshaledCustomerType marshaled = helper.convert(assertCustomerType(customerTypeToken));
-	return Response.ok(marshaled).build();
+	return helper.convert(assertCustomerType(customerTypeToken));
     }
 
     /**
@@ -116,18 +94,14 @@ public class CustomerTypes {
      * @return
      * @throws SiteWhereException
      */
-    @PUT
-    @Path("/{customerTypeToken}")
-    @Operation(summary = "Update existing customer type", description = "Update existing customer type")
-    public Response updateCustomerType(
-	    @Parameter(description = "Token that identifies customer type", required = true) @PathParam("customerTypeToken") String customerTypeToken,
+    @PutMapping("/{customerTypeToken}")
+    public MarshaledCustomerType updateCustomerType(@PathVariable String customerTypeToken,
 	    @RequestBody CustomerTypeCreateRequest request) throws SiteWhereException {
 	ICustomerType existing = assertCustomerType(customerTypeToken);
 	CustomerTypeMarshalHelper helper = new CustomerTypeMarshalHelper(getDeviceManagement());
 	helper.setIncludeContainedCustomerTypes(true);
 	ICustomerType updated = getDeviceManagement().updateCustomerType(existing.getId(), request);
-	MarshaledCustomerType marshaled = helper.convert(updated);
-	return Response.ok(marshaled).build();
+	return helper.convert(updated);
     }
 
     /**
@@ -138,20 +112,15 @@ public class CustomerTypes {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/{customerTypeToken}/label/{generatorId}")
-    @Produces("image/png")
-    @Operation(summary = "Get label for customer type", description = "Get label for customer type")
-    public Response getCustomerTypeLabel(
-	    @Parameter(description = "Token that identifies customer type", required = true) @PathParam("customerTypeToken") String customerTypeToken,
-	    @Parameter(description = "Generator id", required = true) @PathParam("generatorId") String generatorId)
-	    throws SiteWhereException {
+    @GetMapping("/{customerTypeToken}/label/{generatorId}")
+    public ResponseEntity<?> getCustomerTypeLabel(@PathVariable String customerTypeToken,
+	    @PathVariable String generatorId) throws SiteWhereException {
 	ICustomerType existing = assertCustomerType(customerTypeToken);
 	ILabel label = getLabelGeneration().getCustomerTypeLabel(generatorId, existing.getId());
 	if (label == null) {
-	    return Response.status(Status.NOT_FOUND).build();
+	    return ResponseEntity.notFound().build();
 	}
-	return Response.ok(label.getContent()).build();
+	return ResponseEntity.ok(label.getContent());
     }
 
     /**
@@ -163,13 +132,11 @@ public class CustomerTypes {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Operation(summary = "List customer types matching criteria", description = "List customer types matching criteria")
-    public Response listCustomerTypes(
-	    @Parameter(description = "Include contained customer types", required = false) @QueryParam("includeContainedCustomerTypes") @DefaultValue("false") boolean includeContainedCustomerTypes,
-	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
-	    throws SiteWhereException {
+    @GetMapping
+    public SearchResults<ICustomerType> listCustomerTypes(
+	    @RequestParam(defaultValue = "false", required = false) boolean includeContainedCustomerTypes,
+	    @RequestParam(defaultValue = "1", required = false) int page,
+	    @RequestParam(defaultValue = "100", required = false) int pageSize) throws SiteWhereException {
 	SearchCriteria criteria = new SearchCriteria(page, pageSize);
 	ISearchResults<? extends ICustomerType> matches = getDeviceManagement().listCustomerTypes(criteria);
 
@@ -180,7 +147,7 @@ public class CustomerTypes {
 	for (ICustomerType customerType : matches.getResults()) {
 	    results.add(helper.convert(customerType));
 	}
-	return Response.ok(new SearchResults<ICustomerType>(results, matches.getNumResults())).build();
+	return new SearchResults<ICustomerType>(results, matches.getNumResults());
     }
 
     /**
@@ -190,18 +157,13 @@ public class CustomerTypes {
      * @return
      * @throws SiteWhereException
      */
-    @DELETE
-    @Path("/{customerTypeToken}")
-    @Operation(summary = "Delete customer type by token", description = "Delete customer type by token")
-    public Response deleteCustomerType(
-	    @Parameter(description = "Token that identifies customer type", required = true) @PathParam("customerTypeToken") String customerTypeToken)
-	    throws SiteWhereException {
+    @DeleteMapping("/{customerTypeToken}")
+    public MarshaledCustomerType deleteCustomerType(@PathVariable String customerTypeToken) throws SiteWhereException {
 	ICustomerType existing = assertCustomerType(customerTypeToken);
 	CustomerTypeMarshalHelper helper = new CustomerTypeMarshalHelper(getDeviceManagement());
 	helper.setIncludeContainedCustomerTypes(true);
 	ICustomerType deleted = getDeviceManagement().deleteCustomerType(existing.getId());
-	MarshaledCustomerType marshaled = helper.convert(deleted);
-	return Response.ok(marshaled).build();
+	return helper.convert(deleted);
     }
 
     /**

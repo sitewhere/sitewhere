@@ -16,7 +16,7 @@
 package com.sitewhere.labels;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.SpringApplication;
 
 import com.sitewhere.labels.spi.microservice.ILabelGenerationMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
@@ -24,11 +24,14 @@ import com.sitewhere.microservice.MicroserviceApplication;
 /**
  * Main application which runs the label generation microservice.
  */
-@SpringBootApplication
 public class LabelGenerationApplication extends MicroserviceApplication<ILabelGenerationMicroservice> {
 
     @Autowired
     private ILabelGenerationMicroservice microservice;
+
+    public static void main(String[] args) {
+	SpringApplication.run(LabelGenerationApplication.class, args);
+    }
 
     /*
      * (non-Javadoc)

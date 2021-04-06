@@ -16,7 +16,7 @@
 package com.sitewhere.event;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.SpringApplication;
 
 import com.sitewhere.event.spi.microservice.IEventManagementMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
@@ -24,11 +24,14 @@ import com.sitewhere.microservice.MicroserviceApplication;
 /**
  * Main application which runs the event management microservice.
  */
-@SpringBootApplication
 public class EventManagementApplication extends MicroserviceApplication<IEventManagementMicroservice> {
 
     @Autowired
     private IEventManagementMicroservice microservice;
+
+    public static void main(String[] args) {
+	SpringApplication.run(EventManagementApplication.class, args);
+    }
 
     /*
      * (non-Javadoc)

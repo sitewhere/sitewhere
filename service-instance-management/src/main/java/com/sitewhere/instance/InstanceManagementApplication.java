@@ -15,18 +15,27 @@
  */
 package com.sitewhere.instance;
 
-import javax.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.annotation.Import;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
+import com.sitewhere.web.configuration.RestConfiguration;
+import com.sitewhere.web.configuration.WebSecurityConfiguration;
 
 /**
  * Spring Boot application for web/REST microservice.
  */
+@Import(value = { RestConfiguration.class, WebSecurityConfiguration.class })
 public class InstanceManagementApplication extends MicroserviceApplication<IInstanceManagementMicroservice> {
 
-    @Inject
+    @Autowired
     private IInstanceManagementMicroservice microservice;
+
+    public static void main(String[] args) {
+	SpringApplication.run(InstanceManagementApplication.class, args);
+    }
 
     /*
      * (non-Javadoc)

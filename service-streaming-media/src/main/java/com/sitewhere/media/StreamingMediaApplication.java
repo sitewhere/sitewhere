@@ -15,6 +15,8 @@
  */
 package com.sitewhere.media;
 
+import org.springframework.boot.SpringApplication;
+
 import com.sitewhere.media.spi.microservice.IStreamingMediaMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
 
@@ -24,6 +26,10 @@ import com.sitewhere.microservice.MicroserviceApplication;
 public class StreamingMediaApplication extends MicroserviceApplication<IStreamingMediaMicroservice> {
 
     private IStreamingMediaMicroservice microservice;
+
+    public static void main(String[] args) {
+	SpringApplication.run(StreamingMediaApplication.class, args);
+    }
 
     /*
      * (non-Javadoc)

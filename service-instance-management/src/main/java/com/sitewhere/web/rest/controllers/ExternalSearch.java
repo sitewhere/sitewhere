@@ -15,49 +15,33 @@
  */
 package com.sitewhere.web.rest.controllers;
 
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 
-import io.swagger.annotations.Api;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
-import io.swagger.v3.oas.annotations.tags.Tag;
-
 /**
  * Controller for search operations.
  */
-@Path("/api/search")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "search")
-@Tag(name = "External Search", description = "Allows for searching device event data stored externally.")
-@SecurityRequirements({ @SecurityRequirement(name = "jwtAuth", scopes = {}),
-	@SecurityRequirement(name = "tenantIdHeader", scopes = {}),
-	@SecurityRequirement(name = "tenantAuthHeader", scopes = {}) })
+@RestController
+@RequestMapping("/api/search")
 public class ExternalSearch {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
     private static Log LOGGER = LogFactory.getLog(ExternalSearch.class);
 
-    @Inject
+    @Autowired
     private IInstanceManagementMicroservice microservice;
 
     /**
@@ -66,9 +50,8 @@ public class ExternalSearch {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Operation(summary = "List available search providers", description = "List available search providers")
-    public Response listSearchProviders() throws SiteWhereException {
+    @GetMapping
+    public ResponseEntity<?> listSearchProviders() throws SiteWhereException {
 	// List<ISearchProvider> providers =
 	// getSearchProviderManager().getSearchProviders();
 	// List<SearchProvider> retval = new ArrayList<SearchProvider>();
@@ -76,7 +59,7 @@ public class ExternalSearch {
 	// retval.add(SearchProvider.copy(provider));
 	// }
 	// return retval;
-	return Response.ok().build();
+	return ResponseEntity.ok().build();
     }
 
     /**
@@ -87,12 +70,8 @@ public class ExternalSearch {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/{providerId}/events")
-    @Operation(summary = "Search for events in provider", description = "Search for events in provider")
-    public Response searchDeviceEvents(
-	    @Parameter(description = "Search provider id", required = true) @PathParam("providerId") String providerId)
-	    throws SiteWhereException {
+    @GetMapping("/{providerId}/events")
+    public ResponseEntity<?> searchDeviceEvents(@PathVariable String providerId) throws SiteWhereException {
 	// ISearchProvider provider =
 	// getSearchProviderManager().getSearchProvider(providerId);
 	// if (provider == null) {
@@ -106,24 +85,20 @@ public class ExternalSearch {
 	// }
 	// String query = request.getQueryString();
 	// return ((IDeviceEventSearchProvider) provider).executeQuery(query);
-	return Response.ok().build();
+	return ResponseEntity.ok().build();
     }
 
     /**
      * Perform serach and return raw JSON response.
      * 
      * @param providerId
-     * @param request
-     * @param servletRequest
+     * @param query
      * @return
      * @throws SiteWhereException
      */
-    @POST
-    @Path("/{providerId}/raw")
-    @Operation(summary = "Execute search and return raw results", description = "Execute search and return raw results")
-    public Response rawSearch(
-	    @Parameter(description = "Search provider id", required = true) @PathParam("providerId") String providerId,
-	    @RequestBody String query) throws SiteWhereException {
+    @PostMapping("/{providerId}/raw")
+    public ResponseEntity<?> rawSearch(@PathVariable String providerId, @RequestBody String query)
+	    throws SiteWhereException {
 	// ISearchProvider provider =
 	// getSearchProviderManager().getSearchProvider(providerId);
 	// if (provider == null) {
@@ -137,7 +112,7 @@ public class ExternalSearch {
 	// }
 	// return ((IDeviceEventSearchProvider)
 	// provider).executeQueryWithRawResponse(query);
-	return Response.ok().build();
+	return ResponseEntity.ok().build();
     }
 
     protected IInstanceManagementMicroservice getMicroservice() {

@@ -15,20 +15,18 @@
  */
 package com.sitewhere.web.rest.controllers;
 
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.rest.model.user.RoleSearchCriteria;
@@ -38,109 +36,87 @@ import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.microservice.user.IUserManagement;
+import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.IRole;
-
-import io.swagger.annotations.Api;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * Controller for user operations.
  */
-@Path("/api/roles")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "roles")
-@Tag(name = "Roles", description = "Roles")
-@SecurityRequirements({ @SecurityRequirement(name = "jwtAuth", scopes = {}),
-	@SecurityRequirement(name = "tenantIdHeader", scopes = {}),
-	@SecurityRequirement(name = "tenantAuthHeader", scopes = {}) })
+@RestController
+@RequestMapping("/api/roles")
 public class Roles {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
     private static Log LOGGER = LogFactory.getLog(Roles.class);
 
-    @Inject
+    @Autowired
     private IInstanceManagementMicroservice microservice;
 
     /**
      * Get role by name.
-     *
+     * 
      * @param roleName
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/{roleName}")
-    @Operation(summary = "Get role by name", description = "Get role by name")
-    public Response getRoleByName(
-	    @Parameter(description = "Unique roleName", required = true) @PathParam("roleName") String roleName)
-	    throws SiteWhereException {
-	IRole match = getUserManagement().getRoleByName(roleName);
-	return Response.ok(match).build();
+    @GetMapping("/{roleName}")
+    public IRole getRoleByName(@PathVariable String roleName) throws SiteWhereException {
+	return getUserManagement().getRoleByName(roleName);
     }
 
-    @GET
-    @Operation(summary = "List roles matching criteria", description = "List Roles matching criteria")
-    public Response listRoles() throws SiteWhereException {
+    /**
+     * List all roles.
+     * 
+     * @return
+     * @throws SiteWhereException
+     */
+    @GetMapping
+    public ISearchResults<IRole> listRoles() throws SiteWhereException {
 	RoleSearchCriteria criteria = new RoleSearchCriteria();
-	return Response.ok(getUserManagement().listRoles(criteria)).build();
+	return getUserManagement().listRoles(criteria);
     }
 
     /**
      * Delete information for a given user based on username.
-     *
+     * 
      * @param roleName
      * @return
      * @throws SiteWhereException
      */
-    @DELETE
-    @Path("/{roleName}")
-    @Operation(summary = "Delete role by roleName", description = "Delete role by roleName")
-    public Response deleteRoleByRoleName(
-	    @Parameter(description = "Unique rolName", required = true) @PathParam("roleName") String roleName)
-	    throws SiteWhereException {
+    @DeleteMapping("/{roleName}")
+    public ResponseEntity<?> deleteRoleByRoleName(@PathVariable String roleName) throws SiteWhereException {
 	getUserManagement().deleteRole(roleName);
-	return Response.ok().build();
+	return ResponseEntity.ok().build();
     }
 
     /**
      * Create a new role.
-     *
+     * 
      * @param input
      * @return
      * @throws SiteWhereException
      */
-    @POST
-    @Operation(summary = "Create new role", description = "Create new role")
-    public Response createRole(@RequestBody RoleCreateRequest input) throws SiteWhereException {
+    @PostMapping
+    public IRole createRole(@RequestBody RoleCreateRequest input) throws SiteWhereException {
 	if ((input.getRole() == null)) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidUserInformation, ErrorLevel.ERROR);
 	}
-	return Response.ok(getUserManagement().createRole(input)).build();
+	return getUserManagement().createRole(input);
     }
 
     /**
      * Update an existing role.
-     *
+     * 
      * @param roleName
      * @param input
      * @return
      * @throws SiteWhereException
      */
-    @PUT
-    @Path("/{roleName}")
-    @Operation(summary = "Update existing user", description = "Update existing user")
-    public Response updateUser(
-	    @Parameter(description = "Unique roleName", required = true) @PathParam("roleName") String roleName,
-	    @RequestBody RoleCreateRequest input) throws SiteWhereException {
-
-	return Response.ok(getUserManagement().updateRole(roleName, input)).build();
+    @PutMapping("/{roleName}")
+    public IRole updateRole(@PathVariable String roleName, @RequestBody RoleCreateRequest input)
+	    throws SiteWhereException {
+	return getUserManagement().updateRole(roleName, input);
     }
 
     protected IUserManagement getUserManagement() throws SiteWhereException {

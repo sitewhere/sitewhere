@@ -16,7 +16,7 @@
 package com.sitewhere.schedule;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.SpringApplication;
 
 import com.sitewhere.microservice.MicroserviceApplication;
 import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
@@ -24,11 +24,14 @@ import com.sitewhere.schedule.spi.microservice.IScheduleManagementMicroservice;
 /**
  * Main application which runs the schedule management microservice.
  */
-@SpringBootApplication
 public class ScheduleManagementApplication extends MicroserviceApplication<IScheduleManagementMicroservice> {
 
     @Autowired
     private IScheduleManagementMicroservice microservice;
+
+    public static void main(String[] args) {
+	SpringApplication.run(ScheduleManagementApplication.class, args);
+    }
 
     /*
      * (non-Javadoc)

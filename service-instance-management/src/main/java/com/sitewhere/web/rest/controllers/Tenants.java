@@ -18,22 +18,18 @@ package com.sitewhere.web.rest.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.security.SiteWhereAuthentication;
@@ -56,32 +52,19 @@ import io.sitewhere.k8s.crd.tenant.configuration.TenantConfigurationTemplate;
 import io.sitewhere.k8s.crd.tenant.configuration.TenantConfigurationTemplateList;
 import io.sitewhere.k8s.crd.tenant.dataset.TenantDatasetTemplate;
 import io.sitewhere.k8s.crd.tenant.dataset.TenantDatasetTemplateList;
-import io.swagger.annotations.Api;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * Controller for tenant operations.
  */
-@Path("/api/tenants")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "tenants")
-@Tag(name = "Tenants", description = "Tenants define separate configurable runtimes which run in a SiteWhere instance.")
-@SecurityRequirements({ @SecurityRequirement(name = "jwtAuth", scopes = {}),
-	@SecurityRequirement(name = "tenantIdHeader", scopes = {}),
-	@SecurityRequirement(name = "tenantAuthHeader", scopes = {}) })
+@RestController
+@RequestMapping("/api/tenants")
 public class Tenants {
 
     /** Static logger instance */
     @SuppressWarnings("unused")
     private static Log LOGGER = LogFactory.getLog(Tenants.class);
 
-    @Inject
+    @Autowired
     private IInstanceManagementMicroservice microservice;
 
     /**
@@ -91,10 +74,9 @@ public class Tenants {
      * @return
      * @throws SiteWhereException
      */
-    @POST
-    @Operation(summary = "Create new tenant", description = "Create new tenant")
-    public Response createTenant(@RequestBody TenantCreateRequest request) throws SiteWhereException {
-	return Response.ok(getTenantManagement().createTenant(request)).build();
+    @PostMapping
+    public ITenant createTenant(@RequestBody TenantCreateRequest request) throws SiteWhereException {
+	return getTenantManagement().createTenant(request);
     }
 
     /**
@@ -105,18 +87,15 @@ public class Tenants {
      * @return
      * @throws SiteWhereException
      */
-    @PUT
-    @Path("/{tenantToken}")
-    @Operation(summary = "Update an existing tenant", description = "Update an existing tenant")
-    public Response updateTenant(
-	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken,
-	    @RequestBody TenantCreateRequest request) throws SiteWhereException {
+    @PutMapping("/{tenantToken}")
+    public ITenant updateTenant(@PathVariable String tenantToken, @RequestBody TenantCreateRequest request)
+	    throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantToken);
 	SiteWhereAuthentication user = UserContext.getCurrentUser();
 	if (!tenant.getAuthorizedUserIds().contains(user.getUsername())) {
 	    throw new SiteWhereSystemException(ErrorCode.NotAuthorizedForTenant, ErrorLevel.ERROR);
 	}
-	return Response.ok(getTenantManagement().updateTenant(tenantToken, request)).build();
+	return getTenantManagement().updateTenant(tenantToken, request);
     }
 
     /**
@@ -126,36 +105,33 @@ public class Tenants {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/{tenantToken}")
-    @Operation(summary = "Get tenant by token", description = "Get tenant by token")
-    public Response getTenantByToken(
-	    @Parameter(description = "Tenant token", required = true) @PathParam("tenantToken") String tenantToken)
-	    throws SiteWhereException {
+    @GetMapping("/{tenantToken}")
+    public ITenant getTenantByToken(@PathVariable String tenantToken) throws SiteWhereException {
 	ITenant tenant = assureTenant(tenantToken);
 	SiteWhereAuthentication user = UserContext.getCurrentUser();
 	if (!tenant.getAuthorizedUserIds().contains(user.getUsername())) {
 	    throw new SiteWhereSystemException(ErrorCode.NotAuthorizedForTenant, ErrorLevel.ERROR);
 	}
-	return Response.ok(tenant).build();
+	return tenant;
     }
 
     /**
      * List tenants that match the given criteria.
      * 
-     * @param criteria
+     * @param textSearch
+     * @param authUserId
+     * @param includeRuntimeInfo
+     * @param page
+     * @param pageSize
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Operation(summary = "List tenants that match criteria", description = "List tenants that match criteria")
-    public Response listTenants(
-	    @Parameter(description = "Text search (partial id or name)", required = false) @QueryParam("textSearch") String textSearch,
-	    @Parameter(description = "Authorized user id", required = false) @QueryParam("authUserId") String authUserId,
-	    @Parameter(description = "Include runtime info", required = false) @QueryParam("includeRuntimeInfo") @DefaultValue("true") boolean includeRuntimeInfo,
-	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
-	    throws SiteWhereException {
+    @GetMapping
+    public SearchResults<ITenant> listTenants(@RequestParam(required = false) String textSearch,
+	    @RequestParam(required = false) String authUserId,
+	    @RequestParam(defaultValue = "true", required = false) boolean includeRuntimeInfo,
+	    @RequestParam(defaultValue = "1", required = false) int page,
+	    @RequestParam(defaultValue = "100", required = false) int pageSize) throws SiteWhereException {
 
 	TenantSearchCriteria criteria = new TenantSearchCriteria(page, pageSize);
 	criteria.setTextSearch(textSearch);
@@ -170,8 +146,7 @@ public class Tenants {
 		authorized.process(tenant);
 	    }
 	}
-	SearchResults<ITenant> matches = new SearchResults<>(authorized.getResults(), authorized.getTotal());
-	return Response.ok(matches).build();
+	return new SearchResults<ITenant>(authorized.getResults(), authorized.getTotal());
     }
 
     /**
@@ -181,18 +156,14 @@ public class Tenants {
      * @return
      * @throws SiteWhereException
      */
-    @DELETE
-    @Path("/{token}")
-    @Operation(summary = "Delete existing tenant", description = "Delete existing tenant")
-    public Response deleteTenant(
-	    @Parameter(description = "Tenant token", required = true) @PathParam("token") String token)
-	    throws SiteWhereException {
+    @DeleteMapping("/{token}")
+    public ITenant deleteTenant(@PathVariable String token) throws SiteWhereException {
 	ITenant tenant = assureTenant(token);
 	SiteWhereAuthentication user = UserContext.getCurrentUser();
 	if (!tenant.getAuthorizedUserIds().contains(user.getUsername())) {
 	    throw new SiteWhereSystemException(ErrorCode.NotAuthorizedForTenant, ErrorLevel.ERROR);
 	}
-	return Response.ok(getTenantManagement().deleteTenant(token)).build();
+	return getTenantManagement().deleteTenant(token);
     }
 
     /**
@@ -201,10 +172,8 @@ public class Tenants {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/templates/configuration")
-    @Operation(summary = "List templates available for creating tenants", description = "List templates available for creating tenants")
-    public Response listTenantConfigurationTemplates() throws SiteWhereException {
+    @GetMapping("/templates/configuration")
+    public List<MarshaledTenantConfigurationTemplate> listTenantConfigurationTemplates() throws SiteWhereException {
 	TenantConfigurationTemplateList list = getMicroservice().getSiteWhereKubernetesClient()
 		.getTenantConfigurationTemplates().list();
 	List<MarshaledTenantConfigurationTemplate> templates = new ArrayList<>();
@@ -216,7 +185,7 @@ public class Tenants {
 	    templates.add(marshaled);
 	}
 
-	return Response.ok(templates).build();
+	return templates;
     }
 
     /**
@@ -225,10 +194,8 @@ public class Tenants {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/templates/dataset")
-    @Operation(summary = "List datasets available for creating tenants", description = "List datasets available for creating tenants")
-    public Response listTenantDatasetTemplates() throws SiteWhereException {
+    @GetMapping("/templates/dataset")
+    public List<MarshaledTenantDatasetTemplate> listTenantDatasetTemplates() throws SiteWhereException {
 	TenantDatasetTemplateList list = getMicroservice().getSiteWhereKubernetesClient().getTenantDatasetTemplates()
 		.list();
 	List<MarshaledTenantDatasetTemplate> templates = new ArrayList<>();
@@ -240,7 +207,7 @@ public class Tenants {
 	    templates.add(marshaled);
 	}
 
-	return Response.ok(templates).build();
+	return templates;
     }
 
     /**

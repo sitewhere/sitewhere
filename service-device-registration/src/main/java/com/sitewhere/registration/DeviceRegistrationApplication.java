@@ -16,7 +16,7 @@
 package com.sitewhere.registration;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.SpringApplication;
 
 import com.sitewhere.microservice.MicroserviceApplication;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice;
@@ -24,11 +24,14 @@ import com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservi
 /**
  * Main application which runs the device registration microservice.
  */
-@SpringBootApplication
 public class DeviceRegistrationApplication extends MicroserviceApplication<IDeviceRegistrationMicroservice> {
 
     @Autowired
     private IDeviceRegistrationMicroservice microservice;
+
+    public static void main(String[] args) {
+	SpringApplication.run(DeviceRegistrationApplication.class, args);
+    }
 
     /*
      * (non-Javadoc)

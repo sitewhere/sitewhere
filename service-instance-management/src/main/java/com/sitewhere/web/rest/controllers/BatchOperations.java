@@ -19,20 +19,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.microservice.api.asset.IAssetManagement;
@@ -43,6 +40,7 @@ import com.sitewhere.microservice.api.batch.IBatchManagement;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.api.schedule.IScheduleManagement;
 import com.sitewhere.microservice.api.schedule.ScheduledJobHelper;
+import com.sitewhere.rest.model.batch.MarshaledBatchOperation;
 import com.sitewhere.rest.model.batch.request.BatchCommandInvocationRequest;
 import com.sitewhere.rest.model.batch.request.InvocationByAssignmentCriteriaRequest;
 import com.sitewhere.rest.model.batch.request.InvocationByDeviceCriteriaRequest;
@@ -59,28 +57,14 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 import com.sitewhere.spi.search.ISearchResults;
 
-import io.swagger.annotations.Api;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
-import io.swagger.v3.oas.annotations.tags.Tag;
-
 /**
  * Controller for batch operations.
  */
-@Path("/api/batch")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "batch")
-@Tag(name = "Batch Operations", description = "Batch operations are used to interact with large groups of devices.")
-@SecurityRequirements({ @SecurityRequirement(name = "jwtAuth", scopes = {}),
-	@SecurityRequirement(name = "tenantIdHeader", scopes = {}),
-	@SecurityRequirement(name = "tenantAuthHeader", scopes = {}) })
+@RestController
+@RequestMapping("/api/batch")
 public class BatchOperations {
 
-    @Inject
+    @Autowired
     private IInstanceManagementMicroservice microservice;
 
     /** Static logger instance */
@@ -94,18 +78,14 @@ public class BatchOperations {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/{batchToken}")
-    @Operation(summary = "Get batch operation by unique token", description = "Get batch operation by unique token")
-    public Response getBatchOperationByToken(
-	    @Parameter(description = "Unique token that identifies batch operation", required = true) @PathParam("batchToken") String batchToken)
-	    throws SiteWhereException {
+    @GetMapping("/{batchToken}")
+    public MarshaledBatchOperation getBatchOperationByToken(@PathVariable String batchToken) throws SiteWhereException {
 	IBatchOperation batch = getBatchManagement().getBatchOperationByToken(batchToken);
 	if (batch == null) {
 	    throw new SiteWhereSystemException(ErrorCode.InvalidBatchOperationToken, ErrorLevel.ERROR);
 	}
 	BatchOperationMarshalHelper helper = new BatchOperationMarshalHelper();
-	return Response.ok(helper.convert(batch)).build();
+	return helper.convert(batch);
     }
 
     /**
@@ -116,12 +96,10 @@ public class BatchOperations {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Operation(summary = "List batch operations", description = "List batch operations")
-    public Response listBatchOperations(
-	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
-	    throws SiteWhereException {
+    @GetMapping
+    public SearchResults<IBatchOperation> listBatchOperations(
+	    @RequestParam(defaultValue = "1", required = false) int page,
+	    @RequestParam(defaultValue = "100", required = false) int pageSize) throws SiteWhereException {
 	BatchOperationSearchCriteria criteria = new BatchOperationSearchCriteria(page, pageSize);
 
 	ISearchResults<? extends IBatchOperation> results = getBatchManagement().listBatchOperations(criteria);
@@ -130,7 +108,7 @@ public class BatchOperations {
 	for (IBatchOperation op : results.getResults()) {
 	    converted.add(helper.convert(op));
 	}
-	return Response.ok(new SearchResults<IBatchOperation>(converted, results.getNumResults())).build();
+	return new SearchResults<IBatchOperation>(converted, results.getNumResults());
     }
 
     /**
@@ -143,15 +121,11 @@ public class BatchOperations {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/{operationToken}/elements")
-    @Operation(summary = "List batch operation elements", description = "List batch operation elements")
-    public Response listBatchOperationElements(
-	    @Parameter(description = "Unique batch operation token", required = true) @PathParam("operationToken") String operationToken,
-	    @Parameter(description = "Include device information", required = false) @QueryParam("includeDevice") @DefaultValue("false") boolean includeDevice,
-	    @Parameter(description = "Page number", required = false) @QueryParam("page") @DefaultValue("1") int page,
-	    @Parameter(description = "Page size", required = false) @QueryParam("pageSize") @DefaultValue("100") int pageSize)
-	    throws SiteWhereException {
+    @GetMapping("/{operationToken}/elements")
+    public SearchResults<IBatchElement> listBatchOperationElements(@PathVariable String operationToken,
+	    @RequestParam(defaultValue = "false", required = false) boolean includeDevice,
+	    @RequestParam(defaultValue = "1", required = false) int page,
+	    @RequestParam(defaultValue = "100", required = false) int pageSize) throws SiteWhereException {
 	IBatchOperation batchOperation = assureBatchOperation(operationToken);
 	BatchElementSearchCriteria criteria = new BatchElementSearchCriteria(page, pageSize);
 	ISearchResults<? extends IBatchElement> results = getBatchManagement().listBatchElements(batchOperation.getId(),
@@ -163,7 +137,7 @@ public class BatchOperations {
 	for (IBatchElement element : results.getResults()) {
 	    converted.add(helper.convert(element, getDeviceManagement()));
 	}
-	return Response.ok(new SearchResults<IBatchElement>(converted, results.getNumResults())).build();
+	return new SearchResults<IBatchElement>(converted, results.getNumResults());
     }
 
     /**
@@ -173,14 +147,12 @@ public class BatchOperations {
      * @return
      * @throws SiteWhereException
      */
-    @POST
-    @Path("/command")
-    @Operation(summary = "Create new batch command invocation", description = "Create new batch command invocation")
-    public Response createBatchCommandInvocation(@RequestBody BatchCommandInvocationRequest request)
+    @PostMapping("/command")
+    public MarshaledBatchOperation createBatchCommandInvocation(@RequestBody BatchCommandInvocationRequest request)
 	    throws SiteWhereException {
 	IBatchOperation result = getBatchManagement().createBatchCommandInvocation(request);
 	BatchOperationMarshalHelper helper = new BatchOperationMarshalHelper();
-	return Response.ok(helper.convert(result)).build();
+	return helper.convert(result);
     }
 
     /**
@@ -192,16 +164,13 @@ public class BatchOperations {
      * @return
      * @throws SiteWhereException
      */
-    @POST
-    @Path("/command/criteria/device")
-    @Operation(summary = "Create batch command operation based on device criteria", description = "Create batch command operation based on device criteria")
-    public Response createInvocationsByDeviceCriteria(@RequestBody InvocationByDeviceCriteriaRequest request,
-	    @Parameter(description = "Schedule token", required = false) @QueryParam("scheduleToken") String scheduleToken)
-	    throws SiteWhereException {
+    @PostMapping("/command/criteria/device")
+    public ResponseEntity<?> createInvocationsByDeviceCriteria(@RequestBody InvocationByDeviceCriteriaRequest request,
+	    @RequestParam(required = false) String scheduleToken) throws SiteWhereException {
 	if (scheduleToken != null) {
 	    IScheduledJobCreateRequest job = ScheduledJobHelper
 		    .createBatchCommandInvocationJobForDeviceCriteria(request, scheduleToken);
-	    return Response.ok(getScheduleManagement().createScheduledJob(job)).build();
+	    return ResponseEntity.ok(getScheduleManagement().createScheduledJob(job));
 	} else {
 	    // Resolve tokens for devices matching criteria.
 	    List<String> deviceTokens = BatchUtils.resolveDeviceTokensForDeviceCriteria(request, getDeviceManagement(),
@@ -216,7 +185,7 @@ public class BatchOperations {
 
 	    IBatchOperation result = getBatchManagement().createBatchCommandInvocation(invoke);
 	    BatchOperationMarshalHelper helper = new BatchOperationMarshalHelper();
-	    return Response.ok(helper.convert(result)).build();
+	    return ResponseEntity.ok(helper.convert(result));
 	}
     }
 
@@ -228,16 +197,14 @@ public class BatchOperations {
      * @return
      * @throws SiteWhereException
      */
-    @POST
-    @Path("/command/criteria/assignment")
-    @Operation(summary = "Create batch command invocation based on device assignment criteria", description = "Create batch command invocation based on device assignment criteria")
-    public Response createInvocationsByAssignmentCriteria(@RequestBody InvocationByAssignmentCriteriaRequest request,
-	    @Parameter(description = "Schedule token", required = false) @QueryParam("scheduleToken") String scheduleToken)
-	    throws SiteWhereException {
+    @PostMapping("/command/criteria/assignment")
+    public ResponseEntity<?> createInvocationsByAssignmentCriteria(
+	    @RequestBody InvocationByAssignmentCriteriaRequest request,
+	    @RequestParam(required = false) String scheduleToken) throws SiteWhereException {
 	if (scheduleToken != null) {
 	    IScheduledJobCreateRequest job = ScheduledJobHelper
 		    .createBatchCommandInvocationJobForAssignmentCriteria(request, scheduleToken);
-	    return Response.ok(getScheduleManagement().createScheduledJob(job)).build();
+	    return ResponseEntity.ok(getScheduleManagement().createScheduledJob(job));
 	} else {
 	    // Resolve tokens for devices matching criteria.
 	    List<String> deviceTokens = BatchUtils.resolveDeviceTokensForAssignmentCriteria(request,
@@ -252,7 +219,7 @@ public class BatchOperations {
 
 	    IBatchOperation result = getBatchManagement().createBatchCommandInvocation(invoke);
 	    BatchOperationMarshalHelper helper = new BatchOperationMarshalHelper();
-	    return Response.ok(helper.convert(result)).build();
+	    return ResponseEntity.ok(helper.convert(result));
 	}
     }
 

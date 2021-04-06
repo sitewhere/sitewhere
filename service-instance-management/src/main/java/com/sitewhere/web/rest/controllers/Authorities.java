@@ -15,16 +15,15 @@
  */
 package com.sitewhere.web.rest.controllers;
 
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
 import com.sitewhere.rest.model.user.GrantedAuthority;
@@ -35,29 +34,16 @@ import com.sitewhere.spi.microservice.user.IUserManagement;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.web.rest.model.GrantedAuthorityHierarchyBuilder;
-
-import io.swagger.annotations.Api;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.sitewhere.web.rest.model.GrantedAuthorityHierarchyNode;
 
 /**
  * Controller for user operations.
  */
-@Path("/api/authorities")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "authorities")
-@Tag(name = "User Granted Authorities", description = "Granted authorities define operations which are authorized for a user.")
-@SecurityRequirements({ @SecurityRequirement(name = "jwtAuth", scopes = {}),
-	@SecurityRequirement(name = "tenantIdHeader", scopes = {}),
-	@SecurityRequirement(name = "tenantAuthHeader", scopes = {}) })
+@RestController
+@RequestMapping("/api/authorities")
 public class Authorities {
 
-    @Inject
+    @Autowired
     private IInstanceManagementMicroservice microservice;
 
     /**
@@ -67,11 +53,11 @@ public class Authorities {
      * @return
      * @throws SiteWhereException
      */
-    @POST
-    @Operation(summary = "Create a new authority", description = "Create a new authority")
-    public Response createAuthority(@RequestBody GrantedAuthorityCreateRequest input) throws SiteWhereException {
+    @PostMapping
+    public GrantedAuthority createAuthority(@RequestBody GrantedAuthorityCreateRequest input)
+	    throws SiteWhereException {
 	IGrantedAuthority auth = getUserManagement().createGrantedAuthority(input);
-	return Response.ok(GrantedAuthority.copy(auth)).build();
+	return GrantedAuthority.copy(auth);
     }
 
     /**
@@ -81,18 +67,13 @@ public class Authorities {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/{name}")
-    @Operation(summary = "Get authority by id", description = "Get authority by id")
-    public Response getAuthorityByName(
-	    @Parameter(description = "Authority name", required = true) @PathParam("name") String name)
-	    throws SiteWhereException {
-	// checkAuthForAll(SiteWhereAuthority.REST, SiteWhereAuthority.AdminUsers);
+    @GetMapping("/{name}")
+    public GrantedAuthority getAuthorityByName(@PathVariable String name) throws SiteWhereException {
 	IGrantedAuthority auth = getUserManagement().getGrantedAuthorityByName(name);
 	if (auth == null) {
-	    return Response.status(Status.NOT_FOUND).build();
+	    return null;
 	}
-	return Response.ok(GrantedAuthority.copy(auth)).build();
+	return GrantedAuthority.copy(auth);
     }
 
     /**
@@ -101,11 +82,10 @@ public class Authorities {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Operation(summary = "List authorities that match criteria", description = "List authorities that match criteria")
-    public Response listAuthorities() throws SiteWhereException {
+    @GetMapping
+    public ISearchResults<IGrantedAuthority> listAuthorities() throws SiteWhereException {
 	GrantedAuthoritySearchCriteria criteria = new GrantedAuthoritySearchCriteria();
-	return Response.ok(getUserManagement().listGrantedAuthorities(criteria)).build();
+	return getUserManagement().listGrantedAuthorities(criteria);
     }
 
     /**
@@ -114,21 +94,13 @@ public class Authorities {
      * @return
      * @throws SiteWhereException
      */
-    @GET
-    @Path("/hierarchy")
-    @Operation(summary = "Get authorities hierarchy", description = "Get authorities hierarchy")
-    public Response getAuthoritiesHierarchy() throws SiteWhereException {
+    @GetMapping("/hierarchy")
+    public List<GrantedAuthorityHierarchyNode> getAuthoritiesHierarchy() throws SiteWhereException {
 	GrantedAuthoritySearchCriteria criteria = new GrantedAuthoritySearchCriteria(1, 0);
 	ISearchResults<IGrantedAuthority> auths = getUserManagement().listGrantedAuthorities(criteria);
-	return Response.ok(GrantedAuthorityHierarchyBuilder.build(auths.getResults())).build();
+	return GrantedAuthorityHierarchyBuilder.build(auths.getResults());
     }
 
-    /**
-     * Get user management implementation.
-     * 
-     * @return
-     * @throws SiteWhereException
-     */
     protected IUserManagement getUserManagement() throws SiteWhereException {
 	return getMicroservice().getUserManagement();
     }
