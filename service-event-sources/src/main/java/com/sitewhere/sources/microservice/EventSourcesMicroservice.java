@@ -15,6 +15,7 @@
  */
 package com.sitewhere.sources.microservice;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
@@ -25,6 +26,7 @@ import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
+import com.sitewhere.sources.ApplicationSettings;
 import com.sitewhere.sources.configuration.EventSourcesConfiguration;
 import com.sitewhere.sources.configuration.EventSourcesModule;
 import com.sitewhere.sources.spi.microservice.IEventSourcesMicroservice;
@@ -50,6 +52,10 @@ public class EventSourcesMicroservice
 
     /** Device event management API channel */
     private IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel;
+
+    public EventSourcesMicroservice(@Autowired ApplicationSettings instanceSettings) {
+	super(instanceSettings);
+    }
 
     /*
      * (non-Javadoc)

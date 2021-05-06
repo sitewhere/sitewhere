@@ -15,6 +15,7 @@
  */
 package com.sitewhere.instance.microservice;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
@@ -33,6 +34,7 @@ import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceStateApiChannel;
 import com.sitewhere.grpc.client.spi.client.ILabelGenerationApiChannel;
 import com.sitewhere.grpc.client.spi.client.IScheduleManagementApiChannel;
+import com.sitewhere.instance.ApplicationSettings;
 import com.sitewhere.instance.configuration.InstanceManagementConfiguration;
 import com.sitewhere.instance.configuration.InstanceManagementModule;
 import com.sitewhere.instance.grpc.tenant.TenantManagementGrpcServer;
@@ -91,6 +93,10 @@ public class InstanceManagementMicroservice extends
 
     /** Device state API channel */
     private IDeviceStateApiChannel<?> deviceStateApiChannel;
+
+    public InstanceManagementMicroservice(@Autowired ApplicationSettings instanceSettings) {
+	super(instanceSettings);
+    }
 
     /*
      * (non-Javadoc)

@@ -29,7 +29,7 @@ import com.sitewhere.microservice.security.UserContext;
 import com.sitewhere.microservice.tenant.TenantManagementRequestBuilder;
 import com.sitewhere.rest.model.user.request.UserCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
+import com.sitewhere.spi.microservice.IInstanceSettings;
 import com.sitewhere.spi.microservice.lifecycle.IAsyncStartLifecycleComponent;
 import com.sitewhere.spi.microservice.lifecycle.ICompositeLifecycleStep;
 import com.sitewhere.spi.microservice.lifecycle.ILifecycleProgressMonitor;

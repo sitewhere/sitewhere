@@ -2,12 +2,13 @@ pluginManagement {
     repositories {
         mavenLocal()
         mavenCentral()
+        maven { url 'https://repo.spring.io/release' }
         gradlePluginPortal()
     }
     resolutionStrategy {
         eachPlugin {
-            if (requested.id.id == 'com.sitewhere') {
-                useModule("com.sitewhere:sitewhere-gradle-plugin:${requested.version}")
+            if (requested.id.id == "org.hibernate.orm") {
+                useModule("org.hibernate:hibernate-gradle-plugin:${requested.version}")
             }
         }
     }

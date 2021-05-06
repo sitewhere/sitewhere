@@ -1,0 +1,23 @@
+[
+  {
+    "name" : "com.sitewhere.schedule.configuration.ScheduleManagementTenantEngineModule",
+    "allDeclaredConstructors" : true,
+    "allPublicConstructors" : true,
+    "allDeclaredMethods" : true,
+    "allPublicMethods" : true
+  },
+  {
+    "name" : "com.sitewhere.schedule.configuration.ScheduleManagementTenantConfiguration",
+    "allDeclaredConstructors" : true,
+    "allPublicConstructors" : true,
+    "allDeclaredMethods" : true,
+    "allPublicMethods" : true
+  },
+  {
+    "name" : "com.sitewhere.schedule.persistence.rdb.RdbScheduleManagement",
+    "allDeclaredConstructors" : true,
+    "allPublicConstructors" : true,
+    "allDeclaredMethods" : true,
+    "allPublicMethods" : true
+  }
+]

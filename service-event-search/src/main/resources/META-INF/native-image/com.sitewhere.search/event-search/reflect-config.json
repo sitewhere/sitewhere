@@ -1,0 +1,16 @@
+[
+  {
+    "name" : "com.sitewhere.search.configuration.EventSearchTenantEngineModule",
+    "allDeclaredConstructors" : true,
+    "allPublicConstructors" : true,
+    "allDeclaredMethods" : true,
+    "allPublicMethods" : true
+  },
+  {
+    "name" : "com.sitewhere.search.configuration.EventSearchTenantConfiguration",
+    "allDeclaredConstructors" : true,
+    "allPublicConstructors" : true,
+    "allDeclaredMethods" : true,
+    "allPublicMethods" : true
+  }
+]

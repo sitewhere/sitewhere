@@ -42,7 +42,7 @@ import com.sitewhere.microservice.security.JwtExpiredException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ResourceExistsException;
-import com.sitewhere.spi.microservice.instance.IInstanceSettings;
+import com.sitewhere.spi.microservice.IInstanceSettings;
 import com.sitewhere.spi.tenant.TenantNotAvailableException;
 import com.sitewhere.spi.web.ISiteWhereWebConstants;
 import com.sitewhere.web.auth.controllers.JwtService;

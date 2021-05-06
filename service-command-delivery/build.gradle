@@ -4,16 +4,20 @@ springBoot  {
     mainClass = 'com.sitewhere.commands.CommandDeliveryApplication'
 }
 
-dependencies {
-	// SiteWhere microservice library including gRPC support.	
-    compile group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
+bootBuildImage {
+    imageName = "docker.io/sitewhere/${project.name}:${project.version}"
+    builder = "paketobuildpacks/builder:tiny"
+    environment = [
+        "BP_NATIVE_IMAGE" : "true",
+        "BP_NATIVE_IMAGE_BUILD_ARGUMENTS" : "--no-server -J-Xmx48G --verbose -H:+AddAllCharsets --enable-https"
+    ]
+}
 
-	// SiteWhere Communication Protocol integration.	
-    compile group: 'com.sitewhere', name: 'sitewhere-communication', version: "${rootProject.ext['sitewhere.integration.api.version']}"
-	
-	// Commons Lang 3 for utility functions.
-	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
-	
-	// Twilio dependencies.
-    compile group: 'com.twilio.sdk', name: 'twilio-java-sdk', version:'3.4.5'
+dependencies {
+    implementation group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
+    implementation group: 'com.sitewhere', name: 'sitewhere-communication', version: "${rootProject.ext['sitewhere.integration.api.version']}"
+
+	implementation group: 'org.apache.commons', name: 'commons-lang3'
+
+    implementation group: 'com.twilio.sdk', name: 'twilio-java-sdk', version:'3.4.5'
 }

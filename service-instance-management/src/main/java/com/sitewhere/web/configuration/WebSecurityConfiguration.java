@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -38,6 +39,7 @@ import com.sitewhere.web.security.TokenAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity(debug = false)
+@Import({ SiteWhereAuthenticationProvider.class, TokenAuthenticationFilter.class })
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     /** Matcher for all API methods */
@@ -49,9 +51,15 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     /** Matcher for all authentication API methods */
     private static final String ALL_AUTH_APIS = "/authapi/**";
 
+    @Autowired
+    private SiteWhereAuthenticationProvider authenticationProvider;
+
+    @Autowired
+    private TokenAuthenticationFilter tokenAuthenticationFilter;
+
     @Order(1)
     @Configuration
-    public static class AuthWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
+    public class AuthWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -69,7 +77,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Order(2)
     @Configuration
-    public static class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
+    public class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -84,23 +92,13 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		    .antMatchers(HttpMethod.GET, ALL_APIS_WITH_SYMBOLS).permitAll().anyRequest().authenticated();
 
 	    // Look for JWT bearer tokens to establish identity.
-	    http.addFilterBefore(tokenAuthenticationFilter(), BasicAuthenticationFilter.class);
-	}
-
-	@Bean
-	protected TokenAuthenticationFilter tokenAuthenticationFilter() throws Exception {
-	    return new TokenAuthenticationFilter();
+	    http.addFilterBefore(getTokenAuthenticationFilter(), BasicAuthenticationFilter.class);
 	}
     }
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-	auth.authenticationProvider(authenticationProvider());
-    }
-
-    @Bean
-    protected SiteWhereAuthenticationProvider authenticationProvider() throws Exception {
-	return new SiteWhereAuthenticationProvider();
+	auth.authenticationProvider(getAuthenticationProvider());
     }
 
     @Bean
@@ -116,5 +114,13 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	config.getExposedHeaders().add(ISiteWhereWebConstants.HEADER_SITEWHERE_ERROR_CODE);
 	source.registerCorsConfiguration("/**", config);
 	return new CorsFilter(source);
+    }
+
+    protected SiteWhereAuthenticationProvider getAuthenticationProvider() {
+	return authenticationProvider;
+    }
+
+    protected TokenAuthenticationFilter getTokenAuthenticationFilter() {
+	return tokenAuthenticationFilter;
     }
 }

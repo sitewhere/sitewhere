@@ -15,9 +15,11 @@
  */
 package com.sitewhere.search.microservice;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
+import com.sitewhere.search.ApplicationSettings;
 import com.sitewhere.search.configuration.EventSearchConfiguration;
 import com.sitewhere.search.configuration.EventSearchModule;
 import com.sitewhere.search.spi.microservice.IEventSearchMicroservice;
@@ -35,6 +37,10 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 public class EventSearchMicroservice
 	extends MultitenantMicroservice<MicroserviceIdentifier, EventSearchConfiguration, IEventSearchTenantEngine>
 	implements IEventSearchMicroservice {
+
+    public EventSearchMicroservice(@Autowired ApplicationSettings instanceSettings) {
+	super(instanceSettings);
+    }
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()

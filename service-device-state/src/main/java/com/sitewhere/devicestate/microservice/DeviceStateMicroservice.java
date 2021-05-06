@@ -15,8 +15,10 @@
  */
 package com.sitewhere.devicestate.microservice;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.sitewhere.devicestate.ApplicationSettings;
 import com.sitewhere.devicestate.configuration.DeviceStateConfiguration;
 import com.sitewhere.devicestate.configuration.DeviceStateModule;
 import com.sitewhere.devicestate.grpc.DeviceStateGrpcServer;
@@ -62,6 +64,10 @@ public class DeviceStateMicroservice
 
     /** Device event management API channel */
     private IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel;
+
+    public DeviceStateMicroservice(@Autowired ApplicationSettings instanceSettings) {
+	super(instanceSettings);
+    }
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()

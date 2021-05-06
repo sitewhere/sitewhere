@@ -4,11 +4,17 @@ springBoot  {
     mainClass = 'com.sitewhere.media.StreamingMediaApplication'
 }
 
-dependencies {
-	// SiteWhere microservice library including gRPC support.	
-    compile group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
+bootBuildImage {
+    imageName = "docker.io/sitewhere/${project.name}:${project. version}"
+    builder = "paketobuildpacks/builder:tiny"
+    environment = [
+        "BP_NATIVE_IMAGE" : "true",
+        "BP_NATIVE_IMAGE_BUILD_ARGUMENTS" : "--no-server -J-Xmx48G --verbose -H:+AddAllCharsets --enable-https"
+    ]
+}
 
-	// SiteWhere database integrations.	
-    compile group: 'com.sitewhere', name: 'sitewhere-cassandra', version: "${rootProject.ext['sitewhere.integration.api.version']}"
-    compile group: 'com.sitewhere', name: 'sitewhere-influxdb', version: "${rootProject.ext['sitewhere.integration.api.version']}"
+dependencies {
+    implementation group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
+    implementation group: 'com.sitewhere', name: 'sitewhere-cassandra', version: "${rootProject.ext['sitewhere.integration.api.version']}"
+    implementation group: 'com.sitewhere', name: 'sitewhere-influxdb', version: "${rootProject.ext['sitewhere.integration.api.version']}"
 }

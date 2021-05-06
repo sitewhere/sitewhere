@@ -15,8 +15,10 @@
  */
 package com.sitewhere.batch.microservice;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.sitewhere.batch.ApplicationSettings;
 import com.sitewhere.batch.configuration.BatchOperationsConfiguration;
 import com.sitewhere.batch.configuration.BatchOperationsModule;
 import com.sitewhere.batch.grpc.BatchManagementGrpcServer;
@@ -55,6 +57,10 @@ public class BatchOperationsMicroservice extends
 
     /** Device event management API demux */
     private IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel;
+
+    public BatchOperationsMicroservice(@Autowired ApplicationSettings instanceSettings) {
+	super(instanceSettings);
+    }
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()

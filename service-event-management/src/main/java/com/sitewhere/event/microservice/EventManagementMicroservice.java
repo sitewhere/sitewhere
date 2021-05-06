@@ -15,8 +15,10 @@
  */
 package com.sitewhere.event.microservice;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.sitewhere.event.ApplicationSettings;
 import com.sitewhere.event.configuration.EventManagementConfiguration;
 import com.sitewhere.event.configuration.EventManagementModule;
 import com.sitewhere.event.grpc.EventManagementGrpcServer;
@@ -50,6 +52,10 @@ public class EventManagementMicroservice extends
 
     /** Device management API channel */
     private IDeviceManagement deviceManagement;
+
+    public EventManagementMicroservice(@Autowired ApplicationSettings instanceSettings) {
+	super(instanceSettings);
+    }
 
     /*
      * (non-Javadoc)

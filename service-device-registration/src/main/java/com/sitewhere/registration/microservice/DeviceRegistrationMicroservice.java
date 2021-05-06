@@ -15,6 +15,7 @@
  */
 package com.sitewhere.registration.microservice;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.sitewhere.grpc.client.asset.AssetManagementApiChannel;
@@ -26,6 +27,7 @@ import com.sitewhere.microservice.api.asset.IAssetManagement;
 import com.sitewhere.microservice.api.device.IDeviceManagement;
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
+import com.sitewhere.registration.ApplicationSettings;
 import com.sitewhere.registration.configuration.DeviceRegistrationConfiguration;
 import com.sitewhere.registration.configuration.DeviceRegistrationModule;
 import com.sitewhere.registration.spi.microservice.IDeviceRegistrationMicroservice;
@@ -53,6 +55,10 @@ public class DeviceRegistrationMicroservice extends
     // private CachedAssetManagementApiChannel assetManagement;
     /** Asset management API channel */
     private IAssetManagementApiChannel<?> assetManagementApiChannel;
+
+    public DeviceRegistrationMicroservice(@Autowired ApplicationSettings instanceSettings) {
+	super(instanceSettings);
+    }
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()

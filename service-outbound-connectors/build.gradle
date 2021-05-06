@@ -4,23 +4,22 @@ springBoot  {
     mainClass = 'com.sitewhere.connectors.OutboundConnectorsApplication'
 }
 
+bootBuildImage {
+    imageName = "docker.io/sitewhere/${project.name}:${project.version}"
+    builder = "paketobuildpacks/builder:tiny"
+    environment = [
+        "BP_NATIVE_IMAGE" : "true",
+        "BP_NATIVE_IMAGE_BUILD_ARGUMENTS" : "--no-server -J-Xmx48G --verbose -H:+AddAllCharsets --enable-https"
+    ]
+}
+
 dependencies {
-	// SiteWhere microservice library including gRPC support.	
-    compile group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
+    implementation group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
+    implementation group: 'com.sitewhere', name: 'sitewhere-communication', version: "${rootProject.ext['sitewhere.integration.api.version']}"
 
-	// SiteWhere Communication Protocol integration.	
-    compile group: 'com.sitewhere', name: 'sitewhere-communication', version: "${rootProject.ext['sitewhere.integration.api.version']}"
+    implementation group: 'com.sitewhere', name: 'sitewhere-solr', version: "${rootProject.ext['sitewhere.integration.api.version']}"
 
-	// SiteWhere Solr integration.	
-    compile group: 'com.sitewhere', name: 'sitewhere-solr', version: "${rootProject.ext['sitewhere.integration.api.version']}"
+    implementation group: 'com.amazonaws', name: 'aws-java-sdk-sqs', version: '1.9.6'
 
-    // Amazon SQS dependencies.
-    compile group: 'com.amazonaws', name: 'aws-java-sdk-sqs', version: '1.9.6'
-
-    // Azure dependencies.
-    compile group: 'org.apache.qpid', name: 'qpid-amqp-1-0-client', version:'0.32'
-    compile group: 'org.apache.activemq', name: 'activemq-broker', version: '5.15.10'
-
-    // RabbitMQ dependencies.
-    compile group: 'com.rabbitmq', name: 'amqp-client', version:'3.6.0'
+    implementation group: 'com.rabbitmq', name: 'amqp-client', version:'3.6.0'
 }

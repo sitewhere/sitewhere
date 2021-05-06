@@ -4,9 +4,17 @@ springBoot  {
     mainClass = 'com.sitewhere.labels.LabelGenerationApplication'
 }
 
-dependencies {
-	// SiteWhere microservice library including gRPC support.	
-    compile group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
+bootBuildImage {
+    imageName = "docker.io/sitewhere/${project.name}:${project.version}"
+    builder = "paketobuildpacks/builder:tiny"
+    environment = [
+        "BP_NATIVE_IMAGE" : "true",
+        "BP_NATIVE_IMAGE_BUILD_ARGUMENTS" : "--no-server -J-Xmx48G --verbose -H:+AddAllCharsets --enable-https"
+    ]
+}
 
-    compile group: 'com.github.kenglxn.qrgen', name: 'javase', version:'2.5.0'
+dependencies {
+    implementation group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
+
+    implementation group: 'com.github.kenglxn.qrgen', name: 'javase', version:'2.5.0'
 }

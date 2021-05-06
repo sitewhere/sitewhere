@@ -6,11 +6,22 @@ springBoot  {
     mainClass = 'com.sitewhere.instance.InstanceManagementApplication'
 }
 
+bootBuildImage {
+    imageName = "docker.io/sitewhere/${project.name}:${project.version}"
+    builder = "paketobuildpacks/builder:tiny"
+    environment = [
+        "BP_NATIVE_IMAGE" : "true",
+        "BP_NATIVE_IMAGE_BUILD_ARGUMENTS" : "--no-server -J-Xmx48G --verbose -H:+AddAllCharsets --enable-https --language:js"
+    ]
+}
+
 dependencies {
-    // Import web components.
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-     
-    // SiteWhere microservice library including gRPC support.	
-    compile group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
+    implementation 'org.springframework:spring-web'
+    implementation 'org.springframework:spring-webmvc'
+    implementation 'org.springframework.security:spring-security-config'
+    implementation 'org.springframework.security:spring-security-web'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-websocket'
+
+    implementation group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
 }

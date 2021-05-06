@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.sitewhere.instance.spi.microservice.IInstanceManagementMicroservice;
@@ -39,6 +40,7 @@ import com.sitewhere.spi.web.ISiteWhereWebConstants;
  * Spring request filter used to establish a JWT based on basic auth
  * information.
  */
+@Component
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     /** Static logger instance */

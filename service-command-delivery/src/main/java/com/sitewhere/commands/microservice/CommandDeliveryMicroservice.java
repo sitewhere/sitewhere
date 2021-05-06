@@ -15,8 +15,10 @@
  */
 package com.sitewhere.commands.microservice;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.sitewhere.commands.ApplicationSettings;
 import com.sitewhere.commands.configuration.CommandDeliveryConfiguration;
 import com.sitewhere.commands.configuration.CommandDeliveryModule;
 import com.sitewhere.commands.spi.microservice.ICommandDeliveryMicroservice;
@@ -45,6 +47,10 @@ public class CommandDeliveryMicroservice extends
 
     /** Device management API channel */
     private CachedDeviceManagementApiChannel deviceManagement;
+
+    public CommandDeliveryMicroservice(@Autowired ApplicationSettings instanceSettings) {
+	super(instanceSettings);
+    }
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()

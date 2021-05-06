@@ -4,29 +4,26 @@ springBoot  {
     mainClass = 'com.sitewhere.sources.EventSourcesApplication'
 }
 
-dependencies {
-	// SiteWhere microservice library including gRPC support.	
-    compile group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
+bootBuildImage {
+    imageName = "docker.io/sitewhere/${project.name}:${project.version}"
+    builder = "paketobuildpacks/builder:tiny"
+    environment = [
+        "BP_NATIVE_IMAGE" : "true",
+        "BP_NATIVE_IMAGE_BUILD_ARGUMENTS" : "--no-server -J-Xmx48G --verbose -H:+AddAllCharsets --enable-https"
+    ]
+}
 
-	// SiteWhere Communication Protocol integration.	
-    compile group: 'com.sitewhere', name: 'sitewhere-communication', version: "${rootProject.ext['sitewhere.integration.api.version']}"
-	
-	// ActiveMQ dependencies.
-    compile group: 'org.apache.activemq', name: 'activemq-amqp', version:'5.14.0'
-    compile group: 'org.apache.activemq', name: 'activemq-mqtt', version:'5.14.0'
-    compile group: 'org.apache.activemq', name: 'activemq-stomp', version:'5.14.0'
-    compile group: 'org.apache.activemq', name: 'activemq-kahadb-store', version:'5.14.0'
-    
-    // Azure dependencies.
-    compile group: 'com.microsoft.azure', name: 'azure-eventhubs-eph', version:'1.0.0'
-    
-    // RabbitMQ dependencies.
-    compile group: 'com.rabbitmq', name: 'amqp-client', version:'3.6.0'
-	
-	// WebSocket dependencies.
-    compile group: 'javax.websocket', name: 'javax.websocket-api', version:'1.1'
-    compile group: 'org.glassfish.tyrus', name: 'tyrus-server', version:'1.13.1'
-    compile group: 'org.glassfish.tyrus', name: 'tyrus-container-grizzly-server', version:'1.13.1'
+dependencies {
+    implementation group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
+    implementation group: 'com.sitewhere', name: 'sitewhere-communication', version: "${rootProject.ext['sitewhere.integration.api.version']}"
+
+    implementation group: 'com.microsoft.azure', name: 'azure-eventhubs-eph', version:'1.0.0'
+
+    implementation group: 'com.rabbitmq', name: 'amqp-client', version:'3.6.0'
+
+    implementation group: 'javax.websocket', name: 'javax.websocket-api', version:'1.1'
+    implementation group: 'org.glassfish.tyrus', name: 'tyrus-server', version:'1.13.1'
+    implementation group: 'org.glassfish.tyrus', name: 'tyrus-container-grizzly-server', version:'1.13.1'
 }
 test {
     exclude '**/*'

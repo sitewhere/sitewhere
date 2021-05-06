@@ -15,6 +15,7 @@
  */
 package com.sitewhere.inbound.microservice;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.sitewhere.grpc.client.device.CachedDeviceManagementApiChannel;
@@ -22,6 +23,7 @@ import com.sitewhere.grpc.client.device.DeviceManagementApiChannel;
 import com.sitewhere.grpc.client.event.DeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceEventManagementApiChannel;
 import com.sitewhere.grpc.client.spi.client.IDeviceManagementApiChannel;
+import com.sitewhere.inbound.ApplicationSettings;
 import com.sitewhere.inbound.configuration.InboundProcessingConfiguration;
 import com.sitewhere.inbound.configuration.InboundProcessingModule;
 import com.sitewhere.inbound.spi.microservice.IInboundProcessingMicroservice;
@@ -50,6 +52,10 @@ public class InboundProcessingMicroservice extends
 
     /** Device event management API channel */
     private IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel;
+
+    public InboundProcessingMicroservice(@Autowired ApplicationSettings instanceSettings) {
+	super(instanceSettings);
+    }
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()

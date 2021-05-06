@@ -26,16 +26,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.microservice.util.MarshalUtils;
 import com.sitewhere.sources.BinaryInboundEventSource;
-import com.sitewhere.sources.activemq.ActiveMqBrokerEventReceiver;
-import com.sitewhere.sources.activemq.ActiveMqClientEventReceiver;
 import com.sitewhere.sources.azure.EventHubInboundEventReceiver;
 import com.sitewhere.sources.coap.CoapServerEventReceiver;
 import com.sitewhere.sources.coap.CoapServerEventSource;
 import com.sitewhere.sources.configuration.DecoderGenericConfiguration;
 import com.sitewhere.sources.configuration.EventSourceGenericConfiguration;
 import com.sitewhere.sources.configuration.EventSourcesTenantConfiguration;
-import com.sitewhere.sources.configuration.eventsource.activemq.ActiveMqBrokerConfiguration;
-import com.sitewhere.sources.configuration.eventsource.activemq.ActiveMqClientConfiguration;
 import com.sitewhere.sources.configuration.eventsource.azure.EventHubConfiguration;
 import com.sitewhere.sources.configuration.eventsource.coap.CoapServerConfiguration;
 import com.sitewhere.sources.configuration.eventsource.mqtt.MqttConfiguration;
@@ -59,12 +55,6 @@ public class EventSourcesParser {
 
     /** Static logger instance */
     private static final Logger LOGGER = LoggerFactory.getLogger(EventSourcesParser.class);
-
-    /** Type for ActiveMQ broker */
-    public static final String TYPE_ACTIVEMQ_BROKER = "activemq-broker";
-
-    /** Type for ActiveMQ client */
-    public static final String TYPE_ACTIVEMQ_CLIENT = "activemq-client";
 
     /** Type for CoAP server event source */
     public static final String TYPE_COAP = "coap";
@@ -100,14 +90,6 @@ public class EventSourcesParser {
 	List<IInboundEventSource<?>> sources = new ArrayList<>();
 	for (EventSourceGenericConfiguration sourceConfig : configuration.getEventSources()) {
 	    switch (sourceConfig.getType()) {
-	    case TYPE_ACTIVEMQ_BROKER: {
-		sources.add(createActiveMqBrokerEventSource(component, sourceConfig));
-		break;
-	    }
-	    case TYPE_ACTIVEMQ_CLIENT: {
-		sources.add(createActiveMqClientEventSource(component, sourceConfig));
-		break;
-	    }
 	    case TYPE_COAP: {
 		sources.add(createCoapEventSource(component, sourceConfig));
 		break;
@@ -148,40 +130,6 @@ public class EventSourcesParser {
 	source.setDeviceEventDecoder(parseBinaryDecoder(sourceConfig));
 	source.setSourceId(sourceConfig.getId());
 	return source;
-    }
-
-    /**
-     * Create an ActiveMQ broker event source.
-     * 
-     * @param sourceConfig
-     * @return
-     * @throws SiteWhereException
-     */
-    protected static IInboundEventSource<?> createActiveMqBrokerEventSource(ITenantEngineLifecycleComponent component,
-	    EventSourceGenericConfiguration sourceConfig) throws SiteWhereException {
-	ActiveMqBrokerConfiguration config = new ActiveMqBrokerConfiguration(component);
-	config.apply(sourceConfig);
-	LOGGER.info(String.format("Creating ActiveMQ broker event source with configuration:\n%s\n\n",
-		MarshalUtils.marshalJsonAsPrettyString(config)));
-	ActiveMqBrokerEventReceiver receiver = new ActiveMqBrokerEventReceiver(config);
-	return binaryEventSourceFor(sourceConfig, Collections.singletonList(receiver));
-    }
-
-    /**
-     * Create an ActiveMQ client event source.
-     * 
-     * @param sourceConfig
-     * @return
-     * @throws SiteWhereException
-     */
-    protected static IInboundEventSource<?> createActiveMqClientEventSource(ITenantEngineLifecycleComponent component,
-	    EventSourceGenericConfiguration sourceConfig) throws SiteWhereException {
-	ActiveMqClientConfiguration config = new ActiveMqClientConfiguration(component);
-	config.apply(sourceConfig);
-	LOGGER.info(String.format("Creating ActiveMQ client event source with configuration:\n%s\n\n",
-		MarshalUtils.marshalJsonAsPrettyString(config)));
-	ActiveMqClientEventReceiver receiver = new ActiveMqClientEventReceiver(config);
-	return binaryEventSourceFor(sourceConfig, Collections.singletonList(receiver));
     }
 
     /**

@@ -15,8 +15,10 @@
  */
 package com.sitewhere.asset.microservice;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.sitewhere.asset.ApplicationSettings;
 import com.sitewhere.asset.configuration.AssetManagementConfiguration;
 import com.sitewhere.asset.configuration.AssetManagementModule;
 import com.sitewhere.asset.grpc.AssetManagementGrpcServer;
@@ -48,6 +50,10 @@ public class AssetManagementMicroservice extends
 
     /** Device management API demux */
     private IDeviceManagementApiChannel<?> deviceManagementApiChannel;
+
+    public AssetManagementMicroservice(@Autowired ApplicationSettings instanceSettings) {
+	super(instanceSettings);
+    }
 
     /*
      * (non-Javadoc)

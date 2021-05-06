@@ -1,17 +1,34 @@
+plugins {
+    id 'org.hibernate.orm' version '5.4.30.Final'
+}
+
 description = 'SiteWhere Asset Management Microservice'
+
+hibernate {
+    enhance {
+        enableLazyInitialization= true
+        enableDirtyTracking = true
+        enableAssociationManagement = true
+        enableExtendedEnhancement = false
+    }
+}
 
 springBoot  {
     mainClass = 'com.sitewhere.asset.AssetManagementApplication'
 }
 
+bootBuildImage {
+    imageName = "docker.io/sitewhere/${project.name}:${project.version}"
+    builder = "paketobuildpacks/builder:tiny"
+    environment = [
+        "BP_NATIVE_IMAGE" : "true",
+        "BP_NATIVE_IMAGE_BUILD_ARGUMENTS" : "--no-server -J-Xmx48G --verbose -H:+AddAllCharsets --enable-https --language:js"
+    ]
+}
+
 dependencies {
-	// SiteWhere microservice library including gRPC support.	
-    compile group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
+    implementation group: 'com.sitewhere', name: 'sitewhere-grpc-client', version: "${rootProject.ext['sitewhere.microservice.api.version']}"
+    implementation group: 'com.sitewhere', name: 'sitewhere-rdb', version: "${rootProject.ext['sitewhere.integration.api.version']}"
 
-	// SiteWhere RDB integration.	
-    compile group: 'com.sitewhere', name: 'sitewhere-rdb', version: "${rootProject.ext['sitewhere.integration.api.version']}"
-
-    compile group: 'org.apache.httpcomponents', name: 'httpclient'
-    
-    compile group: 'org.graalvm.sdk', name: 'graal-sdk', version: '19.2.1'
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient'
 }

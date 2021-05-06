@@ -17,6 +17,16 @@ package com.sitewhere.batch;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
+import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
+import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.JndiDataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
+import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 
 import com.sitewhere.batch.spi.microservice.IBatchOperationsMicroservice;
 import com.sitewhere.microservice.MicroserviceApplication;
@@ -24,6 +34,10 @@ import com.sitewhere.microservice.MicroserviceApplication;
 /**
  * Main application which runs the batch operations microservice.
  */
+@SpringBootApplication(exclude = { AopAutoConfiguration.class, CacheAutoConfiguration.class,
+	CassandraAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class,
+	FlywayAutoConfiguration.class, JndiDataSourceAutoConfiguration.class, JtaAutoConfiguration.class,
+	KafkaAutoConfiguration.class, WebFluxAutoConfiguration.class })
 public class BatchOperationsApplication extends MicroserviceApplication<IBatchOperationsMicroservice> {
 
     @Autowired

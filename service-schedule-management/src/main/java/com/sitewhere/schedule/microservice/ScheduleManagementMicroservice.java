@@ -15,10 +15,12 @@
  */
 package com.sitewhere.schedule.microservice;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.sitewhere.microservice.lifecycle.CompositeLifecycleStep;
 import com.sitewhere.microservice.multitenant.MultitenantMicroservice;
+import com.sitewhere.schedule.ApplicationSettings;
 import com.sitewhere.schedule.configuration.ScheduleManagementConfiguration;
 import com.sitewhere.schedule.configuration.ScheduleManagementModule;
 import com.sitewhere.schedule.grpc.ScheduleManagementGrpcServer;
@@ -43,6 +45,10 @@ public class ScheduleManagementMicroservice extends
 
     /** Provides server for schedule management GRPC requests */
     private IScheduleManagementGrpcServer scheduleManagementGrpcServer;
+
+    public ScheduleManagementMicroservice(@Autowired ApplicationSettings instanceSettings) {
+	super(instanceSettings);
+    }
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()

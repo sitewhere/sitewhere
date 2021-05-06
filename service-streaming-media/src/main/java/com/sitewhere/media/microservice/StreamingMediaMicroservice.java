@@ -15,8 +15,10 @@
  */
 package com.sitewhere.media.microservice;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.sitewhere.media.ApplicationSettings;
 import com.sitewhere.media.configuration.StreamingMediaConfiguration;
 import com.sitewhere.media.configuration.StreamingMediaModule;
 import com.sitewhere.media.spi.microservice.IStreamingMediaMicroservice;
@@ -35,6 +37,10 @@ import io.sitewhere.k8s.crd.tenant.engine.SiteWhereTenantEngine;
 public class StreamingMediaMicroservice extends
 	MultitenantMicroservice<MicroserviceIdentifier, StreamingMediaConfiguration, IStreamingMediaTenantEngine>
 	implements IStreamingMediaMicroservice {
+
+    public StreamingMediaMicroservice(@Autowired ApplicationSettings instanceSettings) {
+	super(instanceSettings);
+    }
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()

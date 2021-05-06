@@ -15,8 +15,10 @@
  */
 package com.sitewhere.connectors.microservice;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.sitewhere.connectors.ApplicationSettings;
 import com.sitewhere.connectors.configuration.OutboundConnectorsConfiguration;
 import com.sitewhere.connectors.configuration.OutboundConnectorsModule;
 import com.sitewhere.connectors.spi.microservice.IOutboundConnectorsMicroservice;
@@ -50,6 +52,10 @@ public class OutboundConnectorsMicroservice extends
 
     /** Device event management API demux */
     private IDeviceEventManagementApiChannel<?> deviceEventManagementApiChannel;
+
+    public OutboundConnectorsMicroservice(@Autowired ApplicationSettings instanceSettings) {
+	super(instanceSettings);
+    }
 
     /*
      * @see com.sitewhere.spi.microservice.IMicroservice#getName()

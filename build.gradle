@@ -1,5 +1,6 @@
 plugins {
-    id 'org.springframework.boot' version '2.4.4' apply false
+    id 'org.springframework.boot' version '2.4.5' apply false
+    id 'org.springframework.experimental.aot' version '0.9.2' apply false
     id 'com.bmuschko.docker-remote-api' version '5.3.0'
     id 'org.ajoberstar.grgit' version '2.2.1'
     id 'com.github.hierynomus.license' version '0.15.0'
@@ -16,9 +17,6 @@ ext {
 ext['git.revision'] = ext.git.head().id
 ext['git.revision.abbrev'] = ext.git.head().abbreviatedId
 
-ext['docker.base.image'] = 'openjdk:8-jre-alpine'
-ext['docker.maintainer'] = 'admin@sitewhere.com'
-
 ext['sitewhere.microservice.api.version'] = '3.1.0'
 ext['sitewhere.integration.api.version'] = '3.1.0'
 ext['kafka.version'] = '2.0.0'
@@ -32,16 +30,16 @@ allprojects {
     repositories {
 		mavenLocal()
         mavenCentral()
+        maven { url 'https://repo.spring.io/release' }
         maven { url 'http://maven.restlet.org' }
         maven { url "https://jitpack.io" }
         maven { url "http://oss.jfrog.org/artifactory/oss-release-local/" }
-        maven { url "http://maven.wso2.org/nexus/content/repositories/releases/" }
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     }
 }
 
 subprojects {
     apply plugin: 'org.springframework.boot'
+    apply plugin: 'org.springframework.experimental.aot'
     
 	license {
 		header rootProject.file('HEADER')
@@ -137,6 +135,9 @@ subprojects {
     dependencies {
         // Sping dependency managment.
         implementation platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+        
+        // Expected for microservice library.
+        compileOnly group: 'org.graalvm.nativeimage', name: 'svm', version: '21.0.0.2'
 
     	// Testing dependencies.
 		testCompile group: 'junit', name: 'junit', version: '4.12'

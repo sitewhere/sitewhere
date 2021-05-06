@@ -1,0 +1,9 @@
+[
+  {
+    "name" : "com.sitewhere.asset.persistence.rdb.RdbAssetManagement",
+    "allDeclaredConstructors" : true,
+    "allPublicConstructors" : true,
+    "allDeclaredMethods" : true,
+    "allPublicMethods" : true
+  }
+]
