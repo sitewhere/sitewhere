@@ -1,3 +1,82 @@
+<div align="center">
+
+<a href="https://devicechain.io">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/devicechain-io/devicechain/main/branding/logos/logo.svg">
+    <img alt="DeviceChain" src="https://raw.githubusercontent.com/devicechain-io/devicechain/main/branding/logos/logo-light.svg" width="180">
+  </picture>
+</a>
+
+# SiteWhere is now DeviceChain
+
+**A ground-up rebuild in Go — the same domain model, without the stack that made it hard to run.**
+
+<a href="https://devicechain.io"><strong>Website</strong></a> ·
+<a href="https://docs.devicechain.io"><strong>Documentation</strong></a> ·
+<a href="https://github.com/devicechain-io/devicechain"><strong>Source</strong></a> ·
+<a href="https://github.com/devicechain-io/devicechain/discussions"><strong>Discussions</strong></a>
+
+</div>
+
+> [!IMPORTANT]
+> **This repository is no longer maintained.** The last release was SiteWhere CE 3.0.5 in March 2021.
+> It stays here, read-only, so existing deployments, forks and links keep working — but it is not
+> receiving fixes. **[DeviceChain](https://devicechain.io) is where the work continues.**
+
+## Why DeviceChain
+
+DeviceChain keeps what SiteWhere got right — devices, types, assignments, the event pipeline — and
+rebuilds everything underneath it.
+
+|  | SiteWhere | DeviceChain |
+| --- | --- | --- |
+| **Runtime** | Java / Spring microservices on the JVM | Go single-binary services, sub-second startup |
+| **Infrastructure** | Zookeeper, Kafka, MongoDB, InfluxDB, Cassandra, an MQTT broker | **NATS and TimescaleDB.** That is the whole list. |
+| **Orchestration** | Kubernetes + Istio service mesh + Helm charts | A Kubernetes operator with one declarative CRD — no service mesh required |
+| **API** | REST | GraphQL per area, with generated TypeScript and C#/.NET SDKs (AOT/IL2CPP-safe, so it works in Unity) |
+| **Device model** | Device types and a fixed assignment hierarchy | Versioned device profiles, a typed relationship graph, and dynamic groups resolved from a CEL selector |
+
+### And things SiteWhere never had
+
+- **A deterministic streaming rule engine.** Threshold, duration, rate-of-change, absence, windowed
+  aggregate and area-correlation rules compiled from CEL — and because every rule lowers to one
+  compiler and one engine, you can **replay real history through a rule and watch what it would have
+  done** before it governs anything.
+- **Versioned dashboards.** Draft, publish, roll back. Build one against synthetic data before a
+  single device exists, then point the same layout at a live fleet — or embed it in your own app
+  through the widget runtime.
+- **Modern edge protocols.** A stateful Sparkplug B host application and an LwM2M terminator over
+  CoAP/DTLS, both of which *assert* device presence rather than inferring it from silence.
+- **An edge agent** that buffers durably through a WAN outage and replays when the link returns.
+- **Outbound connectors** — SSRF-hardened webhooks plus publish to MQTT, Kafka, SNS and SQS.
+- **Rules in plain language.** Describe what you want and it drafts a candidate — then runs it
+  through the *same* compiler as every hand-written rule. If it does not compile, it does not ship.
+- **A door built for AI agents.** A read-only MCP server that carries the caller's own token, so an
+  agent can never see more than the person operating it.
+
+And it stays **Apache-2.0 end to end** — no open-core split and no per-device metering. Device
+inventory, twin state, two-way command delivery, dashboards, multi-tenancy, high availability and
+SSO are part of the platform rather than a paid tier.
+
+## If you ran SiteWhere, we want to hear from you
+
+DeviceChain is **pre-1.0 and in active development**. It is built and exercised in CI, and its
+disaster-recovery and high-availability behaviour has been drilled against a live cluster — but it
+has not yet been run by many people who did not write it.
+
+That is the gap, and people who ran SiteWhere are the best possible ones to close it: you already
+know where this kind of platform tends to break. Installing it and telling us where you got stuck is
+genuinely the most useful thing anyone can do for it right now — and interfaces can still change in
+response to what you find, which stops being true at 1.0.
+
+**[Start with the docs](https://docs.devicechain.io)** · **[Tell us what broke](https://docs.devicechain.io/getting-help)**
+
+---
+
+<sub>The original SiteWhere README follows, unchanged, for reference.</sub>
+
+---
+
 [![Build Status](https://travis-ci.org/sitewhere/sitewhere.svg?branch=master)](https://travis-ci.org/sitewhere/sitewhere) 
 [![Docker Pulls](https://img.shields.io/docker/pulls/sitewhere/service-web-rest.svg?label=Docker%20Pulls&style=flat-square)](https://hub.docker.com/u/sitewhere) 
 
