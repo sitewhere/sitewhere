@@ -36,10 +36,10 @@ allprojects {
     repositories {
 		mavenLocal()
         maven { url "https://repo.maven.apache.org/maven2" }
-        maven { url 'http://maven.restlet.org' }
+        maven { url 'https://maven.restlet.org' }
         maven { url "https://jitpack.io" }
-        maven { url "http://oss.jfrog.org/artifactory/oss-release-local/" }
-        maven { url "http://maven.wso2.org/nexus/content/repositories/releases/" }
+        maven { url "https://oss.jfrog.org/artifactory/oss-release-local/" }
+        maven { url "https://maven.wso2.org/nexus/content/repositories/releases/" }
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     }
 }
