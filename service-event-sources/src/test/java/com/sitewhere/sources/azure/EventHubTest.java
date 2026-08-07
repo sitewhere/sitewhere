@@ -11,6 +11,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.net.URLEncoder;
+import java.nio.file.Files;
 import java.util.Hashtable;
 
 import javax.jms.BytesMessage;
@@ -32,7 +33,7 @@ public class EventHubTest {
     public void sendEvent() throws Exception {
 	String key = URLEncoder.encode("SAS_KEY_GOES_HERE");
 	String connectionString = "amqps://user:" + key + "@sitewhere.servicebus.windows.net";
-	File file = File.createTempFile("qpid", "props");
+	File file = Files.createTempFile("qpid", "props").toFile();
 	BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 	writer.write("connectionfactory.SBCF = " + connectionString);
 	writer.newLine();

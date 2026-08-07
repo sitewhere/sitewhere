@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.file.Files;
 import java.util.Hashtable;
 
 import javax.naming.Context;
@@ -74,7 +75,7 @@ public class EventHubOutboundConnector extends SerialOutboundConnector {
 	try {
 	    String key = URLEncoder.encode(getSasKey(), "UTF8");
 	    String connectionString = "amqps://" + getSasName() + ":" + key + "@" + getServiceBusName();
-	    File file = File.createTempFile("eventhub", ".props");
+	    File file = Files.createTempFile("eventhub", ".props").toFile();
 	    BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 	    writer.write("connectionfactory.SBCF = " + connectionString);
 	    writer.newLine();
